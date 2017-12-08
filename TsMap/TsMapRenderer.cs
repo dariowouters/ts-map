@@ -88,6 +88,8 @@ namespace TsMap
 
             var prefabs = itemsNearby.Where(item => item.Type == TsItemType.Prefab && !item.Hidden);
 
+            List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
+
             foreach (var prefabItem in prefabs) // TODO: Road Width
             {
                 var originNode = _mapper.GetNodeByUid(prefabItem.Nodes[0]);
@@ -137,7 +139,14 @@ namespace TsMap
                         else if ((colorFlag & 0x08) != 0) fillColor = _palette.PrefabGreen;
                         else fillColor = _palette.Error; // Unknown
 
-                        g.FillPolygon(fillColor, polyPoints.Values.ToArray());
+                        var prefabLook = new TsPrefabLook(polyPoints.Values.ToList())
+                        {
+                            Type = TsPrefabLookType.Poly,
+                            ZIndex = ((colorFlag & 0x01) != 0) ? 3 : 2,
+                            Color = fillColor
+                        };
+                        
+                        drawingQueue.Add(prefabLook);
                         continue;
                     }
 
@@ -155,14 +164,33 @@ namespace TsMap
                         var newPointEnd = RotatePoint(prefabStartX + neighbourPoint.X,
                             prefabStartZ + neighbourPoint.Z, rot, originNode.X, originNode.Z);
                         
-                        g.DrawLine(new Pen(_palette.PrefabRoad, 10f * scaleX),
-                            (newPointStart.X - startX) * scaleX,
-                            (newPointStart.Y - startY) * scaleY,
-                            (newPointEnd.X - startX) * scaleX,
-                            (newPointEnd.Y - startY) * scaleY);
+                        TsPrefabLook prefabLook = new TsPrefabLook
+                        {
+                            Color = _palette.PrefabRoad,
+                            Type = TsPrefabLookType.Road,
+                            Width = 10f * scaleX,
+                            ZIndex = 1
+                        };
+                        prefabLook.AddPoint((newPointStart.X - startX) * scaleX, (newPointStart.Y - startY) * scaleY);
+                        prefabLook.AddPoint((newPointEnd.X - startX) * scaleX, (newPointEnd.Y - startY) * scaleY);
+
+                        drawingQueue.Add(prefabLook);
                     }
                 }
             }
+
+            foreach (var prefabLook in drawingQueue.OrderBy(p => p.ZIndex))
+            {
+                if (prefabLook.Type == TsPrefabLookType.Poly)
+                {
+                    g.FillPolygon(prefabLook.Color, prefabLook.GetPoints());
+                }
+                else
+                {
+                    g.DrawLines(new Pen(prefabLook.Color, prefabLook.Width), prefabLook.GetPoints());
+                }
+            }
+
 
             var cities = itemsNearby.Where(item => item.Type == TsItemType.City && !item.Hidden);
 
