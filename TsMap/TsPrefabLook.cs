@@ -3,33 +3,22 @@ using System.Drawing;
 
 namespace TsMap
 {
-    public enum TsPrefabLookType
-    {
-        Road,
-        Poly
-    }
-
-    public class TsPrefabLook
+    public abstract class TsPrefabLook
     {
         public int ZIndex { get; set; }
-        public TsPrefabLookType Type { get; set; }
         public Brush Color { get; set; }
-        public float Width { get; set; }
-        private readonly List<PointF> _points;
+        protected readonly List<PointF> Points;
 
-        public TsPrefabLook(List<PointF> points)
+        protected TsPrefabLook(List<PointF> points)
         {
-            _points = points;
+            Points = points;
         }
 
-        public TsPrefabLook() : this(new List<PointF>())
-        {
-
-        }
+        protected TsPrefabLook() : this(new List<PointF>()) { }
 
         public void AddPoint(PointF p)
         {
-            _points.Add(p);
+            Points.Add(p);
         }
 
         public void AddPoint(float x, float y)
@@ -37,9 +26,31 @@ namespace TsMap
             AddPoint(new PointF(x, y));
         }
 
-        public PointF[] GetPoints()
+        public abstract void Draw(Graphics g);
+    }
+
+    public class TsPrefabRoadLook : TsPrefabLook
+    {
+        public float Width { private get; set; }
+
+        public TsPrefabRoadLook()
         {
-            return _points.ToArray();
+            ZIndex = 1;
+        }
+
+        public override void Draw(Graphics g)
+        {
+            g.DrawLines(new Pen(Color, Width), Points.ToArray());
+        }
+    }
+
+    public class TsPrefabPolyLook : TsPrefabLook
+    {
+        public TsPrefabPolyLook(List<PointF> points) : base(points) { }
+
+        public override void Draw(Graphics g)
+        {
+            g.FillPolygon(Color, Points.ToArray());
         }
     }
 }

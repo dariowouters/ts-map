@@ -139,9 +139,8 @@ namespace TsMap
                         else if ((colorFlag & 0x08) != 0) fillColor = _palette.PrefabGreen;
                         else fillColor = _palette.Error; // Unknown
 
-                        var prefabLook = new TsPrefabLook(polyPoints.Values.ToList())
+                        var prefabLook = new TsPrefabPolyLook(polyPoints.Values.ToList())
                         {
-                            Type = TsPrefabLookType.Poly,
                             ZIndex = ((colorFlag & 0x01) != 0) ? 3 : 2,
                             Color = fillColor
                         };
@@ -164,12 +163,10 @@ namespace TsMap
                         var newPointEnd = RotatePoint(prefabStartX + neighbourPoint.X,
                             prefabStartZ + neighbourPoint.Z, rot, originNode.X, originNode.Z);
                         
-                        TsPrefabLook prefabLook = new TsPrefabLook
+                        TsPrefabLook prefabLook = new TsPrefabRoadLook()
                         {
                             Color = _palette.PrefabRoad,
-                            Type = TsPrefabLookType.Road,
                             Width = 10f * scaleX,
-                            ZIndex = 1
                         };
                         prefabLook.AddPoint((newPointStart.X - startX) * scaleX, (newPointStart.Y - startY) * scaleY);
                         prefabLook.AddPoint((newPointEnd.X - startX) * scaleX, (newPointEnd.Y - startY) * scaleY);
@@ -181,14 +178,7 @@ namespace TsMap
 
             foreach (var prefabLook in drawingQueue.OrderBy(p => p.ZIndex))
             {
-                if (prefabLook.Type == TsPrefabLookType.Poly)
-                {
-                    g.FillPolygon(prefabLook.Color, prefabLook.GetPoints());
-                }
-                else
-                {
-                    g.DrawLines(new Pen(prefabLook.Color, prefabLook.Width), prefabLook.GetPoints());
-                }
+                prefabLook.Draw(g);
             }
 
 
