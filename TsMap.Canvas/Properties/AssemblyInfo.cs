@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TsMap.Console")]
+[assembly: AssemblyTitle("TsMap.Canvas")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TsMap.Console")]
+[assembly: AssemblyProduct("TsMap.Canvas")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("28a95998-bf46-4232-b653-4f8b6f478410")]
+[assembly: Guid("b32c5d14-37b7-4e9f-a046-fb91c3338f02")]
 
 // Version information for an assembly consists of the following four values:
 //

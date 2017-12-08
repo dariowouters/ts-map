@@ -1,6 +1,6 @@
-﻿namespace TsMap.Console
+﻿namespace TsMap.Canvas
 {
-    partial class Form1
+    partial class TsMapCanvas
     {
         /// <summary>
         /// Required designer variable.
@@ -28,12 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // TsMapCanvas
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(802, 592);
+            this.Name = "TsMapCanvas";
+            this.Text = "TsMapCanvas";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
     }
 }
-

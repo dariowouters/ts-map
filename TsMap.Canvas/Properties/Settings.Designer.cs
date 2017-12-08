@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TsMap.Console.Properties
+namespace TsMap.Canvas.Properties
 {
 
 
