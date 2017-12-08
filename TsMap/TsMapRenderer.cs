@@ -73,15 +73,15 @@ namespace TsMap
             
             foreach (var road in roads) // TODO: Smooth out roads, fix connection between road segments
             {
-                var forwardNode = road.GetStartNode();
-                var backwardNode = road.GetEndNode();
+                var startNode = road.GetStartNode();
+                var endNode = road.GetEndNode();
 
-                var startP = new PointF((forwardNode.X - startX) * scaleX, (forwardNode.Z - startY) * scaleY);
-                var endP = new PointF((backwardNode.X - startX) * scaleX, (backwardNode.Z - startY) * scaleY);
+                var startPoint = new PointF((startNode.X - startX) * scaleX, (startNode.Z - startY) * scaleY);
+                var endPoint = new PointF((endNode.X - startX) * scaleX, (endNode.Z - startY) * scaleY);
 
                 var roadWidth = road.RoadLook.GetWidth() * scaleX;
 
-                g.DrawLine(new Pen(_palette.Road, roadWidth), startP, endP);
+                g.DrawLine(new Pen(_palette.Road, roadWidth), startPoint, endPoint);
             }
 
             // g.DrawString($"x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
