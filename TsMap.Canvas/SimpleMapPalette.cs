@@ -9,9 +9,9 @@ namespace TsMap.Canvas
             Background = new SolidBrush(Color.FromArgb(72, 78, 102));
             Road = Brushes.Wheat;
             PrefabRoad = Brushes.Wheat;
-            PrefabLight = new SolidBrush(Color.FromArgb(100, 150, 150, 150));
-            PrefabDark = new SolidBrush(Color.FromArgb(20, 20, 20));
-            PrefabGreen = new SolidBrush(Color.FromArgb(50, 125, 125, 125));
+            PrefabLight = new SolidBrush(Color.FromArgb(150, 150, 150)); // undiscovered
+            PrefabDark = new SolidBrush(Color.FromArgb(75, 75, 75));
+            PrefabGreen = new SolidBrush(Color.FromArgb(150, 150, 150)); // undiscovered
 
             CityName = Brushes.AliceBlue;
 

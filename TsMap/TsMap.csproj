@@ -50,6 +50,7 @@
     <Compile Include="TsMapRenderer.cs" />
     <Compile Include="TsNode.cs" />
     <Compile Include="TsPrefab.cs" />
+    <Compile Include="TsPrefabLook.cs" />
     <Compile Include="TsRoadLook.cs" />
     <Compile Include="TsSector.cs" />
   </ItemGroup>
