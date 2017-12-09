@@ -71,17 +71,36 @@ namespace TsMap
 
             var roads = itemsNearby.Where(item => item.Type == TsItemType.Road && !item.Hidden);
             
-            foreach (var road in roads) // TODO: Smooth out roads, fix connection between road segments
+            foreach (var road in roads)
             {
                 var startNode = road.GetStartNode();
                 var endNode = road.GetEndNode();
 
-                var startPoint = new PointF((startNode.X - startX) * scaleX, (startNode.Z - startY) * scaleY);
-                var endPoint = new PointF((endNode.X - startX) * scaleX, (endNode.Z - startY) * scaleY);
+                var sx = startNode.X;
+                var sz = startNode.Z;
+                var ex = endNode.X;
+                var ez = endNode.Z;
 
+                var radius = Math.Sqrt(Math.Pow(sx - ex, 2) + Math.Pow(sz - ez, 2));
+                 
+                var tanSx = Math.Cos(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                var tanEx = Math.Cos(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+                var tanSz = Math.Sin(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                var tanEz = Math.Sin(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+
+                List<PointF> points = new List<PointF>();
+
+                for (var i = 0; i < 32; i++)
+                {
+                    var s = i / (float) (32 - 1);
+                    var x = (float) TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
+                    var z = (float) TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
+                    points.Add(new PointF((x - startX) * scaleX, (z - startY) * scaleY));
+                }
+                
                 var roadWidth = road.RoadLook.GetWidth() * scaleX;
 
-                g.DrawLine(new Pen(_palette.Road, roadWidth), startPoint, endPoint);
+                g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
             }
 
             // g.DrawString($"x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
@@ -106,7 +125,7 @@ namespace TsMap
                 {
                     var mapPoint = prefabItem.Prefab.MapPoints[i];
                     pointsDrawn.Add(i);
-                    // TODO: Add Drawing Queue To Correctly Render Items On Top of Each other
+                    
                     if (mapPoint.LaneCount == -1) // non-road Prefab
                     {
                         Dictionary<int, PointF> polyPoints = new Dictionary<int, PointF>();
@@ -168,6 +187,7 @@ namespace TsMap
                             Color = _palette.PrefabRoad,
                             Width = 10f * scaleX,
                         };
+
                         prefabLook.AddPoint((newPointStart.X - startX) * scaleX, (newPointStart.Y - startY) * scaleY);
                         prefabLook.AddPoint((newPointEnd.X - startX) * scaleX, (newPointEnd.Y - startY) * scaleY);
 
