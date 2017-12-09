@@ -265,6 +265,12 @@ namespace TsMap
             Log.Msg($"Prefabs Count: {_prefabLookup.Count}");
             Log.Msg($"Cities Count: {_citiesLookup.Count}");
 
+            if (_sectorFiles == null)
+            {
+                Log.Msg("No Map file(s) found.");
+                return;
+            }
+
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
