@@ -66,11 +66,13 @@ namespace TsMap
 
             if (float.IsInfinity(scaleX) || float.IsNaN(scaleX)) scaleX = clip.Width;
             if (float.IsInfinity(scaleY) || float.IsNaN(scaleY)) scaleY = clip.Height;
-
-            var itemsNearby = _mapper.Items.Values.Where(item => item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 && item.Z <= endY + 1500).ToList();
-
-            var roads = itemsNearby.Where(item => item.Type == TsItemType.Road && !item.Hidden);
             
+            var roads = _mapper.Roads.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
+
+
             foreach (var road in roads)
             {
                 var startNode = road.GetStartNode();
@@ -105,7 +107,10 @@ namespace TsMap
 
             // g.DrawString($"x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
 
-            var prefabs = itemsNearby.Where(item => item.Type == TsItemType.Prefab && !item.Hidden);
+            var prefabs = _mapper.Prefabs.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
 
             List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
 
@@ -202,7 +207,10 @@ namespace TsMap
             }
 
 
-            var cities = itemsNearby.Where(item => item.Type == TsItemType.City && !item.Hidden);
+            var cities = _mapper.Cities.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
 
             foreach (var city in cities)
             {
@@ -210,13 +218,14 @@ namespace TsMap
                 g.DrawString(city.CityName, cityFont, _palette.CityName, (city.X - startX) * scaleX, (city.Z - startY) * scaleY);
             }
 
-            var overlays = itemsNearby.Where(item => item.Type == TsItemType.MapOverlay);
+            var overlays = _mapper.MapOverlays.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500)
+                .ToList();
 
             foreach (var overlayItem in overlays)
             {
-                var overlay = _mapper.LookupOverlay(overlayItem.OverlayId);
-                if (overlay == null) continue;
-                Bitmap b = overlay.GetBitmap();
+                Bitmap b = overlayItem.Overlay.GetBitmap();
                 g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
             }
 
