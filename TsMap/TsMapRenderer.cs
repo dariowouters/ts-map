@@ -153,15 +153,14 @@ namespace TsMap
                                 nextPoint = -1;
                             }
                         } while (nextPoint != -1);
-
-                        Brush fillColor;
+                        
                         var colorFlag = prefabItem.Prefab.MapPoints[polyPoints.First().Key].PrefabColorFlags;
 
-                        if (colorFlag == 0) fillColor = _palette.PrefabLight;
-                        else if ((colorFlag & 0x02) != 0) fillColor = _palette.PrefabLight;
+                        Brush fillColor = _palette.PrefabLight;
+                        if ((colorFlag & 0x02) != 0) fillColor = _palette.PrefabLight;
                         else if ((colorFlag & 0x04) != 0) fillColor = _palette.PrefabDark;
                         else if ((colorFlag & 0x08) != 0) fillColor = _palette.PrefabGreen;
-                        else fillColor = _palette.Error; // Unknown
+                        // else fillColor = _palette.Error; // Unknown
 
                         var prefabLook = new TsPrefabPolyLook(polyPoints.Values.ToList())
                         {
