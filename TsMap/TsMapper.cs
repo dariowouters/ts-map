@@ -21,7 +21,13 @@ namespace TsMap
         private readonly Dictionary<ulong, TsRoadLook> _roadLookup = new Dictionary<ulong, TsRoadLook>();
         private readonly Dictionary<ulong, TsMapOverlay> _overlayLookup = new Dictionary<ulong, TsMapOverlay>();
 
-        public readonly Dictionary<ulong, TsItem> Items = new Dictionary<ulong, TsItem>();
+        public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
+        public readonly List<TsPrefabItem> Prefabs = new List<TsPrefabItem>();
+        public readonly List<TsCityItem> Cities = new List<TsCityItem>();
+        public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
+        public readonly List<TsFerryItem> Ferries = new List<TsFerryItem>();
+
+
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
         private List<TsSector> Sectors { get; set; }
@@ -189,7 +195,7 @@ namespace TsMap
 
             // OVERLAYS
             var overlaysJson = _jsonLutDir + "overlays.json";
-            if (File.Exists(overlaysJson) && _overlayLookup.Count != 0)
+            if (File.Exists(overlaysJson) && _overlayFiles.Length != 0)
             {
                 var lines = File.ReadAllLines(overlaysJson);
                 var idName = "";
@@ -326,7 +332,6 @@ namespace TsMap
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
-            Log.Msg($"# Items: {Items.Count}, # nodes: {Nodes.Count}");
         }
 
         public TsNode GetNodeByUid(ulong uid)
