@@ -189,7 +189,7 @@ namespace TsMap
 
             // OVERLAYS
             var overlaysJson = _jsonLutDir + "overlays.json";
-            if (File.Exists(overlaysJson))
+            if (File.Exists(overlaysJson) && _overlayLookup.Count != 0)
             {
                 var lines = File.ReadAllLines(overlaysJson);
                 var idName = "";

@@ -24,7 +24,7 @@ namespace TsMap.Canvas
             //var baseMap = "D:/Projects/ts-map-files/europe/";
             //var mapper = new TsMapper(
             //    @"D:/Games/steamapps/common/Euro Truck Simulator 2/base/map/test/",
-            //    baseMap + "SCS/prefab/",
+            //    baseMap + "SCS/",
             //    baseMap + "SCS/LUT/",
             //    baseMap + "LUT/");
             mapper.Parse();
