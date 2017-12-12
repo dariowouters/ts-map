@@ -209,6 +209,18 @@ namespace TsMap
                 var cityFont = new Font("Arial", 80 * scaleX, FontStyle.Bold);
                 g.DrawString(city.CityName, cityFont, _palette.CityName, (city.X - startX) * scaleX, (city.Z - startY) * scaleY);
             }
+
+            var overlays = itemsNearby.Where(item => item.Type == TsItemType.MapOverlay);
+
+            foreach (var overlayItem in overlays)
+            {
+                var overlay = _mapper.LookupOverlay(overlayItem.OverlayId);
+                if (overlay == null) continue;
+                Bitmap b = overlay.GetBitmap();
+                g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
+            }
+
+
         }
     }
 }

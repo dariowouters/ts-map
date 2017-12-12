@@ -37,6 +37,8 @@ namespace TsMap
         public TsPrefab Prefab { get; }
         public string CityName { get; }
 
+        public ulong OverlayId { get; private set; }
+
         public TsItem(TsSector sector, int offset)
         {
             _sector = sector;
@@ -149,12 +151,12 @@ namespace TsMap
                         BlockSize = fileOffset - startOffset;
                         break;
                     }
-                case TsItemType.MapOverlay: // TODO: Add DDS reader to draw icons
+                case TsItemType.MapOverlay: // TODO: Figure out gas station / service station icons
                     {
-                        Valid = false;
+                        Valid = true;
                         fileOffset += 0x20; // Set position at start of flags
                         var zoomLevelVisibility = (byte)BitConverter.ToChar(_sector.Stream, fileOffset);
-                        var overlayId = BitConverter.ToUInt64(_sector.Stream, fileOffset += 0x05);
+                        OverlayId = BitConverter.ToUInt64(_sector.Stream, fileOffset += 0x05);
                         fileOffset += 0x08 + 0x08;
                         BlockSize = fileOffset - startOffset;
                         break;
