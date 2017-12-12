@@ -151,7 +151,7 @@ namespace TsMap
                         BlockSize = fileOffset - startOffset;
                         break;
                     }
-                case TsItemType.MapOverlay:
+                case TsItemType.MapOverlay: // TODO: Figure out gas station / service station icons
                     {
                         Valid = true;
                         fileOffset += 0x20; // Set position at start of flags
