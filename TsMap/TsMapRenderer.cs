@@ -197,7 +197,7 @@ namespace TsMap
                 var overlay = _mapper.LookupOverlay(overlayItem.OverlayId);
                 if (overlay == null) continue;
                 Bitmap b = overlay.GetBitmap();
-                g.DrawImage(b, (overlayItem.X - startX) * scaleX, (overlayItem.Z - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
+                g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
             }
 
 
