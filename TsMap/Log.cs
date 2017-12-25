@@ -12,7 +12,7 @@ namespace TsMap
         {
             try
             {
-                var logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ts");
+                var logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ts-map");
                 if (!Directory.Exists(logDir))
                 {
                     Directory.CreateDirectory(logDir);

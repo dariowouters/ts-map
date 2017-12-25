@@ -58,7 +58,7 @@ namespace TsMap
             var nodeCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
             var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x1C);
 
-            if (version > 0x15) fileOffset += 0x04;
+            if (version > 0x15) fileOffset += 0x04; // http://modding.scssoft.com/wiki/Games/ETS2/Modding_guides/1.30#Prefabs
 
             var nodeOffset = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var mapPointOffset = BitConverter.ToInt32(_stream, fileOffset + 0x20);

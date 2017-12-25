@@ -66,27 +66,53 @@ namespace TsMap
 
             if (float.IsInfinity(scaleX) || float.IsNaN(scaleX)) scaleX = clip.Width;
             if (float.IsInfinity(scaleY) || float.IsNaN(scaleY)) scaleY = clip.Height;
-
-            var itemsNearby = _mapper.Items.Values.Where(item => item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 && item.Z <= endY + 1500).ToList();
-
-            var roads = itemsNearby.Where(item => item.Type == TsItemType.Road && !item.Hidden);
             
-            foreach (var road in roads) // TODO: Smooth out roads, fix connection between road segments
+            var roads = _mapper.Roads.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
+
+
+            foreach (var road in roads)
             {
-                var forwardNode = road.GetStartNode();
-                var backwardNode = road.GetEndNode();
+                var startNode = road.GetStartNode();
+                var endNode = road.GetEndNode();
 
-                var startP = new PointF((forwardNode.X - startX) * scaleX, (forwardNode.Z - startY) * scaleY);
-                var endP = new PointF((backwardNode.X - startX) * scaleX, (backwardNode.Z - startY) * scaleY);
+                var sx = startNode.X;
+                var sz = startNode.Z;
+                var ex = endNode.X;
+                var ez = endNode.Z;
 
+                var radius = Math.Sqrt(Math.Pow(sx - ex, 2) + Math.Pow(sz - ez, 2));
+                 
+                var tanSx = Math.Cos(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                var tanEx = Math.Cos(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+                var tanSz = Math.Sin(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                var tanEz = Math.Sin(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+
+                List<PointF> points = new List<PointF>();
+
+                for (var i = 0; i < 32; i++)
+                {
+                    var s = i / (float) (32 - 1);
+                    var x = (float) TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
+                    var z = (float) TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
+                    points.Add(new PointF((x - startX) * scaleX, (z - startY) * scaleY));
+                }
+                
                 var roadWidth = road.RoadLook.GetWidth() * scaleX;
 
-                g.DrawLine(new Pen(_palette.Road, roadWidth), startP, endP);
+                g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
             }
 
             // g.DrawString($"x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
 
-            var prefabs = itemsNearby.Where(item => item.Type == TsItemType.Prefab && !item.Hidden);
+            var prefabs = _mapper.Prefabs.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
+
+            List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
 
             foreach (var prefabItem in prefabs) // TODO: Road Width
             {
@@ -104,7 +130,7 @@ namespace TsMap
                 {
                     var mapPoint = prefabItem.Prefab.MapPoints[i];
                     pointsDrawn.Add(i);
-                    // TODO: Add Drawing Queue To Correctly Render Items On Top of Each other
+                    
                     if (mapPoint.LaneCount == -1) // non-road Prefab
                     {
                         Dictionary<int, PointF> polyPoints = new Dictionary<int, PointF>();
@@ -127,17 +153,22 @@ namespace TsMap
                                 nextPoint = -1;
                             }
                         } while (nextPoint != -1);
-
-                        Brush fillColor;
+                        
                         var colorFlag = prefabItem.Prefab.MapPoints[polyPoints.First().Key].PrefabColorFlags;
 
-                        if (colorFlag == 0) fillColor = _palette.PrefabLight;
-                        else if ((colorFlag & 0x02) != 0) fillColor = _palette.PrefabLight;
+                        Brush fillColor = _palette.PrefabLight;
+                        if ((colorFlag & 0x02) != 0) fillColor = _palette.PrefabLight;
                         else if ((colorFlag & 0x04) != 0) fillColor = _palette.PrefabDark;
                         else if ((colorFlag & 0x08) != 0) fillColor = _palette.PrefabGreen;
-                        else fillColor = _palette.Error; // Unknown
+                        // else fillColor = _palette.Error; // Unknown
 
-                        g.FillPolygon(fillColor, polyPoints.Values.ToArray());
+                        var prefabLook = new TsPrefabPolyLook(polyPoints.Values.ToList())
+                        {
+                            ZIndex = ((colorFlag & 0x01) != 0) ? 3 : 2,
+                            Color = fillColor
+                        };
+                        
+                        drawingQueue.Add(prefabLook);
                         continue;
                     }
 
@@ -155,22 +186,49 @@ namespace TsMap
                         var newPointEnd = RotatePoint(prefabStartX + neighbourPoint.X,
                             prefabStartZ + neighbourPoint.Z, rot, originNode.X, originNode.Z);
                         
-                        g.DrawLine(new Pen(_palette.PrefabRoad, 10f * scaleX),
-                            (newPointStart.X - startX) * scaleX,
-                            (newPointStart.Y - startY) * scaleY,
-                            (newPointEnd.X - startX) * scaleX,
-                            (newPointEnd.Y - startY) * scaleY);
+                        TsPrefabLook prefabLook = new TsPrefabRoadLook()
+                        {
+                            Color = _palette.PrefabRoad,
+                            Width = 10f * scaleX,
+                        };
+
+                        prefabLook.AddPoint((newPointStart.X - startX) * scaleX, (newPointStart.Y - startY) * scaleY);
+                        prefabLook.AddPoint((newPointEnd.X - startX) * scaleX, (newPointEnd.Y - startY) * scaleY);
+
+                        drawingQueue.Add(prefabLook);
                     }
                 }
             }
 
-            var cities = itemsNearby.Where(item => item.Type == TsItemType.City && !item.Hidden);
+            foreach (var prefabLook in drawingQueue.OrderBy(p => p.ZIndex))
+            {
+                prefabLook.Draw(g);
+            }
+
+
+            var cities = _mapper.Cities.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
 
             foreach (var city in cities)
             {
                 var cityFont = new Font("Arial", 80 * scaleX, FontStyle.Bold);
                 g.DrawString(city.CityName, cityFont, _palette.CityName, (city.X - startX) * scaleX, (city.Z - startY) * scaleY);
             }
+
+            var overlays = _mapper.MapOverlays.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500)
+                .ToList();
+
+            foreach (var overlayItem in overlays)
+            {
+                Bitmap b = overlayItem.Overlay.GetBitmap();
+                if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
+            }
+
+
         }
     }
 }

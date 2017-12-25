@@ -13,20 +13,28 @@ namespace TsMap
         private readonly string _siiLutDir;
 
         private readonly string[] _sectorFiles;
+        private readonly string[] _overlayFiles;
 
         private readonly Dictionary<ulong, TsPrefab> _prefabLookup = new Dictionary<ulong, TsPrefab>();
         private readonly Dictionary<ulong, string> _citiesLookup = new Dictionary<ulong, string>();
         private readonly List<TsRoadLook> _roadLookLookup = new List<TsRoadLook>();
         private readonly Dictionary<ulong, TsRoadLook> _roadLookup = new Dictionary<ulong, TsRoadLook>();
+        private readonly Dictionary<ulong, TsMapOverlay> _overlayLookup = new Dictionary<ulong, TsMapOverlay>();
 
-        public readonly Dictionary<ulong, TsItem> Items = new Dictionary<ulong, TsItem>();
+        public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
+        public readonly List<TsPrefabItem> Prefabs = new List<TsPrefabItem>();
+        public readonly List<TsCityItem> Cities = new List<TsCityItem>();
+        public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
+        public readonly List<TsFerryItem> Ferries = new List<TsFerryItem>();
+
+
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
         private List<TsSector> Sectors { get; set; }
 
-        public TsMapper(string sectorDir, string prefabDir, string siiLutDir, string jsonLutDir)
+        public TsMapper(string sectorDir, string scsFilesDir, string siiLutDir, string jsonLutDir)
         {
-            _prefabDir = prefabDir;
+            _prefabDir = scsFilesDir + "prefab/";
             _siiLutDir = siiLutDir;
             _jsonLutDir = jsonLutDir;
 
@@ -36,10 +44,12 @@ namespace TsMap
                 return;
             }
             _sectorFiles = Directory.GetFiles(sectorDir, "*.base");
+            if (Directory.Exists(scsFilesDir + "overlay/"))
+                _overlayFiles = Directory.GetFiles(scsFilesDir + "overlay/", "*.dds");
 
         }
 
-        public TsMapper(string mainDir) : this(mainDir + @"SCS/map/", mainDir + @"SCS/prefab/", mainDir + @"SCS/LUT/", mainDir + @"LUT/")
+        public TsMapper(string mainDir) : this(mainDir + @"SCS/map/", mainDir + @"SCS/", mainDir + @"SCS/LUT/", mainDir + @"LUT/")
         {
            
         }
@@ -182,6 +192,54 @@ namespace TsMap
             {
                 Log.Msg($"Cannot find file: {roadsJson}");
             }
+
+            // OVERLAYS
+            var overlaysJson = _jsonLutDir + "overlays.json";
+            if (File.Exists(overlaysJson) && _overlayFiles.Length != 0)
+            {
+                var lines = File.ReadAllLines(overlaysJson);
+                var idName = "";
+                ulong token = 0;
+                foreach (var line in lines)
+                {
+                    if (line.Trim() == "]")
+                    {
+                        break;
+                    }
+                    if (line.Contains(":"))
+                    {
+                        var k = line.Split(':')[0].Split('"')[1];
+                        var v = line.Split(':')[1].Split('"')[1];
+
+                        switch (k)
+                        {
+                            case "token":
+                                token = ulong.Parse(v, NumberStyles.HexNumber);
+                                break;
+                            case "idName":
+                                idName = v;
+                                break;
+                        }
+                    }
+
+                    if (!line.Contains("}")) continue;
+                    if (token != 0 && idName != "")
+                    {
+                        var file = _overlayFiles.FirstOrDefault(x => x.Contains(idName));
+                        if (file != null && !_overlayLookup.ContainsKey(token))
+                        {
+                            _overlayLookup.Add(token, new TsMapOverlay(file));
+                        }
+                    }
+
+                    idName = "";
+                    token = 0;
+                }
+            }
+            else
+            {
+                Log.Msg($"Cannot find file: {overlaysJson}");
+            }
         }
 
         private void ParseRoadLookFiles()
@@ -265,10 +323,15 @@ namespace TsMap
             Log.Msg($"Prefabs Count: {_prefabLookup.Count}");
             Log.Msg($"Cities Count: {_citiesLookup.Count}");
 
+            if (_sectorFiles == null)
+            {
+                Log.Msg("No Map file(s) found.");
+                return;
+            }
+
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
-            Log.Msg($"# Items: {Items.Count}, # nodes: {Nodes.Count}");
         }
 
         public TsNode GetNodeByUid(ulong uid)
@@ -289,6 +352,11 @@ namespace TsMap
         public string LookupCity(ulong cityId)
         {
             return _citiesLookup.ContainsKey(cityId) ? _citiesLookup[cityId] : null;
+        }
+
+        public TsMapOverlay LookupOverlay(ulong overlayId)
+        {
+            return _overlayLookup.ContainsKey(overlayId) ? _overlayLookup[overlayId] : null;
         }
     }
 }

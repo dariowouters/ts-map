@@ -1,0 +1,512 @@
+[
+    {
+        "idName": "road.look5",
+        "token": "0000000000D10C68",
+        "fullName": "ca_1x1_country_small_border"
+    },
+    {
+        "idName": "road.look5t",
+        "token": "000000008E8007A8",
+        "fullName": "ca_1x1_country_small_border_tram"
+    },
+    {
+        "idName": "road.look6",
+        "token": "0000000000F0DD78",
+        "fullName": "ca_1x1_country_full"
+    },
+    {
+        "idName": "road.look7",
+        "token": "000000000110AE88",
+        "fullName": "Road no center lane"
+    },
+    {
+        "idName": "road.look1",
+        "token": "000000000051C828",
+        "fullName": "Highway 2 lanes 2m offset (freeway)"
+    },
+    {
+        "idName": "road.look1_city",
+        "token": "001503DAEA8B07C8",
+        "fullName": "Highway 2 lanes 2m offset (allow city limit)"
+    },
+    {
+        "idName": "road.look2_city",
+        "token": "001503DAEAAAD8D8",
+        "fullName": "ca_2x2_5m offset (allow city limit)"
+    },
+    {
+        "idName": "road.look2",
+        "token": "0000000000719938",
+        "fullName": "ca_2x2_5m offset (freeway)"
+    },
+    {
+        "idName": "road.look3",
+        "token": "0000000000916A48",
+        "fullName": "Highway 3 lanes 2m offset"
+    },
+    {
+        "idName": "road.look3_city",
+        "token": "001503DAEACAA9E8",
+        "fullName": "Highway 3 lanes 2m offset (city limit)"
+    },
+    {
+        "idName": "road.look8",
+        "token": "0000000001307F98",
+        "fullName": "ca_city 2 lanes 1m 1 ai lines"
+    },
+    {
+        "idName": "road.look9",
+        "token": "00000000015050A8",
+        "fullName": "Exit road"
+    },
+    {
+        "idName": "road.look10",
+        "token": "00000000050AD088",
+        "fullName": "Road no lanes small"
+    },
+    {
+        "idName": "road.look11",
+        "token": "0000000009C3D8E8",
+        "fullName": "Highway 2 lanes 1m offset"
+    },
+    {
+        "idName": "road.look16",
+        "token": "00000000216102C8",
+        "fullName": "Highway 3 lanes one way"
+    },
+    {
+        "idName": "road.look24",
+        "token": "00000000180EC318",
+        "fullName": "Highway 2 lanes one way"
+    },
+    {
+        "idName": "road.look25",
+        "token": "000000001CC7CB78",
+        "fullName": "ca_narrow way"
+    },
+    {
+        "idName": "road.look26",
+        "token": "000000002180D3D8",
+        "fullName": "Highway 2 lanes 2.5m offset"
+    },
+    {
+        "idName": "road.look29",
+        "token": "000000002FABECF8",
+        "fullName": "Exit2 road"
+    },
+    {
+        "idName": "road.look30",
+        "token": "00000000054A72A8",
+        "fullName": "ca_city 2 lanes 1m 2 ai lines"
+    },
+    {
+        "idName": "road.look30t",
+        "token": "000000150D43BE28",
+        "fullName": "ca_city 2 lanes 1m 2 ai lines tram"
+    },
+    {
+        "idName": "road.look31",
+        "token": "000000000A037B08",
+        "fullName": "ca_2x2_2m offset (allow city limit)"
+    },
+    {
+        "idName": "road.look31_fw",
+        "token": "0000844215729348",
+        "fullName": "ca_2x2_2m offset (freeway)"
+    },
+    {
+        "idName": "road.look33",
+        "token": "0000000013758BC8",
+        "fullName": "entry road"
+    },
+    {
+        "idName": "road.look34",
+        "token": "00000000182E9428",
+        "fullName": "entry out"
+    },
+    {
+        "idName": "road.look35",
+        "token": "000000001CE79C88",
+        "fullName": "entry in"
+    },
+    {
+        "idName": "road.look36",
+        "token": "0000000021A0A4E8",
+        "fullName": "ca_2x2_0m offset"
+    },
+    {
+        "idName": "road.look36f",
+        "token": "0000000B591488E8",
+        "fullName": "ca_2x2_0m offset (freeway)"
+    },
+    {
+        "idName": "road.look37",
+        "token": "000000002659AD48",
+        "fullName": "ca_road_no_lanes_small"
+    },
+    {
+        "idName": "road.look38",
+        "token": "000000002B12B5A8",
+        "fullName": "ca_city 4 lanes 1m 4ai lines"
+    },
+    {
+        "idName": "road.look39",
+        "token": "000000002FCBBE08",
+        "fullName": "ca_2x2_15m offset"
+    },
+    {
+        "idName": "road.look40",
+        "token": "00000000056A43B8",
+        "fullName": "ca_city 2 lanes 1m no lines"
+    },
+    {
+        "idName": "road.look41",
+        "token": "000000000A234C18",
+        "fullName": "ca_1x1_city_half"
+    },
+    {
+        "idName": "road.look42",
+        "token": "000000000EDC5478",
+        "fullName": "ca_1x1_city_full"
+    },
+    {
+        "idName": "road.template0",
+        "token": "0000059922DAA384",
+        "fullName": "ca 1x1 country small border tmpl"
+    },
+    {
+        "idName": "road.template1",
+        "token": "0000098D6F75C484",
+        "fullName": "ca 1x1 country full tmpl"
+    },
+    {
+        "idName": "road.template3",
+        "token": "0000117608AC0684",
+        "fullName": "hw 2lanes oneway tmpl"
+    },
+    {
+        "idName": "road.us_tmpl0",
+        "token": "0000002A8DB32CA1",
+        "fullName": "us 2-2 freeway 4m offset tmpl"
+    },
+    {
+        "idName": "road.us_tmpl1",
+        "token": "0000004531666A21",
+        "fullName": "us 2-2 freeway 11m offset tmpl"
+    },
+    {
+        "idName": "road.us_tmpl3",
+        "token": "0000007A78CCE521",
+        "fullName": "us 2-2 freeway 30m offset tmpl"
+    },
+    {
+        "idName": "road.us_tmpl11",
+        "token": "0000082DCA9CAC21",
+        "fullName": "us 0-1 exit road"
+    },
+    {
+        "idName": "road.us_tmpl12",
+        "token": "00000C221737CD21",
+        "fullName": "us 0-2 freeway"
+    },
+    {
+        "idName": "road.us_tmpl13",
+        "token": "0000101663D2EE21",
+        "fullName": "us 0-3 freeway"
+    },
+    {
+        "idName": "road.us_tmpl16",
+        "token": "00001BF349A45121",
+        "fullName": "us 3-3 freeway 20m offset"
+    },
+    {
+        "idName": "road.us_tmpl17",
+        "token": "00001FE7963F7221",
+        "fullName": "us 3-3 freeway 30m offset"
+    },
+    {
+        "idName": "road.us_tmpl14",
+        "token": "0000140AB06E0F21",
+        "fullName": "us 3-3 freeway 4m offset"
+    },
+    {
+        "idName": "road.us_tmpl15",
+        "token": "000017FEFD093021",
+        "fullName": "us 3-3 freeway 11m offset"
+    },
+    {
+        "idName": "road.us_tmpl18",
+        "token": "000023DBE2DA9321",
+        "fullName": "x LEGACY ROAD PREFAB - DO NOT USE X"
+    },
+    {
+        "idName": "road.us_tmpl19",
+        "token": "000027D02F75B421",
+        "fullName": "us 1-1 country 1"
+    },
+    {
+        "idName": "road.us_tmpl20",
+        "token": "0000045421B4C8A1",
+        "fullName": "us walk road"
+    },
+    {
+        "idName": "road.us_tmpl20a",
+        "token": "000679393700AAA1",
+        "fullName": "us walk road 4m offset"
+    },
+    {
+        "idName": "road.us_tmpl2",
+        "token": "0000005FD519A7A1",
+        "fullName": "us 2-2 freeway 20m offset"
+    },
+    {
+        "idName": "road.us_tmp20",
+        "token": "0000001D3BD98DE1",
+        "fullName": "us 2-1-2 city 0"
+    },
+    {
+        "idName": "road.us_tmp21",
+        "token": "00000037DF8CCB61",
+        "fullName": "x LEGACY ROAD PREFAB - DO NOT USE X"
+    },
+    {
+        "idName": "road.us_tmpl23",
+        "token": "0000103107862BA1",
+        "fullName": "us 2-1-2 city ai1 0"
+    },
+    {
+        "idName": "road.us_tmpl24",
+        "token": "0000142554214CA1",
+        "fullName": "us 2-1-2 city ai2 0"
+    },
+    {
+        "idName": "road.us_tmpl25",
+        "token": "00001819A0BC6DA1",
+        "fullName": "us 2-2 city divided 0"
+    },
+    {
+        "idName": "road.us_tmpl25a",
+        "token": "00068CFEB6084FA1",
+        "fullName": "us 0-2 city"
+    },
+    {
+        "idName": "road.us_tmpl26",
+        "token": "00001C0DED578EA1",
+        "fullName": "us 1-1 country 3"
+    },
+    {
+        "idName": "road.us_tmpl27",
+        "token": "0000200239F2AFA1",
+        "fullName": "us 2-2 country offset 11m 3"
+    },
+    {
+        "idName": "road.us_tmpl29",
+        "token": "000027EAD328F1A1",
+        "fullName": "us 2-2 country 3"
+    },
+    {
+        "idName": "road.us_tmpl30",
+        "token": "0000046EC5680621",
+        "fullName": "us 2-2 country 1"
+    },
+    {
+        "idName": "road.us_tmpl31",
+        "token": "0000086312032721",
+        "fullName": "us 2-1-2 city ai2 1 shoulder"
+    },
+    {
+        "idName": "road.us_tmpl32",
+        "token": "00000C575E9E4821",
+        "fullName": "us 2-1-2 city ai1 1 shoulder"
+    },
+    {
+        "idName": "road.us_tmpl33",
+        "token": "0000104BAB396921",
+        "fullName": "us 2-1-2 city 1 shoulder"
+    },
+    {
+        "idName": "road.us_tmpl34",
+        "token": "0000143FF7D48A21",
+        "fullName": "us 2-1-2 city 3"
+    },
+    {
+        "idName": "road.us_tmpl28",
+        "token": "000023F6868DD0A1",
+        "fullName": "us 2-2 country offset 4m 3"
+    },
+    {
+        "idName": "road.us_tmpl35",
+        "token": "00001834446FAB21",
+        "fullName": "us 2-2 city divided 1 shoulder"
+    },
+    {
+        "idName": "road.us_tmpl36",
+        "token": "00001C28910ACC21",
+        "fullName": "us 2-2 country offset 4m 1"
+    },
+    {
+        "idName": "road.us_tmpl37",
+        "token": "0000201CDDA5ED21",
+        "fullName": "us 2-2 country offset 11m 1"
+    },
+    {
+        "idName": "road.ca_tmpl38",
+        "token": "000024112A410B63",
+        "fullName": "ca 3-3 gg bridge tmpl"
+    },
+    {
+        "idName": "road.rl_tmpl1",
+        "token": "0000004531666914",
+        "fullName": "rail (cargo)"
+    },
+    {
+        "idName": "road.rl_tmpl2",
+        "token": "0000005FD519A694",
+        "fullName": "rail double (cargo)"
+    },
+    {
+        "idName": "road.rl_tmpl1_ps",
+        "token": "0296AB6EFA379E14",
+        "fullName": "rail (passenger)"
+    },
+    {
+        "idName": "road.rl_tmpl2_ps",
+        "token": "0296AB899DEADB94",
+        "fullName": "rail double (passenger)"
+    },
+    {
+        "idName": "road.nm_tmpl02",
+        "token": "00000C0773848EB6",
+        "fullName": "us 0-2 country 3"
+    },
+    {
+        "idName": "road.nm_tmpl03",
+        "token": "00000FFBC01FAFB6",
+        "fullName": "us 0-4 freeway"
+    },
+    {
+        "idName": "road.nm_tmpl04",
+        "token": "000013F00CBAD0B6",
+        "fullName": "us 4-4 freeway 4m offset"
+    },
+    {
+        "idName": "road.nm_tmpl05",
+        "token": "000017E45955F1B6",
+        "fullName": "us 4-4 freeway 11m offset"
+    },
+    {
+        "idName": "road.nm_tmpl06",
+        "token": "00001BD8A5F112B6",
+        "fullName": "us 4-4 freeway 20m offset"
+    },
+    {
+        "idName": "road.nm_tmpl07",
+        "token": "00001FCCF28C33B6",
+        "fullName": "us 4-4 freeway 30m offset"
+    },
+    {
+        "idName": "road.nm_tmpl08",
+        "token": "000023C13F2754B6",
+        "fullName": "us 0-1 reststop road"
+    },
+    {
+        "idName": "road.us_tmpl13a",
+        "token": "000684FB791ED021",
+        "fullName": "us 0-4 freeway no ai 1line"
+    },
+    {
+        "idName": "road.us_tmpl38",
+        "token": "000024112A410E21",
+        "fullName": "us 1-1-1 country ai1 1"
+    },
+    {
+        "idName": "road.us_tmp39",
+        "token": "0000010DB09DF5A1",
+        "fullName": "us 2-2 freeway"
+    },
+    {
+        "idName": "road.us_tmpl40",
+        "token": "00000489691B43A1",
+        "fullName": "us 1-1-1 country 1"
+    },
+    {
+        "idName": "road.us_tmpl41",
+        "token": "0000087DB5B664A1",
+        "fullName": "us 1-1-1 country ai2 1"
+    },
+    {
+        "idName": "road.us_tmpl42",
+        "token": "00000C72025185A1",
+        "fullName": "us 0-2 country 1"
+    },
+    {
+        "idName": "road.us_tmpl42a",
+        "token": "00068157179D67A1",
+        "fullName": "us 0-2 country"
+    },
+    {
+        "idName": "road.us_tmpl43",
+        "token": "000010664EECA6A1",
+        "fullName": "us 0-1 exit road narrow"
+    },
+    {
+        "idName": "road.us_tmpl44",
+        "token": "0000145A9B87C7A1",
+        "fullName": "us 1-1-1 country ai1 3"
+    },
+    {
+        "idName": "road.us_tmpl45",
+        "token": "0000184EE822E8A1",
+        "fullName": "us 1-1_1 country ai2 3"
+    },
+    {
+        "idName": "road.us_tmpl19l",
+        "token": "000D119A5A0D7821",
+        "fullName": "us 1-1 country 1 lowpoly 15"
+    },
+    {
+        "idName": "road.us_tmpl43l",
+        "token": "000CFA3079846AA1",
+        "fullName": "us 0-1 exit road narrow lowpoly 15"
+    },
+    {
+        "idName": "road.us_tmpl20l",
+        "token": "000CEE1E4C4C8CA1",
+        "fullName": "us walk road lowpoly 15"
+    },
+    {
+        "idName": "road.us_tmpl12l",
+        "token": "000CF5EC41CF9121",
+        "fullName": "us 0-2 freeway lowpoly 15"
+    },
+    {
+        "idName": "road.nm_tmpl02l",
+        "token": "000CF5D19E1C52B6",
+        "fullName": "us 0-2 country 3 lowpoly 15"
+    },
+    {
+        "idName": "road.us_tmpl46",
+        "token": "00001C4334BE09A1",
+        "fullName": "us 1-1 country park"
+    },
+    {
+        "idName": "road.us_tmpl47",
+        "token": "0000203781592AA1",
+        "fullName": "us 0-3 country"
+    },
+    {
+        "idName": "road.us_tmpl49",
+        "token": "000028201A8F6CA1",
+        "fullName": "us 1-1 country park left"
+    },
+    {
+        "idName": "road.us_tmpl50",
+        "token": "000004A40CCE8121",
+        "fullName": "us 1-1 country park right"
+    },
+    {
+        "idName": "road.us_tmpl51",
+        "token": "000008985969A221",
+        "fullName": "us 3-3 country 4m offset"
+    }
+]

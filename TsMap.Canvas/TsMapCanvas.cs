@@ -8,10 +8,10 @@ namespace TsMap.Canvas
     {
         private readonly TsMapRenderer _renderer;
 
-        private PointF _pos = new PointF(850, -920);
+        private PointF _pos = new PointF(850, -920); // for ATS: -103000, 16000
         private Point? _dragPoint;
 
-        private float _mapScale = 1300f;
+        private float _mapScale = 4000;
 
         public TsMapCanvas()
         {
@@ -20,7 +20,13 @@ namespace TsMap.Canvas
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
-            TsMapper mapper = new TsMapper("D:/Projects/ts-map-files/europe/");
+            var mapper = new TsMapper("D:/Projects/ts-map-files/europe/");
+            //var baseMap = "D:/Projects/ts-map-files/europe/";
+            //var mapper = new TsMapper(
+            //    @"D:/Games/steamapps/common/Euro Truck Simulator 2/base/map/test/",
+            //    baseMap + "SCS/",
+            //    baseMap + "SCS/LUT/",
+            //    baseMap + "LUT/");
             mapper.Parse();
 
             _renderer = new TsMapRenderer(mapper, new SimpleMapPalette());
