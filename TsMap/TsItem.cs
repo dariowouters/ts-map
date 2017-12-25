@@ -199,8 +199,7 @@ namespace TsMap
             if (Overlay == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Overlay with id: {overlayId:X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                if (overlayId != 0) Log.Msg($"Could not find Overlay with id: {overlayId:X}, in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
             fileOffset += 0x08 + 0x08;
             BlockSize = fileOffset - startOffset;

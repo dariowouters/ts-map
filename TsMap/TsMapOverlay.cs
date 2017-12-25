@@ -69,6 +69,13 @@ namespace TsMap
             Width = BitConverter.ToUInt32(_stream, fileOffset += 0x04);
             fileOffset += 0x6C;
 
+            if (_stream.Length / 16 < Width * Height)
+            {
+                Valid = false;
+                Console.WriteLine("Invalid DDS file (size).");
+                return;
+            }
+
             _pixelData = new Color8888[Width * Height];
 
             for (var i = 0; i < Width * Height; i++)

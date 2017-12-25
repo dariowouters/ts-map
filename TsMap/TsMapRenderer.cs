@@ -225,7 +225,7 @@ namespace TsMap
             foreach (var overlayItem in overlays)
             {
                 Bitmap b = overlayItem.Overlay.GetBitmap();
-                g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
+                if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
             }
 
 

@@ -8,10 +8,10 @@ namespace TsMap.Canvas
     {
         private readonly TsMapRenderer _renderer;
 
-        private PointF _pos = new PointF(850, -920);
+        private PointF _pos = new PointF(850, -920); // for ATS: -103000, 16000
         private Point? _dragPoint;
 
-        private float _mapScale = 1300f;
+        private float _mapScale = 4000;
 
         public TsMapCanvas()
         {
