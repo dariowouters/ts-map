@@ -73,4 +73,4 @@ Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destina
         - Also Located in dlc_fr.scs at def/world/
         - Copy road_look.sii and road_look.template.sii to SCS/LUT/road/
 
-[Original project](nlhans/ets2-map)
+[Original project](https://github.com/nlhans/ets2-map)
