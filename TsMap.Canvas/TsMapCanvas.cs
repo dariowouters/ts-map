@@ -59,7 +59,7 @@ namespace TsMap.Canvas
         private void TsMapCanvas_MouseWheel(object sender, MouseEventArgs e)
         {
             _mapScale -= e.Delta;
-            _mapScale = Math.Max(100, Math.Min(30000, _mapScale));
+            _mapScale = Math.Max(100, Math.Min(60000, _mapScale));
         }
 
         private void TsMapCanvas_Resize(object sender, System.EventArgs e)

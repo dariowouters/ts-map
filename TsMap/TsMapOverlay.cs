@@ -112,7 +112,7 @@ namespace TsMap
 
             var fourCc = BitConverter.ToUInt32(_stream, 0x54);
 
-            if (fourCc == 0x35545844) ParseDXT5();
+            if (fourCc == 0x35545844) ParseDxt5();
             else ParseUncompressed();
 
         }
@@ -137,7 +137,7 @@ namespace TsMap
             }
         }
 
-        private void ParseDXT5() // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        private void ParseDxt5() // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
         {
             var fileOffset = 0x80;
             _pixelData = new Color8888[Width * Height];
@@ -221,13 +221,24 @@ namespace TsMap
 
     public class TsMapOverlay
     {
-        private readonly OverlayIcon _icon;
+        private readonly Bitmap _overlayBitmap;
 
         public TsMapOverlay(string filePath)
         {
             if (File.Exists(filePath))
             {
-                _icon = new OverlayIcon(filePath);
+                var icon = new OverlayIcon(filePath);
+                if (!icon.Valid) return;
+
+                _overlayBitmap = new Bitmap((int)icon.Width, (int)icon.Height, PixelFormat.Format32bppArgb);
+
+                var bd = _overlayBitmap.LockBits(new Rectangle(0, 0, _overlayBitmap.Width, _overlayBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+                var ptr = bd.Scan0;
+
+                Marshal.Copy(icon.GetData(), 0, ptr, (bd.Width * bd.Height * 0x4));
+
+                _overlayBitmap.UnlockBits(bd);
             }
             else
             {
@@ -237,19 +248,7 @@ namespace TsMap
 
         public Bitmap GetBitmap()
         {
-            if (_icon == null || !_icon.Valid) return null;
-            var b = new Bitmap((int)_icon.Width, (int)_icon.Height, PixelFormat.Format32bppArgb);
-
-            var bd = b.LockBits(new Rectangle(0, 0, b.Width, b.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-            var ptr = bd.Scan0;
-
-            Marshal.Copy(_icon.GetData(), 0, ptr, (bd.Width * bd.Height * 0x4));
-
-            b.UnlockBits(bd);
-
-            return b;
-
+            return _overlayBitmap;
         }
     }
 }

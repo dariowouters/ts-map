@@ -28,6 +28,7 @@ namespace TsMap
 
         public void Render(Graphics g, Rectangle clip, float baseScale, PointF pos)
         {
+            var startTime = DateTime.Now.Ticks;
             g.FillRectangle(_palette.Background, new Rectangle(0, 0, clip.X + clip.Width, clip.Y + clip.Height));
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.None;
@@ -104,8 +105,6 @@ namespace TsMap
 
                 g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
             }
-
-            // g.DrawString($"x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
 
             var prefabs = _mapper.Prefabs.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
@@ -228,6 +227,9 @@ namespace TsMap
                 if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
             }
 
+
+            var elapsedTime = DateTime.Now.Ticks - startTime;
+            g.DrawString($"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
 
         }
     }

@@ -328,10 +328,11 @@ namespace TsMap
                 Log.Msg("No Map file(s) found.");
                 return;
             }
-
+            var startTime = DateTime.Now.Ticks;
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
+            Log.Msg($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base) map files");
         }
 
         public TsNode GetNodeByUid(ulong uid)
