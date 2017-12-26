@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 
 namespace TsMap
@@ -57,6 +58,18 @@ namespace TsMap
     {
         private const int StampBlockSize = 0x18;
         public TsRoadLook RoadLook { get; }
+
+        private List<PointF> _points;
+
+        public void AddPoints(List<PointF> points)
+        {
+            _points = points;
+        }
+
+        public PointF[] GetPoints()
+        {
+            return _points?.ToArray();
+        }
 
         public TsRoadItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {

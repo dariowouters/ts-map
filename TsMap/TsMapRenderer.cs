@@ -73,34 +73,45 @@ namespace TsMap
                     item.Z <= endY + 1500 && !item.Hidden)
                 .ToList();
 
-
             foreach (var road in roads)
             {
                 var startNode = road.GetStartNode();
                 var endNode = road.GetEndNode();
 
-                var sx = startNode.X;
-                var sz = startNode.Z;
-                var ex = endNode.X;
-                var ez = endNode.Z;
-
-                var radius = Math.Sqrt(Math.Pow(sx - ex, 2) + Math.Pow(sz - ez, 2));
-                 
-                var tanSx = Math.Cos(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
-                var tanEx = Math.Cos(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
-                var tanSz = Math.Sin(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
-                var tanEz = Math.Sin(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
-
-                List<PointF> points = new List<PointF>();
-
-                for (var i = 0; i < 32; i++)
+                if (road.GetPoints() == null)
                 {
-                    var s = i / (float) (32 - 1);
-                    var x = (float) TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
-                    var z = (float) TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
-                    points.Add(new PointF((x - startX) * scaleX, (z - startY) * scaleY));
+                    var newPoints = new List<PointF>();
+
+                    var sx = startNode.X;
+                    var sz = startNode.Z;
+                    var ex = endNode.X;
+                    var ez = endNode.Z;
+
+                    var radius = Math.Sqrt(Math.Pow(sx - ex, 2) + Math.Pow(sz - ez, 2));
+
+                    var tanSx = Math.Cos(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                    var tanEx = Math.Cos(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+                    var tanSz = Math.Sin(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                    var tanEz = Math.Sin(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+
+                    for (var i = 0; i < 8; i++)
+                    {
+                        var s = i / (float) (8 - 1);
+                        var x = (float) TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
+                        var z = (float) TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
+                        newPoints.Add(new PointF(x, z));
+                    }
+                    road.AddPoints(newPoints);
                 }
-                
+
+                var points = road.GetPoints();
+
+                for (var i = 0; i < points.Length; i++)
+                {
+                    var point = points[i];
+                    points[i] = new PointF((point.X - startX) * scaleX, (point.Y - startY) * scaleY);
+                }
+
                 var roadWidth = road.RoadLook.GetWidth() * scaleX;
 
                 g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
@@ -204,7 +215,6 @@ namespace TsMap
                 prefabLook.Draw(g);
             }
 
-
             var cities = _mapper.Cities.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
                     item.Z <= endY + 1500 && !item.Hidden)
@@ -227,10 +237,8 @@ namespace TsMap
                 if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
             }
 
-
             var elapsedTime = DateTime.Now.Ticks - startTime;
             g.DrawString($"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {centerX}, y: {centerY}, scale: {baseScale}", defaultFont, Brushes.WhiteSmoke, 5, 5);
-
         }
     }
 }
