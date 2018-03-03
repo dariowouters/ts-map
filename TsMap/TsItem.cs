@@ -133,12 +133,23 @@ namespace TsMap
 
     public class TsCompanyItem : TsItem
     {
+        public TsMapOverlay Overlay { get; }
+
         public TsCompanyItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
-            Valid = false;
+            Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x25);
+            var overlayId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+
+            Overlay = Sector.Mapper.LookupOverlay(overlayId);
+            if (Overlay == null)
+            {
+                Valid = false;
+                if (overlayId != 0) Log.Msg($"Could not find Company Overlay with id: {overlayId:X}, in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+            }
+
+            var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x20);
             count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));

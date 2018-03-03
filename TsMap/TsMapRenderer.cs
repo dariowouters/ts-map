@@ -231,10 +231,21 @@ namespace TsMap
                     item.Z <= endY + 1500)
                 .ToList();
 
-            foreach (var overlayItem in overlays)
+            foreach (var overlayItem in overlays) // TODO: Scaling
             {
                 Bitmap b = overlayItem.Overlay.GetBitmap();
                 if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
+            }
+
+            var companies = _mapper.Companies.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500)
+                .ToList();
+
+            foreach (var companyItem in companies) // TODO: Scaling
+            {
+                Bitmap b = companyItem.Overlay.GetBitmap();
+                if (b != null) g.DrawImage(b, (companyItem.X - startX) * scaleX, (companyItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 
             var elapsedTime = DateTime.Now.Ticks - startTime;

@@ -54,7 +54,7 @@ Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destina
         - This is located in base.scs at map/europe/ or map/usa/
         - Put all \*.base files in SCS/map/
     - Overlays
-        - Located in base/material/ui/map/road/
+        - Located in base/material/ui/map/road/ and in base/material/ui/company/small/
         - Put all \*.dds files in SCS/overlay/
     - Prefab information
         - Also located in base.scs, copy all \*.ppd files (with directories) from prefab/ and prefab2/ to SCS/prefab/
