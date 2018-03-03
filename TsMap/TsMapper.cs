@@ -26,6 +26,7 @@ namespace TsMap
         public readonly List<TsCityItem> Cities = new List<TsCityItem>();
         public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
         public readonly List<TsFerryItem> Ferries = new List<TsFerryItem>();
+        public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
 
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();

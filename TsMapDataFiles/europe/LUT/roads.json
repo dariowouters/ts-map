@@ -1,512 +1,512 @@
 [
-    {
-        "idName": "road.look0",
-        "token": "000000000031F718",
-        "fullName": "Road 1 lane double"
-    },
-    {
-        "idName": "road.look5",
-        "token": "0000000000D10C68",
-        "fullName": "Road 1 lane single"
-    },
-    {
-        "idName": "road.look6",
-        "token": "0000000000F0DD78",
-        "fullName": "Road 1 lane broken"
-    },
-    {
-        "idName": "road.look7",
-        "token": "000000000110AE88",
-        "fullName": "Road no center lane"
-    },
-    {
-        "idName": "road.look1",
-        "token": "000000000051C828",
-        "fullName": "Highway 2 lanes 2m offset"
-    },
-    {
-        "idName": "road.look2",
-        "token": "0000000000719938",
-        "fullName": "Highway 2 lanes 5m offset"
-    },
-    {
-        "idName": "road.look3",
-        "token": "0000000000916A48",
-        "fullName": "Highway 3 lanes 2m offset"
-    },
-    {
-        "idName": "road.look4",
-        "token": "0000000000B13B58",
-        "fullName": "Highway 3 lanes 5m offset"
-    },
-    {
-        "idName": "road.look8",
-        "token": "0000000001307F98",
-        "fullName": "City 2 lanes 1m offset"
-    },
-    {
-        "idName": "road.look9",
-        "token": "00000000015050A8",
-        "fullName": "Exit road"
-    },
-    {
-        "idName": "road.look10",
-        "token": "00000000050AD088",
-        "fullName": "Road no lanes small"
-    },
-    {
-        "idName": "road.look11",
-        "token": "0000000009C3D8E8",
-        "fullName": "Highway 2 lanes 1m offset"
-    },
-    {
-        "idName": "road.look12",
-        "token": "000000000E7CE148",
-        "fullName": "Ground road (ground texture only)"
-    },
-    {
-        "idName": "road.look13",
-        "token": "000000001335E9A8",
-        "fullName": "Highway 3 lanes 15m offset"
-    },
-    {
-        "idName": "road.look14",
-        "token": "0000000017EEF208",
-        "fullName": "Highway 3 lanes 25m offset"
-    },
-    {
-        "idName": "road.look15",
-        "token": "000000001CA7FA68",
-        "fullName": "Highway 3 lanes 10m offset"
-    },
-    {
-        "idName": "road.look16",
-        "token": "00000000216102C8",
-        "fullName": "Highway 3 lanes one way"
-    },
-    {
-        "idName": "road.look17",
-        "token": "00000000261A0B28",
-        "fullName": "Highway 3 lanes one way UK"
-    },
-    {
-        "idName": "road.look18",
-        "token": "000000002AD31388",
-        "fullName": "Road broken no outer lanes"
-    },
-    {
-        "idName": "road.look19",
-        "token": "000000002F8C1BE8",
-        "fullName": "Road single no outer lanes"
-    },
-    {
-        "idName": "road.look20",
-        "token": "00000000052AA198",
-        "fullName": "City 2 lanes 5m offset"
-    },
-    {
-        "idName": "road.look21",
-        "token": "0000000009E3A9F8",
-        "fullName": "Highway 2 lanes 15m offset"
-    },
-    {
-        "idName": "road.look22",
-        "token": "000000000E9CB258",
-        "fullName": "Highway 2 lanes 2m offset no lanes"
-    },
-    {
-        "idName": "road.look23",
-        "token": "000000001355BAB8",
-        "fullName": "Highway 2 lanes 10m offset"
-    },
-    {
-        "idName": "road.look24",
-        "token": "00000000180EC318",
-        "fullName": "Highway 2 lanes one way"
-    },
-    {
-        "idName": "road.look25",
-        "token": "000000001CC7CB78",
-        "fullName": "narrow way no lanes no traffic"
-    },
-    {
-        "idName": "road.look26",
-        "token": "000000002180D3D8",
-        "fullName": "Highway 2 lanes 2.5m offset"
-    },
-    {
-        "idName": "road.look27",
-        "token": "000000002639DC38",
-        "fullName": "Exit road UK"
-    },
-    {
-        "idName": "road.look28",
-        "token": "000000002AF2E498",
-        "fullName": "Road double no outer lanes"
-    },
-    {
-        "idName": "road.look29",
-        "token": "000000002FABECF8",
-        "fullName": "narrow way walkers"
-    },
-    {
-        "idName": "road.look30",
-        "token": "00000000054A72A8",
-        "fullName": "Road 2+1"
-    },
-    {
-        "idName": "road.look31",
-        "token": "000000000A037B08",
-        "fullName": "Road 1+2"
-    },
-    {
-        "idName": "road.template24",
-        "token": "0002FCD297336384",
-        "fullName": "fr road 1 plus 2 tmpl"
-    },
-    {
-        "idName": "road.template25",
-        "token": "00039315F63A4984",
-        "fullName": "fr road 2 plus 1 tmpl"
-    },
-    {
-        "idName": "road.template31",
-        "token": "00013DFCC6B9D284",
-        "fullName": "fr hw 3 lanes 5m offset tmpl"
-    },
-    {
-        "idName": "road.template35",
-        "token": "0003970A42D56A84",
-        "fullName": "fr hw 2 lanes 2 way tmpl"
-    },
-    {
-        "idName": "road.template0",
-        "token": "0000059922DAA384",
-        "fullName": "*Road 1 city minim scan temp"
-    },
-    {
-        "idName": "road.template1",
-        "token": "0000098D6F75C484",
-        "fullName": "*Road 1 scan temp"
-    },
-    {
-        "idName": "road.template2",
-        "token": "00000D81BC10E584",
-        "fullName": "*Road 1 city narrow scan temp"
-    },
-    {
-        "idName": "road.template3",
-        "token": "0000117608AC0684",
-        "fullName": "*Road 1 plus 2 temp"
-    },
-    {
-        "idName": "road.template4",
-        "token": "0000156A55472784",
-        "fullName": "*Road 2 plus 1 temp"
-    },
-    {
-        "idName": "road.template5",
-        "token": "0000195EA1E24884",
-        "fullName": "*Road 2 city narrow scan temp"
-    },
-    {
-        "idName": "road.template6",
-        "token": "00001D52EE7D6984",
-        "fullName": "*Road 2 city narrow np scan temp"
-    },
-    {
-        "idName": "road.template7",
-        "token": "000021473B188A84",
-        "fullName": "*Road 1 city enter scan temp"
-    },
-    {
-        "idName": "road.template8",
-        "token": "0000253B87B3AB84",
-        "fullName": "*Road sidewalk scan temp"
-    },
-    {
-        "idName": "road.template9",
-        "token": "0000292FD44ECC84",
-        "fullName": "*Hw exit temp"
-    },
-    {
-        "idName": "road.template10",
-        "token": "00009FD0CE7CAA84",
-        "fullName": "*Hw2 exit one way temp"
-    },
-    {
-        "idName": "road.template11",
-        "token": "000136142D839084",
-        "fullName": "rail1 temp"
-    },
-    {
-        "idName": "road.template12",
-        "token": "0001CC578C8A7684",
-        "fullName": "rail double temp"
-    },
-    {
-        "idName": "road.template13",
-        "token": "0002629AEB915C84",
-        "fullName": "*Road 2 city narrow np hw scan temp"
-    },
-    {
-        "idName": "road.template14",
-        "token": "0002F8DE4A984284",
-        "fullName": "fr hw 2 lanes one way tmpl"
-    },
-    {
-        "idName": "road.template14b",
-        "token": "010EA0DF8EE1F284",
-        "fullName": "fr hw 2 lanes one way playeronly tmpl"
-    },
-    {
-        "idName": "road.template15",
-        "token": "00038F21A99F2884",
-        "fullName": "fr hw 2 lanes 2m offset tmpl"
-    },
-    {
-        "idName": "road.template16",
-        "token": "0004256508A60E84",
-        "fullName": "fr hw 3 lanes one way tmpl"
-    },
-    {
-        "idName": "road.template17",
-        "token": "0004BBA867ACF484",
-        "fullName": "fr hw 3 lanes 2m offset tmpl"
-    },
-    {
-        "idName": "road.template18",
-        "token": "000551EBC6B3DA84",
-        "fullName": "fr exit one lane tmpl"
-    },
-    {
-        "idName": "road.template19",
-        "token": "0005E82F25BAC084",
-        "fullName": "fr hw2 exit one lane tmpl"
-    },
-    {
-        "idName": "road.template20",
-        "token": "0000A3C51B17CB84",
-        "fullName": "fr hw3 exit one lane tmpl"
-    },
-    {
-        "idName": "road.template21",
-        "token": "00013A087A1EB184",
-        "fullName": "fr road1 hw 1m offset tmpl"
-    },
-    {
-        "idName": "road.template22",
-        "token": "0001D04BD9259784",
-        "fullName": "fr road 1 tmpl"
-    },
-    {
-        "idName": "road.template23",
-        "token": "0002668F382C7D84",
-        "fullName": "fr hw exit one lane tmpl"
-    },
-    {
-        "idName": "road.template26",
-        "token": "0004295955412F84",
-        "fullName": "fr road 1 minim tmpl"
-    },
-    {
-        "idName": "road.template27",
-        "token": "0004BF9CB4481584",
-        "fullName": "fr road 1 enter tmpl"
-    },
-    {
-        "idName": "road.template28",
-        "token": "000555E0134EFB84",
-        "fullName": "fr road 2 narrow tmpl"
-    },
-    {
-        "idName": "road.template29",
-        "token": "0005EC237255E184",
-        "fullName": "fr gas road 1 tmpl"
-    },
-    {
-        "idName": "road.template30",
-        "token": "0000A7B967B2EC84",
-        "fullName": "fr hw 2 lanes 5m offset tmpl"
-    },
-    {
-        "idName": "road.template32",
-        "token": "0001D44025C0B884",
-        "fullName": "fr road 1 one way tmpl"
-    },
-    {
-        "idName": "road.template33",
-        "token": "00026A8384C79E84",
-        "fullName": "fr tram 1"
-    },
-    {
-        "idName": "road.template34",
-        "token": "000300C6E3CE8484",
-        "fullName": "fr road 1 minim village 1 tmpl"
-    },
-    {
-        "idName": "road.template37",
-        "token": "0004C39100E33684",
-        "fullName": "fr sidewalk road tmpl"
-    },
-    {
-        "idName": "road.template98",
-        "token": "0005718E2B8CE284",
-        "fullName": "rail double AI 01 tmpl"
-    },
-    {
-        "idName": "road.template98b",
-        "token": "0111198F6FD69284",
-        "fullName": "rail double AI 01 high speed tmpl"
-    },
-    {
-        "idName": "road.template99",
-        "token": "000607D18A93C884",
-        "fullName": "rail AI 01 tmpl"
-    },
-    {
-        "idName": "road.template36",
-        "token": "00042D4DA1DC5084",
-        "fullName": "fr hw 2 lanes one way2 tmpl"
-    },
-    {
-        "idName": "road.template994",
-        "token": "00758DD211B27C84",
-        "fullName": "fr hw 3 lanes one way br 30 tmpl"
-    },
-    {
-        "idName": "road.template38",
-        "token": "000559D45FEA1C84",
-        "fullName": "it hw 2 lanes one way tmpl"
-    },
-    {
-        "idName": "road.template1b",
-        "token": "000714B5E3C88C84",
-        "fullName": "it hw 2 lanes one way playeronly tmpl"
-    },
-    {
-        "idName": "road.template39",
-        "token": "0005F017BEF10284",
-        "fullName": "it hw 2 lanes 2m offset tmpl"
-    },
-    {
-        "idName": "road.template40",
-        "token": "0000ABADB44E0D84",
-        "fullName": "it hw 3 lanes one way tmpl"
-    },
-    {
-        "idName": "road.template41",
-        "token": "000141F11354F384",
-        "fullName": "it hw 3 lanes 2m offset tmpl"
-    },
-    {
-        "idName": "road.template42",
-        "token": "0001D834725BD984",
-        "fullName": "it exit one lane tmpl"
-    },
-    {
-        "idName": "road.template43",
-        "token": "00026E77D162BF84",
-        "fullName": "it hw2 exit one lane tmpl"
-    },
-    {
-        "idName": "road.template44",
-        "token": "000304BB3069A584",
-        "fullName": "it hw3 exit one lane tmpl"
-    },
-    {
-        "idName": "road.template45",
-        "token": "00039AFE8F708B84",
-        "fullName": "it road1 hw 1m offset tmpl"
-    },
-    {
-        "idName": "road.template46",
-        "token": "00043141EE777184",
-        "fullName": "it road 1 tmpl"
-    },
-    {
-        "idName": "road.template48",
-        "token": "00055DC8AC853D84",
-        "fullName": "it road 1 minim tmpl"
-    },
-    {
-        "idName": "road.template49",
-        "token": "0005F40C0B8C2384",
-        "fullName": "it road 1 enter tmpl"
-    },
-    {
-        "idName": "road.template50",
-        "token": "0000AFA200E92E84",
-        "fullName": "it road 2 narrow tmpl"
-    },
-    {
-        "idName": "road.template51",
-        "token": "000145E55FF01484",
-        "fullName": "it gas road 1 tmpl"
-    },
-    {
-        "idName": "road.template52",
-        "token": "0001DC28BEF6FA84",
-        "fullName": "it hw 2 lanes 5m offset tmpl"
-    },
-    {
-        "idName": "road.template53",
-        "token": "0002726C1DFDE084",
-        "fullName": "it road 1 one way tmpl"
-    },
-    {
-        "idName": "road.template54",
-        "token": "000308AF7D04C684",
-        "fullName": "it tram 1"
-    },
-    {
-        "idName": "road.template55",
-        "token": "00039EF2DC0BAC84",
-        "fullName": "it road 1 minim village 1 tmpl"
-    },
-    {
-        "idName": "road.template56",
-        "token": "000435363B129284",
-        "fullName": "it sidewalk road tmpl"
-    },
-    {
-        "idName": "road.template57",
-        "token": "0004CB799A197884",
-        "fullName": "it hw 3 lanes one way br 15 tmpl"
-    },
-    {
-        "idName": "road.template58",
-        "token": "000561BCF9205E84",
-        "fullName": "it hw 3 lanes 5m offset tmpl"
-    },
-    {
-        "idName": "road.template59",
-        "token": "0005F80058274484",
-        "fullName": "it road 2 narrow one way tmpl"
-    },
-    {
-        "idName": "road.template60",
-        "token": "0000B3964D844F84",
-        "fullName": "it road 2 city narrow tmpl"
-    },
-    {
-        "idName": "road.template61",
-        "token": "000149D9AC8B3584",
-        "fullName": "it rail AI 01 tmpl"
-    },
-    {
-        "idName": "road.template62",
-        "token": "0001E01D0B921B84",
-        "fullName": "it rail double AI high speed tmpl"
-    },
-    {
-        "idName": "road.template62a",
-        "token": "00F73A1E34D5A784",
-        "fullName": "it rail double AI tmpl"
-    },
-    {
-        "idName": "road.template63",
-        "token": "000276606A990184",
-        "fullName": "it road 1 far tmpl"
-    }
+  {
+    "token": "000000000031F718",
+    "idName": "road.look0",
+    "fullName": "Road 1 lane double"
+  },
+  {
+    "token": "0000000000D10C68",
+    "idName": "road.look5",
+    "fullName": "Road 1 lane single"
+  },
+  {
+    "token": "0000000000F0DD78",
+    "idName": "road.look6",
+    "fullName": "Road 1 lane broken"
+  },
+  {
+    "token": "000000000110AE88",
+    "idName": "road.look7",
+    "fullName": "Road no center lane"
+  },
+  {
+    "token": "000000000051C828",
+    "idName": "road.look1",
+    "fullName": "Highway 2 lanes 2m offset"
+  },
+  {
+    "token": "0000000000719938",
+    "idName": "road.look2",
+    "fullName": "Highway 2 lanes 5m offset"
+  },
+  {
+    "token": "0000000000916A48",
+    "idName": "road.look3",
+    "fullName": "Highway 3 lanes 2m offset"
+  },
+  {
+    "token": "0000000000B13B58",
+    "idName": "road.look4",
+    "fullName": "Highway 3 lanes 5m offset"
+  },
+  {
+    "token": "0000000001307F98",
+    "idName": "road.look8",
+    "fullName": "City 2 lanes 1m offset"
+  },
+  {
+    "token": "00000000015050A8",
+    "idName": "road.look9",
+    "fullName": "Exit road"
+  },
+  {
+    "token": "00000000050AD088",
+    "idName": "road.look10",
+    "fullName": "Road no lanes small"
+  },
+  {
+    "token": "0000000009C3D8E8",
+    "idName": "road.look11",
+    "fullName": "Highway 2 lanes 1m offset"
+  },
+  {
+    "token": "000000000E7CE148",
+    "idName": "road.look12",
+    "fullName": "Ground road (ground texture only)"
+  },
+  {
+    "token": "000000001335E9A8",
+    "idName": "road.look13",
+    "fullName": "Highway 3 lanes 15m offset"
+  },
+  {
+    "token": "0000000017EEF208",
+    "idName": "road.look14",
+    "fullName": "Highway 3 lanes 25m offset"
+  },
+  {
+    "token": "000000001CA7FA68",
+    "idName": "road.look15",
+    "fullName": "Highway 3 lanes 10m offset"
+  },
+  {
+    "token": "00000000216102C8",
+    "idName": "road.look16",
+    "fullName": "Highway 3 lanes one way"
+  },
+  {
+    "token": "00000000261A0B28",
+    "idName": "road.look17",
+    "fullName": "Highway 3 lanes one way UK"
+  },
+  {
+    "token": "000000002AD31388",
+    "idName": "road.look18",
+    "fullName": "Road broken no outer lanes"
+  },
+  {
+    "token": "000000002F8C1BE8",
+    "idName": "road.look19",
+    "fullName": "Road single no outer lanes"
+  },
+  {
+    "token": "00000000052AA198",
+    "idName": "road.look20",
+    "fullName": "City 2 lanes 5m offset"
+  },
+  {
+    "token": "0000000009E3A9F8",
+    "idName": "road.look21",
+    "fullName": "Highway 2 lanes 15m offset"
+  },
+  {
+    "token": "000000000E9CB258",
+    "idName": "road.look22",
+    "fullName": "Highway 2 lanes 2m offset no lanes"
+  },
+  {
+    "token": "000000001355BAB8",
+    "idName": "road.look23",
+    "fullName": "Highway 2 lanes 10m offset"
+  },
+  {
+    "token": "00000000180EC318",
+    "idName": "road.look24",
+    "fullName": "Highway 2 lanes one way"
+  },
+  {
+    "token": "000000001CC7CB78",
+    "idName": "road.look25",
+    "fullName": "narrow way no lanes no traffic"
+  },
+  {
+    "token": "000000002180D3D8",
+    "idName": "road.look26",
+    "fullName": "Highway 2 lanes 2.5m offset"
+  },
+  {
+    "token": "000000002639DC38",
+    "idName": "road.look27",
+    "fullName": "Exit road UK"
+  },
+  {
+    "token": "000000002AF2E498",
+    "idName": "road.look28",
+    "fullName": "Road double no outer lanes"
+  },
+  {
+    "token": "000000002FABECF8",
+    "idName": "road.look29",
+    "fullName": "narrow way walkers"
+  },
+  {
+    "token": "00000000054A72A8",
+    "idName": "road.look30",
+    "fullName": "Road 2+1"
+  },
+  {
+    "token": "000000000A037B08",
+    "idName": "road.look31",
+    "fullName": "Road 1+2"
+  },
+  {
+    "token": "0000059922DAA384",
+    "idName": "road.template0",
+    "fullName": "*Road 1 city minim scan temp"
+  },
+  {
+    "token": "0000098D6F75C484",
+    "idName": "road.template1",
+    "fullName": "*Road 1 scan temp"
+  },
+  {
+    "token": "00000D81BC10E584",
+    "idName": "road.template2",
+    "fullName": "*Road 1 city narrow scan temp"
+  },
+  {
+    "token": "0000117608AC0684",
+    "idName": "road.template3",
+    "fullName": "*Road 1 plus 2 temp"
+  },
+  {
+    "token": "0000156A55472784",
+    "idName": "road.template4",
+    "fullName": "*Road 2 plus 1 temp"
+  },
+  {
+    "token": "0000195EA1E24884",
+    "idName": "road.template5",
+    "fullName": "*Road 2 city narrow scan temp"
+  },
+  {
+    "token": "00001D52EE7D6984",
+    "idName": "road.template6",
+    "fullName": "*Road 2 city narrow np scan temp"
+  },
+  {
+    "token": "000021473B188A84",
+    "idName": "road.template7",
+    "fullName": "*Road 1 city enter scan temp"
+  },
+  {
+    "token": "0000253B87B3AB84",
+    "idName": "road.template8",
+    "fullName": "*Road sidewalk scan temp"
+  },
+  {
+    "token": "0000292FD44ECC84",
+    "idName": "road.template9",
+    "fullName": "*Hw exit temp"
+  },
+  {
+    "token": "00009FD0CE7CAA84",
+    "idName": "road.template10",
+    "fullName": "*Hw2 exit one way temp"
+  },
+  {
+    "token": "000136142D839084",
+    "idName": "road.template11",
+    "fullName": "rail1 temp"
+  },
+  {
+    "token": "0001CC578C8A7684",
+    "idName": "road.template12",
+    "fullName": "rail double temp"
+  },
+  {
+    "token": "0002629AEB915C84",
+    "idName": "road.template13",
+    "fullName": "*Road 2 city narrow np hw scan temp"
+  },
+  {
+    "token": "0002F8DE4A984284",
+    "idName": "road.template14",
+    "fullName": "fr hw 2 lanes one way tmpl"
+  },
+  {
+    "token": "010EA0DF8EE1F284",
+    "idName": "road.template14b",
+    "fullName": "fr hw 2 lanes one way playeronly tmpl"
+  },
+  {
+    "token": "00038F21A99F2884",
+    "idName": "road.template15",
+    "fullName": "fr hw 2 lanes 2m offset tmpl"
+  },
+  {
+    "token": "0004256508A60E84",
+    "idName": "road.template16",
+    "fullName": "fr hw 3 lanes one way tmpl"
+  },
+  {
+    "token": "0004BBA867ACF484",
+    "idName": "road.template17",
+    "fullName": "fr hw 3 lanes 2m offset tmpl"
+  },
+  {
+    "token": "000551EBC6B3DA84",
+    "idName": "road.template18",
+    "fullName": "fr exit one lane tmpl"
+  },
+  {
+    "token": "0005E82F25BAC084",
+    "idName": "road.template19",
+    "fullName": "fr hw2 exit one lane tmpl"
+  },
+  {
+    "token": "0000A3C51B17CB84",
+    "idName": "road.template20",
+    "fullName": "fr hw3 exit one lane tmpl"
+  },
+  {
+    "token": "00013A087A1EB184",
+    "idName": "road.template21",
+    "fullName": "fr road1 hw 1m offset tmpl"
+  },
+  {
+    "token": "0001D04BD9259784",
+    "idName": "road.template22",
+    "fullName": "fr road 1 tmpl"
+  },
+  {
+    "token": "0002668F382C7D84",
+    "idName": "road.template23",
+    "fullName": "fr hw exit one lane tmpl"
+  },
+  {
+    "token": "0004295955412F84",
+    "idName": "road.template26",
+    "fullName": "fr road 1 minim tmpl"
+  },
+  {
+    "token": "0004BF9CB4481584",
+    "idName": "road.template27",
+    "fullName": "fr road 1 enter tmpl"
+  },
+  {
+    "token": "000555E0134EFB84",
+    "idName": "road.template28",
+    "fullName": "fr road 2 narrow tmpl"
+  },
+  {
+    "token": "0005EC237255E184",
+    "idName": "road.template29",
+    "fullName": "fr gas road 1 tmpl"
+  },
+  {
+    "token": "0000A7B967B2EC84",
+    "idName": "road.template30",
+    "fullName": "fr hw 2 lanes 5m offset tmpl"
+  },
+  {
+    "token": "0001D44025C0B884",
+    "idName": "road.template32",
+    "fullName": "fr road 1 one way tmpl"
+  },
+  {
+    "token": "00026A8384C79E84",
+    "idName": "road.template33",
+    "fullName": "fr tram 1"
+  },
+  {
+    "token": "000300C6E3CE8484",
+    "idName": "road.template34",
+    "fullName": "fr road 1 minim village 1 tmpl"
+  },
+  {
+    "token": "0004C39100E33684",
+    "idName": "road.template37",
+    "fullName": "fr sidewalk road tmpl"
+  },
+  {
+    "token": "0005718E2B8CE284",
+    "idName": "road.template98",
+    "fullName": "rail double AI 01 tmpl"
+  },
+  {
+    "token": "0111198F6FD69284",
+    "idName": "road.template98b",
+    "fullName": "rail double AI 01 high speed tmpl"
+  },
+  {
+    "token": "000607D18A93C884",
+    "idName": "road.template99",
+    "fullName": "rail AI 01 tmpl"
+  },
+  {
+    "token": "00042D4DA1DC5084",
+    "idName": "road.template36",
+    "fullName": "fr hw 2 lanes one way2 tmpl"
+  },
+  {
+    "token": "00758DD211B27C84",
+    "idName": "road.template994",
+    "fullName": "fr hw 3 lanes one way br 30 tmpl"
+  },
+  {
+    "token": "000559D45FEA1C84",
+    "idName": "road.template38",
+    "fullName": "it hw 2 lanes one way tmpl"
+  },
+  {
+    "token": "000714B5E3C88C84",
+    "idName": "road.template1b",
+    "fullName": "it hw 2 lanes one way playeronly tmpl"
+  },
+  {
+    "token": "0005F017BEF10284",
+    "idName": "road.template39",
+    "fullName": "it hw 2 lanes 2m offset tmpl"
+  },
+  {
+    "token": "0000ABADB44E0D84",
+    "idName": "road.template40",
+    "fullName": "it hw 3 lanes one way tmpl"
+  },
+  {
+    "token": "000141F11354F384",
+    "idName": "road.template41",
+    "fullName": "it hw 3 lanes 2m offset tmpl"
+  },
+  {
+    "token": "0001D834725BD984",
+    "idName": "road.template42",
+    "fullName": "it exit one lane tmpl"
+  },
+  {
+    "token": "00026E77D162BF84",
+    "idName": "road.template43",
+    "fullName": "it hw2 exit one lane tmpl"
+  },
+  {
+    "token": "000304BB3069A584",
+    "idName": "road.template44",
+    "fullName": "it hw3 exit one lane tmpl"
+  },
+  {
+    "token": "00039AFE8F708B84",
+    "idName": "road.template45",
+    "fullName": "it road1 hw 1m offset tmpl"
+  },
+  {
+    "token": "00043141EE777184",
+    "idName": "road.template46",
+    "fullName": "it road 1 tmpl"
+  },
+  {
+    "token": "00055DC8AC853D84",
+    "idName": "road.template48",
+    "fullName": "it road 1 minim tmpl"
+  },
+  {
+    "token": "0005F40C0B8C2384",
+    "idName": "road.template49",
+    "fullName": "it road 1 enter tmpl"
+  },
+  {
+    "token": "0000AFA200E92E84",
+    "idName": "road.template50",
+    "fullName": "it road 2 narrow tmpl"
+  },
+  {
+    "token": "000145E55FF01484",
+    "idName": "road.template51",
+    "fullName": "it gas road 1 tmpl"
+  },
+  {
+    "token": "0001DC28BEF6FA84",
+    "idName": "road.template52",
+    "fullName": "it hw 2 lanes 5m offset tmpl"
+  },
+  {
+    "token": "0002726C1DFDE084",
+    "idName": "road.template53",
+    "fullName": "it road 1 one way tmpl"
+  },
+  {
+    "token": "000308AF7D04C684",
+    "idName": "road.template54",
+    "fullName": "it tram 1"
+  },
+  {
+    "token": "00039EF2DC0BAC84",
+    "idName": "road.template55",
+    "fullName": "it road 1 minim village 1 tmpl"
+  },
+  {
+    "token": "000435363B129284",
+    "idName": "road.template56",
+    "fullName": "it sidewalk road tmpl"
+  },
+  {
+    "token": "0004CB799A197884",
+    "idName": "road.template57",
+    "fullName": "it hw 3 lanes one way br 15 tmpl"
+  },
+  {
+    "token": "000561BCF9205E84",
+    "idName": "road.template58",
+    "fullName": "it hw 3 lanes 5m offset tmpl"
+  },
+  {
+    "token": "0005F80058274484",
+    "idName": "road.template59",
+    "fullName": "it road 2 narrow one way tmpl"
+  },
+  {
+    "token": "0000B3964D844F84",
+    "idName": "road.template60",
+    "fullName": "it road 2 city narrow tmpl"
+  },
+  {
+    "token": "000149D9AC8B3584",
+    "idName": "road.template61",
+    "fullName": "it rail AI 01 tmpl"
+  },
+  {
+    "token": "0001E01D0B921B84",
+    "idName": "road.template62",
+    "fullName": "it rail double AI high speed tmpl"
+  },
+  {
+    "token": "00F73A1E34D5A784",
+    "idName": "road.template62a",
+    "fullName": "it rail double AI tmpl"
+  },
+  {
+    "token": "000276606A990184",
+    "idName": "road.template63",
+    "fullName": "it road 1 far tmpl"
+  },
+  {
+    "token": "0002FCD297336384",
+    "idName": "road.template24",
+    "fullName": "fr road 1 plus 2 tmpl"
+  },
+  {
+    "token": "00039315F63A4984",
+    "idName": "road.template25",
+    "fullName": "fr road 2 plus 1 tmpl"
+  },
+  {
+    "token": "00013DFCC6B9D284",
+    "idName": "road.template31",
+    "fullName": "fr hw 3 lanes 5m offset tmpl"
+  },
+  {
+    "token": "0003970A42D56A84",
+    "idName": "road.template35",
+    "fullName": "fr hw 2 lanes 2 way tmpl"
+  }
 ]
