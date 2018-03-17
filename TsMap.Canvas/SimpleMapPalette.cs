@@ -15,6 +15,8 @@ namespace TsMap.Canvas
 
             CityName = Brushes.AliceBlue;
 
+            FerryLines = new SolidBrush(Color.FromArgb(80, 255, 255, 255));
+
             Error = Brushes.LightCoral;
         }
     }
