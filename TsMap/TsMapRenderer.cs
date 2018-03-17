@@ -67,7 +67,34 @@ namespace TsMap
 
             if (float.IsInfinity(scaleX) || float.IsNaN(scaleX)) scaleX = clip.Width;
             if (float.IsInfinity(scaleY) || float.IsNaN(scaleY)) scaleY = clip.Height;
-            
+
+
+            var ferryConnections = _mapper.FerryConnections.Where(item => !item.Hidden)
+                .ToList();
+
+            foreach (var ferryConnection in ferryConnections)
+            {
+                var connections = _mapper.LookupFerryConnection(ferryConnection.FerryPortId);
+
+                foreach (var conn in connections)
+                {
+                    var newPoints = new List<PointF>
+                    {
+                        new PointF((conn.StartPortLocation.X - startX) * scaleX,
+                            (conn.StartPortLocation.Y - startY) * scaleY)
+                    };
+
+                    foreach (var connection in conn.connections)
+                    {
+                        newPoints.Add(new PointF((connection.X - startX) * scaleX, (connection.Y - startY) * scaleY));
+                    }
+                    newPoints.Add(new PointF((conn.EndPortLocation.X - startX) * scaleX, (conn.EndPortLocation.Y - startY) * scaleY));
+
+                    var pen = new Pen(_palette.FerryLines, 50 * scaleX) { DashPattern = new[] { 10f, 10f } };
+                    g.DrawCurve(pen, newPoints.ToArray());
+                }
+            }
+
             var roads = _mapper.Roads.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
                     item.Z <= endY + 1500 && !item.Hidden)

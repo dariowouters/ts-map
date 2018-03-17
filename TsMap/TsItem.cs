@@ -232,12 +232,14 @@ namespace TsMap
 
     public class TsFerryItem : TsItem // TODO: Draw ferry lines
     {
+        public ulong FerryPortId { get; set; }
         public TsFerryItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
-            Valid = false;
+            Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             
-            var ferryId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            FerryPortId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            sector.Mapper.AddFerryPortLocation(FerryPortId, X, Z);
             fileOffset += 0x08 + 0x1C;
             BlockSize = fileOffset - startOffset;
         }

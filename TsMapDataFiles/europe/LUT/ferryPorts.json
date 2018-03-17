@@ -1,0 +1,122 @@
+[
+  {
+    "idName": "calais",
+    "token": "000000008B5C2A9F"
+  },
+  {
+    "idName": "dover",
+    "token": "000000000388252C"
+  },
+  {
+    "idName": "europoort",
+    "token": "0000799CE1D04A71"
+  },
+  {
+    "idName": "harwich",
+    "token": "0000000CDE40928C"
+  },
+  {
+    "idName": "hull",
+    "token": "000000000012EC54"
+  },
+  {
+    "idName": "ijmuiden",
+    "token": "0000028A215FDC9F"
+  },
+  {
+    "idName": "plymouth",
+    "token": "000001F5202B1762"
+  },
+  {
+    "idName": "rostock",
+    "token": "0000000EF962B866"
+  },
+  {
+    "idName": "tunnel_c",
+    "token": "00000174AA2EBB48"
+  },
+  {
+    "idName": "tunnel_d",
+    "token": "0000018F4DE1F8C8"
+  },
+  {
+    "idName": "tyne",
+    "token": "00000000000D1BD8"
+  },
+  {
+    "idName": "gdansk",
+    "token": "0000000066DCB721"
+  },
+  {
+    "idName": "gdynia",
+    "token": "000000003664C021"
+  },
+  {
+    "idName": "roscoff",
+    "token": "0000000B862B5E6E"
+  },
+  {
+    "idName": "napoli",
+    "token": "000000005C8D197A"
+  },
+  {
+    "idName": "palermo",
+    "token": "00000011F6CCBF9C"
+  },
+  {
+    "idName": "messina",
+    "token": "0000000829EDE7CD"
+  },
+  {
+    "idName": "giovanni",
+    "token": "0000020B6C4D8617"
+  },
+  {
+    "idName": "bergen",
+    "token": "000000007344E4FE"
+  },
+  {
+    "idName": "esbjerg",
+    "token": "0000000C7116539D"
+  },
+  {
+    "idName": "frederikshv",
+    "token": "02D4C5AA02874F54"
+  },
+  {
+    "idName": "hirtshals",
+    "token": "000074FECDD0B774"
+  },
+  {
+    "idName": "stavanger",
+    "token": "0000705456352B0D"
+  },
+  {
+    "idName": "gedser",
+    "token": "000000008632C3AB"
+  },
+  {
+    "idName": "goteborg",
+    "token": "000001D8F78EBEC7"
+  },
+  {
+    "idName": "karlskrona",
+    "token": "0006D67A483E3467"
+  },
+  {
+    "idName": "kristiansand",
+    "token": "30785253E0B11621"
+  },
+  {
+    "idName": "nynashamn",
+    "token": "00006153F26C5342"
+  },
+  {
+    "idName": "oslo",
+    "token": "0000000000156F17"
+  },
+  {
+    "idName": "trelleborg",
+    "token": "000A6BD4602B07F2"
+  }
+]

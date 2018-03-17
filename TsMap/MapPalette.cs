@@ -15,6 +15,11 @@ namespace TsMap
         public Brush Road;
 
         /// <summary>
+        /// Ferry Lines
+        /// </summary>
+        public Brush FerryLines;
+
+        /// <summary>
         /// Prefab roads (prefabs are crosspoints, etc.)
         /// </summary>
         public Brush PrefabRoad;

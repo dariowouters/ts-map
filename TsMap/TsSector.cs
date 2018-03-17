@@ -88,7 +88,7 @@ namespace TsMap
                     {
                         var item = new TsFerryItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Ferries.Add(item); break;
+                        if (item.Valid) Mapper.FerryConnections.Add(item); break;
                     }
                     case TsItemType.Garage:
                     {
