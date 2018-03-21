@@ -21,15 +21,18 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, (some) map overlay
 map_data_directory (the directory you set in TsMapCanvas.cs)
 ├───LUT
 │       cities.json
+│       ferryPorts.json
 │       overlays.json
 │       prefabs.json
 │       roads.json
 └───SCS
     ├───LUT
-    │   └───road
-    │           road_look.sii
-    │           road_look.template.dlc_fr.sii
-    │           road_look.template.sii
+    │   ├───road
+    │   │       road_look.sii
+    │   │       road_look.template.dlc_fr.sii
+    │   │       road_look.template.sii
+    │   └───ferryConnection
+    │           all ferry connection files (*.sii)
     ├───map
     │       all *.base files
     ├───overlay
@@ -54,13 +57,19 @@ Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destina
         - This is located in base.scs at map/europe/ or map/usa/
         - Put all \*.base files in SCS/map/
     - Overlays
-        - Located in base/material/ui/map/road/ and in base/material/ui/company/small/
         - Put all \*.dds files in SCS/overlay/
+        - Located in
+            - base/material/ui/map/
+            - base/material/ui/map/road/
+            - base/material/ui/company/small/
     - Prefab information
         - Also located in base.scs, copy all \*.ppd files (with directories) from prefab/ and prefab2/ to SCS/prefab/
     - Sii road look files
         - Located in def.scs at def/world/
         - Copy road_look.sii and road_look.template.sii to SCS/LUT/road/
+    - ferry connection Files
+        - Located in def.scs at def/ferry/connection/
+        - copy all \*.sii files to SCS/LUT/ferryConnection/
 
 
 - DLC (Vive la France ! as an example)
@@ -72,5 +81,8 @@ Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destina
     - Sii road look files **(some DLC won't have these)**
         - Also Located in dlc_fr.scs at def/world/
         - Copy road_look.sii and road_look.template.sii to SCS/LUT/road/
+    - ferry connection Files **(some DLC won't have these)**
+        - Also Located in dlc_fr.scs at def/ferry/connection/
+        - copy all \*.sii files to SCS/LUT/ferryConnection/
 
 [Original project](https://github.com/nlhans/ets2-map)
