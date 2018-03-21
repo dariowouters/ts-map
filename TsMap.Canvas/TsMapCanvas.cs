@@ -20,7 +20,7 @@ namespace TsMap.Canvas
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
-            var mapper = new TsMapper("D:/Projects/ts-map-files/europe/"); 
+            var mapper = new TsMapper("D:/Projects/ts-map-files/europe/");
             //var baseMap = "D:/Projects/ts-map-files/europe/";
             //var mapper = new TsMapper(
             //    @"D:/Games/steamapps/common/Euro Truck Simulator 2/base/map/test/",

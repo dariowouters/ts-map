@@ -172,6 +172,122 @@
     "idName": "walbert"
   },
   {
+    "token": "000EE210C8438914",
+    "idName": "dealer_ico"
+  },
+  {
+    "token": "3972693D16C29423",
+    "idName": "explored_bcg"
+  },
+  {
+    "token": "1CC535CCA702465B",
+    "idName": "garage_free_ico"
+  },
+  {
+    "token": "4572831B4D58CC5B",
+    "idName": "garage_large_ico"
+  },
+  {
+    "token": "5D054AECAA8FDCDB",
+    "idName": "garage_small_ico"
+  },
+  {
+    "token": "1E88740B5D14605B",
+    "idName": "garage_tiny_ico"
+  },
+  {
+    "token": "00000011C686A54F",
+    "idName": "gas_ico"
+  },
+  {
+    "token": "000003305E46FF79",
+    "idName": "gps_hint"
+  },
+  {
+    "token": "0000000000009461",
+    "idName": "map"
+  },
+  {
+    "token": "0000000000016AB9",
+    "idName": "map0"
+  },
+  {
+    "token": "0000000000024111",
+    "idName": "map1"
+  },
+  {
+    "token": "0000000000031769",
+    "idName": "map2"
+  },
+  {
+    "token": "000000000003EDC1",
+    "idName": "map3"
+  },
+  {
+    "token": "000002A5A7C9C1C9",
+    "idName": "map_info"
+  },
+  {
+    "token": "000001F50242C074",
+    "idName": "pan_both"
+  },
+  {
+    "token": "000003305E46E114",
+    "idName": "pan_hint"
+  },
+  {
+    "token": "02358E762E112CD4",
+    "idName": "parking_ico"
+  },
+  {
+    "token": "000000008637B9E2",
+    "idName": "player"
+  },
+  {
+    "token": "1E18DD7A560F3E5A",
+    "idName": "recruitment_ico"
+  },
+  {
+    "token": "00000000000BFAAE",
+    "idName": "road"
+  },
+  {
+    "token": "0013C4887C4EE6EA",
+    "idName": "roll_arrow"
+  },
+  {
+    "token": "02358E7493388A97",
+    "idName": "service_ico"
+  },
+  {
+    "token": "02358E7B41966FD3",
+    "idName": "unknown_ico"
+  },
+  {
+    "token": "657635253C97188F",
+    "idName": "unload_point"
+  },
+  {
+    "token": "D50E1058FBBF179F",
+    "idName": "weigh_station_ico"
+  },
+  {
+    "token": "000062D209097AB6",
+    "idName": "zoom_in_n"
+  },
+  {
+    "token": "0000769788111FB6",
+    "idName": "zoom_in_s"
+  },
+  {
+    "token": "000EABD56041EF36",
+    "idName": "zoom_out_n"
+  },
+  {
+    "token": "00119B263B646D36",
+    "idName": "zoom_out_s"
+  },
+  {
     "token": "000002A377F6ECAC",
     "idName": "toll_ico"
   },
@@ -430,5 +546,13 @@
   {
     "token": "00000000000466DD",
     "idName": "is84"
+  },
+  {
+    "token": "8783CA6422D58FBE",
+    "idName": "road_train_ico"
+  },
+  {
+    "token": "C3663FDC498AE9FE",
+    "idName": "road_port_overlay"
   }
 ]

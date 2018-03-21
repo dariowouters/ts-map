@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TsMap
 {
@@ -20,14 +21,15 @@ namespace TsMap
         private readonly List<TsRoadLook> _roadLookLookup = new List<TsRoadLook>();
         private readonly Dictionary<ulong, TsRoadLook> _roadLookup = new Dictionary<ulong, TsRoadLook>();
         private readonly Dictionary<ulong, TsMapOverlay> _overlayLookup = new Dictionary<ulong, TsMapOverlay>();
+        private readonly Dictionary<string, ulong> _ferryPortLookup = new Dictionary<string, ulong>();
+        private readonly List<TsFerryConnection> _ferryConnectionLookup = new List<TsFerryConnection>();
 
         public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
         public readonly List<TsPrefabItem> Prefabs = new List<TsPrefabItem>();
         public readonly List<TsCityItem> Cities = new List<TsCityItem>();
         public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
-        public readonly List<TsFerryItem> Ferries = new List<TsFerryItem>();
+        public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
-
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -102,10 +104,11 @@ namespace TsMap
             }
 
             // CITIES
-            if (File.Exists(_jsonLutDir + "cities.json"))
+            var citiesJson = _jsonLutDir + "cities.json";
+            if (File.Exists(citiesJson))
             {
 
-                var lines = File.ReadAllLines(_jsonLutDir + "cities.json");
+                var lines = File.ReadAllLines(citiesJson);
                 var cityName = "";
                 ulong token = 0;
                 foreach (var line in lines)
@@ -141,7 +144,7 @@ namespace TsMap
             }
             else
             {
-                Log.Msg($"Cannot find file: {_jsonLutDir + "cities.json"}");
+                Log.Msg($"Cannot find file: {citiesJson}");
             }
 
             // ROAD LOOKS
@@ -241,6 +244,53 @@ namespace TsMap
             {
                 Log.Msg($"Cannot find file: {overlaysJson}");
             }
+
+            // FerryPorts
+            var ferryPortsJson = _jsonLutDir + "ferryPorts.json";
+            if (File.Exists(ferryPortsJson))
+            {
+                var lines = File.ReadAllLines(ferryPortsJson);
+                var idName = "";
+                ulong token = 0;
+                foreach (var line in lines)
+                {
+                    if (line.Trim() == "]")
+                    {
+                        break;
+                    }
+                    if (line.Contains(":"))
+                    {
+                        var k = line.Split(':')[0].Split('"')[1];
+                        var v = line.Split(':')[1].Split('"')[1];
+
+                        switch (k)
+                        {
+                            case "token":
+                                token = ulong.Parse(v, NumberStyles.HexNumber);
+                                break;
+                            case "idName":
+                                idName = v;
+                                break;
+                        }
+                    }
+
+                    if (!line.Contains("}")) continue;
+                    if (token != 0 && idName != "")
+                    {
+                        if (!_ferryPortLookup.ContainsKey(idName))
+                        {
+                            _ferryPortLookup.Add(idName, token);
+                        }
+                    }
+
+                    idName = "";
+                    token = 0;
+                }
+            }
+            else
+            {
+                Log.Msg($"Cannot find file: {ferryPortsJson}");
+            }
         }
 
         private void ParseRoadLookFiles()
@@ -255,13 +305,13 @@ namespace TsMap
             roadLookFiles.ToList().ForEach(file =>
             {
                 var road = String.Empty;
-                var fileData = File.ReadLines(file);
+                var lines = File.ReadLines(file);
                 TsRoadLook look = null;
-                foreach (var k in fileData)
+                foreach (var line in lines)
                 {
-                    if (k.Contains(":") && !road.Equals(String.Empty) && look != null)
+                    if (line.Contains(":") && !road.Equals(String.Empty) && look != null)
                     {
-                        var key = k;
+                        var key = line;
                         var data = key.Substring(key.IndexOf(':') + 1).Trim();
                         key = key.Substring(0, key.IndexOf(':')).Trim();
 
@@ -295,9 +345,9 @@ namespace TsMap
                                 break;
                         }
                     }
-                    if (k.StartsWith("road_look"))
+                    if (line.StartsWith("road_look"))
                     {
-                        var d = k.Split(':');
+                        var d = line.Split(':');
                         d[1] = d[1].Trim();
                         if (d[1].Length > 3)
                         {
@@ -305,7 +355,7 @@ namespace TsMap
                             look = new TsRoadLook(road);
                         }
                     }
-                    if (k.Trim() != "}") continue;
+                    if (!line.Contains("}")) continue;
                     if (look != null && !_roadLookLookup.Contains(look))
                     {
                         _roadLookLookup.Add(look);
@@ -315,8 +365,68 @@ namespace TsMap
             });
         }
 
+        private void ParseFerryConnectionFiles()
+        {
+            if (!Directory.Exists(_siiLutDir + @"ferryConnection\"))
+            {
+                Log.Msg("No ferry connection files found");
+                return;
+            }
+            var ferryConnectionFiles = Directory.GetFiles(_siiLutDir + @"ferryConnection\", "*.sii");
+
+            if (_ferryPortLookup.Count == 0) return;
+
+            ferryConnectionFiles.ToList().ForEach(file =>
+            {
+                TsFerryConnection conn = null;
+                var lines = File.ReadLines(file);
+
+                foreach (var line in lines)
+                {
+                    if (line.Contains(":"))
+                    {
+                        var key = line;
+                        var data = key.Split(':')[1].Trim();
+                        key = key.Split(':')[0].Trim();
+
+                        if (conn != null)
+                        {
+                            if (key.Contains("connection_positions"))
+                            {
+                                var vector = data.Split('(')[1].Split(')')[0];
+                                var values = vector.Split(',');
+                                var x = float.Parse(values[0].Replace('.', ','));
+                                var z = float.Parse(values[2].Replace('.', ','));
+                                conn.AddConnectionPosition(x, z);
+
+                            }
+                        }
+
+                        if (line.Contains("ferry_connection"))
+                        {
+                            var portIds = data.Split('.');
+                            conn = new TsFerryConnection
+                            {
+                                StartPortToken = _ferryPortLookup[portIds[1]],
+                                StartId = portIds[1],
+                                EndId = portIds[2].TrimEnd('{').Trim(),
+                                EndPortToken = _ferryPortLookup[portIds[2].TrimEnd('{').Trim()]
+                            };
+                        }
+                    }
+                    if (!line.Contains("}") || conn == null) continue;
+
+                    var existingItem = _ferryConnectionLookup.FirstOrDefault(item =>
+                        (item.StartPortToken == conn.StartPortToken && item.EndPortToken == conn.EndPortToken) ||
+                        (item.StartPortToken == conn.EndPortToken && item.EndPortToken == conn.StartPortToken)); // Check if connection already exists
+                    if (existingItem == null) _ferryConnectionLookup.Add(conn);
+                }
+            });
+        }
+
         public void Parse()
         {
+            var startTime = DateTime.Now.Ticks;
             ParseRoadLookFiles();
             Log.Msg($"RoadLook Count: {_roadLookLookup.Count}");
             LoadLut();
@@ -324,16 +434,21 @@ namespace TsMap
             Log.Msg($"Prefabs Count: {_prefabLookup.Count}");
             Log.Msg($"Cities Count: {_citiesLookup.Count}");
 
+            ParseFerryConnectionFiles();
+
+            Log.Msg($"Ferry Connections Count: {_ferryConnectionLookup.Count}");
+
             if (_sectorFiles == null)
             {
                 Log.Msg("No Map file(s) found.");
                 return;
             }
-            var startTime = DateTime.Now.Ticks;
+            var preMapParseTime = DateTime.Now.Ticks;
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
-            Log.Msg($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base) map files");
+            Log.Msg($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base)" +
+                    $" map files and {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms total.");
         }
 
         public TsNode GetNodeByUid(ulong uid)
@@ -359,6 +474,20 @@ namespace TsMap
         public TsMapOverlay LookupOverlay(ulong overlayId)
         {
             return _overlayLookup.ContainsKey(overlayId) ? _overlayLookup[overlayId] : null;
+        }
+
+        public List<TsFerryConnection> LookupFerryConnection(ulong ferryPortId)
+        {
+            return _ferryConnectionLookup.Where(item => item.StartPortToken == ferryPortId).ToList();
+        }
+
+        public void AddFerryPortLocation(ulong ferryPortId, float x, float z)
+        {
+            var ferry = _ferryConnectionLookup.Where(item => item.StartPortToken == ferryPortId || item.EndPortToken == ferryPortId);
+            foreach (var connection in ferry)
+            {
+                connection.SetPortLocation(ferryPortId, x, z);
+            }
         }
     }
 }
