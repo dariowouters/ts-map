@@ -95,55 +95,6 @@ namespace TsMap
                 }
             }
 
-            var roads = _mapper.Roads.Where(item =>
-                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                    item.Z <= endY + 1500 && !item.Hidden)
-                .ToList();
-
-            foreach (var road in roads)
-            {
-                var startNode = road.GetStartNode();
-                var endNode = road.GetEndNode();
-
-                if (road.GetPoints() == null)
-                {
-                    var newPoints = new List<PointF>();
-
-                    var sx = startNode.X;
-                    var sz = startNode.Z;
-                    var ex = endNode.X;
-                    var ez = endNode.Z;
-
-                    var radius = Math.Sqrt(Math.Pow(sx - ex, 2) + Math.Pow(sz - ez, 2));
-
-                    var tanSx = Math.Cos(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
-                    var tanEx = Math.Cos(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
-                    var tanSz = Math.Sin(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
-                    var tanEz = Math.Sin(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
-
-                    for (var i = 0; i < 8; i++)
-                    {
-                        var s = i / (float) (8 - 1);
-                        var x = (float) TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
-                        var z = (float) TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
-                        newPoints.Add(new PointF(x, z));
-                    }
-                    road.AddPoints(newPoints);
-                }
-
-                var points = road.GetPoints();
-
-                for (var i = 0; i < points.Length; i++)
-                {
-                    var point = points[i];
-                    points[i] = new PointF((point.X - startX) * scaleX, (point.Y - startY) * scaleY);
-                }
-
-                var roadWidth = road.RoadLook.GetWidth() * scaleX;
-
-                g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
-            }
-
             var prefabs = _mapper.Prefabs.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
                     item.Z <= endY + 1500 && !item.Hidden)
@@ -226,6 +177,7 @@ namespace TsMap
                         TsPrefabLook prefabLook = new TsPrefabRoadLook()
                         {
                             Color = _palette.PrefabRoad,
+                            ZIndex = 4,
                             Width = 10f * scaleX,
                         };
 
@@ -241,6 +193,56 @@ namespace TsMap
             {
                 prefabLook.Draw(g);
             }
+
+            var roads = _mapper.Roads.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
+
+            foreach (var road in roads)
+            {
+                var startNode = road.GetStartNode();
+                var endNode = road.GetEndNode();
+
+                if (road.GetPoints() == null)
+                {
+                    var newPoints = new List<PointF>();
+
+                    var sx = startNode.X;
+                    var sz = startNode.Z;
+                    var ex = endNode.X;
+                    var ez = endNode.Z;
+
+                    var radius = Math.Sqrt(Math.Pow(sx - ex, 2) + Math.Pow(sz - ez, 2));
+
+                    var tanSx = Math.Cos(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                    var tanEx = Math.Cos(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+                    var tanSz = Math.Sin(-(Math.PI * 0.5f - startNode.Rotation)) * radius;
+                    var tanEz = Math.Sin(-(Math.PI * 0.5f - endNode.Rotation)) * radius;
+
+                    for (var i = 0; i < 8; i++)
+                    {
+                        var s = i / (float)(8 - 1);
+                        var x = (float)TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
+                        var z = (float)TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
+                        newPoints.Add(new PointF(x, z));
+                    }
+                    road.AddPoints(newPoints);
+                }
+
+                var points = road.GetPoints();
+
+                for (var i = 0; i < points.Length; i++)
+                {
+                    var point = points[i];
+                    points[i] = new PointF((point.X - startX) * scaleX, (point.Y - startY) * scaleY);
+                }
+
+                var roadWidth = road.RoadLook.GetWidth() * scaleX;
+
+                g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
+            }
+
 
             var cities = _mapper.Cities.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
@@ -261,7 +263,8 @@ namespace TsMap
             foreach (var overlayItem in overlays) // TODO: Scaling
             {
                 Bitmap b = overlayItem.Overlay.GetBitmap();
-                if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY, b.Width * 2 * scaleX, b.Height * 2 * scaleY);
+                if (b != null) g.DrawImage(b, (overlayItem.X - b.Width - startX) * scaleX, (overlayItem.Z - b.Height - startY) * scaleY,
+                    b.Width * 2 * scaleX, b.Height * 2 * scaleY);
             }
 
             var companies = _mapper.Companies.Where(item =>
@@ -273,6 +276,110 @@ namespace TsMap
             {
                 Bitmap b = companyItem.Overlay.GetBitmap();
                 if (b != null) g.DrawImage(b, (companyItem.X - startX) * scaleX, (companyItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
+            }
+
+            foreach (var prefab in prefabs) // Draw all prefab overlays
+            {
+                var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
+                var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+                var rot = (float)(originNode.Rotation - Math.PI - Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+                var prefabStartX = originNode.X - mapPointOrigin.X;
+                var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                foreach (var spawnPoint in prefab.Prefab.SpawnPoints)
+                {
+                    var newPoint = RotatePoint(prefabStartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
+                        originNode.X, originNode.Z);
+
+                    switch (spawnPoint.Type)
+                    {
+                        case TsSpawnPointType.Fuel:
+                        {
+                            var overlay = _mapper.LookupOverlay(0x11C686A54F);
+                            Bitmap b = overlay?.GetBitmap();
+
+                            if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                                b.Width * scaleX, b.Height * scaleY);
+                            break;
+                        }
+                        case TsSpawnPointType.Service:
+                        {
+                            var overlay = _mapper.LookupOverlay(0x2358E7493388A97);
+                            Bitmap b = overlay?.GetBitmap();
+
+                            if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                                b.Width * scaleX, b.Height * scaleY);
+                            break;
+                        }
+                        case TsSpawnPointType.WeightStation:
+                        {
+                            var overlay = _mapper.LookupOverlay(0xD50E1058FBBF179F);
+                            Bitmap b = overlay?.GetBitmap();
+
+                            if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                                b.Width * scaleX, b.Height * scaleY);
+                            break;
+                        }
+                        case TsSpawnPointType.TruckDealer:
+                        {
+                            var overlay = _mapper.LookupOverlay(0xEE210C8438914);
+                            Bitmap b = overlay?.GetBitmap();
+
+                            if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                                b.Width * scaleX, b.Height * scaleY);
+                            break;
+                        }
+                        case TsSpawnPointType.GarageOutdoor:
+                        {
+                            var overlay = _mapper.LookupOverlay(0x4572831B4D58CC5B);
+                            Bitmap b = overlay?.GetBitmap();
+
+                            if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                                b.Width * scaleX, b.Height * scaleY);
+                            break;
+                        }
+                        case TsSpawnPointType.Recruitment:
+                        {
+                            var overlay = _mapper.LookupOverlay(0x1E18DD7A560F3E5A);
+                            Bitmap b = overlay?.GetBitmap();
+
+                            if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                                b.Width * scaleX, b.Height * scaleY);
+                            break;
+                        }
+                    }
+                }
+
+                var lastId = -1;
+                foreach (var triggerPoint in prefab.Prefab.TriggerPoints) // trigger points in prefabs: garage, hotel, ...
+                {
+                    var newPoint = RotatePoint(prefabStartX + triggerPoint.X, prefabStartZ + triggerPoint.Z, rot,
+                        originNode.X, originNode.Z);
+
+                    if (triggerPoint.TriggerId == lastId) continue;
+                    lastId = (int)triggerPoint.TriggerId;
+
+                    if (triggerPoint.TriggerActionUid == 0x18991B7A99E279C) // parking trigger
+                    {
+                        var overlay = _mapper.LookupOverlay(0x2358E762E112CD4);
+                        Bitmap b = overlay?.GetBitmap();
+
+                        if (b != null) g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX, (newPoint.Y - b.Height / 2f - startY) * scaleY,
+                            b.Width * scaleX, b.Height * scaleY);
+                    }
+                }
+            }
+
+            var ferryItems = _mapper.FerryConnections.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500)
+                .ToList();
+
+            foreach (var ferryItem in ferryItems) // TODO: Scaling
+            {
+                Bitmap b = ferryItem.Overlay.GetBitmap();
+                if (b != null) g.DrawImage(b, (ferryItem.X - startX) * scaleX, (ferryItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 
             var elapsedTime = DateTime.Now.Ticks - startTime;

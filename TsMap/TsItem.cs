@@ -104,7 +104,7 @@ namespace TsMap
             Valid = true;
             Nodes = new List<ulong>();
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
+
             Hidden = (Sector.Stream[fileOffset += 0x02] & 0x02) != 0;
             var prefabId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x03);
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -165,7 +165,6 @@ namespace TsMap
         {
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-
             fileOffset += 0x05 + 0x10;
             BlockSize = fileOffset - startOffset;
         }
@@ -177,7 +176,7 @@ namespace TsMap
         {
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
+
             var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05);
             fileOffset += 0x04 + (0x08 * nodeCount);
             BlockSize = fileOffset - startOffset;
@@ -218,7 +217,9 @@ namespace TsMap
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
             ZoomLevelVisibility = Sector.Stream[fileOffset];
+            var type = Sector.Stream[fileOffset + 0x02];
             var overlayId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            if (type == 1 && overlayId == 0) overlayId = 0x2358E762E112CD4; // parking
             Overlay = Sector.Mapper.LookupOverlay(overlayId);
             if (Overlay == null)
             {
@@ -232,12 +233,18 @@ namespace TsMap
 
     public class TsFerryItem : TsItem // TODO: Draw ferry lines
     {
-        public ulong FerryPortId { get; set; }
+        public ulong FerryPortId { get; }
+        public bool Train { get; }
+        public TsMapOverlay Overlay { get; }
+
         public TsFerryItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
+            Train = (Sector.Stream[fileOffset] != 0);
+            if (Train) Overlay = Sector.Mapper.LookupOverlay(0x8783CA6422D58FBE);
+            else Overlay = Sector.Mapper.LookupOverlay(0xC3663FDC498AE9FE);
+
             FerryPortId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
             sector.Mapper.AddFerryPortLocation(FerryPortId, X, Z);
             fileOffset += 0x08 + 0x1C;
@@ -251,7 +258,6 @@ namespace TsMap
         {
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
             fileOffset += 0x05 + 0x1C;
             BlockSize = fileOffset - startOffset;
         }
@@ -293,7 +299,6 @@ namespace TsMap
         {
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
             fileOffset += 0x05 + 0x10;
             BlockSize = fileOffset - startOffset;
         }
@@ -346,7 +351,7 @@ namespace TsMap
         {
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
+
             fileOffset += 0x05 + 0x18;
             BlockSize = fileOffset - startOffset;
         }

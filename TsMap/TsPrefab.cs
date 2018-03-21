@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace TsMap
 {
@@ -25,17 +26,36 @@ namespace TsMap
         public List<int> Neighbours;
     }
 
+    public class TsSpawnPoint
+    {
+        public float X;
+        public float Z;
+        public TsSpawnPointType Type;
+    }
+
+    public class TsTriggerPoint
+    {
+        public uint TriggerId;
+        public ulong TriggerActionUid;
+        public float X;
+        public float Z;
+    }
+
     public class TsPrefab
     {
         private const int NodeBlockSize = 0x68;
         private const int MapPointBlockSize = 0x30;
+        private const int SpawnPointBlockSize = 0x20;
+        private const int TriggerPointBlockSize = 0x30;
 
         private string _filePath;
 
         private byte[] _stream;
 
         public List<TsPrefabNode> PrefabNodes { get; private set; }
+        public List<TsSpawnPoint> SpawnPoints { get; private set; }
         public List<TsMapPoint> MapPoints { get; private set; }
+        public List<TsTriggerPoint> TriggerPoints { get; private set; }
 
         public TsPrefab(string filePath)
         {
@@ -49,19 +69,25 @@ namespace TsMap
         private void Parse()
         {
             PrefabNodes = new List<TsPrefabNode>();
+            SpawnPoints = new List<TsSpawnPoint>();
             MapPoints = new List<TsMapPoint>();
+            TriggerPoints = new List<TsTriggerPoint>();
 
             var fileOffset = 0x0;
 
             var version = BitConverter.ToInt32(_stream, fileOffset);
 
             var nodeCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
-            var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x1C);
+            var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x10);
+            var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
+            var triggerPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
 
             if (version > 0x15) fileOffset += 0x04; // http://modding.scssoft.com/wiki/Games/ETS2/Modding_guides/1.30#Prefabs
 
-            var nodeOffset = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
-            var mapPointOffset = BitConverter.ToInt32(_stream, fileOffset + 0x20);
+            var nodeOffset = BitConverter.ToInt32(_stream, fileOffset += 0x08);
+            var spawnPointOffset = BitConverter.ToInt32(_stream, fileOffset += 0x10);
+            var mapPointOffset = BitConverter.ToInt32(_stream, fileOffset += 0x10);
+            var triggerPointOffset = BitConverter.ToInt32(_stream, fileOffset += 0x04);
 
             for (var i = 0; i < nodeCount; i++)
             {
@@ -74,6 +100,23 @@ namespace TsMap
                     RotZ = BitConverter.ToSingle(_stream, nodeBaseOffset + 0x24),
                 };
                 PrefabNodes.Add(node);
+            }
+
+            for (var i = 0; i < spawnPointCount; i++)
+            {
+                var spawnPointBaseOffset = spawnPointOffset + (i * SpawnPointBlockSize);
+                var spawnPoint = new TsSpawnPoint
+                {
+                    X = BitConverter.ToSingle(_stream, spawnPointBaseOffset),
+                    Z = BitConverter.ToSingle(_stream, spawnPointBaseOffset + 0x08),
+                    Type = (TsSpawnPointType)BitConverter.ToUInt32(_stream, spawnPointBaseOffset + 0x1C)
+                };
+                var pointInVicinity = SpawnPoints.FirstOrDefault(point => // check if any other spawn points with the same type are close
+                    point.Type == spawnPoint.Type &&
+                    ((spawnPoint.X > point.X - 4 && spawnPoint.X < point.X + 4) ||
+                    (spawnPoint.Z > point.Z - 4 && spawnPoint.Z < point.Z + 4)));
+                if (pointInVicinity == null) SpawnPoints.Add(spawnPoint);
+                // Log.Msg($"Spawn point of type: {spawnPoint.Type} in {_filePath}");
             }
 
             for (var i = 0; i < mapPointCount; i++)
@@ -136,6 +179,23 @@ namespace TsMap
                 }
 
                 MapPoints.Add(point);
+            }
+
+            for (var i = 0; i < triggerPointCount; i++)
+            {
+                var triggerPointBaseOffset = triggerPointOffset + (i * TriggerPointBlockSize);
+                var triggerPoint = new TsTriggerPoint
+                {
+                    TriggerId = BitConverter.ToUInt32(_stream, triggerPointBaseOffset),
+                    TriggerActionUid = BitConverter.ToUInt64(_stream, triggerPointBaseOffset + 0x04),
+                    X = BitConverter.ToSingle(_stream, triggerPointBaseOffset + 0x1C),
+                    Z = BitConverter.ToSingle(_stream, triggerPointBaseOffset + 0x24),
+                };
+                var pointInVicinity = TriggerPoints.FirstOrDefault(point => // check if any other trigger points with the same id are close
+                    point.TriggerActionUid == triggerPoint.TriggerActionUid &&
+                    ((triggerPoint.X > point.X - 20 && triggerPoint.X < point.X + 20) ||
+                    (triggerPoint.Z > point.Z - 20 && triggerPoint.Z < point.Z + 20)));
+                if (pointInVicinity == null) TriggerPoints.Add(triggerPoint);
             }
 
             _stream = null;
