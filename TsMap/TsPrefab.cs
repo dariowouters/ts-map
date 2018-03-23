@@ -135,12 +135,13 @@ namespace TsMap
                     case 5: laneOffset = 15; break;
                     case 6: laneOffset = 20; break;
                     case 7: laneOffset = 25; break;
-                    default: laneOffset = 1; break;
+                    default: laneOffset = 0; break;
 
                 }
                 int laneCount;
                 switch (laneTypeFlags) // TODO: Change these (not really used atm)
                 {
+                    case 0: laneCount = 1; break;
                     case 1: laneCount = 2; break;
                     case 2: laneCount = 4; break;
                     case 3: laneCount = 6; break;
@@ -149,9 +150,9 @@ namespace TsMap
                     case 6: laneCount = 7; break;
                     case 8: laneCount = 3; break;
                     case 13: laneCount = -1; break;
-                    case 14: laneCount = 0; break;
+                    case 14: laneCount = 2; break; // auto ; temp set at 2
                     default:
-                        laneCount = 0;
+                        laneCount = 1;
                         // Log.Msg($"Unknown LaneType: {laneTypeFlags}");
                         break;
                 }
