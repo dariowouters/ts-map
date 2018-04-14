@@ -83,11 +83,23 @@ namespace TsMap
                 Log.Msg($"Could not find RoadLook with id: {BitConverter.ToUInt64(Sector.Stream, fileOffset):X}, " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0x50);
-            EndNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08);
-            var stampCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x134);
-            var vegetationSphereCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (StampBlockSize * stampCount));
-            fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount);
+
+            if (Sector.Version >= Common.BaseFileVersion130)
+            {
+                StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0x9C);
+                EndNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08);
+                fileOffset += 0x08 + 0x04;
+            }
+            else
+            {
+                StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0x50);
+                EndNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08);
+                var stampCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x134);
+                var vegetationSphereCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (StampBlockSize * stampCount));
+                fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount);
+                
+            }
+
             BlockSize = fileOffset - startOffset;
         }
     }
@@ -114,19 +126,42 @@ namespace TsMap
                 Log.Msg($"Could not find Prefab with id: {BitConverter.ToUInt64(Sector.Stream, fileOffset):X}, " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            var additionalItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x10);
-            var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * additionalItemCount));
-            fileOffset += 0x04;
-            for (var i = 0; i < nodeCount; i++)
+
+            if (Sector.Version >= Common.BaseFileVersion130)
             {
-                Nodes.Add(BitConverter.ToUInt64(Sector.Stream, fileOffset));
-                fileOffset += 0x08;
+                var additionalItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x08);
+                var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (additionalItemCount * 0x08));
+                fileOffset += 0x04;
+                for (var i = 0; i < nodeCount; i++)
+                {
+                    Nodes.Add(BitConverter.ToUInt64(Sector.Stream, fileOffset));
+                    fileOffset += 0x08;
+                }
+                var connectedItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                Origin = Sector.Stream[fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08];
+                fileOffset += 0x02 + nodeCount * 0x0C;
             }
-            var unkEntityCount = BitConverter.ToInt32(Sector.Stream, fileOffset);
-            Origin = BitConverter.ToChar(Sector.Stream, fileOffset += 0x04 + (0x08 * unkEntityCount) + 0x08);
-            var prefabVegetationCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x01 + (NodeLookBlockSize * nodeCount) + 0x01);
-            var vegetationSphereCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04);
-            fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount) + (0x18 * nodeCount);
+            else
+            {
+                var additionalItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x10);
+
+                var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * additionalItemCount));
+                fileOffset += 0x04;
+                for (var i = 0; i < nodeCount; i++)
+                {
+                    Nodes.Add(BitConverter.ToUInt64(Sector.Stream, fileOffset));
+                    fileOffset += 0x08;
+                }
+
+                var connectedItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                Origin = Sector.Stream[fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08];
+                var prefabVegetationCount = BitConverter.ToInt32(Sector.Stream,
+                    fileOffset += 0x01 + (NodeLookBlockSize * nodeCount) + 0x01);
+                var vegetationSphereCount = BitConverter.ToInt32(Sector.Stream,
+                    fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04);
+                fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount) + (0x18 * nodeCount);
+            }
+
             BlockSize = fileOffset - startOffset;
         }
     }
@@ -206,7 +241,7 @@ namespace TsMap
         }
     }
 
-    public class TsMapOverlayItem : TsItem // TODO: Figure out gas station / service station icons
+    public class TsMapOverlayItem : TsItem
     {
         public TsMapOverlay Overlay { get; }
         public byte ZoomLevelVisibility { get; }
@@ -231,7 +266,7 @@ namespace TsMap
         }
     }
 
-    public class TsFerryItem : TsItem // TODO: Draw ferry lines
+    public class TsFerryItem : TsItem
     {
         public ulong FerryPortId { get; }
         public bool Train { get; }

@@ -8,6 +8,8 @@ namespace TsMap
         public string FilePath { get; }
         public TsMapper Mapper { get; }
 
+
+        public int Version { get; private set; }
         private bool _empty;
 
         public byte[] Stream { get; private set; }
@@ -27,6 +29,7 @@ namespace TsMap
 
         public void Parse()
         {
+            Version = BitConverter.ToInt32(Stream, 0x0); // 853 = 1.31+
             var itemCount = BitConverter.ToUInt32(Stream, 0x10);
             if (itemCount == 0) _empty = true;
             if (_empty) return;

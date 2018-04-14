@@ -112,6 +112,10 @@
     "idName": "plaster_n_son"
   },
   {
+    "token": "0947E9A2DF8581A6",
+    "idName": "plaster_n_son"
+  },
+  {
     "token": "0C977DA6E26ED9A6",
     "idName": "plaster_n_son"
   },
@@ -546,6 +550,30 @@
   {
     "token": "00000000000466DD",
     "idName": "is84"
+  },
+  {
+    "token": "000000000000EBB1",
+    "idName": "us20"
+  },
+  {
+    "token": "000000000000F155",
+    "idName": "us30"
+  },
+  {
+    "token": "000000000006EF95",
+    "idName": "us97"
+  },
+  {
+    "token": "000000000106F7A5",
+    "idName": "us197"
+  },
+  {
+    "token": "00000000014699C5",
+    "idName": "us199"
+  },
+  {
+    "token": "00000000C1FA3D83",
+    "idName": "ca_r120"
   },
   {
     "token": "8783CA6422D58FBE",
