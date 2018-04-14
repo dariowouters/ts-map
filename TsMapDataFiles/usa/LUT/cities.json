@@ -1,95 +1,5 @@
 [
   {
-    "fullName": "Camp Verde",
-    "country": "Arizona",
-    "idName": "city.camp_verde",
-    "token": "00090843C94B336B"
-  },
-  {
-    "fullName": "Ehrenberg",
-    "country": "Arizona",
-    "idName": "city.ehrenberg",
-    "token": "0000462DBD99BE93"
-  },
-  {
-    "fullName": "Flagstaff",
-    "country": "Arizona",
-    "idName": "city.flagstaff",
-    "token": "000040F74C5DBC08"
-  },
-  {
-    "fullName": "Grand Canyon",
-    "country": "Arizona",
-    "idName": "city.g_canyon_vlg",
-    "token": "3A46E592FF12908B"
-  },
-  {
-    "fullName": "Holbrook",
-    "country": "Arizona",
-    "idName": "city.holbrook",
-    "token": "000002416DF05AE0"
-  },
-  {
-    "fullName": "Kayenta",
-    "country": "Arizona",
-    "idName": "city.kayenta",
-    "token": "0000000846D797CB"
-  },
-  {
-    "fullName": "Kingman",
-    "country": "Arizona",
-    "idName": "city.kingman",
-    "token": "000000110A0BC0AF"
-  },
-  {
-    "fullName": "Nogales",
-    "country": "Arizona",
-    "idName": "city.nogales",
-    "token": "000000149E1F1BBA"
-  },
-  {
-    "fullName": "Page",
-    "country": "Arizona",
-    "idName": "city.page",
-    "token": "00000000000CF0C8"
-  },
-  {
-    "fullName": "Phoenix",
-    "country": "Arizona",
-    "idName": "city.phoenix",
-    "token": "00000018329A9C12"
-  },
-  {
-    "fullName": "San Simon",
-    "country": "Arizona",
-    "idName": "city.san_simon",
-    "token": "00006191A8388307"
-  },
-  {
-    "fullName": "Show Low",
-    "country": "Arizona",
-    "idName": "city.show_low",
-    "token": "000003810D5C2275"
-  },
-  {
-    "fullName": "Sierra Vista",
-    "country": "Arizona",
-    "idName": "city.sierra_vista",
-    "token": "2719D4615C34334B"
-  },
-  {
-    "fullName": "Tucson",
-    "country": "Arizona",
-    "idName": "city.tucson",
-    "token": "00000000748CC994"
-  },
-  {
-    "fullName": "Yuma",
-    "country": "Arizona",
-    "idName": "city.yuma",
-    "token": "000000000009BC41"
-  },
-  {
     "fullName": "Bakersfield",
     "country": "California",
     "idName": "city.bakersfield",
@@ -222,6 +132,156 @@
     "token": "0000000002465751"
   },
   {
+    "fullName": "Camp Verde",
+    "country": "Arizona",
+    "idName": "city.camp_verde",
+    "token": "00090843C94B336B"
+  },
+  {
+    "fullName": "Ehrenberg",
+    "country": "Arizona",
+    "idName": "city.ehrenberg",
+    "token": "0000462DBD99BE93"
+  },
+  {
+    "fullName": "Flagstaff",
+    "country": "Arizona",
+    "idName": "city.flagstaff",
+    "token": "000040F74C5DBC08"
+  },
+  {
+    "fullName": "Grand Canyon",
+    "country": "Arizona",
+    "idName": "city.g_canyon_vlg",
+    "token": "3A46E592FF12908B"
+  },
+  {
+    "fullName": "Holbrook",
+    "country": "Arizona",
+    "idName": "city.holbrook",
+    "token": "000002416DF05AE0"
+  },
+  {
+    "fullName": "Kayenta",
+    "country": "Arizona",
+    "idName": "city.kayenta",
+    "token": "0000000846D797CB"
+  },
+  {
+    "fullName": "Kingman",
+    "country": "Arizona",
+    "idName": "city.kingman",
+    "token": "000000110A0BC0AF"
+  },
+  {
+    "fullName": "Nogales",
+    "country": "Arizona",
+    "idName": "city.nogales",
+    "token": "000000149E1F1BBA"
+  },
+  {
+    "fullName": "Page",
+    "country": "Arizona",
+    "idName": "city.page",
+    "token": "00000000000CF0C8"
+  },
+  {
+    "fullName": "Phoenix",
+    "country": "Arizona",
+    "idName": "city.phoenix",
+    "token": "00000018329A9C12"
+  },
+  {
+    "fullName": "San Simon",
+    "country": "Arizona",
+    "idName": "city.san_simon",
+    "token": "00006191A8388307"
+  },
+  {
+    "fullName": "Show Low",
+    "country": "Arizona",
+    "idName": "city.show_low",
+    "token": "000003810D5C2275"
+  },
+  {
+    "fullName": "Sierra Vista",
+    "country": "Arizona",
+    "idName": "city.sierra_vista",
+    "token": "2719D4615C34334B"
+  },
+  {
+    "fullName": "Tucson",
+    "country": "Arizona",
+    "idName": "city.tucson",
+    "token": "00000000748CC994"
+  },
+  {
+    "fullName": "Yuma",
+    "country": "Arizona",
+    "idName": "city.yuma",
+    "token": "000000000009BC41"
+  },
+  {
+    "fullName": "Carson City",
+    "country": "Nevada",
+    "idName": "city.carson_city",
+    "token": "031E927F390C8CE7"
+  },
+  {
+    "fullName": "Elko",
+    "country": "Nevada",
+    "idName": "city.elko",
+    "token": "000000000015685F"
+  },
+  {
+    "fullName": "Ely",
+    "country": "Nevada",
+    "idName": "city.ely",
+    "token": "000000000000C8BF"
+  },
+  {
+    "fullName": "Jackpot",
+    "country": "Nevada",
+    "idName": "city.jackpot",
+    "token": "00000015815838C2"
+  },
+  {
+    "fullName": "Las Vegas",
+    "country": "Nevada",
+    "idName": "city.las_vegas",
+    "token": "000073DDEC22C364"
+  },
+  {
+    "fullName": "Pioche",
+    "country": "Nevada",
+    "idName": "city.pioche",
+    "token": "00000000491FA328"
+  },
+  {
+    "fullName": "Primm",
+    "country": "Nevada",
+    "idName": "city.primm",
+    "token": "0000000002EF79C6"
+  },
+  {
+    "fullName": "Reno",
+    "country": "Nevada",
+    "idName": "city.reno",
+    "token": "000000000015784E"
+  },
+  {
+    "fullName": "Tonopah",
+    "country": "Nevada",
+    "idName": "city.tonopah",
+    "token": "0000000CD5A6720C"
+  },
+  {
+    "fullName": "Winnemucca",
+    "country": "Nevada",
+    "idName": "city.winnemucca",
+    "token": "0006A9BD7348DB63"
+  },
+  {
     "fullName": "Albuquerque",
     "country": "New_Mexico",
     "idName": "city.albuquerque",
@@ -316,65 +376,5 @@
     "country": "New_Mexico",
     "idName": "city.tucumcari",
     "token": "00004E138D9951C4"
-  },
-  {
-    "fullName": "Carson City",
-    "country": "Nevada",
-    "idName": "city.carson_city",
-    "token": "031E927F390C8CE7"
-  },
-  {
-    "fullName": "Elko",
-    "country": "Nevada",
-    "idName": "city.elko",
-    "token": "000000000015685F"
-  },
-  {
-    "fullName": "Ely",
-    "country": "Nevada",
-    "idName": "city.ely",
-    "token": "000000000000C8BF"
-  },
-  {
-    "fullName": "Jackpot",
-    "country": "Nevada",
-    "idName": "city.jackpot",
-    "token": "00000015815838C2"
-  },
-  {
-    "fullName": "Las Vegas",
-    "country": "Nevada",
-    "idName": "city.las_vegas",
-    "token": "000073DDEC22C364"
-  },
-  {
-    "fullName": "Pioche",
-    "country": "Nevada",
-    "idName": "city.pioche",
-    "token": "00000000491FA328"
-  },
-  {
-    "fullName": "Primm",
-    "country": "Nevada",
-    "idName": "city.primm",
-    "token": "0000000002EF79C6"
-  },
-  {
-    "fullName": "Reno",
-    "country": "Nevada",
-    "idName": "city.reno",
-    "token": "000000000015784E"
-  },
-  {
-    "fullName": "Tonopah",
-    "country": "Nevada",
-    "idName": "city.tonopah",
-    "token": "0000000CD5A6720C"
-  },
-  {
-    "fullName": "Winnemucca",
-    "country": "Nevada",
-    "idName": "city.winnemucca",
-    "token": "0006A9BD7348DB63"
   }
 ]

@@ -2,6 +2,8 @@
 
 This Application reads ATS/ETS2 files to draw roads, prefabs, (some) map overlays and city names.
 
+#### 1.31 (ATS open beta) Supported
+
 ### Supported maps / DLC
 - ATS
     - Base
@@ -50,39 +52,41 @@ Files you'll have to extract:
 - def.scs
 - Any map dlc you want to render (e.g. dlc_fr.scs)
 
-Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destination\ *.ppd /E`
+Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destination\ *.ppd /s`
 
 - Base map
     - Map data
-        - This is located in base.scs at map/europe/ or map/usa/
-        - Put all \*.base files in SCS/map/
+        - This is located in base.scs at `map/europe/` or `map/usa/`
+        - Put all \*.base files in `SCS/map/`
     - Overlays
-        - Put all \*.dds files in SCS/overlay/
+        - Put all \*.dds files in `SCS/overlay/`
         - Located in
-            - base/material/ui/map/
-            - base/material/ui/map/road/
-            - base/material/ui/company/small/
+            - `base/material/ui/map/`
+            - `base/material/ui/map/road/`
+            - `base/material/ui/company/small/`
     - Prefab information
-        - Also located in base.scs, copy all \*.ppd files (with directories) from prefab/ and prefab2/ to SCS/prefab/
+        - Located in base.scs, copy all \*.ppd files (with directories) from `prefab/` and `prefab2/` to `SCS/prefab/`
+        - ***Also copy all \*.ppd files from `model/` and `model2/` to `SCS/prefab/`***
     - Sii road look files
-        - Located in def.scs at def/world/
-        - Copy road_look.sii and road_look.template.sii to SCS/LUT/road/
+        - Located in def.scs at `def/world/`
+        - Copy road_look.sii and road_look.template.sii to `SCS/LUT/road/`
     - ferry connection Files
-        - Located in def.scs at def/ferry/connection/
-        - copy all \*.sii files to SCS/LUT/ferryConnection/
+        - Located in def.scs at `def/ferry/connection/`
+        - copy all \*.sii files to `SCS/LUT/ferryConnection/`
 
 
 - DLC (Vive la France ! as an example)
     - Raw map information
-        - This is located in dlc_fr.scs at map/europe/
-        - Put all \*.base files in SCS/map/
+        - This is located in dlc_fr.scs at `map/europe/`
+        - Put all \*.base files in `SCS/map/`
     - Prefab information **(some DLC won't have these)**
-        - Also located in dlc_fr.scs, copy all \*.ppd files (with directories) from prefab2/ to SCS/prefab/
+        - Located in dlc_fr.scs, copy all \*.ppd files (with directories) from `prefab/` and `prefab2/` to `SCS/prefab/`
+        - ***Also copy all \*.ppd files from `model/` and `model2/` to `SCS/prefab/`***
     - Sii road look files **(some DLC won't have these)**
-        - Also Located in dlc_fr.scs at def/world/
-        - Copy road_look.sii and road_look.template.sii to SCS/LUT/road/
+        - Also Located in dlc_fr.scs at `def/world/`
+        - Copy road_look.sii and road_look.template.sii to `SCS/LUT/road/`
     - ferry connection Files **(some DLC won't have these)**
-        - Also Located in dlc_fr.scs at def/ferry/connection/
-        - copy all \*.sii files to SCS/LUT/ferryConnection/
+        - Also Located in dlc_fr.scs at `def/ferry/connection/`
+        - copy all \*.sii files to `SCS/LUT/ferryConnection/`
 
 [Original project](https://github.com/nlhans/ets2-map)

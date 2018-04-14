@@ -237,7 +237,7 @@
   {
     "token": "000023DBE2DA9321",
     "idName": "road.us_tmpl18",
-    "fullName": "x LEGACY ROAD PREFAB - DO NOT USE X"
+    "fullName": "x LEGACY ROAD - DO NOT USE X"
   },
   {
     "token": "000027D02F75B421",
@@ -267,7 +267,7 @@
   {
     "token": "00000037DF8CCB61",
     "idName": "road.us_tmp21",
-    "fullName": "x LEGACY ROAD PREFAB - DO NOT USE X"
+    "fullName": "x LEGACY ROAD - DO NOT USE X"
   },
   {
     "token": "0000103107862BA1",
@@ -452,12 +452,12 @@
   {
     "token": "0000145A9B87C7A1",
     "idName": "road.us_tmpl44",
-    "fullName": "us 1-1-1 country ai1 3"
+    "fullName": "us 1-1-1 country ai2 3"
   },
   {
     "token": "0000184EE822E8A1",
     "idName": "road.us_tmpl45",
-    "fullName": "us 1-1_1 country ai2 3"
+    "fullName": "us 1-1-1 country ai1 3"
   },
   {
     "token": "000D119A5A0D7821",
@@ -508,5 +508,35 @@
     "token": "000008985969A221",
     "idName": "road.us_tmpl51",
     "fullName": "us 3-3 country 4m offset"
+  },
+  {
+    "token": "00000C8CA604C321",
+    "idName": "road.us_tmpl52",
+    "fullName": "us 0-2 country 1 roundabout"
+  },
+  {
+    "token": "00001080F29FE421",
+    "idName": "road.us_tmpl53",
+    "fullName": "us 1-1-1 country 3"
+  },
+  {
+    "token": "000CEE38EFFFCA21",
+    "idName": "road.us_tmpl30l",
+    "fullName": "us 2-2 country 1 lowpoly 15"
+  },
+  {
+    "token": "0000081326E96E75",
+    "idName": "road.or_tmpl01",
+    "fullName": "or forest road"
+  },
+  {
+    "token": "00000C0773848F75",
+    "idName": "road.or_tmpl02",
+    "fullName": "or forest road middle"
+  },
+  {
+    "token": "0000A4AF87A5FC21",
+    "idName": "road.us_tmpln20",
+    "fullName": "us walk road narrow"
   }
 ]
