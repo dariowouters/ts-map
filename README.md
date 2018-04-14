@@ -2,7 +2,7 @@
 
 This Application reads ATS/ETS2 files to draw roads, prefabs, (some) map overlays and city names.
 
-##### 1.31 (ATS open beta) Supported
+#### 1.31 (ATS open beta) Supported
 
 ### Supported maps / DLC
 - ATS
@@ -65,7 +65,8 @@ Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destina
             - `base/material/ui/map/road/`
             - `base/material/ui/company/small/`
     - Prefab information
-        - Also located in base.scs, copy all \*.ppd files (with directories) from `prefab/`, `prefab2/`, `model/` and `model2/` to `SCS/prefab/`
+        - Located in base.scs, copy all \*.ppd files (with directories) from `prefab/` and `prefab2/` to `SCS/prefab/`
+        - ***Also copy all \*.ppd files from `model/` and `model2/` to `SCS/prefab/`***
     - Sii road look files
         - Located in def.scs at `def/world/`
         - Copy road_look.sii and road_look.template.sii to `SCS/LUT/road/`
@@ -79,7 +80,8 @@ Easy way to copy all \*.ppd files (command-line) `Robocopy c:\source\ c:\destina
         - This is located in dlc_fr.scs at `map/europe/`
         - Put all \*.base files in `SCS/map/`
     - Prefab information **(some DLC won't have these)**
-        - Also located in dlc_fr.scs, copy all \*.ppd files (with directories) from `prefab2/` and `model2/` to `SCS/prefab/`
+        - Located in dlc_fr.scs, copy all \*.ppd files (with directories) from `prefab/` and `prefab2/` to `SCS/prefab/`
+        - ***Also copy all \*.ppd files from `model/` and `model2/` to `SCS/prefab/`***
     - Sii road look files **(some DLC won't have these)**
         - Also Located in dlc_fr.scs at `def/world/`
         - Copy road_look.sii and road_look.template.sii to `SCS/LUT/road/`
