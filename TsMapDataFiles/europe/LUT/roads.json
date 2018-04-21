@@ -490,6 +490,46 @@
     "fullName": "it road 1 far tmpl"
   },
   {
+    "token": "0000000000F85386",
+    "idName": "road.balt6",
+    "fullName": "balt hw 1 lanes one way tmpl"
+  },
+  {
+    "token": "0000000005124696",
+    "idName": "road.balt10",
+    "fullName": "balt road 1 tmpl"
+  },
+  {
+    "token": "0000000009CB4EF6",
+    "idName": "road.balt11",
+    "fullName": "balt road 1 minim tmpl"
+  },
+  {
+    "token": "0000000017F66816",
+    "idName": "road.balt14",
+    "fullName": "balt gas road 1 tmpl"
+  },
+  {
+    "token": "000000000EC3F976",
+    "idName": "road.balt32",
+    "fullName": "balt road 1 plus 1 tmpl"
+  },
+  {
+    "token": "0000000021A81AF6",
+    "idName": "road.balt36",
+    "fullName": "balt road 1 exits tmpl"
+  },
+  {
+    "token": "0000000026612356",
+    "idName": "road.balt37",
+    "fullName": "balt road 1 plus 2 tmpl"
+  },
+  {
+    "token": "000000002B1A2BB6",
+    "idName": "road.balt38",
+    "fullName": "balt road 1 dirt minim tmpl"
+  },
+  {
     "token": "0002FCD297336384",
     "idName": "road.template24",
     "fullName": "fr road 1 plus 2 tmpl"

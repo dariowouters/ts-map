@@ -4805,6 +4805,166 @@
     "idName": "prefab.dlc_no_51"
   },
   {
+    "token": "00054798DB73F3BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_gas1_fork_mirrored_tmpl.ppd",
+    "idName": "prefab.dlc_balt_7"
+  },
+  {
+    "token": "0005DDDC3A7AD9BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_gas1_joint_mirrored_tmpl.ppd",
+    "idName": "prefab.dlc_balt_8"
+  },
+  {
+    "token": "0006741F9981BFBE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_gas1_joint2_mirrored_tmpl.ppd",
+    "idName": "prefab.dlc_balt_9"
+  },
+  {
+    "token": "00E327132BA38FBE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r1_narrow_x_r1_minim_t_tmpl.ppd",
+    "idName": "prefab.dlc_balt_59"
+  },
+  {
+    "token": "001AFF55977331BE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r1_narrow_x_r1_minim_tmpl.ppd",
+    "idName": "prefab.dlc_balt_60"
+  },
+  {
+    "token": "00743756038BC1BE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r1_x_r1_narrow_tmpl.ppd",
+    "idName": "prefab.dlc_balt_64"
+  },
+  {
+    "token": "00B72156549E2DBE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r1_x_r1_t_narrow_tmpl.ppd",
+    "idName": "prefab.dlc_balt_67"
+  },
+  {
+    "token": "00E3BD568AAA75BE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r1_x_r1_y_narrow_mirrored_tmpl.ppd",
+    "idName": "prefab.dlc_balt_69"
+  },
+  {
+    "token": "001B9598F67A17BE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r1_x_r1_y_narrow_tmpl.ppd",
+    "idName": "prefab.dlc_balt_70"
+  },
+  {
+    "token": "00495E1FEA942BBE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r2_plus_1_x_oneway_in.ppd",
+    "idName": "prefab.dlc_balt_92"
+  },
+  {
+    "token": "005FAC20059A4FBE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_r2_plus_1_x_oneway_out.ppd",
+    "idName": "prefab.dlc_balt_93"
+  },
+  {
+    "token": "008C48203BA697BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_fork_road_1_x_1_plus_1_tmpl.ppd",
+    "idName": "prefab.dlc_balt_95"
+  },
+  {
+    "token": "0D566014C7F613BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_fork_1_to_1_2_road.ppd",
+    "idName": "prefab.dlc_balt_103"
+  },
+  {
+    "token": "10BC4218E5E58FBE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_r1_r1_joint_double.ppd",
+    "idName": "prefab.dlc_balt_114"
+  },
+  {
+    "token": "1438721D1EDB2FBE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_road1_split_tmpl.ppd",
+    "idName": "prefab.dlc_balt_135"
+  },
+  {
+    "token": "10FF2C1936F7FBBE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_r1_r2_plus_2_tmpl.ppd",
+    "idName": "prefab.dlc_balt_144"
+  },
+  {
+    "token": "144EC01D39E153BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_r1_r2plus2_trans_tmpl.ppd",
+    "idName": "prefab.dlc_balt_145"
+  },
+  {
+    "token": "1E3D7C29429D5BBE",
+    "prefab_desc": "/prefab2/gas_station/gas_universal_02_balt.ppd",
+    "idName": "prefab.dlc_balt_148"
+  },
+  {
+    "token": "0DC5E6154F14C7BE",
+    "prefab_desc": "/prefab2/border_crossing/border_small_road_01_func_balt.ppd",
+    "idName": "prefab.dlc_balt_153"
+  },
+  {
+    "token": "11157A1951FE1FBE",
+    "prefab_desc": "/prefab2/border_crossing/border_small_road_01_big_func_balt.ppd",
+    "idName": "prefab.dlc_balt_154"
+  },
+  {
+    "token": "1E53CA295DA37FBE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_r1_oneway_gas_road.ppd",
+    "idName": "prefab.dlc_balt_158"
+  },
+  {
+    "token": "03ED7809615EE3BE",
+    "prefab_desc": "/prefab2/bus_station/balt/balt_road_1_double_bus.ppd",
+    "idName": "prefab.dlc_balt_160"
+  },
+  {
+    "token": "0A8CA011673193BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_gas1_fork_tmpl.ppd",
+    "idName": "prefab.dlc_balt_162"
+  },
+  {
+    "token": "0DDC34156A1AEBBE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_r1_oneway_gas_road_mirrored.ppd",
+    "idName": "prefab.dlc_balt_163"
+  },
+  {
+    "token": "21B9AC2D7B92FBBE",
+    "prefab_desc": "/prefab2/level_crossing/balt/balt_rail2_x_road1_narrow_01.ppd",
+    "idName": "prefab.dlc_balt_169"
+  },
+  {
+    "token": "04306209B2714FBE",
+    "prefab_desc": "/prefab2/border_crossing/border_small_road_01_truck_func_balt.ppd",
+    "idName": "prefab.dlc_balt_190"
+  },
+  {
+    "token": "1EAD0229C9BC0FBE",
+    "prefab_desc": "/prefab2/gas_station/balt_gas_parking_small_01_mirrored.ppd",
+    "idName": "prefab.dlc_balt_198"
+  },
+  {
+    "token": "21FC962DCCA567BE",
+    "prefab_desc": "/prefab2/gas_station/balt_gas_parking_small_02.ppd",
+    "idName": "prefab.dlc_balt_199"
+  },
+  {
+    "token": "10BCD85C44EC75BE",
+    "prefab_desc": "/prefab2/farm/animal_farm_balt.ppd",
+    "idName": "prefab.dlc_balt_214"
+  },
+  {
+    "token": "1DFB286C5091D5BE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_road_dirt_t_junction.ppd",
+    "idName": "prefab.dlc_balt_218"
+  },
+  {
+    "token": "214ABC70537B2DBE",
+    "prefab_desc": "/prefab2/cross_temp/balt/balt_road_dirt_cross_junction.ppd",
+    "idName": "prefab.dlc_balt_219"
+  },
+  {
+    "token": "06E46A50573691BE",
+    "prefab_desc": "/prefab2/fork_temp/balt/balt_road_dirt_x_minim_end.ppd",
+    "idName": "prefab.dlc_balt_221"
+  },
+  {
     "token": "0000009FA915759E",
     "prefab_desc": "/prefab2/nuc_powerplant/nuc_powerplant_01_fr.ppd",
     "idName": "prefab.dlc_fr_4"
@@ -5423,6 +5583,11 @@
     "token": "0001506D374F360E",
     "prefab_desc": "/prefab2/landmark/livorno_bridge_02_it.ppd",
     "idName": "prefab.dlc_it_181"
+  },
+  {
+    "token": "0001E6B096561C0E",
+    "prefab_desc": "/prefab2/cross_temp/it/it_r1_narrow_x_r1_exit_t_tmpl.ppd",
+    "idName": "prefab.dlc_it_182"
   },
   {
     "token": "0000004FB0CF2C7E",
