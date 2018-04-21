@@ -124,7 +124,7 @@ namespace TsMap
             {
                 Valid = false;
                 Log.Msg($"Could not find Prefab with id: {BitConverter.ToUInt64(Sector.Stream, fileOffset):X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
 
             if (Sector.Version >= Common.BaseFileVersion130)

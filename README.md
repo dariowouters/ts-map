@@ -2,7 +2,7 @@
 
 This Application reads ATS/ETS2 files to draw roads, prefabs, (some) map overlays and city names.
 
-#### 1.31 (ATS open beta) Supported
+#### 1.31 (ATS/ETS2 open beta) Supported
 
 ### Supported maps / DLC
 - ATS
