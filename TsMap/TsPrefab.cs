@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace TsMap
 {
@@ -48,7 +49,9 @@ namespace TsMap
         private const int SpawnPointBlockSize = 0x20;
         private const int TriggerPointBlockSize = 0x30;
 
-        private string _filePath;
+        private readonly string _filePath;
+        public ulong Token { get; }
+        public string Category { get; }
 
         private byte[] _stream;
 
@@ -57,12 +60,18 @@ namespace TsMap
         public List<TsMapPoint> MapPoints { get; private set; }
         public List<TsTriggerPoint> TriggerPoints { get; private set; }
 
-        public TsPrefab(string filePath)
+        public TsPrefab(TsMapper mapper, string filePath, ulong token, string category)
         {
             _filePath = filePath;
+            Token = token;
+            Category = category;
 
-            if (!File.Exists(filePath)) return;
-            _stream = File.ReadAllBytes(filePath);
+            var file = mapper.Rfs.GetFileEntry(_filePath);
+
+            if (file == null) return;
+
+            _stream = file.Entry.Read();
+
             Parse();
         }
 

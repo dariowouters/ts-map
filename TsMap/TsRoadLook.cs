@@ -5,7 +5,7 @@ namespace TsMap
 {
     public class TsRoadLook
     {
-        public string LookId { get; private set; }
+        public ulong Token { get; }
 
         public float Offset;
         public float SizeLeft;
@@ -25,11 +25,11 @@ namespace TsMap
             return h1 * x + h2 * z + h3 * tanX + h4 * tanZ;
         }
 
-        public TsRoadLook(string look)
+        public TsRoadLook(ulong token)
         {
             LanesLeft = new List<string>();
             LanesRight = new List<string>();
-            LookId = look;
+            Token = token;
         }
 
         public float GetWidth()

@@ -229,7 +229,7 @@ namespace TsMap
 
             Hidden = (Sector.Stream[fileOffset] & 0x01) != 0;
             var cityId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
-            CityName = Sector.Mapper.LookupCity(cityId);
+            CityName = Sector.Mapper.LookupCity(cityId)?.Name;
             if (CityName == null)
             {
                 Valid = false;

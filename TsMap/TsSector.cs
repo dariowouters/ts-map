@@ -18,13 +18,14 @@ namespace TsMap
         {
             Mapper = mapper;
             FilePath = filePath;
-            if (!File.Exists(FilePath))
+            var file = Mapper.Rfs.GetFileEntry(FilePath);
+            if (file == null)
             {
                 _empty = true;
                 return;
             }
 
-            Stream = File.ReadAllBytes(FilePath);
+            Stream = file.Entry.Read();
         }
 
         public void Parse()
