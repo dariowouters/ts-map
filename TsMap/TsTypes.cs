@@ -1,5 +1,13 @@
-﻿namespace TsMap
+﻿using System;
+
+namespace TsMap
 {
+
+    public static class Common
+    {
+        public const int BaseFileVersion130 = 853;
+    }
+
     public enum TsItemType
     {
         Building = 0x01,
