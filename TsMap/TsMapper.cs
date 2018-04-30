@@ -123,6 +123,10 @@ namespace TsMap
                         {
                             _prefabLookup.Add(prefab.Token, prefab);
                         }
+
+                        token = 0;
+                        path = "";
+                        category = "";
                     }
                 }
             }
@@ -173,7 +177,7 @@ namespace TsMap
 
                     if (line.Contains("road_look"))
                     {
-                        roadLook = new TsRoadLook(ScsHash.StringToToken(line.Split('.')[1].Trim()));
+                        roadLook = new TsRoadLook(ScsHash.StringToToken(line.Split('.')[1].Trim('{').Trim()));
                     }
 
                     if (line.Contains("}") && roadLook != null)
@@ -181,6 +185,7 @@ namespace TsMap
                         if (roadLook.Token != 0 && !_roadLookup.ContainsKey(roadLook.Token))
                         {
                             _roadLookup.Add(roadLook.Token, roadLook);
+                            roadLook = null;
                         }
                     }
                 }
@@ -245,6 +250,7 @@ namespace TsMap
                         (item.StartPortToken == conn.StartPortToken && item.EndPortToken == conn.EndPortToken) ||
                         (item.StartPortToken == conn.EndPortToken && item.EndPortToken == conn.StartPortToken)); // Check if connection already exists
                     if (existingItem == null) _ferryConnectionLookup.Add(conn);
+                    conn = null;
                 }
             }
         }
