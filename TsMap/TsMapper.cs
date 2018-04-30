@@ -165,6 +165,9 @@ namespace TsMap
                             case "lanes_right[]":
                                 roadLook.LanesRight.Add(value);
                                 break;
+                            case "road_offset":
+                                float.TryParse(value.Replace('.', ','), out roadLook.Offset);
+                                break;
                         }
                     }
 
