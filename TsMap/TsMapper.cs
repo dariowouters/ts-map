@@ -378,10 +378,22 @@ namespace TsMap
                 return;
             }
 
-            Rfs = new RootFileSystem(_gameDir);
+            try
+            {
+                Rfs = new RootFileSystem(_gameDir);
+            }
+            catch (FileNotFoundException e)
+            {
+                Log.Msg(e.Message);
+                return;
+            }
+            
 
             ParseDefFiles();
             ParseMapFiles();
+
+            
+            if (_sectorFiles == null) return;
 
             var preMapParseTime = DateTime.Now.Ticks;
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();

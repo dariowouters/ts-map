@@ -190,6 +190,7 @@ namespace TsMap.HashFiles
 
         private ScsDirectory _rootDirectory;
 
+        /// <exception cref="FileNotFoundException"></exception>
         public RootFileSystem(string path)
         {
             _path = path;
@@ -200,8 +201,7 @@ namespace TsMap.HashFiles
 
             if (scsFiles.Length < 2)
             {
-                Log.Msg("[Error] Needs atleast 2 .scs files (base.scs and def.scs)");
-                return;
+                throw new FileNotFoundException("[Error] Needs atleast 2 .scs files (base.scs and def.scs)");
             }
 
             foreach (var scsFile in scsFiles)
