@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using TsMap.HashFiles;
 
 namespace TsMap
 {
@@ -277,8 +278,8 @@ namespace TsMap
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             Train = (Sector.Stream[fileOffset] != 0);
-            if (Train) Overlay = Sector.Mapper.LookupOverlay(0x8783CA6422D58FBE);
-            else Overlay = Sector.Mapper.LookupOverlay(0xC3663FDC498AE9FE);
+            if (Train) Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken("train_ico"));
+            else Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken("port_overlay"));
 
             FerryPortId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
             sector.Mapper.AddFerryPortLocation(FerryPortId, X, Z);
