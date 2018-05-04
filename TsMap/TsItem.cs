@@ -86,7 +86,7 @@ namespace TsMap
 
             if (Sector.Version >= Common.BaseFileVersion130)
             {
-                StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0x9C);
+                StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0xA4);
                 EndNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08);
                 fileOffset += 0x08 + 0x04;
             }
