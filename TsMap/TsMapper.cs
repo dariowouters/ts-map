@@ -303,7 +303,9 @@ namespace TsMap
                     {
                         var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), line.Split('"')[1]);
 
-                        var tobjData = Rfs.GetFileEntry(tobjPath).Entry.Read();
+                        var tobjData = Rfs.GetFileEntry(tobjPath)?.Entry?.Read();
+
+                        if (tobjData == null) break;
 
                         var pathLength = BitConverter.ToInt32(tobjData, 0x28);
                         var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, pathLength));
@@ -346,23 +348,28 @@ namespace TsMap
                 return;
             }
 
-            var mbd = baseMapEntry.Files.Values.FirstOrDefault(x => x.GetExtension().Equals("mbd")); // Get the map name from the mbd file
-            if (mbd == null)
+            var mbd = baseMapEntry.Files.Values.Where(x => x.GetExtension().Equals("mbd")).ToList(); // Get the map names from the mbd files
+            if (mbd.Count == 0)
             {
                 Log.Msg("Could not find mbd file");
                 return;
             }
 
-            var mapName = mbd.GetFileName();
+            _sectorFiles = new List<string>();
 
-            var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
-            if (mapFileDir == null)
+            foreach (var file in mbd)
             {
-                Log.Msg($"Could not read 'map/{mapName}' directory");
-                return;
-            }
+                var mapName = file.GetFileName();
 
-            _sectorFiles = mapFileDir.GetFiles(".base").Select(x => x.GetPath()).ToList();
+                var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
+                if (mapFileDir == null)
+                {
+                    Log.Msg($"Could not read 'map/{mapName}' directory");
+                    return;
+                }
+
+                _sectorFiles.AddRange(mapFileDir.GetFiles(".base").Select(x => x.GetPath()).ToList());
+            }
         }
 
         /// <summary>
@@ -381,6 +388,7 @@ namespace TsMap
             try
             {
                 Rfs = new RootFileSystem(_gameDir);
+                Rfs.AddSourceDirectory(@"D:\Users\Dario\Downloads\games\Truckers\maps\rusmap\");
             }
             catch (FileNotFoundException e)
             {

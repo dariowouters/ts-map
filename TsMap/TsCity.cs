@@ -28,7 +28,7 @@ namespace TsMap
                 {
                     Token = ScsHash.StringToToken(line.Split('.')[1].Trim());
                 }
-                else if (line.Contains("city_name") && !line.Contains("uppercase"))
+                else if (line.Contains("city_name") && !line.Contains("uppercase") && !line.Contains("short"))
                 {
                     Name = line.Split('"')[1];
                 }

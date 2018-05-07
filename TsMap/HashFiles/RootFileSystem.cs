@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace TsMap.HashFiles
 {
-
     public class ScsFile
     {
         private readonly string _entryPath;
 
-        public ScsHashEntry Entry { get; }
+        public ScsEntry Entry { get; }
 
-        public ScsFile(ScsHashEntry entry, string path)
+        public ScsFile(ScsEntry entry, string path)
         {
             Entry = entry;
             _entryPath = path;
@@ -27,10 +27,10 @@ namespace TsMap.HashFiles
             return _entryPath;
         }
 
-        /// <summary>
-        /// Will return local path
-        /// eg. If full path is material/ui/test.mat this will return 'material/ui'
-        /// </summary>
+        /// <summary> 
+        /// Will return local path 
+        /// eg. If full path is material/ui/test.mat this will return 'material/ui' 
+        /// </summary> 
         public string GetLocalPath()
         {
             var lastSlash = _entryPath.LastIndexOf('/');
@@ -77,32 +77,37 @@ namespace TsMap.HashFiles
 
         public Dictionary<ulong, ScsFile> Files { get; }
 
-        public ScsDirectory(ScsHashEntry entry, string path)
-        {
-            if (entry == null) return;
+        private RootFileSystem _rfs;
 
-            EntryPath = path;
+        public ScsDirectory(RootFileSystem rfs, string path)
+        {
             Directories = new Dictionary<ulong, ScsDirectory>();
             Files = new Dictionary<ulong, ScsFile>();
-            AddDirEntry(entry);
+
+            _rfs = rfs;
+            EntryPath = path;
         }
 
-        public void AddDirEntry(ScsHashEntry entry)
+        public void AddHashEntry(ScsHashEntry entry)
         {
             if (entry == null) return;
 
             var data = entry.Read();
             var contents = Encoding.UTF8.GetString(data);
-            if (contents.Contains("*") || contents.Contains(".")) // dir/file list
+            if (entry.IsDirectory())
             {
                 var lines = contents.Split('\n');
                 foreach (var line in lines) // loop through file/dir list
                 {
+                    if (line.Equals("")) continue;
+
                     if (line.StartsWith("*")) // dirs
                     {
-                        var dirPath = Helper.CombinePath(EntryPath, line.Substring(1));
+                        var dirPath = Path.Combine(EntryPath, line.Substring(1));
+                        dirPath = dirPath.Replace('\\', '/');
+
+                        var nextEntry = (ScsHashEntry) entry.GetRootFile().GetEntry(dirPath);
                         var nextHash = CityHash.CityHash64(Encoding.UTF8.GetBytes(dirPath), (ulong)dirPath.Length);
-                        var nextEntry = entry.Hf.GetEntry(nextHash);
 
                         if (nextEntry == null)
                         {
@@ -112,18 +117,22 @@ namespace TsMap.HashFiles
 
                         if (!Directories.ContainsKey(nextHash))
                         {
-                            Directories.Add(nextHash, new ScsDirectory(nextEntry, dirPath));
+                            var dir = new ScsDirectory(_rfs, dirPath);
+                            dir.AddHashEntry(nextEntry);
+                            Directories.Add(nextHash, dir);
                         }
                         else
                         {
-                            Directories[nextHash].AddDirEntry(nextEntry);
+                            Directories[nextHash].AddHashEntry(nextEntry);
                         }
                     }
                     else // file
                     {
-                        var filePath = Helper.CombinePath(EntryPath, line);
+                        var filePath = Path.Combine(EntryPath, line);
+                        filePath = filePath.Replace('\\', '/');
+
                         var nextHash = CityHash.CityHash64(Encoding.UTF8.GetBytes(filePath), (ulong)filePath.Length);
-                        var nextEntry = entry.Hf.GetEntry(nextHash);
+                        var nextEntry = entry.GetRootFile().GetEntry(filePath);
 
                         if (nextEntry == null)
                         {
@@ -142,6 +151,53 @@ namespace TsMap.HashFiles
                         }
                     }
                 }
+            }
+        }
+
+        public void AddZipEntry(ScsZipEntry entry, string path)
+        {
+            if (entry == null || path == "") return;
+
+            var slashIndex = path.IndexOf("/", StringComparison.Ordinal);
+
+            if (slashIndex == -1) // no slash found => end of path = file location
+            {
+                var fileHash = entry.GetHash();
+                var newPath = Path.Combine(EntryPath, path);
+                newPath = newPath.Replace('\\', '/');
+
+                if (Files.ContainsKey(fileHash))
+                {
+                    // Log.Msg($"File '{filePath}' already exists => overwriting");
+                    Files[fileHash] = new ScsFile(entry, newPath);
+                }
+                else
+                {
+                    Files.Add(fileHash, new ScsFile(entry, newPath));
+                }
+
+                return;
+            }
+
+            if (path.StartsWith("/")) path = path.Substring(1);
+
+            var currentDir = path.Substring(0, slashIndex);
+            var hashName = Helper.CombinePath(EntryPath, currentDir);
+            var hash = CityHash.CityHash64(Encoding.UTF8.GetBytes(hashName), (ulong) hashName.Length);
+
+            if (Directories.ContainsKey(hash))
+            {
+                Directories[hash].AddZipEntry(entry, path.Substring(slashIndex + 1));
+            }
+            else
+            {
+                var newPath = Path.Combine(EntryPath, currentDir);
+                newPath = newPath.Replace('\\', '/');
+
+                var dir = new ScsDirectory(_rfs, newPath);
+                dir.AddZipEntry(entry, path.Substring(slashIndex + 1));
+
+                Directories.Add(hash, dir);
             }
         }
 
@@ -185,56 +241,81 @@ namespace TsMap.HashFiles
 
     public class RootFileSystem
     {
+
+        /// <summary>
+        /// SCS#
+        /// </summary>
+        private const uint ScsMagic = 592659283;
+
         private string _path;
-        private readonly Dictionary<string, HashFile> _hashFiles;
+        public Dictionary<string, ScsRootFile> Files { get; }
 
         private ScsDirectory _rootDirectory;
 
-        /// <exception cref="FileNotFoundException"></exception>
         public RootFileSystem(string path)
         {
             _path = path;
 
-            _hashFiles = new Dictionary<string, HashFile>();
+            Files = new Dictionary<string, ScsRootFile>();
 
+            AddSourceDirectory(path);
+        }
+
+        public void AddSourceDirectory(string path)
+        {
             var scsFiles = Directory.GetFiles(path, "*.scs");
-
-            if (scsFiles.Length < 2)
-            {
-                throw new FileNotFoundException("[Error] Needs atleast 2 .scs files (base.scs and def.scs)");
-            }
 
             foreach (var scsFile in scsFiles)
             {
-                _hashFiles.Add(scsFile, new HashFile(scsFile, this));
+                var f = File.OpenRead(scsFile);
+                f.Seek(0, SeekOrigin.Begin);
+                var buff = new byte[4];
+                f.Read(buff, 0, 4);
+
+                if (BitConverter.ToUInt32(buff, 0) == ScsMagic) Files.Add(scsFile, new HashFile(scsFile, this));
+                else Files.Add(scsFile, new ScsZipFile(scsFile, this));
             }
         }
 
-        public void AddDirEntry(ScsHashEntry entry)
+        public void AddHashEntry(ScsHashEntry entry)
         {
             if (_rootDirectory == null)
             {
-                _rootDirectory = new ScsDirectory(entry, "");
+                _rootDirectory = new ScsDirectory(this, "");
+                _rootDirectory.AddHashEntry(entry);
             }
             else
             {
-                _rootDirectory.AddDirEntry(entry);
+                _rootDirectory.AddHashEntry(entry);
+            }
+        }
+
+        public void AddZipEntry(ScsZipEntry entry, string path)
+        {
+            if (_rootDirectory == null)
+            {
+                _rootDirectory = new ScsDirectory(this, "");
+                _rootDirectory.AddZipEntry(entry, path);
+            }
+            else
+            {
+                _rootDirectory.AddZipEntry(entry, path);
             }
         }
 
         public ScsDirectory GetDirectory(ulong hash)
         {
-            return _rootDirectory.GetDirectory(hash);
+            return _rootDirectory?.GetDirectory(hash);
         }
 
         public ScsDirectory GetDirectory(string name)
         {
-            return GetDirectory(CityHash.CityHash64(Encoding.UTF8.GetBytes(name), (ulong)name.Length));
+            return GetDirectory(CityHash.CityHash64(Encoding.UTF8.GetBytes(name), (ulong) name.Length));
         }
 
         public ScsFile GetFileEntry(ulong hash)
         {
-            return _rootDirectory.GetFileEntry(hash);
+            return _rootDirectory?.GetFileEntry(hash);
         }
 
         public ScsFile GetFileEntry(string name)
