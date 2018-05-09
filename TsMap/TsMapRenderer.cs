@@ -378,7 +378,7 @@ namespace TsMap
 
             foreach (var ferryItem in ferryItems) // TODO: Scaling
             {
-                Bitmap b = ferryItem.Overlay.GetBitmap();
+                Bitmap b = ferryItem.Overlay?.GetBitmap();
                 if (b != null) g.DrawImage(b, (ferryItem.X - startX) * scaleX, (ferryItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 

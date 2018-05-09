@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TsMap
+﻿namespace TsMap
 {
 
     public static class Common
@@ -44,7 +42,7 @@ namespace TsMap
         Unk4, // seems unused
         SomeParking, // also shows parking in companies which don't work/show up in game
         Unk5, // seems unused
-        unk6, // seems unused
+        Unk6, // seems unused
         JobSelect,
         GarageIndoor, // manage garage
         GarageOutdoor, // buy garage

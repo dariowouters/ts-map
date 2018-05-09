@@ -13,9 +13,6 @@ namespace TsMap
         public PointF EndPortLocation { get; private set; }
         public List<PointF> connections = new List<PointF>();
 
-        public string StartId { get; set; }
-        public string EndId { get; set; }
-
         public void AddConnectionPosition(float x, float z)
         {
             connections.Add(new PointF(x / 256f, z / 256f));
