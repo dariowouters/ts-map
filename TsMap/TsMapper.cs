@@ -307,8 +307,7 @@ namespace TsMap
 
                         if (tobjData == null) break;
 
-                        var pathLength = BitConverter.ToInt32(tobjData, 0x28);
-                        var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, pathLength));
+                        var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, tobjData.Length - 0x30));
 
                         var name = matFile.GetFileName();
                         if (name.StartsWith("road_")) name = name.Substring(5);
@@ -329,11 +328,25 @@ namespace TsMap
         /// </summary>
         private void ParseDefFiles()
         {
+            var startTime = DateTime.Now.Ticks;
             ParseCityFiles();
+            Log.Msg($"Loaded city files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParsePrefabFiles();
+            Log.Msg($"Loaded prefab files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseRoadLookFiles();
+            Log.Msg($"Loaded road files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseFerryConnections();
+            Log.Msg($"Loaded ferry files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseOverlays();
+            Log.Msg($"Loaded overlay files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
         }
 
         /// <summary>

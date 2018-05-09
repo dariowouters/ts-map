@@ -83,6 +83,12 @@ namespace TsMap
 
             var version = BitConverter.ToInt32(_stream, fileOffset);
 
+            if (version < 0x15)
+            {
+                Log.Msg($"{_filePath} file version ({version}) too low, min. is {0x15}");
+                return;
+            }
+
             var nodeCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
             var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x10);
             var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);

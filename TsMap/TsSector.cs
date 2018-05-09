@@ -31,6 +31,13 @@ namespace TsMap
         public void Parse()
         {
             Version = BitConverter.ToInt32(Stream, 0x0); // 853 = 1.31+
+
+            if (Version < 846)
+            {
+                Log.Msg($"{FilePath} version ({Version}) is too low, min. is 846");
+                return;
+            }
+
             var itemCount = BitConverter.ToUInt32(Stream, 0x10);
             if (itemCount == 0) _empty = true;
             if (_empty) return;
