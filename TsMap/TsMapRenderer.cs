@@ -125,6 +125,8 @@ namespace TsMap
                         var nextPoint = i;
                         do
                         {
+                            if (prefabItem.Prefab.MapPoints[nextPoint].Neighbours.Count == 0) break;
+
                             foreach (var neighbour in prefabItem.Prefab.MapPoints[nextPoint].Neighbours)
                             {
                                 if (!polyPoints.ContainsKey(neighbour)) // New Polygon Neighbour
@@ -142,6 +144,8 @@ namespace TsMap
                             }
                         } while (nextPoint != -1);
                         
+                        if (polyPoints.Count < 2) continue;
+
                         var colorFlag = prefabItem.Prefab.MapPoints[polyPoints.First().Key].PrefabColorFlags;
 
                         Brush fillColor = _palette.PrefabLight;

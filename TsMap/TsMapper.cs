@@ -409,6 +409,7 @@ namespace TsMap
                 return;
             }
             
+            Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             ParseDefFiles();
             ParseMapFiles();
