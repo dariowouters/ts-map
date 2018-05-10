@@ -321,7 +321,8 @@ namespace TsMap
                     var textLength = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04);
                     fileOffset += 0x04 + textLength;
                 }
-                fileOffset += 0x04 + 0x0C;
+                var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + 0x08);
+                fileOffset += 0x04 + count * 0x08;
             }
 
             fileOffset += 0x18;
