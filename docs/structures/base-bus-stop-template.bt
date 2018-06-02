@@ -1,0 +1,18 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: 
+//   Authors: Dario Wouters
+//   Version: 
+//   Purpose: 
+//  Category: 
+//   History: 
+//------------------------------------------------
+
+typedef struct
+{
+    byte m_flags[5];
+    u32 m_some_value;
+    byte padding[4];
+    u64 m_some_uid[2];
+} base_bus_stop_t;

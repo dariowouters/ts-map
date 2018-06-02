@@ -1,0 +1,51 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: 
+//   Authors: Dario Wouters
+//   Version: 
+//   Purpose: 
+//  Category: 
+//   History: 
+//------------------------------------------------
+
+typedef struct
+{
+    u64 m_railing_model;
+    s16 m_railing_offset;
+} railing_t;
+
+typedef struct
+{
+    railing_t m_railing_r_1;
+    railing_t m_railing_l_1;
+    railing_t m_railing_r_2;
+    railing_t m_railing_l_2;
+    railing_t m_railing_r_3;
+    railing_t m_railing_l_3;
+} railings_t;
+
+typedef struct
+{
+    byte m_flags[9];
+    u64 m_road_look_id <format=hex>;
+    u64 m_road_look_r;
+    u64 m_road_variant_r;
+    u64 m_road_look_l;
+    u64 m_road_variant_l;
+    u64 m_road_edge_r_r;
+    u64 m_road_edge_r_l;
+    u64 m_road_terrain_r;
+    float m_road_terrain_r_coef;
+    u64 m_road_terrain_l;
+    float m_road_terrain_l_coef;
+    
+    u32 m_possible_count;
+    byte padding1[12];
+    u32 m_road_material;
+    u32 padding2;
+    railings_t m_railings;
+    u64 padding3;
+    u64 m_uids[2];
+    u32 padding4;
+} base_road_t;
