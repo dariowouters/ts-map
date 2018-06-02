@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -41,9 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HashFiles\CityHash.cs" />
+    <Compile Include="HashFiles\HashFile.cs" />
+    <Compile Include="HashFiles\Helper.cs" />
+    <Compile Include="HashFiles\ScsHash.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="MapPalette.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="HashFiles\RootFileSystem.cs" />
+    <Compile Include="TsCity.cs" />
     <Compile Include="TsFerryConnection.cs" />
     <Compile Include="TsItem.cs" />
     <Compile Include="TsTypes.cs" />
@@ -55,6 +64,9 @@
     <Compile Include="TsPrefabLook.cs" />
     <Compile Include="TsRoadLook.cs" />
     <Compile Include="TsSector.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

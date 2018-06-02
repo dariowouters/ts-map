@@ -13,7 +13,7 @@ namespace TsMap.Canvas
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TsMapCanvas());
+            Application.Run(new SetupForm());
         }
     }
 }

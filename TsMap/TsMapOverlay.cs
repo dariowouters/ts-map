@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Runtime.InteropServices;
+using TsMap.HashFiles;
 
 namespace TsMap
 {
@@ -76,9 +76,9 @@ namespace TsMap
 
         private Color8888[] _pixelData;
 
-        public OverlayIcon(string filePath)
+        public OverlayIcon(ScsFile file)
         {
-            _stream = File.ReadAllBytes(filePath);
+            _stream = file.Entry.Read();
             Parse();
         }
 
@@ -223,11 +223,16 @@ namespace TsMap
     {
         private readonly Bitmap _overlayBitmap;
 
-        public TsMapOverlay(string filePath)
+        private string _filePath;
+
+        public TsMapOverlay(TsMapper mapper, string filePath)
         {
-            if (File.Exists(filePath))
+            _filePath = filePath;
+            var file = mapper.Rfs.GetFileEntry(_filePath);
+
+            if (file != null)
             {
-                var icon = new OverlayIcon(filePath);
+                var icon = new OverlayIcon(file);
                 if (!icon.Valid) return;
 
                 _overlayBitmap = new Bitmap((int)icon.Width, (int)icon.Height, PixelFormat.Format32bppArgb);
