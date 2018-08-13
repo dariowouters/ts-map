@@ -30,4 +30,6 @@ typedef struct
     byte m_origin;
     byte padding;
     node_look_t m_node_look[m_node_count] <optimize=false>;
+    u32 m_some_count; // 1.32
+    u32 m_some_count2; // 1.32
 } base_prefab_t;

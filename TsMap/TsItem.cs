@@ -141,6 +141,7 @@ namespace TsMap
                 var connectedItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset);
                 Origin = Sector.Stream[fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08];
                 fileOffset += 0x02 + nodeCount * 0x0C;
+                if (Sector.Version >= Common.BaseFileVersion132) fileOffset += 0x08;
             }
             else
             {
@@ -202,6 +203,11 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             fileOffset += 0x05 + 0x10;
+            if (Sector.Version >= Common.BaseFileVersion132)
+            {
+                var count = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x08 * count + 0x04;
+            }
             BlockSize = fileOffset - startOffset;
         }
     }
@@ -295,6 +301,11 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             fileOffset += 0x05 + 0x1C;
+            if (Sector.Version >= Common.BaseFileVersion132)
+            {
+                var count = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x08 * count + 0x04;
+            }
             BlockSize = fileOffset - startOffset;
         }
     }
@@ -337,6 +348,11 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             fileOffset += 0x05 + 0x10;
+            if (Sector.Version >= Common.BaseFileVersion132)
+            {
+                var count = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x08 * count + 0x04;
+            }
             BlockSize = fileOffset - startOffset;
         }
     }
