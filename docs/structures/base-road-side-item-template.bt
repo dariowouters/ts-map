@@ -12,20 +12,26 @@
 typedef struct
 {
     u16 m_sign_type;            // 5 -> text
-    u32 padding2;
+    u32 m_count;
+    
     if (m_sign_type == 0x5)
     {
         u32 m_text_length;
-        u32 padding3;
+        u32 padding2;
         char m_text[m_text_length]  <optimize=false>;
+    }
+    else if (m_sign_type == 0x06)
+    {
+        u32 padding2[m_count];      // 1.32
+        u32 padding3;
     }
     else if (m_sign_type == 0x01)
     {
-        byte padding;
+        byte padding2;
     }
     else
     {
-        u32 padding3;
+        u32 padding2;
     }
 } sign_area_item_t;
 
