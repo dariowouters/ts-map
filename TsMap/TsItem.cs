@@ -378,11 +378,18 @@ namespace TsMap
                 for (var x = 0; x < subItemCount; x++)
                 {
                     var itemType = BitConverter.ToInt16(Sector.Stream, fileOffset);
-                    fileOffset += 0x02 + 0x04;
+
+                    var someCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x02);
+                    fileOffset += 0x04;
+
                     if (itemType == 0x05)
                     {
                         var textLength = BitConverter.ToInt32(Sector.Stream, fileOffset);
                         fileOffset += 0x04 + 0x04 + textLength;
+                    }
+                    else if (itemType == 0x06)
+                    {
+                        fileOffset += 0x04 + 0x04 * someCount;
                     }
                     else if (itemType == 0x01)
                     {
