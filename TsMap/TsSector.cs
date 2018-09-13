@@ -30,8 +30,8 @@ namespace TsMap
 
         public void Parse()
         {
-            Version = BitConverter.ToInt32(Stream, 0x0); // 853 = 1.31+
-            var itemCount = BitConverter.ToUInt32(Stream, 0x10);
+            Version = MemoryHelper.ReadInt32(Stream, 0x0); // 853 = 1.31+
+            var itemCount = MemoryHelper.ReadUInt32(Stream, 0x10);
             if (itemCount == 0) _empty = true;
             if (_empty) return;
 
@@ -39,7 +39,7 @@ namespace TsMap
 
             for (var i = 0; i < itemCount; i++)
             {
-                var type = (TsItemType)BitConverter.ToUInt32(Stream, lastOffset);
+                var type = (TsItemType)MemoryHelper.ReadUInt32(Stream, lastOffset);
                 
                 switch (type)
                 {
@@ -150,7 +150,7 @@ namespace TsMap
                 }
             }
 
-            var nodeCount = BitConverter.ToInt32(Stream, lastOffset);
+            var nodeCount = MemoryHelper.ReadInt32(Stream, lastOffset);
             for (var i = 0; i < nodeCount; i++)
             {
                 TsNode node = new TsNode(this, lastOffset += 0x04);

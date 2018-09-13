@@ -2,7 +2,9 @@
 
 This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferry lines and city names.
 
-#### 1.31 (ATS/ETS2 open beta) Supported
+#### 1.32 (ATS/ETS2 open beta) Supported
+
+![Preview of the map](/docs/preview.jpg "Preview of the map")
 
 ### Supported maps / DLC
 - ATS
@@ -17,8 +19,8 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
     - Vive la France !
     - Italia
 
-### Setting up
+#### Dependencies (NuGet)
+[DotNetZip](https://www.nuget.org/packages/DotNetZip/)
 
-Set the directory in TsMapCanvas.cs to the base game dir (e.g. `D:/Games/steamapps/common/Euro Truck Simulator 2/`)
-
+#### Based on
 [Original project](https://github.com/nlhans/ets2-map)

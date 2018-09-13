@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using TsMap.HashFiles;
 
 namespace TsMap
@@ -306,10 +305,11 @@ namespace TsMap
 
                         var tobjData = Rfs.GetFileEntry(tobjPath).Entry.Read();
 
-                        var pathLength = BitConverter.ToInt32(tobjData, 0x28);
+                        var pathLength = MemoryHelper.ReadInt32(tobjData, 0x28);
                         var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, pathLength));
 
                         var name = matFile.GetFileName();
+                        if (name.StartsWith("map")) continue;
                         if (name.StartsWith("road_")) name = name.Substring(5);
 
                         var token = ScsHash.StringToToken(name);
@@ -379,10 +379,22 @@ namespace TsMap
                 return;
             }
 
-            Rfs = new RootFileSystem(_gameDir);
+            try
+            {
+                Rfs = new RootFileSystem(_gameDir);
+            }
+            catch (FileNotFoundException e)
+            {
+                Log.Msg(e.Message);
+                return;
+            }
+            
 
             ParseDefFiles();
             ParseMapFiles();
+
+            
+            if (_sectorFiles == null) return;
 
             var preMapParseTime = DateTime.Now.Ticks;
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();

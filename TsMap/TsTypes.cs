@@ -1,11 +1,10 @@
-﻿using System;
-
-namespace TsMap
+﻿namespace TsMap
 {
 
     public static class Common
     {
         public const int BaseFileVersion130 = 853;
+        public const int BaseFileVersion132 = 855;
     }
 
     public enum TsItemType
@@ -44,7 +43,7 @@ namespace TsMap
         Unk4, // seems unused
         SomeParking, // also shows parking in companies which don't work/show up in game
         Unk5, // seems unused
-        unk6, // seems unused
+        Unk6, // seems unused
         JobSelect,
         GarageIndoor, // manage garage
         GarageOutdoor, // buy garage

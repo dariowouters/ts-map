@@ -8,19 +8,21 @@ namespace TsMap.Canvas
     {
         private readonly TsMapRenderer _renderer;
 
-        private PointF _pos = new PointF(850, -920); // for ATS: -103000, 16000 ; ETS2: 850, -920
+        private PointF _pos;
         private Point? _dragPoint;
 
         private float _mapScale = 4000;
 
-        public TsMapCanvas()
+        public TsMapCanvas(Form f, string path)
         {
             InitializeComponent();
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
-            var mapper = new TsMapper("D:/Games/steamapps/common/Euro Truck Simulator 2/");
+            _pos = (path.Contains("American Truck Simulator")) ? new PointF(-103000, 16000) : new PointF(850, -920);
+
+            var mapper = new TsMapper(path);
 
             mapper.Parse();
 
@@ -48,6 +50,8 @@ namespace TsMap.Canvas
             MouseWheel += TsMapCanvas_MouseWheel;
 
             Resize += TsMapCanvas_Resize;
+
+            Closed += (s, e) => { f.Close(); };
 
         }
 

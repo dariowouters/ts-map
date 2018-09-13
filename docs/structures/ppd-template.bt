@@ -1,0 +1,215 @@
+/*****************************************************************************
+ * ets2_files - Structure definitions for the .ppd (0x15 version)
+ * file format used in ETS2 and other games by SCS Software
+ *  
+ * Copyright (c) mwl4 2016
+ *
+ *****************************************************************************/
+
+// version 0x16 changes: http://modding.scssoft.com/wiki/Games/ETS2/Modding_guides/1.30#Prefabs
+
+typedef quad                    s64;
+typedef unsigned quad           u64;
+typedef long                    s32;
+typedef unsigned long           u32;
+typedef short                   s16;
+typedef unsigned short          u16;
+typedef byte                    s8;
+typedef unsigned byte           u8;
+
+typedef s64                     i64;
+typedef s32                     i32;
+typedef s16                     i16;
+typedef s8                      i8;
+
+typedef u64                     token_t;
+
+struct float3
+{
+    float x;
+    float y;
+    float z;
+};
+
+struct float4
+{
+    float w;
+    float x;
+    float y;
+    float z;
+};
+
+struct quat_t
+{
+    float w;
+    float x;
+    float y;
+    float z;
+};
+
+struct placement_t
+{
+    struct float3 pos;
+    struct quat_t rot;
+};
+
+struct ppd_node_t
+{
+    u32 m_terrain_point_idx;
+    u32 m_terrain_point_count;
+    u32 m_variant_idx;
+    u32 m_variant_count;
+    struct float3 m_pos;
+    struct float3 m_dir;
+    i32 m_input_lines[8];
+    i32 m_output_lines[8];
+};
+
+struct ppd_curve_t
+{
+    token_t m_name;
+    u32 m_flags;
+    u32 m_leads_to_nodes;
+    struct float3 m_start_pos;
+    struct float3 m_end_pos;
+    struct quat_t m_start_rot;
+    struct quat_t m_end_rot;
+    float m_length;
+    i32 m_next_lines[4];
+    i32 m_prev_lines[4];
+    u32 m_count_next;
+    u32 m_count_prev;
+    i32 m_semaphore_id;
+    token_t m_traffic_rule;
+    u32 navigation_node_index; // version 0x16
+};
+
+struct ppd_sign_t
+{
+    token_t m_name;
+    struct float3 m_position;
+    struct quat_t m_rotation;
+    token_t m_model;
+    token_t m_part;
+};
+
+struct ppd_semaphore_t
+{
+    struct float3 m_position;
+    struct quat_t m_rotation;
+    u32 m_type;
+    u32 m_semaphore_id;
+    struct float4 m_intervals;
+    float m_cycle;
+    token_t m_profile;
+    u32 m_unknown;
+};
+
+struct ppd_spawn_point_t
+{   
+    struct float3 m_position;
+    struct quat_t m_rotation;
+    u32 m_type;
+};
+
+struct ppd_map_point_t
+{
+    u32 m_map_visual_flags <format=binary>;
+    u32 m_map_nav_flags <format=binary>;
+    struct float3 m_position;
+    i32 m_neighbours[6];
+    u32 m_neighbour_count;
+};
+
+struct ppd_terrain_point_variant_t
+{
+    u32 m_attach0;
+    u32 m_attach1;
+};
+
+struct ppd_trigger_point_t
+{
+    u32 m_trigger_id;
+    token_t m_trigger_action <format=hex>;
+    float m_trigger_range;
+    float m_trigger_reset_delay;
+    float m_trigger_reset_dist;
+    u32 m_flags;
+    struct float3 m_position;
+    s32 m_neighbours[2];
+};
+
+struct ppd_intersection_t
+{
+    u32 m_inter_curve_id;
+    float m_inter_position;
+    float m_inter_radius;
+    u32 m_flags;
+};
+
+struct ppd_navi_conn_info_t             // version 0x16
+{
+    u16 target_node;                    // Index of navigational node this connection leads to
+    float length;                       // Length of the connection in meters
+    u8 curve_count;                     // Number of AI curves the connection is created from, limited to 8, if more would be necessary, insert additional nav node
+    u16 curve_indices[8];               // Indices of the relevant AI curves in order they should be used. First curve_count entries are used, reset is set to 0xffff.
+};
+
+struct ppd_navi_node_t                  // version 0x16
+{
+    u8 type;                            // Type of node. 0 = physical node, 1 = AI curve
+    u16 index;                          // Depending on the type it is either index of normal node or index of AI curve to whose ending point this nav node corresponds
+    u8 connection_count;                // Number of outgoing connections leading to other navigational nodes (0-4)
+    ppd_navi_conn_info_t connection[4]; // Information about those connections. First connection_count entries are used. Rest is set to {0xffff, MAX_FLOAT, 0, 0xffff[8]}
+};
+
+struct ppd_header_t
+{
+    u32 m_version;                      // +0 ; 22(0x16) supported only
+
+    u32 m_node_count;                   // +4   0x04
+    u32 m_nav_curve_count;              // +8   0x08
+    u32 m_sign_count;                   // +12  0x0C
+    u32 m_semaphore_count;              // +16  0x10
+    u32 m_spawn_point_count;            // +20  0x14
+    u32 m_terrain_point_count;          // +24  0x18
+    u32 m_terrain_point_variant_count;  // +28  0x1C
+    u32 m_map_point_count;              // +32  0x20
+    u32 m_trigger_point_count;          // +36  0x24
+    u32 m_intersection_count;           // +40  0x28
+    u32 m_navi_node_count;              // +44  0x2C ; version 0x16
+
+    u32 m_node_offset;                  // +48  0x30
+    u32 m_nav_curve_offset;             // +52  0x34
+    u32 m_sign_offset;                  // +56  0x38
+    u32 m_semaphore_offset;             // +60  0x3C
+    u32 m_spawn_point_offset;           // +64  0x40
+    u32 m_terrain_point_pos_offset;     // +68  0x44
+    u32 m_terrain_point_normal_offset;  // +72  0x48
+    u32 m_terrain_point_variant_offset; // +76  0x4C
+    u32 m_map_point_offset;             // +80  0x50
+    u32 m_trigger_point_offset;         // +84  0x54
+    u32 m_intersection_offset;          // +88  0x58
+    u32 m_navi_node_offset;             // +92  0x5C ; version 0x16
+};
+
+struct ppd
+{
+    struct ppd_header_t                 header;
+    struct ppd_node_t                   node[header.m_node_count];
+    struct ppd_curve_t                  curve[header.m_nav_curve_count];
+    struct ppd_sign_t                   sign[header.m_sign_count];
+    struct ppd_semaphore_t              semaphore[header.m_semaphore_count];
+    struct ppd_spawn_point_t            spawn_point[header.m_spawn_point_count];
+    struct float3                       terrain_point_position[header.m_terrain_point_count];
+    struct float3                       terrain_point_normal[header.m_terrain_point_count];
+    struct ppd_terrain_point_variant_t  terrain_point_variant[header.m_terrain_point_variant_count];
+    struct ppd_map_point_t              map_point[header.m_map_point_count];
+    struct ppd_trigger_point_t          trigger_point[header.m_trigger_point_count];
+    struct ppd_intersection_t           intersection[header.m_intersection_count];
+    struct ppd_navi_node_t              navi_node[header.m_navi_node_count];
+};
+
+ppd file;
+
+/* eof */
