@@ -449,13 +449,29 @@ namespace TsMap
 
     public class TsMapAreaItem : TsItem
     {
+        public List<ulong> NodeUids { get; }
+        public uint ColorIndex { get; }
+        public bool DrawOver { get; }
+
         public TsMapAreaItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
-            Valid = false;
+            Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
+            DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
+
+            NodeUids = new List<ulong>();
+
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
-            fileOffset += 0x04 + (0x08 * nodeCount) + 0x04;
+            fileOffset += 0x04;
+            for (var i = 0; i < nodeCount; i++)
+            {
+                NodeUids.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset));
+                fileOffset += 0x08;
+            }
+
+            ColorIndex = MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
+            fileOffset += 0x04;
             BlockSize = fileOffset - startOffset;
         }
     }

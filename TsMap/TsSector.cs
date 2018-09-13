@@ -140,6 +140,7 @@ namespace TsMap
                     {
                         var item = new TsMapAreaItem(this, lastOffset);
                         lastOffset += item.BlockSize;
+                        if (item.Valid) Mapper.MapAreas.Add(item);
                         break;
                     }
                     default:
