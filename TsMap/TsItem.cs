@@ -35,12 +35,12 @@ namespace TsMap
 
             var fileOffset = offset;
 
-            Type = (TsItemType)BitConverter.ToUInt32(Sector.Stream, fileOffset);
+            Type = (TsItemType)MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
 
-            Uid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x04);
+            Uid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04);
 
-            X = BitConverter.ToSingle(Sector.Stream, fileOffset += 0x08);
-            Z = BitConverter.ToSingle(Sector.Stream, fileOffset += 0x08);
+            X = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x08);
+            Z = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x08);
         }
 
         public TsNode GetStartNode()
@@ -76,27 +76,27 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            Hidden = (Sector.Stream[fileOffset += 0x03] & 0x02) != 0;
-            RoadLook = Sector.Mapper.LookupRoadLook(BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x06));
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x03) & 0x02) != 0;
+            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x06));
             if (RoadLook == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find RoadLook with id: {BitConverter.ToUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find RoadLook with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
 
             if (Sector.Version >= Common.BaseFileVersion130)
             {
-                StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0xA4);
-                EndNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08);
+                StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0xA4);
+                EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08);
                 fileOffset += 0x08 + 0x04;
             }
             else
             {
-                StartNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08 + 0x50);
-                EndNodeUid = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x08);
-                var stampCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x134);
-                var vegetationSphereCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (StampBlockSize * stampCount));
+                StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x50);
+                EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08);
+                var stampCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x134);
+                var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (StampBlockSize * stampCount));
                 fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount);
                 
             }
@@ -118,48 +118,48 @@ namespace TsMap
             Nodes = new List<ulong>();
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            Hidden = (Sector.Stream[fileOffset += 0x02] & 0x02) != 0;
-            var prefabId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x03);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x02) & 0x02) != 0;
+            var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x03);
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {BitConverter.ToUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
 
             if (Sector.Version >= Common.BaseFileVersion130)
             {
-                var additionalItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x08);
-                var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (additionalItemCount * 0x08));
+                var additionalItemCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08);
+                var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (additionalItemCount * 0x08));
                 fileOffset += 0x04;
                 for (var i = 0; i < nodeCount; i++)
                 {
-                    Nodes.Add(BitConverter.ToUInt64(Sector.Stream, fileOffset));
+                    Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset));
                     fileOffset += 0x08;
                 }
-                var connectedItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset);
-                Origin = Sector.Stream[fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08];
+                var connectedItemCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                Origin = MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08);
                 fileOffset += 0x02 + nodeCount * 0x0C;
                 if (Sector.Version >= Common.BaseFileVersion132) fileOffset += 0x08;
             }
             else
             {
-                var additionalItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08 + 0x10);
+                var additionalItemCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x10);
 
-                var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * additionalItemCount));
+                var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * additionalItemCount));
                 fileOffset += 0x04;
                 for (var i = 0; i < nodeCount; i++)
                 {
-                    Nodes.Add(BitConverter.ToUInt64(Sector.Stream, fileOffset));
+                    Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset));
                     fileOffset += 0x08;
                 }
 
-                var connectedItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset);
-                Origin = Sector.Stream[fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08];
-                var prefabVegetationCount = BitConverter.ToInt32(Sector.Stream,
+                var connectedItemCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                Origin = MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x04 + (0x08 * connectedItemCount) + 0x08);
+                var prefabVegetationCount = MemoryHelper.ReadInt32(Sector.Stream,
                     fileOffset += 0x01 + (NodeLookBlockSize * nodeCount) + 0x01);
-                var vegetationSphereCount = BitConverter.ToInt32(Sector.Stream,
+                var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream,
                     fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04);
                 fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount) + (0x18 * nodeCount);
             }
@@ -177,7 +177,7 @@ namespace TsMap
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var overlayId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
 
             Overlay = Sector.Mapper.LookupOverlay(overlayId);
             if (Overlay == null)
@@ -186,11 +186,11 @@ namespace TsMap
                 if (overlayId != 0) Log.Msg($"Could not find Company Overlay with id: {overlayId:X}, in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
 
-            var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x20);
-            count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x20);
+            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             fileOffset += 0x04 + (0x08 * count);
             BlockSize = fileOffset - startOffset;
         }
@@ -205,7 +205,7 @@ namespace TsMap
             fileOffset += 0x05 + 0x10;
             if (Sector.Version >= Common.BaseFileVersion132)
             {
-                var count = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
                 fileOffset += 0x08 * count + 0x04;
             }
             BlockSize = fileOffset - startOffset;
@@ -219,7 +219,7 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05);
+            var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
             fileOffset += 0x04 + (0x08 * nodeCount);
             BlockSize = fileOffset - startOffset;
         }
@@ -234,8 +234,8 @@ namespace TsMap
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            Hidden = (Sector.Stream[fileOffset] & 0x01) != 0;
-            var cityId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset) & 0x01) != 0;
+            var cityId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             CityName = Sector.Mapper.LookupCity(cityId)?.Name;
             if (CityName == null)
             {
@@ -258,9 +258,9 @@ namespace TsMap
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            ZoomLevelVisibility = Sector.Stream[fileOffset];
-            var type = Sector.Stream[fileOffset + 0x02];
-            var overlayId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            ZoomLevelVisibility = MemoryHelper.ReadUint8(Sector.Stream, fileOffset);
+            var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
+            var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             if (type == 1 && overlayId == 0) overlayId = 0x2358E762E112CD4; // parking
             Overlay = Sector.Mapper.LookupOverlay(overlayId);
             if (Overlay == null)
@@ -283,11 +283,11 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            Train = (Sector.Stream[fileOffset] != 0);
+            Train = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
             if (Train) Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken("train_ico"));
             else Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken("port_overlay"));
 
-            FerryPortId = BitConverter.ToUInt64(Sector.Stream, fileOffset += 0x05);
+            FerryPortId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             sector.Mapper.AddFerryPortLocation(FerryPortId, X, Z);
             fileOffset += 0x08 + 0x1C;
             BlockSize = fileOffset - startOffset;
@@ -303,7 +303,7 @@ namespace TsMap
             fileOffset += 0x05 + 0x1C;
             if (Sector.Version >= Common.BaseFileVersion132)
             {
-                var count = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
                 fileOffset += 0x08 * count + 0x04;
             }
             BlockSize = fileOffset - startOffset;
@@ -317,22 +317,22 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             
-            var tagCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05);
-            var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount));
-            var triggerActionCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount));
+            var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
+            var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount));
+            var triggerActionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount));
             fileOffset += 0x04;
 
             for (var i = 0; i < triggerActionCount; i++)
             {
-                var isCustom = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x08);
+                var isCustom = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
                 if (isCustom > 0) fileOffset += 0x04;
-                var hasText = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04);
+                var hasText = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
                 if (hasText > 0)
                 {
-                    var textLength = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04);
+                    var textLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
                     fileOffset += 0x04 + textLength;
                 }
-                var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + 0x08);
+                var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + 0x08);
                 fileOffset += 0x04 + count * 0x08;
             }
 
@@ -350,7 +350,7 @@ namespace TsMap
             fileOffset += 0x05 + 0x10;
             if (Sector.Version >= Common.BaseFileVersion132)
             {
-                var count = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
                 fileOffset += 0x08 * count + 0x04;
             }
             BlockSize = fileOffset - startOffset;
@@ -364,27 +364,27 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var tmplTextLength = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05 + 0x58);
+            var tmplTextLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05 + 0x58);
             if (tmplTextLength != 0)
             {
                 fileOffset += 0x04 + tmplTextLength;
             }
-            var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04);
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
             fileOffset += 0x04;
             for (var i = 0; i < count; i++)
             {
-                var subItemCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x0C);
+                var subItemCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x0C);
                 fileOffset += 0x04;
                 for (var x = 0; x < subItemCount; x++)
                 {
-                    var itemType = BitConverter.ToInt16(Sector.Stream, fileOffset);
+                    var itemType = MemoryHelper.ReadInt16(Sector.Stream, fileOffset);
 
-                    var someCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x02);
+                    var someCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x02);
                     fileOffset += 0x04;
 
                     if (itemType == 0x05)
                     {
-                        var textLength = BitConverter.ToInt32(Sector.Stream, fileOffset);
+                        var textLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
                         fileOffset += 0x04 + 0x04 + textLength;
                     }
                     else if (itemType == 0x06)
@@ -424,9 +424,9 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05);
-            count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            count = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
+            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             fileOffset += 0x04 + 0x08;
             BlockSize = fileOffset - startOffset;
         }
@@ -439,9 +439,9 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05);
-            var ruleCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount) + 0x0C);
-            var checkPointCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x04 + (0x1C * ruleCount));
+            var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
+            var ruleCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount) + 0x0C);
+            var checkPointCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x1C * ruleCount));
             fileOffset += 0x04 + (0x10 * checkPointCount) + 0x04;
             BlockSize = fileOffset - startOffset;
         }
@@ -454,7 +454,7 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var nodeCount = BitConverter.ToInt32(Sector.Stream, fileOffset += 0x05);
+            var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
             fileOffset += 0x04 + (0x08 * nodeCount) + 0x04;
             BlockSize = fileOffset - startOffset;
         }
