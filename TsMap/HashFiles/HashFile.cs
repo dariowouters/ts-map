@@ -55,9 +55,8 @@ namespace TsMap.HashFiles
 
         public byte[] Read()
         {
-            Hf.Fs.Seek(Offset, SeekOrigin.Begin);
-            var buff = new byte[CompressedSize];
-            Hf.Fs.Read(buff, 0, CompressedSize);
+            Hf.Br.BaseStream.Seek(Offset, SeekOrigin.Begin);
+            var buff = Hf.Br.ReadBytes(CompressedSize);
             return IsCompressed() ? Inflate(buff) : buff;
         }
 
@@ -105,22 +104,13 @@ namespace TsMap.HashFiles
 
         private readonly string _path;
 
-        public FileStream Fs { get; }
+        public BinaryReader Br { get; }
 
         private ScsHeader Header { get; }
 
         private RootFileSystem _rfs;
 
         public Dictionary<ulong, ScsHashEntry> Entries;
-
-        public static void Uncompress(string path) // TODO: remove (temp function)
-        {
-            if (File.Exists(path))
-            {
-                var compressed = File.ReadAllBytes(path);
-                File.WriteAllBytes(@"C:\scs_tmp\test2.txt", ZlibStream.UncompressBuffer(compressed));
-            }
-        }
 
         public HashFile(string filePath, RootFileSystem rfs)
         {
@@ -129,17 +119,17 @@ namespace TsMap.HashFiles
 
             if (!File.Exists(_path)) return;
 
-            Fs = File.OpenRead(_path);
+            Br = new BinaryReader(File.OpenRead(_path));
             Entries = new Dictionary<ulong, ScsHashEntry>();
 
             Header = new ScsHeader
             {
-                Magic = ReadUint(Fs, 0x0),
-                Version = ReadUshort(Fs, 0x04),
-                Salt = ReadUshort(Fs, 0x06),
-                HashMethod = ReadUint(Fs, 0x08),
-                EntryCount = ReadInt(Fs, 0x0C),
-                StartOffset = ReadInt(Fs, 0x10)
+                Magic = ReadUInt32(Br, 0x0),
+                Version = ReadUInt16(Br, 0x04),
+                Salt = ReadUInt16(Br, 0x06),
+                HashMethod = ReadUInt32(Br, 0x08),
+                EntryCount = ReadInt32(Br, 0x0C),
+                StartOffset = ReadInt32(Br, 0x10)
             };
 
             if (Header.Magic != Magic)
@@ -160,17 +150,20 @@ namespace TsMap.HashFiles
                 return;
             }
 
+            Br.BaseStream.Seek(Header.StartOffset, SeekOrigin.Begin);
+            var entriesRaw = Br.ReadBytes(Header.EntryCount * EntryBlockSize);
+
             for (var i = 0; i < Header.EntryCount; i++)
             {
-                var offset = Header.StartOffset + i * EntryBlockSize;
+                var offset = i * EntryBlockSize;
                 var entry = new ScsHashEntry
                 {
-                    Hash = ReadUlong(Fs, offset),
-                    Offset = ReadLong(Fs, offset + 0x08),
-                    Flags = ReadUint(Fs, offset + 0x10),
-                    Crc = ReadUint(Fs, offset + 0x14),
-                    Size = ReadInt(Fs, offset + 0x18),
-                    CompressedSize = ReadInt(Fs, offset + 0x1C),
+                    Hash = MemoryHelper.ReadUInt64(entriesRaw, offset),
+                    Offset = MemoryHelper.ReadInt64(entriesRaw, offset + 0x08),
+                    Flags = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x10),
+                    Crc = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x14),
+                    Size = MemoryHelper.ReadInt32(entriesRaw, offset + 0x18),
+                    CompressedSize = MemoryHelper.ReadInt32(entriesRaw, offset + 0x1C),
                     Hf = this
                 };
 

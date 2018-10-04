@@ -88,12 +88,12 @@ namespace TsMap.HashFiles
 
         private static ulong Fetch32(byte[] data, ulong pos = 0)
         {
-            return BitConverter.ToUInt32(data, (int)pos);
+            return MemoryHelper.ReadUInt32(data, (int)pos);
         }
 
         private static ulong Fetch64(byte[] data, ulong pos = 0)
         {
-            return BitConverter.ToUInt64(data, (int)pos);
+            return MemoryHelper.ReadUInt64(data, (int)pos);
         }
 
         // Hash 128 input bits down to 64 bits of output.

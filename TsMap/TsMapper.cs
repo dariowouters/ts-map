@@ -24,10 +24,12 @@ namespace TsMap
 
         public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
         public readonly List<TsPrefabItem> Prefabs = new List<TsPrefabItem>();
+        public readonly List<TsMapAreaItem> MapAreas = new List<TsMapAreaItem>();
         public readonly List<TsCityItem> Cities = new List<TsCityItem>();
         public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
         public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
+        public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -305,10 +307,11 @@ namespace TsMap
 
                         var tobjData = Rfs.GetFileEntry(tobjPath).Entry.Read();
 
-                        var pathLength = BitConverter.ToInt32(tobjData, 0x28);
+                        var pathLength = MemoryHelper.ReadInt32(tobjData, 0x28);
                         var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, pathLength));
 
                         var name = matFile.GetFileName();
+                        if (name.StartsWith("map")) continue;
                         if (name.StartsWith("road_")) name = name.Substring(5);
 
                         var token = ScsHash.StringToToken(name);
