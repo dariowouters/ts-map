@@ -326,8 +326,8 @@ namespace TsMap
 
             for (var i = 0; i < triggerActionCount; i++)
             {
-                var id = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
-                if (id == 0x18991B7A99E279C) // hud_parking
+                var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
+                if (action == 0x18991B7A99E279C) // hud_parking
                 {
                     Overlay = Sector.Mapper.LookupOverlay(0x2358E762E112CD4);
                     if (Overlay == null)
@@ -336,8 +336,11 @@ namespace TsMap
                         Valid = false;
                     }
                 }
-                var isCustom = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
-                if (isCustom > 0) fileOffset += 0x04;
+                var overloadTag = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
+                if (overloadTag > 0)
+                {
+                    fileOffset += 0x04 * overloadTag;
+                }
                 var hasText = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
                 if (hasText > 0)
                 {
