@@ -312,9 +312,11 @@ namespace TsMap
 
     public class TsTriggerItem : TsItem
     {
+        public TsMapOverlay Overlay { get; }
+
         public TsTriggerItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
-            Valid = false;
+            Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
@@ -324,6 +326,16 @@ namespace TsMap
 
             for (var i = 0; i < triggerActionCount; i++)
             {
+                var id = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
+                if (id == 0x18991B7A99E279C) // hud_parking
+                {
+                    Overlay = Sector.Mapper.LookupOverlay(0x2358E762E112CD4);
+                    if (Overlay == null)
+                    {
+                        Console.WriteLine("Could not find parking overlay");
+                        Valid = false;
+                    }
+                }
                 var isCustom = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
                 if (isCustom > 0) fileOffset += 0x04;
                 var hasText = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);

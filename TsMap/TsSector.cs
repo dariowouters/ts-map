@@ -104,6 +104,7 @@ namespace TsMap
                     {
                         var item = new TsTriggerItem(this, lastOffset);
                         lastOffset += item.BlockSize;
+                        if (item.Valid) Mapper.Triggers.Add(item);
                         break;
                     }
                     case TsItemType.FuelPump:

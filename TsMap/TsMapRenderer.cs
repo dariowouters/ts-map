@@ -298,7 +298,7 @@ namespace TsMap
 
             foreach (var companyItem in companies) // TODO: Scaling
             {
-                Bitmap b = companyItem.Overlay.GetBitmap();
+                Bitmap b = companyItem.Overlay?.GetBitmap();
                 if (b != null) g.DrawImage(b, (companyItem.X - startX) * scaleX, (companyItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 
@@ -393,6 +393,17 @@ namespace TsMap
                             b.Width * scaleX, b.Height * scaleY);
                     }
                 }
+            }
+
+            var triggers = _mapper.Triggers.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500)
+                .ToList();
+
+            foreach (var triggerItem in triggers) // TODO: Scaling
+            {
+                Bitmap b = triggerItem.Overlay?.GetBitmap();
+                if (b != null) g.DrawImage(b, (triggerItem.X - startX) * scaleX, (triggerItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 
             var ferryItems = _mapper.FerryConnections.Where(item =>
