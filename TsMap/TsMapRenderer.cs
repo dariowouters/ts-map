@@ -245,7 +245,7 @@ namespace TsMap
 
             var mapAreas = _mapper.MapAreas.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                    item.Z <= endY + 1500)
+                    item.Z <= endY + 1500 && !item.Hidden)
                 .ToList();
 
 
@@ -281,7 +281,7 @@ namespace TsMap
 
             var overlays = _mapper.MapOverlays.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                    item.Z <= endY + 1500)
+                    item.Z <= endY + 1500 && !item.Hidden)
                 .ToList();
 
             foreach (var overlayItem in overlays) // TODO: Scaling
@@ -397,7 +397,7 @@ namespace TsMap
 
             var triggers = _mapper.Triggers.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                    item.Z <= endY + 1500)
+                    item.Z <= endY + 1500 && !item.Hidden)
                 .ToList();
 
             foreach (var triggerItem in triggers) // TODO: Scaling
