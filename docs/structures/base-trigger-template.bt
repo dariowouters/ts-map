@@ -11,7 +11,7 @@
 
 typedef struct
 {
-    u64 m_action <format=hex>;
+    u64 m_action <read=token_to_string>;
     s32 m_overload_tag;
     if (m_overload_tag > 0)
     {

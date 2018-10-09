@@ -44,15 +44,15 @@ typedef struct
 
 typedef struct  // https://github.com/dariowouters/ts-map/issues/3
 {
-    u64 m_road_icon <format=hex>;
-    u64 m_primary_text <format=hex>;
-    u64 m_secondary_text <format=hex>;
+    u64 m_road_icon <read=token_to_string>;
+    u64 m_primary_text <read=token_to_string>;
+    u64 m_secondary_text <read=token_to_string>;
 } sign_template_t;
 
 typedef struct
 {
     byte m_flags[5];
-    u64 m_sign_id <format=hex>;
+    u64 m_sign_id <read=token_to_string>;
     u64 m_node_uid <format=hex>;
     sign_template_t m_sign_template[3] <optimize=false>;
     u32 m_sign_tmpl_text_length;
