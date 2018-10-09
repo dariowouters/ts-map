@@ -16,3 +16,16 @@ typedef struct
     u64 m_uid[m_node_count];
     u32 m_color_index;
 } base_map_area_t;
+
+
+// byte 0 of flags
+// 0 => visual
+// 1 => Draw over
+// 2 => Draw outline
+// 8 => navigation 
+
+// color index
+// 0 => road
+// 1 => light
+// 2 => dark
+// 3 => green

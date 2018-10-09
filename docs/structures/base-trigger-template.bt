@@ -11,11 +11,11 @@
 
 typedef struct
 {
-    u64 m_some_id_value;
+    u64 m_action <format=hex>;
     s32 m_overload_tag;
     if (m_overload_tag > 0)
     {
-        float m_overloaded_value;
+        float m_overloaded_value[m_overload_tag];
     }
     s32 m_has_text;
     if (m_has_text > 0) {
@@ -42,5 +42,5 @@ typedef struct
     u32 padding;
     float m_min_speed;
     float m_max_speed;
-    byte m_flags_2[4];
+    byte m_flags2[4];
 } base_trigger_t;
