@@ -30,6 +30,8 @@ typedef struct
     float z;
 } float3;
 
+#include "functions.1sc"
+
 #include "base-road-template.bt"
 #include "base-prefab-template.bt"
 #include "base-company-template.bt"
@@ -49,12 +51,12 @@ typedef struct
 
 typedef struct
 {
-    u32 m_type <bgcolor=cBlue, fgcolor=cWhite>;             // +0x00
-    u64 m_uid <format=hex>;                                 // +0x04
-    float3 m_pos;                                           // +0x0C
-    float3 m_posR;                                          // +0x18
-    float3 m_rot;                                           // +0x24
-    byte padding[4];                                        // +0x30
+    u32 m_type <read=get_type_name, bgcolor=cBlue, fgcolor=cWhite>;
+    u64 m_uid <format=hex>;
+    float3 m_pos;
+    float3 m_posR;
+    float3 m_rot;
+    byte padding[4];
 
     switch (m_type)
     {
@@ -92,7 +94,8 @@ typedef struct
 typedef struct
 {
     u32 m_version;
-    u32 padding[3];
+    u64 m_game_id <read=token_to_string>; // also euro2 in ATS
+    u32 padding; // always 3 ??
     u32 m_item_count <bgcolor=cGreen, fgcolor=cBlack>;
 } base_header_t;
 

@@ -11,7 +11,7 @@
 
 typedef struct
 {
-    u64 m_railing_model;
+    u64 m_railing_model <read=token_to_string>;
     s16 m_railing_offset;
 } railing_t;
 
@@ -28,22 +28,21 @@ typedef struct
 typedef struct
 {
     byte m_flags[9];
-    u64 m_road_look_id <format=hex>;
-    u64 m_road_look_r;
-    u64 m_road_variant_r;
-    u64 m_road_look_l;
-    u64 m_road_variant_l;
-    u64 m_road_edge_r_r;
-    u64 m_road_edge_r_l;
-    u64 m_road_terrain_r;
+    u64 m_road_type_id <read=token_to_string>;
+    u64 m_road_variant_r <read=token_to_string>;
+    u64 m_road_variant_l <read=token_to_string>;
+    u64 m_road_r_edge_r <read=token_to_string>; // right edge on right side of road
+    u64 m_road_r_edge_l <read=token_to_string>; // left edge on right side of road
+    u64 m_road_l_edge_r <read=token_to_string>; // right edge on left side of road
+    u64 m_road_l_edge_l <read=token_to_string>; // left edge on left side of road
+    u64 m_road_terrain_r <read=token_to_string>;
     float m_road_terrain_r_coef;
-    u64 m_road_terrain_l;
+    u64 m_road_terrain_l <read=token_to_string>;
     float m_road_terrain_l_coef;
     
-    u32 m_possible_count;
-    byte padding1[12];
-    u32 m_road_material;
-    u32 padding2;
+    u64 m_road_look_r <read=token_to_string>;
+    u64 m_road_look_l <read=token_to_string>;
+    u64 m_road_material <read=token_to_string>;
     railings_t m_railings;
     u64 padding3;
     u64 m_uids[2];
