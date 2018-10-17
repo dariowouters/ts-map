@@ -4,6 +4,7 @@
     public static class Common
     {
         public const int BaseFileVersion130 = 853;
+        public const int BaseFileVersion132 = 855;
     }
 
     public enum TsItemType

@@ -1,0 +1,35 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: 
+//   Authors: Dario Wouters
+//   Version: 
+//   Purpose: 
+//  Category: 
+//   History: 
+//------------------------------------------------
+
+typedef struct
+{
+    u64 m_profile_id <read=token_to_string>;
+    float m_coef;
+} node_look_t;
+
+typedef struct
+{
+    byte m_flags[5];                                        
+    u64 m_id <read=token_to_string>;
+    u64 m_variant <read=token_to_string>;
+    u32 m_additional_item_count;
+    u64 m_extras[m_additional_item_count] <read=token_to_string>;
+    u32 m_node_count;
+    u64 m_node_uids[m_node_count];
+    u32 m_connected_item_count;
+    u64 m_connected_item_uid[m_connected_item_count] <format=hex>; // service point UIDs (gas station)
+    u64 m_some_uid;                                              // Ferry point uid ?
+    byte m_origin;
+    byte padding;
+    node_look_t m_node_look[m_node_count] <optimize=false>;
+    u32 m_some_count; // 1.32
+    u32 m_some_count2; // 1.32
+} base_prefab_t;

@@ -46,7 +46,7 @@ namespace TsMap
 
             for (var i = 0; i < itemCount; i++)
             {
-                var type = (TsItemType)BitConverter.ToUInt32(Stream, lastOffset);
+                var type = (TsItemType)MemoryHelper.ReadUInt32(Stream, lastOffset);
                 
                 switch (type)
                 {
@@ -111,6 +111,7 @@ namespace TsMap
                     {
                         var item = new TsTriggerItem(this, lastOffset);
                         lastOffset += item.BlockSize;
+                        if (item.Valid) Mapper.Triggers.Add(item);
                         break;
                     }
                     case TsItemType.FuelPump:
@@ -147,6 +148,7 @@ namespace TsMap
                     {
                         var item = new TsMapAreaItem(this, lastOffset);
                         lastOffset += item.BlockSize;
+                        if (item.Valid) Mapper.MapAreas.Add(item);
                         break;
                     }
                     default:
@@ -157,7 +159,7 @@ namespace TsMap
                 }
             }
 
-            var nodeCount = BitConverter.ToInt32(Stream, lastOffset);
+            var nodeCount = MemoryHelper.ReadInt32(Stream, lastOffset);
             for (var i = 0; i < nodeCount; i++)
             {
                 TsNode node = new TsNode(this, lastOffset += 0x04);

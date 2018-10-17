@@ -1,0 +1,46 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    u64 m_action <read=token_to_string>;
+    s32 m_overload_tag;
+    if (m_overload_tag > 0)
+    {
+        float m_overloaded_value[m_overload_tag];
+    }
+    s32 m_has_text;
+    if (m_has_text > 0) {
+        u32 m_text_length;
+        u32 text_padding;
+        char m_source_params[m_text_length];
+    }
+    u32 padding[2];
+    u32 m_count;
+    u64 m_some_value[m_count];
+} trigger_action_t;
+
+typedef struct
+{
+    byte m_flags[5];
+    u32 m_tag_count;
+    u64 m_tags[m_tag_count];
+    u32 m_node_count <bgcolor=0x87D37C, fgcolor=cBlack>;
+    u64 m_node_uid[m_node_count];
+    u32 m_trigger_actions_count;
+    trigger_action_t m_trigger_action[m_trigger_actions_count] <optimize=false>;
+    float m_range;
+    float m_reset_delay;
+    u32 padding;
+    float m_min_speed;
+    float m_max_speed;
+    byte m_flags2[4];
+} base_trigger_t;

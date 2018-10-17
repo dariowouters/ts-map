@@ -103,17 +103,17 @@ namespace TsMap
         {
             Valid = true;
             if (_stream.Length < 128 ||
-                BitConverter.ToUInt32(_stream, 0x00) != 0x20534444 ||
-                BitConverter.ToUInt32(_stream, 0x04) != 0x7C)
+                MemoryHelper.ReadUInt32(_stream, 0x00) != 0x20534444 ||
+                MemoryHelper.ReadUInt32(_stream, 0x04) != 0x7C)
             {
                 Valid = false;
                 Console.WriteLine("Invalid DDS file.");
                 return;
             }
-            Height = BitConverter.ToUInt32(_stream, 0x0C);
-            Width = BitConverter.ToUInt32(_stream, 0x10);
+            Height = MemoryHelper.ReadUInt32(_stream, 0x0C);
+            Width = MemoryHelper.ReadUInt32(_stream, 0x10);
 
-            var fourCc = BitConverter.ToUInt32(_stream, 0x54);
+            var fourCc = MemoryHelper.ReadUInt32(_stream, 0x54);
 
             if (fourCc == 861165636) ParseDxt3();
             else if (fourCc == 894720068) ParseDxt5();
@@ -136,7 +136,7 @@ namespace TsMap
 
             for (var i = 0; i < Width * Height; i++)
             {
-                var rgba = BitConverter.ToUInt32(_stream, fileOffset += 0x04);
+                var rgba = MemoryHelper.ReadUInt32(_stream, fileOffset += 0x04);
                 _pixelData[i] = new Color8888((byte)((rgba >> 0x18) & 0xFF), (byte)((rgba >> 0x10) & 0xFF), (byte)((rgba >> 0x08) & 0xFF), (byte)(rgba & 0xFF));
             }
         }
@@ -220,7 +220,7 @@ namespace TsMap
                         alphas[7] = 255; // bit code 111
                     }
 
-                    var alphaTexelUlongData = BitConverter.ToUInt64(_stream, fileOffset += 0x01);
+                    var alphaTexelUlongData = MemoryHelper.ReadUInt64(_stream, fileOffset += 0x01);
 
                     var alphaTexelData =
                         alphaTexelUlongData & 0xFFFFFFFFFFFF; // remove 2 excess bytes (read 8 bytes only need 6)
@@ -236,8 +236,8 @@ namespace TsMap
                         }
                     }
 
-                    var color0 = new Color565(BitConverter.ToUInt16(_stream, fileOffset += 0x06));
-                    var color1 = new Color565(BitConverter.ToUInt16(_stream, fileOffset += 0x02));
+                    var color0 = new Color565(MemoryHelper.ReadUInt16(_stream, fileOffset += 0x06));
+                    var color1 = new Color565(MemoryHelper.ReadUInt16(_stream, fileOffset += 0x02));
 
                     var color2 = (double) 2 / 3 * color0 + (double) 1 / 3 * color1;
                     var color3 = (double) 1 / 3 * color0 + (double) 2 / 3 * color1;
@@ -250,7 +250,7 @@ namespace TsMap
                         new Color8888(color3, 0xFF) // bit code 11
                     };
 
-                    var colorTexelData = BitConverter.ToUInt32(_stream, fileOffset += 0x02);
+                    var colorTexelData = MemoryHelper.ReadUInt32(_stream, fileOffset += 0x02);
                     for (var j = 3; j >= 0; j--)
                     {
                         var colorTexelRowData = (colorTexelData >> (j * 0x08)) & 0xFF;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
@@ -247,6 +247,30 @@ namespace TsMap
                 g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
             }
 
+            var mapAreas = _mapper.MapAreas.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
+
+
+            foreach (var mapArea in mapAreas.OrderBy(x => x.DrawOver))
+            {
+                var points = new List<PointF>();
+
+                foreach (var mapAreaNode in mapArea.NodeUids)
+                {
+                    var node = _mapper.GetNodeByUid(mapAreaNode);
+                    if (node == null) continue;
+                    points.Add(new PointF((node.X - startX) * scaleX, (node.Z - startY) * scaleY));
+                }
+
+                Brush fillColor = _palette.PrefabLight;
+                if ((mapArea.ColorIndex & 0x01) != 0) fillColor = _palette.PrefabLight;
+                else if ((mapArea.ColorIndex & 0x02) != 0) fillColor = _palette.PrefabDark;
+                else if ((mapArea.ColorIndex & 0x03) != 0) fillColor = _palette.PrefabGreen;
+
+                g.FillPolygon(fillColor, points.ToArray());
+            }
 
             var cities = _mapper.Cities.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
@@ -261,7 +285,7 @@ namespace TsMap
 
             var overlays = _mapper.MapOverlays.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                    item.Z <= endY + 1500)
+                    item.Z <= endY + 1500 && !item.Hidden)
                 .ToList();
 
             foreach (var overlayItem in overlays) // TODO: Scaling
@@ -278,7 +302,7 @@ namespace TsMap
 
             foreach (var companyItem in companies) // TODO: Scaling
             {
-                Bitmap b = companyItem.Overlay.GetBitmap();
+                Bitmap b = companyItem.Overlay?.GetBitmap();
                 if (b != null) g.DrawImage(b, (companyItem.X - startX) * scaleX, (companyItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 
@@ -373,6 +397,17 @@ namespace TsMap
                             b.Width * scaleX, b.Height * scaleY);
                     }
                 }
+            }
+
+            var triggers = _mapper.Triggers.Where(item =>
+                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                    item.Z <= endY + 1500 && !item.Hidden)
+                .ToList();
+
+            foreach (var triggerItem in triggers) // TODO: Scaling
+            {
+                Bitmap b = triggerItem.Overlay?.GetBitmap();
+                if (b != null) g.DrawImage(b, (triggerItem.X - startX) * scaleX, (triggerItem.Z - startY) * scaleY, b.Width * scaleX, b.Height * scaleY);
             }
 
             var ferryItems = _mapper.FerryConnections.Where(item =>
