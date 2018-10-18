@@ -261,19 +261,24 @@ namespace TsMap.HashFiles
             AddSourceDirectory(path);
         }
 
+        public void AddSourceFile(string path)
+        {
+            var f = File.OpenRead(path);
+            f.Seek(0, SeekOrigin.Begin);
+            var buff = new byte[4];
+            f.Read(buff, 0, 4);
+
+            if (BitConverter.ToUInt32(buff, 0) == ScsMagic) Files.Add(path, new HashFile(path, this));
+            else Files.Add(path, new ScsZipFile(path, this));
+        }
+
         public void AddSourceDirectory(string path)
         {
             var scsFiles = Directory.GetFiles(path, "*.scs");
 
             foreach (var scsFile in scsFiles)
             {
-                var f = File.OpenRead(scsFile);
-                f.Seek(0, SeekOrigin.Begin);
-                var buff = new byte[4];
-                f.Read(buff, 0, 4);
-
-                if (BitConverter.ToUInt32(buff, 0) == ScsMagic) Files.Add(scsFile, new HashFile(scsFile, this));
-                else Files.Add(scsFile, new ScsZipFile(scsFile, this));
+                AddSourceFile(scsFile);
             }
         }
 

@@ -10,6 +10,7 @@ namespace TsMap
     public class TsMapper
     {
         private readonly string _gameDir;
+        private List<Mod> _mods;
 
         public RootFileSystem Rfs;
 
@@ -35,9 +36,10 @@ namespace TsMap
 
         private List<TsSector> Sectors { get; set; }
 
-        public TsMapper(string gameDir)
+        public TsMapper(string gameDir, List<Mod> mods)
         {
             _gameDir = gameDir;
+            _mods = mods;
             Sectors = new List<TsSector>();
             
         }
@@ -400,18 +402,16 @@ namespace TsMap
                 Log.Msg("Could not find Game directory.");
                 return;
             }
-
-            try
-            {
-                Rfs = new RootFileSystem(_gameDir);
-                Rfs.AddSourceDirectory(@"D:\Users\Dario\Downloads\games\Truckers\maps\rusmap\");
-            }
-            catch (FileNotFoundException e)
-            {
-                Log.Msg(e.Message);
-                return;
-            }
             
+            Rfs = new RootFileSystem(_gameDir);
+
+            _mods.Reverse(); // Highest priority mods (top) need to be loaded last
+
+            foreach (var mod in _mods)
+            {
+                if (mod.Load) Rfs.AddSourceFile(mod.ModPath);
+            }
+
             Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             ParseDefFiles();
