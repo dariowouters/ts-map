@@ -47,17 +47,17 @@ using static Helper;
 
     public class ScsZipFile : ScsRootFile
     {
-        public FileStream Fs { get; }
+        public BinaryReader Br { get; }
         private Dictionary<string, ScsZipEntry> Entries;
 
         public ScsZipFile(string path, RootFileSystem rfs) : base(path, rfs)
         {
             if (!File.Exists(_path)) return;
 
-            Fs = File.OpenRead(_path);
+            Br = new BinaryReader(File.OpenRead(_path));
             Entries = new Dictionary<string, ScsZipEntry>();
 
-            var entryCount = (short) ReadUshort(Fs, -22 + 10, SeekOrigin.End);
+            var entryCount = (short) ReadUInt16(Br, -22 + 10, SeekOrigin.End);
 
             var fileOffset = 0;
 
@@ -65,15 +65,15 @@ using static Helper;
             {
                 var entry = new ScsZipEntry(this)
                 {
-                    CompressionMethod = ReadUshort(Fs, fileOffset += 8),
-                    CompressedSize = ReadInt(Fs, fileOffset += 10),
-                    Size = ReadInt(Fs, fileOffset += 4),
-                    NameLength = (short) ReadUshort(Fs, fileOffset += 4),
+                    CompressionMethod = ReadUInt16(Br, fileOffset += 8),
+                    CompressedSize = ReadInt32(Br, fileOffset += 10),
+                    Size = ReadInt32(Br, fileOffset += 4),
+                    NameLength = (short) ReadUInt16(Br, fileOffset += 4),
                 };
 
-                var extraFieldLength = ReadUshort(Fs, fileOffset += 2);
-
-                entry.Name = Encoding.UTF8.GetString(ReadBytes(Fs, fileOffset += 2, entry.NameLength));
+                var extraFieldLength = ReadUInt16(Br, fileOffset += 2);
+                Br.BaseStream.Seek(fileOffset += 2, SeekOrigin.Begin);
+                entry.Name = Encoding.UTF8.GetString(Br.ReadBytes(entry.NameLength));
 
                 fileOffset += entry.NameLength + extraFieldLength;
                 entry.Offset = fileOffset; // Offset to data
@@ -129,7 +129,7 @@ using static Helper;
         /// </summary>
         private const ulong RootDirHash = 11160318154034397263;
 
-        public FileStream Fs { get; }
+        public BinaryReader Br { get; }
 
         private ScsHeader Header { get; }
 
@@ -139,17 +139,17 @@ using static Helper;
         {
             if (!File.Exists(_path)) return;
 
-            Fs = File.OpenRead(_path);
+            Br = new BinaryReader(File.OpenRead(_path));
             Entries = new Dictionary<ulong, ScsHashEntry>();
 
             Header = new ScsHeader
             {
-                Magic = ReadUint(Fs, 0x0),
-                Version = ReadUshort(Fs, 0x04),
-                Salt = ReadUshort(Fs, 0x06),
-                HashMethod = ReadUint(Fs, 0x08),
-                EntryCount = ReadInt(Fs, 0x0C),
-                StartOffset = ReadInt(Fs, 0x10)
+                Magic = ReadUInt32(Br, 0x0),
+                Version = ReadUInt16(Br, 0x04),
+                Salt = ReadUInt16(Br, 0x06),
+                HashMethod = ReadUInt32(Br, 0x08),
+                EntryCount = ReadInt32(Br, 0x0C),
+                StartOffset = ReadInt32(Br, 0x10)
             };
 
             if (Header.Magic != Magic)
@@ -170,17 +170,20 @@ using static Helper;
                 return;
             }
 
+            Br.BaseStream.Seek(Header.StartOffset, SeekOrigin.Begin);
+            var entriesRaw = Br.ReadBytes(Header.EntryCount * EntryBlockSize);
+
             for (var i = 0; i < Header.EntryCount; i++)
             {
-                var offset = Header.StartOffset + i * EntryBlockSize;
+                var offset = i * EntryBlockSize;
                 var entry = new ScsHashEntry
                 {
-                    Hash = ReadUlong(Fs, offset),
-                    Offset = ReadLong(Fs, offset + 0x08),
-                    Flags = ReadUint(Fs, offset + 0x10),
-                    Crc = ReadUint(Fs, offset + 0x14),
-                    Size = ReadInt(Fs, offset + 0x18),
-                    CompressedSize = ReadInt(Fs, offset + 0x1C),
+                    Hash = MemoryHelper.ReadUInt64(entriesRaw, offset),
+                    Offset = MemoryHelper.ReadInt64(entriesRaw, offset + 0x08),
+                    Flags = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x10),
+                    Crc = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x14),
+                    Size = MemoryHelper.ReadInt32(entriesRaw, offset + 0x18),
+                    CompressedSize = MemoryHelper.ReadInt32(entriesRaw, offset + 0x1C),
                     Hf = this
                 };
 

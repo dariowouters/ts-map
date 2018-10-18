@@ -105,6 +105,7 @@ namespace TsMap
             foreach (var prefabItem in prefabs) // TODO: Road Width
             {
                 var originNode = _mapper.GetNodeByUid(prefabItem.Nodes[0]);
+                if (prefabItem.Prefab.PrefabNodes == null) continue;
                 var mapPointOrigin = prefabItem.Prefab.PrefabNodes[prefabItem.Origin];
 
                 var rot = (float)(originNode.Rotation - Math.PI - Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
@@ -309,6 +310,7 @@ namespace TsMap
             foreach (var prefab in prefabs) // Draw all prefab overlays
             {
                 var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
+                if (prefab.Prefab.PrefabNodes == null) continue;
                 var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
 
                 var rot = (float)(originNode.Rotation - Math.PI - Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);

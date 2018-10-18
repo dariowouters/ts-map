@@ -47,9 +47,8 @@ namespace TsMap.HashFiles
 
         public override byte[] Read()
         {
-            _szf.Fs.Seek(Offset, SeekOrigin.Begin);
-            var buff = new byte[CompressedSize];
-            _szf.Fs.Read(buff, 0, CompressedSize);
+            _szf.Br.BaseStream.Seek(Offset, SeekOrigin.Begin);
+            var buff = _szf.Br.ReadBytes(CompressedSize);
             return IsCompressed() ? Inflate(buff) : buff;
         }
 
@@ -112,9 +111,8 @@ namespace TsMap.HashFiles
 
         public override byte[] Read()
         {
-            Hf.Fs.Seek(Offset, SeekOrigin.Begin);
-            var buff = new byte[CompressedSize];
-            Hf.Fs.Read(buff, 0, CompressedSize);
+            Hf.Br.BaseStream.Seek(Offset, SeekOrigin.Begin);
+            var buff = Hf.Br.ReadBytes(CompressedSize);
             return IsCompressed() ? Inflate(buff) : buff;
         }
 

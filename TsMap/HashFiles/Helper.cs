@@ -5,31 +5,31 @@ namespace TsMap.HashFiles
 {
     internal static class Helper
     {
-        internal static ushort ReadUInt16(BinaryReader br, long offset)
+        internal static ushort ReadUInt16(BinaryReader br, long offset, SeekOrigin so = SeekOrigin.Begin)
         {
-            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            br.BaseStream.Seek(offset, so);
             return br.ReadUInt16();
         }
 
-        internal static uint ReadUInt32(BinaryReader br, long offset)
+        internal static uint ReadUInt32(BinaryReader br, long offset, SeekOrigin so = SeekOrigin.Begin)
         {
-            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            br.BaseStream.Seek(offset, so);
             return br.ReadUInt32();
         }
-        internal static int ReadInt32(BinaryReader br, long offset)
+        internal static int ReadInt32(BinaryReader br, long offset, SeekOrigin so = SeekOrigin.Begin)
         {
-            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            br.BaseStream.Seek(offset, so);
             return br.ReadInt32();
         }
 
-        internal static ulong ReadUInt64(BinaryReader br, long offset)
+        internal static ulong ReadUInt64(BinaryReader br, long offset, SeekOrigin so = SeekOrigin.Begin)
         {
-            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            br.BaseStream.Seek(offset, so);
             return br.ReadUInt64();
         }
-        internal static long ReadInt64(BinaryReader br, long offset)
+        internal static long ReadInt64(BinaryReader br, long offset, SeekOrigin so = SeekOrigin.Begin)
         {
-            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            br.BaseStream.Seek(offset, so);
             return br.ReadInt64();
         }
 
