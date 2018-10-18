@@ -83,10 +83,16 @@ namespace TsMap
 
             var version = MemoryHelper.ReadInt32(_stream, fileOffset);
 
-            var nodeCount = MemoryHelper.ReadInt32(_stream, fileOffset += 0x04);
-            var spawnPointCount = MemoryHelper.ReadInt32(_stream, fileOffset += 0x10);
-            var mapPointCount = MemoryHelper.ReadInt32(_stream, fileOffset += 0x0C);
-            var triggerPointCount = MemoryHelper.ReadInt32(_stream, fileOffset += 0x04);
+            if (version < 0x15)
+            {
+                Log.Msg($"{_filePath} file version ({version}) too low, min. is {0x15}");
+                return;
+            }
+
+            var nodeCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
+            var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x10);
+            var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
+            var triggerPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
 
             if (version > 0x15) fileOffset += 0x04; // http://modding.scssoft.com/wiki/Games/ETS2/Modding_guides/1.30#Prefabs
 

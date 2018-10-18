@@ -47,7 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HashFiles\CityHash.cs" />
-    <Compile Include="HashFiles\HashFile.cs" />
+    <Compile Include="HashFiles\ScsEntry.cs" />
+    <Compile Include="HashFiles\ScsRootFile.cs" />
     <Compile Include="HashFiles\Helper.cs" />
     <Compile Include="HashFiles\ScsHash.cs" />
     <Compile Include="Log.cs" />

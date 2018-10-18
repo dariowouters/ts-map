@@ -1,10 +1,29 @@
-﻿namespace TsMap
+﻿using System.IO;
+
+namespace TsMap
 {
 
     public static class Common
     {
         public const int BaseFileVersion130 = 853;
         public const int BaseFileVersion132 = 855;
+    }
+
+    public class Mod
+    {
+        public string ModPath { get; set; }
+        public bool Load { get; set; }
+
+        public Mod(string path)
+        {
+            ModPath = path;
+            Load = false;
+        }
+
+        public override string ToString()
+        {
+            return Path.GetFileName(ModPath);
+        }
     }
 
     public enum TsItemType
