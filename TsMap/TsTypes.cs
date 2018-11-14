@@ -7,6 +7,7 @@ namespace TsMap
     {
         public const int BaseFileVersion130 = 853;
         public const int BaseFileVersion132 = 855;
+        public const int BaseFileVersion133 = 858;
     }
 
     public class Mod
