@@ -40,6 +40,8 @@
             this.modList = new System.Windows.Forms.CheckedListBox();
             this.BrowseModBtn = new System.Windows.Forms.Button();
             this.modFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.ToTop = new System.Windows.Forms.Button();
+            this.ToBottom = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.modPanel.SuspendLayout();
             this.SuspendLayout();
@@ -111,6 +113,8 @@
             // 
             this.modPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.modPanel.Controls.Add(this.ToBottom);
+            this.modPanel.Controls.Add(this.ToTop);
             this.modPanel.Controls.Add(this.PrioDown);
             this.modPanel.Controls.Add(this.PrioUp);
             this.modPanel.Controls.Add(this.modList);
@@ -125,7 +129,7 @@
             // 
             this.PrioDown.Location = new System.Drawing.Point(9, 340);
             this.PrioDown.Name = "PrioDown";
-            this.PrioDown.Size = new System.Drawing.Size(315, 23);
+            this.PrioDown.Size = new System.Drawing.Size(255, 23);
             this.PrioDown.TabIndex = 2;
             this.PrioDown.Text = "Decrease Priority";
             this.PrioDown.UseVisualStyleBackColor = true;
@@ -135,7 +139,7 @@
             // 
             this.PrioUp.Location = new System.Drawing.Point(9, 312);
             this.PrioUp.Name = "PrioUp";
-            this.PrioUp.Size = new System.Drawing.Size(315, 23);
+            this.PrioUp.Size = new System.Drawing.Size(255, 23);
             this.PrioUp.TabIndex = 2;
             this.PrioUp.Text = "Increase Priority";
             this.PrioUp.UseVisualStyleBackColor = true;
@@ -159,6 +163,26 @@
             this.BrowseModBtn.Text = "Browse Mod Folder";
             this.BrowseModBtn.UseVisualStyleBackColor = true;
             this.BrowseModBtn.Click += new System.EventHandler(this.BrowseModBtn_Click);
+            // 
+            // ToTop
+            // 
+            this.ToTop.Location = new System.Drawing.Point(270, 312);
+            this.ToTop.Name = "ToTop";
+            this.ToTop.Size = new System.Drawing.Size(54, 23);
+            this.ToTop.TabIndex = 3;
+            this.ToTop.Text = "Top";
+            this.ToTop.UseVisualStyleBackColor = true;
+            this.ToTop.Click += new System.EventHandler(this.ToTop_Click);
+            // 
+            // ToBottom
+            // 
+            this.ToBottom.Location = new System.Drawing.Point(270, 340);
+            this.ToBottom.Name = "ToBottom";
+            this.ToBottom.Size = new System.Drawing.Size(54, 23);
+            this.ToBottom.TabIndex = 3;
+            this.ToBottom.Text = "Bottom";
+            this.ToBottom.UseVisualStyleBackColor = true;
+            this.ToBottom.Click += new System.EventHandler(this.ToBottom_Click);
             // 
             // SetupForm
             // 
@@ -191,5 +215,7 @@
         private System.Windows.Forms.Button PrioDown;
         private System.Windows.Forms.Button PrioUp;
         private System.Windows.Forms.FolderBrowserDialog modFolderBrowserDialog;
+        private System.Windows.Forms.Button ToBottom;
+        private System.Windows.Forms.Button ToTop;
     }
 }

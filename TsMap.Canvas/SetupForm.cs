@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,6 +70,34 @@ namespace TsMap.Canvas
             modList.SelectedIndex = selectedIndex;
         }
 
+        private void MoveItemToTop(int index)
+        {
+            if (index < 1 || index > _mods.Count - 1) return;
+            var newTopMod = _mods[index];
+            for (var i = index; i > 0; i--)
+            {
+                _mods[i] = _mods[i - 1];
+            }
+
+            _mods[0] = newTopMod;
+            modList.SelectedIndex = 0;
+            UpdateModList();
+        }
+
+        private void MoveItemToBottom(int index)
+        {
+            if (index > _mods.Count - 2 || index < 0) return;
+            var newBottomMod = _mods[index];
+            for (var i = index; i < _mods.Count - 1; i++)
+            {
+                _mods[i] = _mods[i + 1];
+            }
+
+            _mods[_mods.Count - 1] = newBottomMod;
+            modList.SelectedIndex = _mods.Count - 1;
+            UpdateModList();
+        }
+
         private void MoveItem(int index, int direction)
         {
             if (index < 0) return;
@@ -108,6 +136,16 @@ namespace TsMap.Canvas
         private void modList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             _mods[e.Index].Load = e.NewValue == CheckState.Checked;
+        }
+
+        private void ToTop_Click(object sender, EventArgs e)
+        {
+            MoveItemToTop(modList.SelectedIndex);
+        }
+
+        private void ToBottom_Click(object sender, EventArgs e)
+        {
+            MoveItemToBottom(modList.SelectedIndex);
         }
     }
 }
