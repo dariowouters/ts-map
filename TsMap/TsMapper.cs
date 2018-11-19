@@ -10,6 +10,7 @@ namespace TsMap
     public class TsMapper
     {
         private readonly string _gameDir;
+        private List<Mod> _mods;
 
         public RootFileSystem Rfs;
 
@@ -24,18 +25,21 @@ namespace TsMap
 
         public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
         public readonly List<TsPrefabItem> Prefabs = new List<TsPrefabItem>();
+        public readonly List<TsMapAreaItem> MapAreas = new List<TsMapAreaItem>();
         public readonly List<TsCityItem> Cities = new List<TsCityItem>();
         public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
         public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
+        public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
         private List<TsSector> Sectors { get; set; }
 
-        public TsMapper(string gameDir)
+        public TsMapper(string gameDir, List<Mod> mods)
         {
             _gameDir = gameDir;
+            _mods = mods;
             Sectors = new List<TsSector>();
             
         }
@@ -303,10 +307,11 @@ namespace TsMap
                     {
                         var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), line.Split('"')[1]);
 
-                        var tobjData = Rfs.GetFileEntry(tobjPath).Entry.Read();
+                        var tobjData = Rfs.GetFileEntry(tobjPath)?.Entry?.Read();
 
-                        var pathLength = MemoryHelper.ReadInt32(tobjData, 0x28);
-                        var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, pathLength));
+                        if (tobjData == null) break;
+
+                        var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, tobjData.Length - 0x30));
 
                         var name = matFile.GetFileName();
                         if (name.StartsWith("map")) continue;
@@ -328,11 +333,25 @@ namespace TsMap
         /// </summary>
         private void ParseDefFiles()
         {
+            var startTime = DateTime.Now.Ticks;
             ParseCityFiles();
+            Log.Msg($"Loaded city files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParsePrefabFiles();
+            Log.Msg($"Loaded prefab files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseRoadLookFiles();
+            Log.Msg($"Loaded road files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseFerryConnections();
+            Log.Msg($"Loaded ferry files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseOverlays();
+            Log.Msg($"Loaded overlay files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
         }
 
         /// <summary>
@@ -347,23 +366,28 @@ namespace TsMap
                 return;
             }
 
-            var mbd = baseMapEntry.Files.Values.FirstOrDefault(x => x.GetExtension().Equals("mbd")); // Get the map name from the mbd file
-            if (mbd == null)
+            var mbd = baseMapEntry.Files.Values.Where(x => x.GetExtension().Equals("mbd")).ToList(); // Get the map names from the mbd files
+            if (mbd.Count == 0)
             {
                 Log.Msg("Could not find mbd file");
                 return;
             }
 
-            var mapName = mbd.GetFileName();
+            _sectorFiles = new List<string>();
 
-            var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
-            if (mapFileDir == null)
+            foreach (var file in mbd)
             {
-                Log.Msg($"Could not read 'map/{mapName}' directory");
-                return;
-            }
+                var mapName = file.GetFileName();
 
-            _sectorFiles = mapFileDir.GetFiles(".base").Select(x => x.GetPath()).ToList();
+                var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
+                if (mapFileDir == null)
+                {
+                    Log.Msg($"Could not read 'map/{mapName}' directory");
+                    return;
+                }
+
+                _sectorFiles.AddRange(mapFileDir.GetFiles(".base").Select(x => x.GetPath()).ToList());
+            }
         }
 
         /// <summary>
@@ -378,17 +402,17 @@ namespace TsMap
                 Log.Msg("Could not find Game directory.");
                 return;
             }
-
-            try
-            {
-                Rfs = new RootFileSystem(_gameDir);
-            }
-            catch (FileNotFoundException e)
-            {
-                Log.Msg(e.Message);
-                return;
-            }
             
+            Rfs = new RootFileSystem(_gameDir);
+
+            _mods.Reverse(); // Highest priority mods (top) need to be loaded last
+
+            foreach (var mod in _mods)
+            {
+                if (mod.Load) Rfs.AddSourceFile(mod.ModPath);
+            }
+
+            Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             ParseDefFiles();
             ParseMapFiles();

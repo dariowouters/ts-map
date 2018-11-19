@@ -76,8 +76,9 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x03) & 0x02) != 0;
-            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x06));
+            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06) > 4 ||
+                     (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09));
             if (RoadLook == null)
             {
                 Valid = false;
@@ -98,7 +99,7 @@ namespace TsMap
                 var stampCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x134);
                 var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (StampBlockSize * stampCount));
                 fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount);
-                
+
             }
 
             BlockSize = fileOffset - startOffset;
@@ -118,8 +119,10 @@ namespace TsMap
             Nodes = new List<ulong>();
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x02) & 0x02) != 0;
-            var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x03);
+            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4 ||
+                     (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+
+            var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
             if (Prefab == null)
             {
@@ -191,6 +194,7 @@ namespace TsMap
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            if (sector.Version == Common.BaseFileVersion133) count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             fileOffset += 0x04 + (0x08 * count);
             BlockSize = fileOffset - startOffset;
         }
@@ -251,14 +255,14 @@ namespace TsMap
     public class TsMapOverlayItem : TsItem
     {
         public TsMapOverlay Overlay { get; }
-        public byte ZoomLevelVisibility { get; }
+        public sbyte ZoomLevelVisibility { get; }
 
         public TsMapOverlayItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-
-            ZoomLevelVisibility = MemoryHelper.ReadUint8(Sector.Stream, fileOffset);
+            ZoomLevelVisibility = MemoryHelper.ReadInt8(Sector.Stream, fileOffset);
+            Hidden = ZoomLevelVisibility == -1 || MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
             var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
             var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             if (type == 1 && overlayId == 0) overlayId = 0x2358E762E112CD4; // parking
@@ -312,11 +316,15 @@ namespace TsMap
 
     public class TsTriggerItem : TsItem
     {
+        public TsMapOverlay Overlay { get; }
+
         public TsTriggerItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
-            Valid = false;
+            Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
+
+            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
+
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount));
             var triggerActionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount));
@@ -324,8 +332,21 @@ namespace TsMap
 
             for (var i = 0; i < triggerActionCount; i++)
             {
-                var isCustom = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
-                if (isCustom > 0) fileOffset += 0x04;
+                var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
+                if (action == 0x18991B7A99E279C) // hud_parking
+                {
+                    Overlay = Sector.Mapper.LookupOverlay(0x2358E762E112CD4);
+                    if (Overlay == null)
+                    {
+                        Console.WriteLine("Could not find parking overlay");
+                        Valid = false;
+                    }
+                }
+                var overloadTag = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
+                if (overloadTag > 0)
+                {
+                    fileOffset += 0x04 * overloadTag;
+                }
                 var hasText = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
                 if (hasText > 0)
                 {
@@ -449,13 +470,31 @@ namespace TsMap
 
     public class TsMapAreaItem : TsItem
     {
+        public List<ulong> NodeUids { get; }
+        public uint ColorIndex { get; }
+        public bool DrawOver { get; }
+
         public TsMapAreaItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
-            Valid = false;
+            Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
+            DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
+
+            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
+
+            NodeUids = new List<ulong>();
+
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
-            fileOffset += 0x04 + (0x08 * nodeCount) + 0x04;
+            fileOffset += 0x04;
+            for (var i = 0; i < nodeCount; i++)
+            {
+                NodeUids.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset));
+                fileOffset += 0x08;
+            }
+
+            ColorIndex = MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
+            fileOffset += 0x04;
             BlockSize = fileOffset - startOffset;
         }
     }

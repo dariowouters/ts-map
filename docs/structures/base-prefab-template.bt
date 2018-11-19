@@ -11,17 +11,17 @@
 
 typedef struct
 {
-    u64 m_uid;
+    u64 m_profile_id <read=token_to_string>;
     float m_coef;
 } node_look_t;
 
 typedef struct
 {
     byte m_flags[5];                                        
-    u64 m_id <format=hex>;
-    u64 m_variant <format=hex>;
+    u64 m_id <read=token_to_string>;
+    u64 m_variant <read=token_to_string>;
     u32 m_additional_item_count;
-    u64 m_extras[m_additional_item_count];
+    u64 m_extras[m_additional_item_count] <read=token_to_string>;
     u32 m_node_count;
     u64 m_node_uids[m_node_count];
     u32 m_connected_item_count;

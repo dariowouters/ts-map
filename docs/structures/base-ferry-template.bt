@@ -12,8 +12,8 @@
 typedef struct
 {
     byte m_flags[5];
-    u64 m_ferry_id <format=hex>;
-    u64 m_some_uid <format=hex>;
+    u64 m_ferry_id <read=token_to_string>;
+    u64 m_prefab_uid <format=hex>;
     u64 m_node_uid <format=hex>;
     float3 m_unload_offset;
 } base_ferry_t;

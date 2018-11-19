@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,7 +14,7 @@ namespace TsMap.Canvas
 
         private float _mapScale = 4000;
 
-        public TsMapCanvas(Form f, string path)
+        public TsMapCanvas(Form f, string path, List<Mod> mods)
         {
             InitializeComponent();
             SetStyle(ControlStyles.UserPaint, true);
@@ -22,7 +23,7 @@ namespace TsMap.Canvas
 
             _pos = (path.Contains("American Truck Simulator")) ? new PointF(-103000, 16000) : new PointF(850, -920);
 
-            var mapper = new TsMapper(path);
+            var mapper = new TsMapper(path, mods);
 
             mapper.Parse();
 
