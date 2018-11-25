@@ -8,6 +8,10 @@ namespace TsMap
         {
             return s[pos];
         }
+        internal static sbyte ReadInt8(byte[] s, int pos)
+        {
+            return (sbyte)s[pos];
+        }
 
         internal static unsafe ushort ReadUInt16(byte[] s, int pos)
         {

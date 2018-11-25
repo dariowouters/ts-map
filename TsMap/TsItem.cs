@@ -99,7 +99,7 @@ namespace TsMap
                 var stampCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x134);
                 var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (StampBlockSize * stampCount));
                 fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount);
-                
+
             }
 
             BlockSize = fileOffset - startOffset;
@@ -194,6 +194,7 @@ namespace TsMap
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            if (sector.Version == Common.BaseFileVersion133) count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             fileOffset += 0x04 + (0x08 * count);
             BlockSize = fileOffset - startOffset;
         }
@@ -254,14 +255,14 @@ namespace TsMap
     public class TsMapOverlayItem : TsItem
     {
         public TsMapOverlay Overlay { get; }
-        public byte ZoomLevelVisibility { get; }
+        public sbyte ZoomLevelVisibility { get; }
 
         public TsMapOverlayItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            ZoomLevelVisibility = MemoryHelper.ReadUint8(Sector.Stream, fileOffset);
-            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
+            ZoomLevelVisibility = MemoryHelper.ReadInt8(Sector.Stream, fileOffset);
+            Hidden = ZoomLevelVisibility == -1 || MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
             var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
             var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             if (type == 1 && overlayId == 0) overlayId = 0x2358E762E112CD4; // parking
@@ -321,7 +322,7 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            
+
             Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
 
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
