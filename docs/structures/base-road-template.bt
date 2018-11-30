@@ -48,3 +48,6 @@ typedef struct
     u64 m_uids[2];
     u32 padding4;
 } base_road_t;
+
+
+// m_flags[6] => dlc_guard

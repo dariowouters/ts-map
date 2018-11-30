@@ -17,7 +17,7 @@ typedef struct
 
 typedef struct
 {
-    byte m_flags[5];                                        
+    byte m_flags[5];
     u64 m_id <read=token_to_string>;
     u64 m_variant <read=token_to_string>;
     u32 m_additional_item_count;
@@ -33,3 +33,5 @@ typedef struct
     u32 m_some_count; // 1.32
     u32 m_some_count2; // 1.32
 } base_prefab_t;
+
+// m_flags[1] => dlc_guard

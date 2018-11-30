@@ -44,3 +44,6 @@ typedef struct
     float m_max_speed;
     byte m_flags2[4];
 } base_trigger_t;
+
+
+// m_flags[1] => dlc_guard

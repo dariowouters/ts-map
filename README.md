@@ -44,6 +44,7 @@ ATS:
     - Scandinavia
     - Vive la France !
     - Italia
+    - Beyond the Baltic Sea
 
 #### Dependencies (NuGet)
 [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
