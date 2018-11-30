@@ -103,6 +103,31 @@ namespace TsMap
                 }
             }
 
+            var mapAreas = _mapper.MapAreas.Where(item =>
+                item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                item.Z <= endY + 1500 && !item.Hidden)
+            .ToList();
+
+
+            foreach (var mapArea in mapAreas.OrderBy(x => x.DrawOver))
+            {
+                var points = new List<PointF>();
+
+                foreach (var mapAreaNode in mapArea.NodeUids)
+                {
+                    var node = _mapper.GetNodeByUid(mapAreaNode);
+                    if (node == null) continue;
+                    points.Add(new PointF((node.X - startX) * scaleX, (node.Z - startY) * scaleY));
+                }
+
+                Brush fillColor = _palette.PrefabLight;
+                if ((mapArea.ColorIndex & 0x01) != 0) fillColor = _palette.PrefabLight;
+                else if ((mapArea.ColorIndex & 0x02) != 0) fillColor = _palette.PrefabDark;
+                else if ((mapArea.ColorIndex & 0x03) != 0) fillColor = _palette.PrefabGreen;
+
+                g.FillPolygon(fillColor, points.ToArray());
+            }
+
             var prefabs = _mapper.Prefabs.Where(item =>
                     item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
                     item.Z <= endY + 1500 && !item.Hidden)
@@ -127,7 +152,7 @@ namespace TsMap
                 {
                     var mapPoint = prefabItem.Prefab.MapPoints[i];
                     pointsDrawn.Add(i);
-                    
+
                     if (mapPoint.LaneCount == -1) // non-road Prefab
                     {
                         Dictionary<int, PointF> polyPoints = new Dictionary<int, PointF>();
@@ -152,7 +177,7 @@ namespace TsMap
                                 nextPoint = -1;
                             }
                         } while (nextPoint != -1);
-                        
+
                         if (polyPoints.Count < 2) continue;
 
                         var colorFlag = prefabItem.Prefab.MapPoints[polyPoints.First().Key].PrefabColorFlags;
@@ -168,7 +193,7 @@ namespace TsMap
                             ZIndex = ((colorFlag & 0x01) != 0) ? 3 : 2,
                             Color = fillColor
                         };
-                        
+
                         drawingQueue.Add(prefabLook);
                         continue;
                     }
@@ -205,7 +230,7 @@ namespace TsMap
                             (4.5f * mapPoint.LaneCount + mapPoint.LaneOffset) / 2f * scaleX, roadYaw - Math.PI / 2);
                         cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, (originNode.X - startX) * scaleX,
                             (originNode.Z - startY) * scaleY));
-                        
+
                         TsPrefabLook prefabLook = new TsPrefabPolyLook(cornerCoords)
                         {
                             Color = _palette.PrefabRoad,
@@ -270,31 +295,6 @@ namespace TsMap
                 var roadWidth = road.RoadLook.GetWidth() * scaleX;
 
                 g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
-            }
-
-            var mapAreas = _mapper.MapAreas.Where(item =>
-                    item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                    item.Z <= endY + 1500 && !item.Hidden)
-                .ToList();
-
-
-            foreach (var mapArea in mapAreas.OrderBy(x => x.DrawOver))
-            {
-                var points = new List<PointF>();
-
-                foreach (var mapAreaNode in mapArea.NodeUids)
-                {
-                    var node = _mapper.GetNodeByUid(mapAreaNode);
-                    if (node == null) continue;
-                    points.Add(new PointF((node.X - startX) * scaleX, (node.Z - startY) * scaleY));
-                }
-
-                Brush fillColor = _palette.PrefabLight;
-                if ((mapArea.ColorIndex & 0x01) != 0) fillColor = _palette.PrefabLight;
-                else if ((mapArea.ColorIndex & 0x02) != 0) fillColor = _palette.PrefabDark;
-                else if ((mapArea.ColorIndex & 0x03) != 0) fillColor = _palette.PrefabGreen;
-
-                g.FillPolygon(fillColor, points.ToArray());
             }
 
             var cities = _mapper.Cities.Where(item =>

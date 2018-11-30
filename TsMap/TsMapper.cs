@@ -13,6 +13,7 @@ namespace TsMap
         private List<Mod> _mods;
 
         public RootFileSystem Rfs;
+        public bool IsEts2 = true;
 
         private List<string> _sectorFiles;
         private readonly string[] _overlayFiles;
@@ -41,7 +42,7 @@ namespace TsMap
             _gameDir = gameDir;
             _mods = mods;
             Sectors = new List<TsSector>();
-            
+
         }
 
         private void ParseCityFiles()
@@ -402,7 +403,7 @@ namespace TsMap
                 Log.Msg("Could not find Game directory.");
                 return;
             }
-            
+
             Rfs = new RootFileSystem(_gameDir);
 
             _mods.Reverse(); // Highest priority mods (top) need to be loaded last
@@ -417,7 +418,7 @@ namespace TsMap
             ParseDefFiles();
             ParseMapFiles();
 
-            
+
             if (_sectorFiles == null) return;
 
             var preMapParseTime = DateTime.Now.Ticks;

@@ -76,8 +76,8 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06) > 4 ||
-                     (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount: Common.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
             RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09));
             if (RoadLook == null)
             {
@@ -118,9 +118,8 @@ namespace TsMap
             Valid = true;
             Nodes = new List<ulong>();
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-
-            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4 ||
-                     (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -179,6 +178,8 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
             var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
 
@@ -262,7 +263,9 @@ namespace TsMap
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             ZoomLevelVisibility = MemoryHelper.ReadInt8(Sector.Stream, fileOffset);
-            Hidden = ZoomLevelVisibility == -1 || MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || ZoomLevelVisibility == -1;
+
             var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
             var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             if (type == 1 && overlayId == 0) overlayId = 0x2358E762E112CD4; // parking
@@ -322,9 +325,8 @@ namespace TsMap
         {
             Valid = true;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-
-            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
-
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount));
             var triggerActionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount));
@@ -480,8 +482,8 @@ namespace TsMap
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
             DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
-
-            Hidden = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01) > 4;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
             NodeUids = new List<ulong>();
 

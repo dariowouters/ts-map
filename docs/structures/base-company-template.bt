@@ -24,4 +24,6 @@ typedef struct
     u64 m_uid5[m_count4];
     u32 m_count5;
     u64 m_uid6[m_count5];
+    u32 m_count6; // 1.33
+    u64 m_uid7[m_count6]; // 1.33
 } base_company_t;

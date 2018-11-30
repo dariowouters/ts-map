@@ -21,9 +21,18 @@ namespace TsMap.Canvas
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
-            _pos = (path.Contains("American Truck Simulator")) ? new PointF(-103000, 16000) : new PointF(850, -920);
-
             var mapper = new TsMapper(path, mods);
+
+            if (path.Contains("American Truck Simulator"))
+            {
+                _pos = new PointF(-103000, -54444);
+                mapper.IsEts2 = false;
+            }
+            else
+            {
+                _pos = new PointF(850, -920);
+                mapper.IsEts2 = true;
+            }
 
             mapper.Parse();
 
