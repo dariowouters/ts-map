@@ -16,7 +16,6 @@ namespace TsMap
         public bool IsEts2 = true;
 
         private List<string> _sectorFiles;
-        private readonly string[] _overlayFiles;
 
         private readonly Dictionary<ulong, TsPrefab> _prefabLookup = new Dictionary<ulong, TsPrefab>();
         private readonly Dictionary<ulong, TsCity> _citiesLookup = new Dictionary<ulong, TsCity>();

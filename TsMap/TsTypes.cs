@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace TsMap
 {
@@ -11,6 +12,20 @@ namespace TsMap
 
         public const int Ets2DlcGuardCount = 8; // TODO: Figure out how to get these dynamically
         public const int AtsDlcGuardCount = 4;
+    }
+
+    [Flags]
+    public enum RenderFlags
+    {
+        None = 0,
+        TextOverlay = 1,
+        Prefabs = 2,
+        Roads = 4,
+        MapAreas = 8,
+        MapOverlays = 16,
+        FerryConnections = 32,
+        CityNames = 64,
+        All = int.MaxValue
     }
 
     public class Mod

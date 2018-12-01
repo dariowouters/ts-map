@@ -51,6 +51,12 @@
     <Compile Include="ImageExportOptionForm.Designer.cs">
       <DependentUpon>ImageExportOptionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ItemVisibilityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ItemVisibilityForm.Designer.cs">
+      <DependentUpon>ItemVisibilityForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetupForm.cs">
@@ -68,6 +74,9 @@
     </Compile>
     <EmbeddedResource Include="ImageExportOptionForm.resx">
       <DependentUpon>ImageExportOptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemVisibilityForm.resx">
+      <DependentUpon>ItemVisibilityForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -18,6 +18,8 @@ namespace TsMap.Canvas
 
         private ImageExportOptionForm _imageExportForm;
 
+        private RenderFlags _renderFlags = RenderFlags.All;
+
         private MapPalette _defaultPalette;
 
         public TsMapCanvas(Form f, string path, List<Mod> mods)
@@ -89,22 +91,24 @@ namespace TsMap.Canvas
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _defaultPalette);
+            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _defaultPalette, _renderFlags);
             base.OnPaint(e);
         }
 
         private void ExportImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_imageExportForm == null || _imageExportForm.IsDisposed) _imageExportForm = new ImageExportOptionForm(new SimpleMapPalette());
+            if (_imageExportForm == null || _imageExportForm.IsDisposed) _imageExportForm = new ImageExportOptionForm();
             _imageExportForm.Show();
             _imageExportForm.BringToFront();
 
-            _imageExportForm.ExportImage += (width, height, palette) => // Called when export button is pressed in ImageExportOptionForm
+            _imageExportForm.ExportImage += (width, height) => // Called when export button is pressed in ImageExportOptionForm
             {
                 if (width == 0 || height == 0) return;
                 var bitmap = new Bitmap(width, height);
+
                 _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    _mapScale, _pos, palette);
+                    _mapScale, _pos, _defaultPalette, _renderFlags);
+
                 var result = exportFileDialog.ShowDialog();
                 if (result != DialogResult.OK) return;
 
@@ -112,13 +116,25 @@ namespace TsMap.Canvas
 
                 bitmap.Save(fileStream, ImageFormat.Png);
                 fileStream.Close();
-                _imageExportForm.Close();
+                _imageExportForm.Hide();
             };
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void ItemVisibilityToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var itemVisibilityForm = new ItemVisibilityForm(_renderFlags);
+            itemVisibilityForm.Show();
+            itemVisibilityForm.BringToFront();
+
+            itemVisibilityForm.UpdateItemVisibility += (renderFlags) =>
+            {
+                _renderFlags = renderFlags;
+            };
         }
     }
 }

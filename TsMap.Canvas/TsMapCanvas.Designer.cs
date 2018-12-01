@@ -33,6 +33,7 @@
             this.exportImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.itemVisibilityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,6 +50,7 @@
             // mainToolStripMenuItem
             // 
             this.mainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemVisibilityToolStripMenuItem,
             this.exportImageToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.mainToolStripMenuItem.Name = "mainToolStripMenuItem";
@@ -58,14 +60,14 @@
             // exportImageToolStripMenuItem
             // 
             this.exportImageToolStripMenuItem.Name = "exportImageToolStripMenuItem";
-            this.exportImageToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.exportImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportImageToolStripMenuItem.Text = "Export Image";
             this.exportImageToolStripMenuItem.Click += new System.EventHandler(this.ExportImageToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -74,6 +76,13 @@
             this.exportFileDialog.DefaultExt = "png";
             this.exportFileDialog.FileName = "map-export";
             this.exportFileDialog.Filter = "PNG File|*.png";
+            // 
+            // itemVisibilityToolStripMenuItem
+            // 
+            this.itemVisibilityToolStripMenuItem.Name = "itemVisibilityToolStripMenuItem";
+            this.itemVisibilityToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.itemVisibilityToolStripMenuItem.Text = "Item visibility";
+            this.itemVisibilityToolStripMenuItem.Click += new System.EventHandler(this.ItemVisibilityToolStripMenuItem_Click);
             // 
             // TsMapCanvas
             // 
@@ -97,5 +106,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog exportFileDialog;
+        private System.Windows.Forms.ToolStripMenuItem itemVisibilityToolStripMenuItem;
     }
 }

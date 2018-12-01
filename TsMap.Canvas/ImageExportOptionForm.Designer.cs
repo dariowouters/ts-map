@@ -33,15 +33,14 @@
             this.HeightText = new System.Windows.Forms.TextBox();
             this.WidthLabel = new System.Windows.Forms.Label();
             this.HeightLabel = new System.Windows.Forms.Label();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.SuspendLayout();
             // 
             // ExportBtn
             // 
             this.ExportBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ExportBtn.Location = new System.Drawing.Point(181, 167);
+            this.ExportBtn.Location = new System.Drawing.Point(12, 157);
             this.ExportBtn.Name = "ExportBtn";
-            this.ExportBtn.Size = new System.Drawing.Size(70, 23);
+            this.ExportBtn.Size = new System.Drawing.Size(239, 23);
             this.ExportBtn.TabIndex = 0;
             this.ExportBtn.Text = "Export";
             this.ExportBtn.UseVisualStyleBackColor = true;
@@ -83,21 +82,17 @@
             this.HeightLabel.TabIndex = 2;
             this.HeightLabel.Text = "Height";
             // 
-            // colorDialog1
-            // 
-            this.colorDialog1.AnyColor = true;
-            // 
             // ImageExportOptionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(263, 202);
+            this.ClientSize = new System.Drawing.Size(263, 192);
             this.Controls.Add(this.HeightLabel);
             this.Controls.Add(this.WidthLabel);
             this.Controls.Add(this.HeightText);
             this.Controls.Add(this.WidthText);
             this.Controls.Add(this.ExportBtn);
-            this.MinimumSize = new System.Drawing.Size(279, 241);
+            this.MinimumSize = new System.Drawing.Size(279, 231);
             this.Name = "ImageExportOptionForm";
             this.Text = "ImageExportOptionForm";
             this.ResumeLayout(false);
@@ -112,6 +107,5 @@
         private System.Windows.Forms.TextBox HeightText;
         private System.Windows.Forms.Label WidthLabel;
         private System.Windows.Forms.Label HeightLabel;
-        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
