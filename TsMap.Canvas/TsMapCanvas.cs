@@ -20,17 +20,14 @@ namespace TsMap.Canvas
 
         private RenderFlags _renderFlags = RenderFlags.All;
 
-        private MapPalette _defaultPalette;
+        private MapPalette _palette;
 
         public TsMapCanvas(Form f, string path, List<Mod> mods)
         {
             InitializeComponent();
-            SetStyle(ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
             var mapper = new TsMapper(path, mods);
-            _defaultPalette = new SimpleMapPalette();
+            _palette = new SimpleMapPalette();
 
             if (path.Contains("American Truck Simulator"))
             {
@@ -51,13 +48,13 @@ namespace TsMap.Canvas
             {
                 Interval = 1000 / 30
             };
-            t.Tick += (s, a) => Invalidate();
+            t.Tick += (s, a) => MapPanel.Invalidate();
             t.Start();
 
             // Panning around
-            MouseDown += (s, e) => _dragPoint = e.Location;
-            MouseUp += (s, e) => _dragPoint = null;
-            MouseMove += (s, e) =>
+            MapPanel.MouseDown += (s, e) => _dragPoint = e.Location;
+            MapPanel.MouseUp += (s, e) => _dragPoint = null;
+            MapPanel.MouseMove += (s, e) =>
             {
                 if (_dragPoint == null) return;
                 var spd = _mapScale / Math.Max(this.Width, this.Height);
@@ -66,9 +63,9 @@ namespace TsMap.Canvas
                 _dragPoint = e.Location;
             };
 
-            MouseWheel += TsMapCanvas_MouseWheel;
+            MapPanel.MouseWheel += TsMapCanvas_MouseWheel;
 
-            Resize += TsMapCanvas_Resize;
+            MapPanel.Resize += TsMapCanvas_Resize;
 
             Closed += (s, e) =>
             {
@@ -86,13 +83,7 @@ namespace TsMap.Canvas
 
         private void TsMapCanvas_Resize(object sender, System.EventArgs e)
         {
-            Invalidate();
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _defaultPalette, _renderFlags);
-            base.OnPaint(e);
+            MapPanel.Invalidate();
         }
 
         private void ExportImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -107,7 +98,7 @@ namespace TsMap.Canvas
                 var bitmap = new Bitmap(width, height);
 
                 _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    _mapScale, _pos, _defaultPalette, _renderFlags);
+                    _mapScale, _pos, _palette, _renderFlags);
 
                 var result = exportFileDialog.ShowDialog();
                 if (result != DialogResult.OK) return;
@@ -135,6 +126,23 @@ namespace TsMap.Canvas
             {
                 _renderFlags = renderFlags;
             };
+        }
+
+        private void paletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var paletteEditorForm = new PaletteEditorForm(_palette);
+            paletteEditorForm.Show();
+            paletteEditorForm.BringToFront();
+
+            paletteEditorForm.UpdatePalette += (palette) =>
+            {
+                _palette = palette;
+            };
+        }
+
+        private void MapPanel_Paint(object sender, PaintEventArgs e)
+        {
+            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _palette, _renderFlags);
         }
     }
 }
