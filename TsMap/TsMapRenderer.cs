@@ -9,12 +9,10 @@ namespace TsMap
     public class TsMapRenderer
     {
         private readonly TsMapper _mapper;
-        private readonly MapPalette _palette;
 
-        public TsMapRenderer(TsMapper mapper, MapPalette palette)
+        public TsMapRenderer(TsMapper mapper)
         {
             _mapper = mapper;
-            _palette = palette;
         }
 
         private static PointF RotatePoint(float x, float z, float angle, float rotX, float rotZ)
@@ -34,18 +32,19 @@ namespace TsMap
             );
         }
 
-        public void Render(Graphics g, Rectangle clip, float baseScale, PointF pos)
+        public void Render(Graphics g, Rectangle clip, float baseScale, PointF pos, MapPalette palette)
         {
             var startTime = DateTime.Now.Ticks;
-            g.FillRectangle(_palette.Background, new Rectangle(0, 0, clip.X + clip.Width, clip.Y + clip.Height));
+            g.FillRectangle(palette.Background, new Rectangle(0, 0, clip.X + clip.Width, clip.Y + clip.Height));
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.None;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
 
             var defaultFont = new Font("Arial", 10.0f, FontStyle.Bold);
 
             if (_mapper == null)
             {
-                g.DrawString("Map object not initialized", defaultFont, _palette.Error, 5, 5);
+                g.DrawString("Map object not initialized", defaultFont, palette.Error, 5, 5);
                 return;
             }
 
@@ -98,7 +97,7 @@ namespace TsMap
                     }
                     newPoints.Add(new PointF((conn.EndPortLocation.X - startX) * scaleX, (conn.EndPortLocation.Y - startY) * scaleY));
 
-                    var pen = new Pen(_palette.FerryLines, 50 * scaleX) { DashPattern = new[] { 10f, 10f } };
+                    var pen = new Pen(palette.FerryLines, 50 * scaleX) { DashPattern = new[] { 10f, 10f } };
                     g.DrawCurve(pen, newPoints.ToArray());
                 }
             }
@@ -120,10 +119,10 @@ namespace TsMap
                     points.Add(new PointF((node.X - startX) * scaleX, (node.Z - startY) * scaleY));
                 }
 
-                Brush fillColor = _palette.PrefabLight;
-                if ((mapArea.ColorIndex & 0x01) != 0) fillColor = _palette.PrefabLight;
-                else if ((mapArea.ColorIndex & 0x02) != 0) fillColor = _palette.PrefabDark;
-                else if ((mapArea.ColorIndex & 0x03) != 0) fillColor = _palette.PrefabGreen;
+                Brush fillColor = palette.PrefabLight;
+                if ((mapArea.ColorIndex & 0x01) != 0) fillColor = palette.PrefabLight;
+                else if ((mapArea.ColorIndex & 0x02) != 0) fillColor = palette.PrefabDark;
+                else if ((mapArea.ColorIndex & 0x03) != 0) fillColor = palette.PrefabGreen;
 
                 g.FillPolygon(fillColor, points.ToArray());
             }
@@ -182,10 +181,10 @@ namespace TsMap
 
                         var colorFlag = prefabItem.Prefab.MapPoints[polyPoints.First().Key].PrefabColorFlags;
 
-                        Brush fillColor = _palette.PrefabLight;
-                        if ((colorFlag & 0x02) != 0) fillColor = _palette.PrefabLight;
-                        else if ((colorFlag & 0x04) != 0) fillColor = _palette.PrefabDark;
-                        else if ((colorFlag & 0x08) != 0) fillColor = _palette.PrefabGreen;
+                        Brush fillColor = palette.PrefabLight;
+                        if ((colorFlag & 0x02) != 0) fillColor = palette.PrefabLight;
+                        else if ((colorFlag & 0x04) != 0) fillColor = palette.PrefabDark;
+                        else if ((colorFlag & 0x08) != 0) fillColor = palette.PrefabGreen;
                         // else fillColor = _palette.Error; // Unknown
 
                         var prefabLook = new TsPrefabPolyLook(polyPoints.Values.ToList())
@@ -233,7 +232,7 @@ namespace TsMap
 
                         TsPrefabLook prefabLook = new TsPrefabPolyLook(cornerCoords)
                         {
-                            Color = _palette.PrefabRoad,
+                            Color = palette.PrefabRoad,
                             ZIndex = 4,
                         };
 
@@ -294,7 +293,7 @@ namespace TsMap
 
                 var roadWidth = road.RoadLook.GetWidth() * scaleX;
 
-                g.DrawCurve(new Pen(_palette.Road, roadWidth), points.ToArray());
+                g.DrawCurve(new Pen(palette.Road, roadWidth), points.ToArray());
             }
 
             var cities = _mapper.Cities.Where(item =>
@@ -305,7 +304,7 @@ namespace TsMap
             foreach (var city in cities)
             {
                 var cityFont = new Font("Arial", 80 * scaleX, FontStyle.Bold);
-                g.DrawString(city.CityName, cityFont, _palette.CityName, (city.X - startX) * scaleX, (city.Z - startY) * scaleY);
+                g.DrawString(city.CityName, cityFont, palette.CityName, (city.X - startX) * scaleX, (city.Z - startY) * scaleY);
             }
 
             var overlays = _mapper.MapOverlays.Where(item =>

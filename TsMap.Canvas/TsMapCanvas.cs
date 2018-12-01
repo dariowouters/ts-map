@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 namespace TsMap.Canvas
@@ -14,6 +16,10 @@ namespace TsMap.Canvas
 
         private float _mapScale = 4000;
 
+        private ImageExportOptionForm _imageExportForm;
+
+        private MapPalette _defaultPalette;
+
         public TsMapCanvas(Form f, string path, List<Mod> mods)
         {
             InitializeComponent();
@@ -22,6 +28,7 @@ namespace TsMap.Canvas
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
             var mapper = new TsMapper(path, mods);
+            _defaultPalette = new SimpleMapPalette();
 
             if (path.Contains("American Truck Simulator"))
             {
@@ -36,7 +43,7 @@ namespace TsMap.Canvas
 
             mapper.Parse();
 
-            _renderer = new TsMapRenderer(mapper, new SimpleMapPalette());
+            _renderer = new TsMapRenderer(mapper);
 
             Timer t = new Timer
             {
@@ -61,7 +68,11 @@ namespace TsMap.Canvas
 
             Resize += TsMapCanvas_Resize;
 
-            Closed += (s, e) => { f.Close(); };
+            Closed += (s, e) =>
+            {
+                f.Close();
+                _imageExportForm?.Close();
+            };
 
         }
 
@@ -78,9 +89,36 @@ namespace TsMap.Canvas
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos);
+            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _defaultPalette);
             base.OnPaint(e);
         }
 
+        private void ExportImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_imageExportForm == null || _imageExportForm.IsDisposed) _imageExportForm = new ImageExportOptionForm(new SimpleMapPalette());
+            _imageExportForm.Show();
+            _imageExportForm.BringToFront();
+
+            _imageExportForm.ExportImage += (width, height, palette) => // Called when export button is pressed in ImageExportOptionForm
+            {
+                if (width == 0 || height == 0) return;
+                var bitmap = new Bitmap(width, height);
+                _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                    _mapScale, _pos, palette);
+                var result = exportFileDialog.ShowDialog();
+                if (result != DialogResult.OK) return;
+
+                var fileStream = exportFileDialog.OpenFile();
+
+                bitmap.Save(fileStream, ImageFormat.Png);
+                fileStream.Close();
+                _imageExportForm.Close();
+            };
+        }
+
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
