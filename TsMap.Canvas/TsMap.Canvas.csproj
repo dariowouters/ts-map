@@ -57,6 +57,12 @@
     <Compile Include="ItemVisibilityForm.Designer.cs">
       <DependentUpon>ItemVisibilityForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="LocalizationSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LocalizationSettingsForm.Designer.cs">
+      <DependentUpon>LocalizationSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MapPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -86,6 +92,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ItemVisibilityForm.resx">
       <DependentUpon>ItemVisibilityForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocalizationSettingsForm.resx">
+      <DependentUpon>LocalizationSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PaletteEditorForm.resx">
       <DependentUpon>PaletteEditorForm.cs</DependentUpon>

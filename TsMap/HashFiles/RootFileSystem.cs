@@ -27,10 +27,10 @@ namespace TsMap.HashFiles
             return _entryPath;
         }
 
-        /// <summary> 
-        /// Will return local path 
-        /// eg. If full path is material/ui/test.mat this will return 'material/ui' 
-        /// </summary> 
+        /// <summary>
+        /// Will return local path
+        /// eg. If full path is material/ui/test.mat this will return 'material/ui'
+        /// </summary>
         public string GetLocalPath()
         {
             var lastSlash = _entryPath.LastIndexOf('/');
@@ -201,6 +201,18 @@ namespace TsMap.HashFiles
             }
         }
 
+        public void AddDirectoryManually(string path, ScsEntry entry)
+        {
+            Directories.Add(entry.GetHash(), new ScsDirectory(_rfs, path));
+        }
+
+        public string GetCurrentDirectoryName()
+        {
+            if (!EntryPath.Contains('/')) return EntryPath;
+            var pathParts = EntryPath.Split('/');
+            return pathParts[pathParts.Length - 1];
+        }
+
         public List<ScsFile> GetFiles(string filter = "")
         {
             return Files.Values.Where(x => x.GetFullName().Contains(filter)).ToList();
@@ -306,6 +318,11 @@ namespace TsMap.HashFiles
             {
                 _rootDirectory.AddZipEntry(entry, path);
             }
+        }
+
+        public ScsDirectory GetRootDirectory()
+        {
+            return _rootDirectory;
         }
 
         public ScsDirectory GetDirectory(ulong hash)

@@ -37,6 +37,7 @@
             this.paletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.MapPanel = new TsMap.Canvas.MapPanel();
+            this.localizationSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -78,6 +79,7 @@
             // 
             this.itemVisibilityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemVisibilityToolStripMenuItem1,
+            this.localizationSettingsToolStripMenuItem,
             this.paletteToolStripMenuItem});
             this.itemVisibilityToolStripMenuItem.Name = "itemVisibilityToolStripMenuItem";
             this.itemVisibilityToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -86,14 +88,14 @@
             // itemVisibilityToolStripMenuItem1
             // 
             this.itemVisibilityToolStripMenuItem1.Name = "itemVisibilityToolStripMenuItem1";
-            this.itemVisibilityToolStripMenuItem1.Size = new System.Drawing.Size(145, 22);
+            this.itemVisibilityToolStripMenuItem1.Size = new System.Drawing.Size(182, 22);
             this.itemVisibilityToolStripMenuItem1.Text = "Item Visibility";
             this.itemVisibilityToolStripMenuItem1.Click += new System.EventHandler(this.ItemVisibilityToolStripMenuItem_Click);
             // 
             // paletteToolStripMenuItem
             // 
             this.paletteToolStripMenuItem.Name = "paletteToolStripMenuItem";
-            this.paletteToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.paletteToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.paletteToolStripMenuItem.Text = "Palette";
             this.paletteToolStripMenuItem.Click += new System.EventHandler(this.paletteToolStripMenuItem_Click);
             // 
@@ -111,6 +113,13 @@
             this.MapPanel.Size = new System.Drawing.Size(802, 568);
             this.MapPanel.TabIndex = 1;
             this.MapPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.MapPanel_Paint);
+            // 
+            // localizationSettingsToolStripMenuItem
+            // 
+            this.localizationSettingsToolStripMenuItem.Name = "localizationSettingsToolStripMenuItem";
+            this.localizationSettingsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.localizationSettingsToolStripMenuItem.Text = "Localization Settings";
+            this.localizationSettingsToolStripMenuItem.Click += new System.EventHandler(this.localizationSettingsToolStripMenuItem_Click);
             // 
             // TsMapCanvas
             // 
@@ -139,5 +148,6 @@
         private System.Windows.Forms.ToolStripMenuItem itemVisibilityToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem paletteToolStripMenuItem;
         private MapPanel MapPanel;
+        private System.Windows.Forms.ToolStripMenuItem localizationSettingsToolStripMenuItem;
     }
 }

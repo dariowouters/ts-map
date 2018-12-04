@@ -41,7 +41,7 @@
             this.ExportBtn.Location = new System.Drawing.Point(12, 157);
             this.ExportBtn.Name = "ExportBtn";
             this.ExportBtn.Size = new System.Drawing.Size(239, 23);
-            this.ExportBtn.TabIndex = 0;
+            this.ExportBtn.TabIndex = 2;
             this.ExportBtn.Text = "Export";
             this.ExportBtn.UseVisualStyleBackColor = true;
             this.ExportBtn.Click += new System.EventHandler(this.ExportBtn_Click);
@@ -53,7 +53,7 @@
             this.WidthText.Location = new System.Drawing.Point(12, 25);
             this.WidthText.Name = "WidthText";
             this.WidthText.Size = new System.Drawing.Size(239, 20);
-            this.WidthText.TabIndex = 1;
+            this.WidthText.TabIndex = 0;
             // 
             // HeightText
             // 

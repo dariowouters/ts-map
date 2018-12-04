@@ -8,6 +8,7 @@ namespace TsMap
         private TsMapper _mapper;
 
         public string Name { get; set; }
+        public string NameLocalized { get; set; }
         public string Country { get; set; }
         public ulong Token { get; set; }
 
@@ -31,6 +32,11 @@ namespace TsMap
                 else if (line.Contains("city_name") && !line.Contains("uppercase") && !line.Contains("short") && !line.Contains("localized"))
                 {
                     Name = line.Split('"')[1];
+                }
+                else if (line.Contains("city_name_localized"))
+                {
+                    NameLocalized = line.Split('"')[1];
+                    NameLocalized = NameLocalized.Substring(2, NameLocalized.Length - 4);
                 }
                 else if (line.Contains("country"))
                 {

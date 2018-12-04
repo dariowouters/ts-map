@@ -330,7 +330,16 @@ namespace TsMap
                 foreach (var city in cities)
                 {
                     var cityFont = new Font("Arial", 80 * scaleX, FontStyle.Bold);
-                    g.DrawString(city.CityName, cityFont, palette.CityName, (city.X - startX) * scaleX,
+
+                    var name = city.City.Name;
+
+                    if (city.City.NameLocalized != string.Empty)
+                    {
+                        var localName = _mapper.GetLocalizedName(city.City.NameLocalized);
+                        if (localName != null) name = localName;
+                    }
+
+                    g.DrawString(name, cityFont, palette.CityName, (city.X - startX) * scaleX,
                         (city.Z - startY) * scaleY);
                 }
             }

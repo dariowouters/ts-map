@@ -243,6 +243,18 @@ using static Helper;
 
                     dir?.AddHashEntry(model2Entry);
                 }
+                var localeEntry = (ScsHashEntry) GetEntry("locale");
+                if (localeEntry != null)
+                {
+                    var dir = _rfs.GetDirectory("locale");
+                    if (dir == null)
+                    {
+                        _rfs.GetRootDirectory()?.AddDirectoryManually("locale", localeEntry);
+                        dir = _rfs.GetDirectory("locale");
+                        if (dir == null) Log.Msg("Fuck");
+                    }
+                    dir?.AddHashEntry(localeEntry);
+                }
             }
             else
             {

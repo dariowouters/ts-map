@@ -16,6 +16,10 @@ namespace TsMap
         public bool IsEts2 = true;
 
         private List<string> _sectorFiles;
+        public int SelectedLocalization = 0;
+        public List<string> LocalizationList = new List<string>();
+
+        public Dictionary<string, string> LocalizedNames = new Dictionary<string, string>();
 
         private readonly Dictionary<ulong, TsPrefab> _prefabLookup = new Dictionary<ulong, TsPrefab>();
         private readonly Dictionary<ulong, TsCity> _citiesLookup = new Dictionary<ulong, TsCity>();
@@ -41,7 +45,7 @@ namespace TsMap
             _gameDir = gameDir;
             _mods = mods;
             Sectors = new List<TsSector>();
-
+            LocalizationList.Add("None");
         }
 
         private void ParseCityFiles()
@@ -390,6 +394,20 @@ namespace TsMap
             }
         }
 
+        private void ReadLocalizationOptions()
+        {
+            var localeDir = Rfs.GetDirectory("locale");
+            if (localeDir == null)
+            {
+                Log.Msg("Could not find locale directory.");
+                return;
+            }
+            foreach (var localeDirDirectory in localeDir.Directories)
+            {
+                LocalizationList.Add(localeDirDirectory.Value.GetCurrentDirectoryName());
+            }
+        }
+
         /// <summary>
         /// Parse through all .scs files and retreive all necessary files
         /// </summary>
@@ -414,6 +432,8 @@ namespace TsMap
 
             Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
+            ReadLocalizationOptions();
+
             ParseDefFiles();
             ParseMapFiles();
 
@@ -426,6 +446,56 @@ namespace TsMap
             Sectors.ForEach(sec => sec.ClearFileData());
             Log.Msg($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base)" +
                     $" map files and {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms total.");
+        }
+
+        public void UpdateLocalization(int locIndex)
+        {
+            LocalizedNames = new Dictionary<string, string>();
+            if (locIndex < 0) return;
+            SelectedLocalization = locIndex;
+            if (locIndex == 0 || locIndex >= LocalizationList.Count) return;
+            var localFile = Rfs.GetFileEntry($"locale/{LocalizationList[locIndex]}/local.sii");
+            if (localFile == null)
+            {
+                Log.Msg($"Could not find locale file for '{LocalizationList[locIndex]}'");
+                return;
+            }
+
+            var fileContents = Helper.Decrypt3Nk(localFile.Entry.Read());
+            if (fileContents == null)
+            {
+                Log.Msg($"Could not decrypt locale file '{localFile.GetPath()}'");
+                return;
+            }
+
+            var key = string.Empty;
+            var saveValues = false;
+
+            foreach (var l in fileContents.Split('\n'))
+            {
+                if (l.Contains("#+ Names of cities")) saveValues = true;
+                if (!saveValues) continue;
+                if (l.Contains("#@}")) break;
+                if(!l.Contains(':')) continue;
+
+
+                if (l.Contains("key[]"))
+                {
+                    key = l.Split('"')[1];
+                }
+                else if (l.Contains("val[]"))
+                {
+                    var val = l.Split('"')[1];
+                    if (key != string.Empty && val != string.Empty)
+                    {
+                        if (!LocalizedNames.ContainsKey(key))
+                        {
+                            LocalizedNames.Add(key, val);
+                        }
+                    }
+                    key = string.Empty;
+                }
+            }
         }
 
         public TsNode GetNodeByUid(ulong uid)
@@ -446,6 +516,11 @@ namespace TsMap
         public TsCity LookupCity(ulong cityId)
         {
             return _citiesLookup.ContainsKey(cityId) ? _citiesLookup[cityId] : null;
+        }
+
+        public string GetLocalizedName(string template)
+        {
+            return LocalizedNames.FirstOrDefault(x => x.Key == template).Value;
         }
 
         public TsMapOverlay LookupOverlay(ulong overlayId)

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Windows.Forms;
 
 namespace TsMap.Canvas
 {
     public partial class TsMapCanvas : Form
     {
+        private readonly TsMapper _mapper;
         private readonly TsMapRenderer _renderer;
 
         private PointF _pos;
@@ -17,6 +17,9 @@ namespace TsMap.Canvas
         private float _mapScale = 4000;
 
         private ImageExportOptionForm _imageExportForm;
+        private ItemVisibilityForm _itemVisibilityForm;
+        private PaletteEditorForm _paletteEditorForm;
+        private LocalizationSettingsForm _localizationSettingsForm;
 
         private RenderFlags _renderFlags = RenderFlags.All;
 
@@ -26,23 +29,23 @@ namespace TsMap.Canvas
         {
             InitializeComponent();
 
-            var mapper = new TsMapper(path, mods);
+            _mapper = new TsMapper(path, mods);
             _palette = new SimpleMapPalette();
 
             if (path.Contains("American Truck Simulator"))
             {
                 _pos = new PointF(-103000, -54444);
-                mapper.IsEts2 = false;
+                _mapper.IsEts2 = false;
             }
             else
             {
                 _pos = new PointF(850, -920);
-                mapper.IsEts2 = true;
+                _mapper.IsEts2 = true;
             }
 
-            mapper.Parse();
+            _mapper.Parse();
 
-            _renderer = new TsMapRenderer(mapper);
+            _renderer = new TsMapRenderer(_mapper);
 
             Timer t = new Timer
             {
@@ -57,7 +60,7 @@ namespace TsMap.Canvas
             MapPanel.MouseMove += (s, e) =>
             {
                 if (_dragPoint == null) return;
-                var spd = _mapScale / Math.Max(this.Width, this.Height);
+                var spd = _mapScale / Math.Max(MapPanel.Width, MapPanel.Height);
                 _pos.X = _pos.X - (e.X - _dragPoint.Value.X) * spd;
                 _pos.Y = _pos.Y - (e.Y - _dragPoint.Value.Y) * spd;
                 _dragPoint = e.Location;
@@ -118,11 +121,11 @@ namespace TsMap.Canvas
 
         private void ItemVisibilityToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var itemVisibilityForm = new ItemVisibilityForm(_renderFlags);
-            itemVisibilityForm.Show();
-            itemVisibilityForm.BringToFront();
+            _itemVisibilityForm = new ItemVisibilityForm(_renderFlags);
+            _itemVisibilityForm.Show();
+            _itemVisibilityForm.BringToFront();
 
-            itemVisibilityForm.UpdateItemVisibility += (renderFlags) =>
+            _itemVisibilityForm.UpdateItemVisibility += (renderFlags) =>
             {
                 _renderFlags = renderFlags;
             };
@@ -130,11 +133,11 @@ namespace TsMap.Canvas
 
         private void paletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var paletteEditorForm = new PaletteEditorForm(_palette);
-            paletteEditorForm.Show();
-            paletteEditorForm.BringToFront();
+            _paletteEditorForm = new PaletteEditorForm(_palette);
+            _paletteEditorForm.Show();
+            _paletteEditorForm.BringToFront();
 
-            paletteEditorForm.UpdatePalette += (palette) =>
+            _paletteEditorForm.UpdatePalette += (palette) =>
             {
                 _palette = palette;
             };
@@ -143,6 +146,19 @@ namespace TsMap.Canvas
         private void MapPanel_Paint(object sender, PaintEventArgs e)
         {
             _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _palette, _renderFlags);
+        }
+
+        private void localizationSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _localizationSettingsForm = new LocalizationSettingsForm(_mapper.LocalizationList, _mapper.SelectedLocalization);
+            _localizationSettingsForm.Show();
+            _localizationSettingsForm.BringToFront();
+
+            _localizationSettingsForm.UpdateLocalization += (locIndex) =>
+            {
+                _mapper.UpdateLocalization(locIndex);
+                _localizationSettingsForm.Close();
+            };
         }
     }
 }

@@ -42,7 +42,7 @@
             this.CityNamesCheckBox.Location = new System.Drawing.Point(12, 127);
             this.CityNamesCheckBox.Name = "CityNamesCheckBox";
             this.CityNamesCheckBox.Size = new System.Drawing.Size(76, 17);
-            this.CityNamesCheckBox.TabIndex = 4;
+            this.CityNamesCheckBox.TabIndex = 5;
             this.CityNamesCheckBox.Text = "CityNames";
             this.CityNamesCheckBox.UseVisualStyleBackColor = true;
             this.CityNamesCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
@@ -53,7 +53,7 @@
             this.MapAreasCheckBox.Location = new System.Drawing.Point(12, 58);
             this.MapAreasCheckBox.Name = "MapAreasCheckBox";
             this.MapAreasCheckBox.Size = new System.Drawing.Size(74, 17);
-            this.MapAreasCheckBox.TabIndex = 5;
+            this.MapAreasCheckBox.TabIndex = 2;
             this.MapAreasCheckBox.Text = "MapAreas";
             this.MapAreasCheckBox.UseVisualStyleBackColor = true;
             this.MapAreasCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
@@ -64,7 +64,7 @@
             this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(12, 104);
             this.FerryConnectionsCheckBox.Name = "FerryConnectionsCheckBox";
             this.FerryConnectionsCheckBox.Size = new System.Drawing.Size(108, 17);
-            this.FerryConnectionsCheckBox.TabIndex = 6;
+            this.FerryConnectionsCheckBox.TabIndex = 4;
             this.FerryConnectionsCheckBox.Text = "FerryConnections";
             this.FerryConnectionsCheckBox.UseVisualStyleBackColor = true;
             this.FerryConnectionsCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
@@ -75,7 +75,7 @@
             this.RoadsCheckBox.Location = new System.Drawing.Point(12, 35);
             this.RoadsCheckBox.Name = "RoadsCheckBox";
             this.RoadsCheckBox.Size = new System.Drawing.Size(57, 17);
-            this.RoadsCheckBox.TabIndex = 7;
+            this.RoadsCheckBox.TabIndex = 1;
             this.RoadsCheckBox.Text = "Roads";
             this.RoadsCheckBox.UseVisualStyleBackColor = true;
             this.RoadsCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
@@ -86,7 +86,7 @@
             this.MapOverlaysCheckBox.Location = new System.Drawing.Point(12, 81);
             this.MapOverlaysCheckBox.Name = "MapOverlaysCheckBox";
             this.MapOverlaysCheckBox.Size = new System.Drawing.Size(88, 17);
-            this.MapOverlaysCheckBox.TabIndex = 8;
+            this.MapOverlaysCheckBox.TabIndex = 3;
             this.MapOverlaysCheckBox.Text = "MapOverlays";
             this.MapOverlaysCheckBox.UseVisualStyleBackColor = true;
             this.MapOverlaysCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
@@ -97,7 +97,7 @@
             this.PrefabsCheckBox.Location = new System.Drawing.Point(12, 12);
             this.PrefabsCheckBox.Name = "PrefabsCheckBox";
             this.PrefabsCheckBox.Size = new System.Drawing.Size(62, 17);
-            this.PrefabsCheckBox.TabIndex = 9;
+            this.PrefabsCheckBox.TabIndex = 0;
             this.PrefabsCheckBox.Text = "Prefabs";
             this.PrefabsCheckBox.UseVisualStyleBackColor = true;
             this.PrefabsCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
