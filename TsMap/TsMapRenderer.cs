@@ -366,7 +366,7 @@ namespace TsMap
             {
                 var companies = _mapper.Companies.Where(item =>
                         item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                        item.Z <= endY + 1500)
+                        item.Z <= endY + 1500 && !item.Hidden)
                     .ToList();
 
                 foreach (var companyItem in companies) // TODO: Scaling

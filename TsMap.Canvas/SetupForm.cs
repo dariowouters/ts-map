@@ -17,7 +17,7 @@ namespace TsMap.Canvas
             InitializeComponent();
             folderBrowserDialog1.Description = "Please select the game directory\nE.g. D:/Games/steamapps/common/Euro Truck Simulator 2/";
             folderBrowserDialog1.ShowNewFolderButton = false;
-            //folderBrowserDialog1.SelectedPath = @"C:\Program Files (x86)\Steam\steamapps\common\Euro Truck Simulator 2";
+            //folderBrowserDialog1.SelectedPath = @"C:\Games\steamapps\common\Euro Truck Simulator 2";
             modFolderBrowserDialog.Description = "Please select the mod directory\nE.g. D:/Users/Dario/Documents/Euro Truck Simulator 2/mod";
             modFolderBrowserDialog.ShowNewFolderButton = false;
             //modFolderBrowserDialog.SelectedPath = @"D:\Users\Dario\Documents\Euro Truck Simulator 2\mod";

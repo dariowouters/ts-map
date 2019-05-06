@@ -195,7 +195,7 @@ namespace TsMap
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            if (sector.Version == Common.BaseFileVersion133) count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            if (sector.Version >= Common.BaseFileVersion133) count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             fileOffset += 0x04 + (0x08 * count);
             BlockSize = fileOffset - startOffset;
         }
