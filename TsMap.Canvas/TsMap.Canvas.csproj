@@ -8,9 +8,10 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>TsMap.Canvas</RootNamespace>
     <AssemblyName>TsMap.Canvas</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,6 +46,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImageExportOptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageExportOptionForm.Designer.cs">
+      <DependentUpon>ImageExportOptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemVisibilityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ItemVisibilityForm.Designer.cs">
+      <DependentUpon>ItemVisibilityForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocalizationSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LocalizationSettingsForm.Designer.cs">
+      <DependentUpon>LocalizationSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MapPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PaletteEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PaletteEditorForm.Designer.cs">
+      <DependentUpon>PaletteEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetupForm.cs">
@@ -60,6 +88,18 @@
     <Compile Include="TsMapCanvas.Designer.cs">
       <DependentUpon>TsMapCanvas.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ImageExportOptionForm.resx">
+      <DependentUpon>ImageExportOptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemVisibilityForm.resx">
+      <DependentUpon>ItemVisibilityForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocalizationSettingsForm.resx">
+      <DependentUpon>LocalizationSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaletteEditorForm.resx">
+      <DependentUpon>PaletteEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -68,6 +108,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="SetupForm.resx">
       <DependentUpon>SetupForm.cs</DependentUpon>

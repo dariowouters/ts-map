@@ -195,7 +195,7 @@ namespace TsMap
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            if (sector.Version == Common.BaseFileVersion133) count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
+            if (sector.Version >= Common.BaseFileVersion133) count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
             fileOffset += 0x04 + (0x08 * count);
             BlockSize = fileOffset - startOffset;
         }
@@ -232,7 +232,7 @@ namespace TsMap
 
     public class TsCityItem : TsItem // TODO: Add zoom levels/range to show city names and icons correctly
     {
-        public string CityName { get; }
+        public TsCity City { get; }
 
         public TsCityItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -241,8 +241,8 @@ namespace TsMap
 
             Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset) & 0x01) != 0;
             var cityId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
-            CityName = Sector.Mapper.LookupCity(cityId)?.Name;
-            if (CityName == null)
+            City = Sector.Mapper.LookupCity(cityId);
+            if (City == null)
             {
                 Valid = false;
                 Log.Msg($"Could not find City with id: {cityId:X}, " +

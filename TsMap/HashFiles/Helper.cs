@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using System.Text;
 
 namespace TsMap.HashFiles
 {
@@ -55,6 +55,20 @@ namespace TsMap.HashFiles
                 return path;
             }
             return CombinePath(currentPath, path);
+        }
+
+        internal static string Decrypt3Nk(byte[] src) // from quickbms scsgames.bms script
+        {
+            if (src.Length < 0x05 || src[0] != 0x33 && src[1] != 0x6E && src[2] != 0x4B) return null;
+            var decrypted = new byte[src.Length - 6];
+            var key = src[5];
+
+            for (var i = 6; i < src.Length; i++)
+            {
+                decrypted[i - 6] = (byte)(((((key << 2) ^ (key ^ 0xff)) << 3) ^ key) ^ src[i]);
+                key++;
+            }
+            return Encoding.UTF8.GetString(decrypted);
         }
     }
 }
