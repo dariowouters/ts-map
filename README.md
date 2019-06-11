@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### Support for 1.35 experimental beta (can always stop working when they push an update)
+### Support for 1.35 & Washington DLC
 
 ## Map mod support
 It can now load map mods.
@@ -40,6 +40,7 @@ ATS:
     - Arizona
     - New Mexico
     - Oregon
+    - Washington
 - ETS2
     - Base
     - Going East!
