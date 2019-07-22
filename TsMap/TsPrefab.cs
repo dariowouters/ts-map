@@ -52,6 +52,8 @@ namespace TsMap
 
         private byte[] _stream;
 
+        public bool ValidRoad { get; private set; }
+
         public List<TsPrefabNode> PrefabNodes { get; private set; }
         public List<TsSpawnPoint> SpawnPoints { get; private set; }
         public List<TsMapPoint> MapPoints { get; private set; }
@@ -90,7 +92,9 @@ namespace TsMap
             }
 
             var nodeCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
-            var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x10);
+            var navCurveCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
+            ValidRoad = navCurveCount != 0;
+            var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var triggerPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
 

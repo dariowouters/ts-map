@@ -210,8 +210,8 @@ namespace TsMap
                             continue;
                         }
 
-                        foreach (var neighbourPointIndex in mapPoint.Neighbours
-                        ) // TODO: Fix connection between road segments
+                        if (!prefabItem.Prefab.ValidRoad) continue;
+                        foreach (var neighbourPointIndex in mapPoint.Neighbours) // TODO: Fix connection between road segments
                         {
                             if (pointsDrawn.Contains(neighbourPointIndex)) continue;
                             var neighbourPoint = prefabItem.Prefab.MapPoints[neighbourPointIndex];
