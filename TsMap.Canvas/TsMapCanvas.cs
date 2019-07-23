@@ -11,11 +11,6 @@ namespace TsMap.Canvas
         private readonly TsMapper _mapper;
         private readonly TsMapRenderer _renderer;
 
-        private PointF _pos;
-        private Point? _dragPoint;
-
-        private float _mapScale = 4000;
-
         private ImageExportOptionForm _imageExportForm;
         private ItemVisibilityForm _itemVisibilityForm;
         private PaletteEditorForm _paletteEditorForm;
@@ -24,6 +19,11 @@ namespace TsMap.Canvas
         private RenderFlags _renderFlags = RenderFlags.All;
 
         private MapPalette _palette;
+
+        private bool _dragging;
+        private PointF _lastPoint;
+        private PointF _startPoint;
+        private float _scale = 0.2f;
 
         public TsMapCanvas(Form f, string path, List<Mod> mods)
         {
@@ -34,12 +34,12 @@ namespace TsMap.Canvas
 
             if (path.Contains("American Truck Simulator"))
             {
-                _pos = new PointF(-103000, -54444);
+                _startPoint = new PointF(-103000, -54444);
                 _mapper.IsEts2 = false;
             }
             else
             {
-                _pos = new PointF(850, -920);
+                _startPoint = new PointF(-1000, -4000);
                 _mapper.IsEts2 = true;
             }
 
@@ -55,18 +55,27 @@ namespace TsMap.Canvas
             t.Start();
 
             // Panning around
-            MapPanel.MouseDown += (s, e) => _dragPoint = e.Location;
-            MapPanel.MouseUp += (s, e) => _dragPoint = null;
+            MapPanel.MouseDown += (s, e) =>
+            {
+                _dragging = true;
+                _lastPoint = new PointF(e.X, e.Y);
+            };
+            MapPanel.MouseUp += (s, e) => _dragging = false;
             MapPanel.MouseMove += (s, e) =>
             {
-                if (_dragPoint == null) return;
-                var spd = _mapScale / Math.Max(MapPanel.Width, MapPanel.Height);
-                _pos.X = _pos.X - (e.X - _dragPoint.Value.X) * spd;
-                _pos.Y = _pos.Y - (e.Y - _dragPoint.Value.Y) * spd;
-                _dragPoint = e.Location;
+                if (_dragging)
+                {
+                    _startPoint.X -= (e.X - _lastPoint.X) / _scale;
+                    _startPoint.Y -= (e.Y - _lastPoint.Y) / _scale;
+                }
+                _lastPoint = new PointF(e.X, e.Y);
             };
 
-            MapPanel.MouseWheel += TsMapCanvas_MouseWheel;
+            MapPanel.MouseWheel += (s, e) =>
+            {
+                _scale += (e.Delta > 0 ? 1 : -1) * 0.05f * _scale;
+                _scale = Math.Max(_scale, 0.0005f);
+            };
 
             MapPanel.Resize += TsMapCanvas_Resize;
 
@@ -76,12 +85,6 @@ namespace TsMap.Canvas
                 _imageExportForm?.Close();
             };
 
-        }
-
-        private void TsMapCanvas_MouseWheel(object sender, MouseEventArgs e)
-        {
-            _mapScale -= e.Delta;
-            _mapScale = Math.Max(100, Math.Min(60000, _mapScale));
         }
 
         private void TsMapCanvas_Resize(object sender, System.EventArgs e)
@@ -101,7 +104,7 @@ namespace TsMap.Canvas
                 var bitmap = new Bitmap(width, height);
 
                 _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    _mapScale, _pos, _palette, _renderFlags);
+                    _scale, _startPoint, _palette, _renderFlags);
 
                 var result = exportFileDialog.ShowDialog();
                 if (result != DialogResult.OK) return;
@@ -145,7 +148,7 @@ namespace TsMap.Canvas
 
         private void MapPanel_Paint(object sender, PaintEventArgs e)
         {
-            _renderer.Render(e.Graphics, e.ClipRectangle, _mapScale, _pos, _palette, _renderFlags);
+            _renderer.Render(e.Graphics, e.ClipRectangle, _scale, _startPoint, _palette, _renderFlags);
         }
 
         private void localizationSettingsToolStripMenuItem_Click(object sender, EventArgs e)
