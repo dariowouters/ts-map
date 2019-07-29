@@ -10,6 +10,7 @@ namespace TsMap
         public float Z;
         public float RotX;
         public float RotZ;
+        public int LaneCount;
     }
 
     public struct TsMapPoint
@@ -22,6 +23,7 @@ namespace TsMap
         public byte PrefabColorFlags;
         public int NeighbourCount;
         public List<int> Neighbours;
+        public sbyte ControlNodeIndex;
     }
 
     public class TsSpawnPoint
@@ -46,7 +48,7 @@ namespace TsMap
         private const int SpawnPointBlockSize = 0x20;
         private const int TriggerPointBlockSize = 0x30;
 
-        private readonly string _filePath;
+        public string FilePath { get; }
         public ulong Token { get; }
         public string Category { get; }
 
@@ -59,11 +61,11 @@ namespace TsMap
 
         public TsPrefab(TsMapper mapper, string filePath, ulong token, string category)
         {
-            _filePath = filePath;
+            FilePath = filePath;
             Token = token;
             Category = category;
 
-            var file = mapper.Rfs.GetFileEntry(_filePath);
+            var file = mapper.Rfs.GetFileEntry(FilePath);
 
             if (file == null) return;
 
@@ -85,7 +87,7 @@ namespace TsMap
 
             if (version < 0x15)
             {
-                Log.Msg($"{_filePath} file version ({version}) too low, min. is {0x15}");
+                Log.Msg($"{FilePath} file version ({version}) too low, min. is {0x15}");
                 return;
             }
 
@@ -111,6 +113,20 @@ namespace TsMap
                     RotX = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x1C),
                     RotZ = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x24),
                 };
+
+                int laneCount = 0;
+                var nodeFileOffset = nodeBaseOffset + 0x24;
+                for (var j = 0; j < 8; j++)
+                {
+                    if (MemoryHelper.ReadInt32(_stream, nodeFileOffset += 0x04) != -1) laneCount++;
+                }
+
+                for (var j = 0; j < 8; j++)
+                {
+                    if (MemoryHelper.ReadInt32(_stream, nodeFileOffset += 0x04) != -1) laneCount++;
+                }
+                node.LaneCount = laneCount;
+
                 PrefabNodes.Add(node);
             }
 
@@ -137,6 +153,7 @@ namespace TsMap
                 var roadLookFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x01);
                 var laneTypeFlags = (byte) (roadLookFlags & 0x0F);
                 var laneOffsetFlags = (byte)(roadLookFlags >> 4);
+                var controlNodeIndexFlags = MemoryHelper.ReadInt8(_stream, mapPointBaseOffset + 0x04);
                 int laneOffset;
                 switch (laneOffsetFlags)
                 {
@@ -162,13 +179,22 @@ namespace TsMap
                     case 6: laneCount = 7; break;
                     case 8: laneCount = 3; break;
                     case 13: laneCount = -1; break;
-                    case 14: laneCount = 2; break; // auto ; temp set at 2
+                    case 14: laneCount = -2; break; // auto
                     default:
                         laneCount = 1;
                         // Log.Msg($"Unknown LaneType: {laneTypeFlags}");
                         break;
                 }
-
+                sbyte controlNodeIndex = -1;
+                switch (controlNodeIndexFlags)
+                {
+                    case 1: controlNodeIndex = 0; break;
+                    case 2: controlNodeIndex = 1; break;
+                    case 4: controlNodeIndex = 2; break;
+                    case 8: controlNodeIndex = 3; break;
+                    case 16: controlNodeIndex = 4; break;
+                    case 32: controlNodeIndex = 5; break;
+                }
                 var prefabColorFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x02);
 
                 var navFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x05);
@@ -183,7 +209,8 @@ namespace TsMap
                     X = MemoryHelper.ReadSingle(_stream, mapPointBaseOffset + 0x08),
                     Z = MemoryHelper.ReadSingle(_stream, mapPointBaseOffset + 0x10),
                     Neighbours = new List<int>(),
-                    NeighbourCount = MemoryHelper.ReadInt32(_stream, mapPointBaseOffset + 0x14 + (0x04 * 6))
+                    NeighbourCount = MemoryHelper.ReadInt32(_stream, mapPointBaseOffset + 0x14 + (0x04 * 6)),
+                    ControlNodeIndex = controlNodeIndex
                 };
 
                 for (var x = 0; x < point.NeighbourCount; x++)

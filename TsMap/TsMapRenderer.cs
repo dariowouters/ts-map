@@ -9,7 +9,7 @@ namespace TsMap
     public class TsMapRenderer
     {
         private readonly TsMapper _mapper;
-        private const float itemDrawMargin = 500f;
+        private const float itemDrawMargin = 1000f;
 
         public TsMapRenderer(TsMapper mapper)
         {
@@ -126,7 +126,7 @@ namespace TsMap
             {
                 List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
 
-                foreach (var prefabItem in prefabs) // TODO: Road Width
+                foreach (var prefabItem in prefabs)
                 {
                     var originNode = _mapper.GetNodeByUid(prefabItem.Nodes[0]);
                     if (prefabItem.Prefab.PrefabNodes == null) continue;
@@ -193,6 +193,13 @@ namespace TsMap
                                 continue;
                             }
 
+                            var mapPointLaneCount = mapPoint.LaneCount;
+
+                            if (mapPointLaneCount == -2 && i < prefabItem.Prefab.PrefabNodes.Count)
+                            {
+                                if (mapPoint.ControlNodeIndex != -1) mapPointLaneCount = prefabItem.Prefab.PrefabNodes[mapPoint.ControlNodeIndex].LaneCount;
+                            }
+
                             foreach (var neighbourPointIndex in mapPoint.Neighbours) // TODO: Fix connection between road segments
                             {
                                 if (pointsDrawn.Contains(neighbourPointIndex)) continue;
@@ -203,25 +210,40 @@ namespace TsMap
 
                                 var roadYaw = Math.Atan2(neighbourPoint.Z - mapPoint.Z, neighbourPoint.X - mapPoint.X);
 
+                                var neighbourLaneCount = neighbourPoint.LaneCount;
+
+                                if (neighbourLaneCount == -2 && neighbourPointIndex < prefabItem.Prefab.PrefabNodes.Count)
+                                {
+                                    if (neighbourPoint.ControlNodeIndex != -1) neighbourLaneCount = prefabItem.Prefab.PrefabNodes[neighbourPoint.ControlNodeIndex].LaneCount;
+                                }
+
+                                if (mapPointLaneCount == -2 && neighbourLaneCount != -2) mapPointLaneCount = neighbourLaneCount;
+                                else if (neighbourLaneCount == -2 && mapPointLaneCount != -2) neighbourLaneCount = mapPointLaneCount;
+                                else if (mapPointLaneCount == -2 && neighbourLaneCount == -2)
+                                {
+                                    Console.WriteLine($"Could not find lane count for ({i}, {neighbourPointIndex}), defaulting to 1 for {prefabItem.Prefab.FilePath}");
+                                    mapPointLaneCount = neighbourLaneCount = 1;
+                                }
+
                                 var cornerCoords = new List<PointF>();
 
                                 var coords = GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
-                                    (4.5f * mapPoint.LaneCount + mapPoint.LaneOffset) / 2f, roadYaw + Math.PI / 2);
+                                    (4.5f * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw + Math.PI / 2);
 
                                 cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 coords = GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
-                                    (4.5f * neighbourPoint.LaneCount + neighbourPoint.LaneOffset) / 2f,
+                                    (4.5f * neighbourLaneCount + neighbourPoint.LaneOffset) / 2f,
                                     roadYaw + Math.PI / 2);
                                 cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 coords = GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
-                                    (4.5f * neighbourPoint.LaneCount + mapPoint.LaneOffset) / 2f,
+                                    (4.5f * neighbourLaneCount + mapPoint.LaneOffset) / 2f,
                                     roadYaw - Math.PI / 2);
                                 cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 coords = GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
-                                    (4.5f * mapPoint.LaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
+                                    (4.5f * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
                                 cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 TsPrefabLook prefabLook = new TsPrefabPolyLook(cornerCoords)
