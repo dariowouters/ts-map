@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,6 +54,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TsMap.Canvas\TsMap.Canvas.csproj">
+      <Project>{B32C5D14-37B7-4E9F-A046-FB91C3338F02}</Project>
+      <Name>TsMap.Canvas</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TsMap\TsMap.csproj">
       <Project>{e458d6d9-6a9c-4214-92a2-46e5678eddda}</Project>
       <Name>TsMap</Name>

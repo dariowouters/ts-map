@@ -17,10 +17,10 @@ namespace TsMap.Canvas
             InitializeComponent();
             folderBrowserDialog1.Description = "Please select the game directory\nE.g. D:/Games/steamapps/common/Euro Truck Simulator 2/";
             folderBrowserDialog1.ShowNewFolderButton = false;
-            //folderBrowserDialog1.SelectedPath = @"C:\Games\steamapps\common\Euro Truck Simulator 2";
+            folderBrowserDialog1.SelectedPath = @"D:\Apps\Steam\steamapps\common\Euro Truck Simulator 2";
             modFolderBrowserDialog.Description = "Please select the mod directory\nE.g. D:/Users/Dario/Documents/Euro Truck Simulator 2/mod";
             modFolderBrowserDialog.ShowNewFolderButton = false;
-            //modFolderBrowserDialog.SelectedPath = @"D:\Users\Dario\Documents\Euro Truck Simulator 2\mod";
+            modFolderBrowserDialog.SelectedPath = @"D:\Documents\Euro Truck Simulator 2\mod";
         }
 
         private void BrowseBtn_Click(object sender, EventArgs e)
@@ -128,6 +128,7 @@ namespace TsMap.Canvas
                 modPath = modFolderBrowserDialog.SelectedPath;
                 var files = Directory.GetFiles(modPath, "*.scs");
                 _mods = files.Select(x => new Mod(x)).ToList();
+                _mods.Where(x => x.ModPath.Contains("promods")).ToList().ForEach(x => x.Load = true);
                 UpdateModList();
                 if (gamePath != null) NextBtn.Enabled = true;
             }

@@ -320,31 +320,6 @@ namespace TsMap
                 }
             }
 
-            if ((renderFlags & RenderFlags.CityNames) != RenderFlags.None)
-            {
-                var cities = _mapper.Cities.Where(item =>
-                        item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
-                        item.Z <= endY + 1500 && !item.Hidden)
-                    .ToList();
-
-                foreach (var city in cities)
-                {
-                    var cityFont = new Font("Arial", 80 * scaleX, FontStyle.Bold);
-
-                    var name = city.City.Name;
-
-                    if (city.City.NameLocalized != string.Empty)
-                    {
-                        var localName = _mapper.GetLocalizedName(city.City.NameLocalized);
-                        if (localName != null) name = localName;
-                    }
-
-                    g.DrawString(name, cityFont, palette.CityName, (city.X - startX) * scaleX,
-                        (city.Z - startY) * scaleY);
-                }
-            }
-
-
             if ((renderFlags & RenderFlags.MapOverlays) != RenderFlags.None)
             {
                 var overlays = _mapper.MapOverlays.Where(item =>
@@ -374,7 +349,7 @@ namespace TsMap
                     Bitmap b = companyItem.Overlay?.GetBitmap();
                     if (b != null)
                         g.DrawImage(b, (companyItem.X - startX) * scaleX, (companyItem.Z - startY) * scaleY,
-                            b.Width * scaleX, b.Height * scaleY);
+                            b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                 }
 
                 foreach (var prefab in prefabs) // Draw all prefab overlays
@@ -403,7 +378,7 @@ namespace TsMap
                                 if (b != null)
                                     g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                         (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                        b.Width * scaleX, b.Height * scaleY);
+                                        b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                                 break;
                             }
                             case TsSpawnPointType.Service:
@@ -414,7 +389,7 @@ namespace TsMap
                                 if (b != null)
                                     g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                         (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                        b.Width * scaleX, b.Height * scaleY);
+                                        b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                                 break;
                             }
                             case TsSpawnPointType.WeightStation:
@@ -425,7 +400,7 @@ namespace TsMap
                                 if (b != null)
                                     g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                         (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                        b.Width * scaleX, b.Height * scaleY);
+                                        b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                                 break;
                             }
                             case TsSpawnPointType.TruckDealer:
@@ -436,7 +411,7 @@ namespace TsMap
                                 if (b != null)
                                     g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                         (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                        b.Width * scaleX, b.Height * scaleY);
+                                        b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                                 break;
                             }
                             case TsSpawnPointType.GarageOutdoor:
@@ -447,7 +422,7 @@ namespace TsMap
                                 if (b != null)
                                     g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                         (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                        b.Width * scaleX, b.Height * scaleY);
+                                        b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                                 break;
                             }
                             case TsSpawnPointType.Recruitment:
@@ -458,7 +433,7 @@ namespace TsMap
                                 if (b != null)
                                     g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                         (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                        b.Width * scaleX, b.Height * scaleY);
+                                        b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                                 break;
                             }
                         }
@@ -482,7 +457,7 @@ namespace TsMap
                             if (b != null)
                                 g.DrawImage(b, (newPoint.X - b.Width / 2f - startX) * scaleX,
                                     (newPoint.Y - b.Height / 2f - startY) * scaleY,
-                                    b.Width * scaleX, b.Height * scaleY);
+                                    b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                         }
                     }
                 }
@@ -497,7 +472,7 @@ namespace TsMap
                     Bitmap b = triggerItem.Overlay?.GetBitmap();
                     if (b != null)
                         g.DrawImage(b, (triggerItem.X - startX) * scaleX, (triggerItem.Z - startY) * scaleY,
-                            b.Width * scaleX, b.Height * scaleY);
+                            b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                 }
 
                 var ferryItems = _mapper.FerryConnections.Where(item =>
@@ -510,15 +485,40 @@ namespace TsMap
                     Bitmap b = ferryItem.Overlay?.GetBitmap();
                     if (b != null)
                         g.DrawImage(b, (ferryItem.X - startX) * scaleX, (ferryItem.Z - startY) * scaleY,
-                            b.Width * scaleX, b.Height * scaleY);
+                            b.Width * 2 * scaleX, b.Height * 2 * scaleY);
                 }
             }
+
+            if ((renderFlags & RenderFlags.CityNames) != RenderFlags.None)
+            {
+                var cities = _mapper.Cities.Where(item =>
+                        item.X >= startX - 1500 && item.X <= endX + 1500 && item.Z >= startY - 1500 &&
+                        item.Z <= endY + 1500 && !item.Hidden)
+                    .ToList();
+
+                foreach (var city in cities)
+                {
+                    var cityFont = new Font("Microsoft Sans Serif", 80 * scaleX, FontStyle.Bold);
+
+                    var name = city.City.Name;
+
+                    if (city.City.NameLocalized != string.Empty)
+                    {
+                        var localName = _mapper.GetLocalizedName(city.City.NameLocalized);
+                        if (localName != null) name = localName;
+                    }
+
+                    g.DrawString(name, cityFont, palette.CityName, (city.X - startX) * scaleX,
+                        (city.Z - startY) * scaleY);
+                }
+            }
+
             var elapsedTime = DateTime.Now.Ticks - startTime;
             if ((renderFlags & RenderFlags.TextOverlay) != RenderFlags.None)
             {
-                g.DrawString(
-                    $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {centerX}, y: {centerY}, scale: {baseScale}",
-                    defaultFont, Brushes.WhiteSmoke, 5, 5);
+                //g.DrawString(
+                //    $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {centerX}, y: {centerY}, scale: {baseScale}",
+                //    defaultFont, Brushes.WhiteSmoke, 5, 5);
             }
 
         }
