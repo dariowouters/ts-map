@@ -38,6 +38,11 @@ namespace TsMap
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
+        public float minX = float.MaxValue;
+        public float maxX = float.MinValue;
+        public float minZ = float.MaxValue;
+        public float maxZ = float.MinValue;
+
         private List<TsSector> Sectors { get; set; }
 
         public TsMapper(string gameDir, List<Mod> mods)
@@ -496,6 +501,14 @@ namespace TsMap
                     key = string.Empty;
                 }
             }
+        }
+
+        public void UpdateEdgeCoords(TsNode node)
+        {
+            if (minX > node.X) minX = node.X;
+            if (maxX < node.X) maxX = node.X;
+            if (minZ > node.Z) minZ = node.Z;
+            if (maxZ < node.Z) maxZ = node.Z;
         }
 
         public TsNode GetNodeByUid(ulong uid)

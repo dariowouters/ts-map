@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 namespace TsMap.Canvas
@@ -11,7 +12,7 @@ namespace TsMap.Canvas
         private readonly TsMapper _mapper;
         private readonly TsMapRenderer _renderer;
 
-        private ImageExportOptionForm _imageExportForm;
+        private TileMapGeneratorForm _tileMapGeneratorForm;
         private ItemVisibilityForm _itemVisibilityForm;
         private PaletteEditorForm _paletteEditorForm;
         private LocalizationSettingsForm _localizationSettingsForm;
@@ -24,6 +25,7 @@ namespace TsMap.Canvas
         private PointF _lastPoint;
         private PointF _startPoint;
         private float _scale = 0.2f;
+        private readonly int tileSize = 256;
 
         public TsMapCanvas(Form f, string path, List<Mod> mods)
         {
@@ -82,39 +84,61 @@ namespace TsMap.Canvas
             Closed += (s, e) =>
             {
                 f.Close();
-                _imageExportForm?.Close();
+                _tileMapGeneratorForm?.Close();
             };
 
+        }
+
+        private void SaveTileImage(int z, int x, int y, PointF pos, float zoom, string exportPath) // z = zoomLevel; x = row tile index; y = column tile index
+        {
+            var bitmap = new Bitmap(tileSize, tileSize);
+
+            pos.X = (x == 0) ? pos.X : pos.X + (bitmap.Width / zoom) * x; // get tile start coords
+            pos.Y = (y == 0) ? pos.Y : pos.Y + (bitmap.Height / zoom) * y;
+
+            _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height), zoom, pos, _palette, _renderFlags ^ RenderFlags.TextOverlay);
+
+            Directory.CreateDirectory($"{exportPath}/{z}/{x}");
+            bitmap.Save($"{exportPath}/{z}/{x}/{y}.png", ImageFormat.Png);
+            bitmap.Dispose();
+        }
+        private void ZoomOutAndCenterMap(float targetWidth, float targetHeight, out PointF pos, out float zoom)
+        {
+            if (_mapper.maxX - _mapper.minX > _mapper.maxZ - _mapper.minZ) // get the scale to have the map edge to edge on the biggest axis
+            {
+                zoom = targetWidth / (_mapper.maxX - _mapper.minX);
+                var z = _mapper.minZ + -(targetHeight / zoom) / 2f + (_mapper.maxZ - _mapper.minZ) / 2f;
+                pos = new PointF(_mapper.minX, z);
+            }
+            else
+            {
+                zoom = targetHeight / (_mapper.maxZ - _mapper.minZ);
+                var x = _mapper.minX + -(targetWidth / zoom) / 2f + (_mapper.maxX - _mapper.minX) / 2f;
+                pos = new PointF(x, _mapper.minZ);
+            }
+        }
+
+        private void GenerateTileMap(int zoomLevel, string exportPath)
+        {
+            ZoomOutAndCenterMap(tileSize, tileSize, out PointF pos, out float zoom); // get zoom and start coords for tile level 0
+            SaveTileImage(0, 0, 0, pos, zoom, exportPath);
+
+            for (int z = 1; z <= zoomLevel; z++) // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+            {
+                ZoomOutAndCenterMap((int)Math.Pow(2, z) * tileSize, (int)Math.Pow(2, z) * tileSize, out pos, out zoom); // get zoom and start coords for current tile level
+                for (int x = 0; x < Math.Pow(2, z); x++)
+                {
+                    for (int y = 0; y < Math.Pow(2, z); y++)
+                    {
+                        SaveTileImage(z, x, y, pos, zoom, exportPath);
+                    }
+                }
+            }
         }
 
         private void TsMapCanvas_Resize(object sender, System.EventArgs e)
         {
             MapPanel.Invalidate();
-        }
-
-        private void ExportImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (_imageExportForm == null || _imageExportForm.IsDisposed) _imageExportForm = new ImageExportOptionForm();
-            _imageExportForm.Show();
-            _imageExportForm.BringToFront();
-
-            _imageExportForm.ExportImage += (width, height) => // Called when export button is pressed in ImageExportOptionForm
-            {
-                if (width == 0 || height == 0) return;
-                var bitmap = new Bitmap(width, height);
-
-                _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    _scale, _startPoint, _palette, _renderFlags);
-
-                var result = exportFileDialog.ShowDialog();
-                if (result != DialogResult.OK) return;
-
-                var fileStream = exportFileDialog.OpenFile();
-
-                bitmap.Save(fileStream, ImageFormat.Png);
-                fileStream.Close();
-                _imageExportForm.Hide();
-            };
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -161,6 +185,28 @@ namespace TsMap.Canvas
             {
                 _mapper.UpdateLocalization(locIndex);
                 _localizationSettingsForm.Close();
+            };
+        }
+
+        private void GenerateTileMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_tileMapGeneratorForm == null || _tileMapGeneratorForm.IsDisposed) _tileMapGeneratorForm = new TileMapGeneratorForm();
+            _tileMapGeneratorForm.Show();
+            _tileMapGeneratorForm.BringToFront();
+
+            _tileMapGeneratorForm.GenerateTileMap += (zoomLevel) => // Called when export button is pressed in TileMapGeneratorForm
+            {
+                if (zoomLevel < 0) return;
+                folderBrowserDialog1.Description = "Select where you want the tile map files to be placed";
+                _tileMapGeneratorForm.Hide();
+                var res = folderBrowserDialog1.ShowDialog();
+                if (res == DialogResult.OK)
+                {
+                    if (!Directory.Exists(folderBrowserDialog1.SelectedPath)) return;
+                    GenerateTileMap(zoomLevel, folderBrowserDialog1.SelectedPath);
+                    MessageBox.Show("Tile map has been generated!", "TsMap - Tile Map Generation Finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                Focus();
             };
         }
     }

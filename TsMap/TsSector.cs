@@ -47,7 +47,7 @@ namespace TsMap
             for (var i = 0; i < itemCount; i++)
             {
                 var type = (TsItemType)MemoryHelper.ReadUInt32(Stream, lastOffset);
-                
+
                 switch (type)
                 {
                     case TsItemType.Road:
@@ -163,6 +163,7 @@ namespace TsMap
             for (var i = 0; i < nodeCount; i++)
             {
                 TsNode node = new TsNode(this, lastOffset += 0x04);
+                Mapper.UpdateEdgeCoords(node);
                 if (!Mapper.Nodes.ContainsKey(node.Uid))
                     Mapper.Nodes.Add(node.Uid, node);
                 lastOffset += 0x34;
