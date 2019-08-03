@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using TsMap.HashFiles;
 
 namespace TsMap
@@ -11,6 +12,8 @@ namespace TsMap
         public string NameLocalized { get; set; }
         public string Country { get; set; }
         public ulong Token { get; set; }
+        public List<int> XOffsets { get; }
+        public List<int> YOffsets { get; }
 
         public TsCity(TsMapper mapper, string path)
         {
@@ -22,6 +25,9 @@ namespace TsMap
             var fileContent = file.Entry.Read();
 
             var lines = Encoding.UTF8.GetString(fileContent).Split('\n');
+            var offsetCount = 0;
+            XOffsets = new List<int>();
+            YOffsets = new List<int>();
 
             foreach (var line in lines)
             {
@@ -41,6 +47,23 @@ namespace TsMap
                 else if (line.Contains("country"))
                 {
                     Country = line.Split(':')[1].Trim();
+                }
+                else if (line.Contains("map_x_offsets[]"))
+                {
+                    if (++offsetCount > 4)
+                    {
+                        var offset = 0;
+                        if (int.TryParse(line.Split(':')[1].Trim(), out offset)) XOffsets.Add(offset);
+                    }
+                    if (offsetCount == 8) offsetCount = 0;
+                }
+                else if (line.Contains("map_y_offsets[]"))
+                {
+                    if (++offsetCount > 4)
+                    {
+                        var offset = 0;
+                        if (int.TryParse(line.Split(':')[1].Trim(), out offset)) YOffsets.Add(offset);
+                    }
                 }
             }
         }

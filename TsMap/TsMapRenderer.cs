@@ -11,6 +11,8 @@ namespace TsMap
         private readonly TsMapper _mapper;
         private const float itemDrawMargin = 1000f;
 
+        private int[] zoomCaps = { 1000, 5000, 18500, 45000 };
+
         public TsMapRenderer(TsMapper mapper)
         {
             _mapper = mapper;
@@ -33,6 +35,15 @@ namespace TsMap
             );
         }
 
+        private static int GetZoomIndex(Rectangle clip, float scale)
+        {
+            var smallestSize = (clip.Width > clip.Height) ? clip.Height / scale : clip.Width / scale;
+            if (smallestSize < 1000) return 0;
+            if (smallestSize < 5000) return 1;
+            if (smallestSize < 18500) return 2;
+            return 3;
+        }
+
         public void Render(Graphics g, Rectangle clip, float scale, PointF startPoint, MapPalette palette, RenderFlags renderFlags = RenderFlags.All)
         {
             var startTime = DateTime.Now.Ticks;
@@ -52,6 +63,8 @@ namespace TsMap
                 g.DrawString("Map object not initialized", defaultFont, palette.Error, 5, 5);
                 return;
             }
+
+            var zoomIndex = GetZoomIndex(clip, scale);
 
             var endPoint = new PointF(startPoint.X + clip.Width / scale, startPoint.Y + clip.Height / scale);
 
@@ -313,31 +326,6 @@ namespace TsMap
             }
             var roadTime = DateTime.Now.Ticks - roadStartTime;
 
-            var cityStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.CityNames) != RenderFlags.None)
-            {
-                var cities = _mapper.Cities.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                    .ToList();
-
-                foreach (var city in cities)
-                {
-                    var cityFont = new Font("Arial", 80, FontStyle.Bold);
-
-                    var name = city.City.Name;
-
-                    if (city.City.NameLocalized != string.Empty)
-                    {
-                        var localName = _mapper.GetLocalizedName(city.City.NameLocalized);
-                        if (localName != null) name = localName;
-                    }
-
-                    g.DrawString(name, cityFont, palette.CityName, city.X, city.Z);
-                }
-            }
-            var cityTime = DateTime.Now.Ticks - cityStartTime;
-
             var mapOverlayStartTime = DateTime.Now.Ticks;
             if ((renderFlags & RenderFlags.MapOverlays) != RenderFlags.None)
             {
@@ -478,6 +466,39 @@ namespace TsMap
             }
             var mapOverlay2Time = DateTime.Now.Ticks - mapOverlay2StartTime;
 
+            var cityStartTime = DateTime.Now.Ticks;
+            if ((renderFlags & RenderFlags.CityNames) != RenderFlags.None) // TODO: Fix position and scaling
+            {
+                var cities = _mapper.Cities.Where(item => !item.Hidden).ToList();
+
+                var cityFont = new Font("Arial", 100 + zoomCaps[zoomIndex] / 100, FontStyle.Bold);
+
+                foreach (var city in cities)
+                {
+                    var name = city.City.Name;
+
+                    if (city.City.NameLocalized != string.Empty)
+                    {
+                        var localName = _mapper.GetLocalizedName(city.City.NameLocalized);
+                        if (localName != null) name = localName;
+                    }
+
+                    var node = _mapper.GetNodeByUid(city.NodeUid);
+                    var coords = (node == null) ? new PointF(city.X, city.Z) : new PointF(node.X, node.Z);
+                    if (city.City.XOffsets.Count > zoomIndex && city.City.YOffsets.Count > zoomIndex)
+                    {
+                        coords.X += city.City.XOffsets[zoomIndex] / (scale * zoomCaps[zoomIndex]);
+                        coords.Y += city.City.YOffsets[zoomIndex] / (scale * zoomCaps[zoomIndex]);
+                    }
+
+                    var textSize = g.MeasureString(name, cityFont);
+
+                    g.DrawString(name, cityFont, new SolidBrush(Color.FromArgb(210, 0, 0, 0)), coords.X + 2, coords.Y + 2);
+                    g.DrawString(name, cityFont, palette.CityName, coords.X, coords.Y);
+                }
+            }
+            var cityTime = DateTime.Now.Ticks - cityStartTime;
+
             g.ResetTransform();
             var elapsedTime = DateTime.Now.Ticks - startTime;
             if ((renderFlags & RenderFlags.TextOverlay) != RenderFlags.None)
@@ -493,6 +514,7 @@ namespace TsMap
                 //g.DrawString($"MapOverlay: {mapOverlayTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 85);
                 //g.DrawString($"MapOverlay2: {mapOverlay2Time / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 100);
                 //g.DrawString($"MapArea: {mapAreaTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 115);
+                //g.DrawString($"City: {cityTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 130);
             }
 
         }

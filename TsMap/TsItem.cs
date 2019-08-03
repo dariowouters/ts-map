@@ -255,6 +255,7 @@ namespace TsMap
     public class TsCityItem : TsItem // TODO: Add zoom levels/range to show city names and icons correctly
     {
         public TsCity City { get; }
+        public ulong NodeUid { get; }
 
         public TsCityItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -263,6 +264,7 @@ namespace TsMap
 
             Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset) & 0x01) != 0;
             var cityId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
+            NodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08);
             City = Sector.Mapper.LookupCity(cityId);
             if (City == null)
             {
@@ -270,8 +272,19 @@ namespace TsMap
                 Log.Msg($"Could not find City with id: {cityId:X}, " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            fileOffset += 0x08 + 0x10;
+            fileOffset += 0x08;
             BlockSize = fileOffset - startOffset;
+        }
+
+        public override string ToString()
+        {
+            var name = City.Name;
+            if (City.NameLocalized != string.Empty)
+            {
+                var localName = Sector.Mapper.GetLocalizedName(City.NameLocalized);
+                if (localName != null) name = localName;
+            }
+            return $"{City.Country} - {name}";
         }
     }
 

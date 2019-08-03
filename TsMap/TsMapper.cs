@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +10,7 @@ namespace TsMap
     public class TsMapper
     {
         private readonly string _gameDir;
+        public Settings AppSettings { get; set; }
         private List<Mod> _mods;
 
         public RootFileSystem Rfs;
