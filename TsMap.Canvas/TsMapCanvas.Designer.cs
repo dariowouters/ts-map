@@ -30,14 +30,14 @@
         {
             this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.mainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.GenerateTileMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.itemVisibilityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.itemVisibilityToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.paletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.MapPanel = new TsMap.Canvas.MapPanel();
             this.localizationSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.paletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.MapPanel = new TsMap.Canvas.MapPanel();
             this.MainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,23 +55,23 @@
             // mainToolStripMenuItem
             // 
             this.mainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportImageToolStripMenuItem,
+            this.GenerateTileMapToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.mainToolStripMenuItem.Name = "mainToolStripMenuItem";
             this.mainToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.mainToolStripMenuItem.Text = "Main";
             // 
-            // exportImageToolStripMenuItem
+            // GenerateTileMapToolStripMenuItem
             // 
-            this.exportImageToolStripMenuItem.Name = "exportImageToolStripMenuItem";
-            this.exportImageToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.exportImageToolStripMenuItem.Text = "Export Image";
-            this.exportImageToolStripMenuItem.Click += new System.EventHandler(this.ExportImageToolStripMenuItem_Click);
+            this.GenerateTileMapToolStripMenuItem.Name = "GenerateTileMapToolStripMenuItem";
+            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.GenerateTileMapToolStripMenuItem.Text = "Generate Tile Map";
+            this.GenerateTileMapToolStripMenuItem.Click += new System.EventHandler(this.GenerateTileMapToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -92,18 +92,19 @@
             this.itemVisibilityToolStripMenuItem1.Text = "Item Visibility";
             this.itemVisibilityToolStripMenuItem1.Click += new System.EventHandler(this.ItemVisibilityToolStripMenuItem_Click);
             // 
+            // localizationSettingsToolStripMenuItem
+            // 
+            this.localizationSettingsToolStripMenuItem.Name = "localizationSettingsToolStripMenuItem";
+            this.localizationSettingsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.localizationSettingsToolStripMenuItem.Text = "Localization Settings";
+            this.localizationSettingsToolStripMenuItem.Click += new System.EventHandler(this.localizationSettingsToolStripMenuItem_Click);
+            // 
             // paletteToolStripMenuItem
             // 
             this.paletteToolStripMenuItem.Name = "paletteToolStripMenuItem";
             this.paletteToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.paletteToolStripMenuItem.Text = "Palette";
             this.paletteToolStripMenuItem.Click += new System.EventHandler(this.paletteToolStripMenuItem_Click);
-            // 
-            // exportFileDialog
-            // 
-            this.exportFileDialog.DefaultExt = "png";
-            this.exportFileDialog.FileName = "map-export";
-            this.exportFileDialog.Filter = "PNG File|*.png";
             // 
             // MapPanel
             // 
@@ -113,13 +114,6 @@
             this.MapPanel.Size = new System.Drawing.Size(802, 568);
             this.MapPanel.TabIndex = 1;
             this.MapPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.MapPanel_Paint);
-            // 
-            // localizationSettingsToolStripMenuItem
-            // 
-            this.localizationSettingsToolStripMenuItem.Name = "localizationSettingsToolStripMenuItem";
-            this.localizationSettingsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.localizationSettingsToolStripMenuItem.Text = "Localization Settings";
-            this.localizationSettingsToolStripMenuItem.Click += new System.EventHandler(this.localizationSettingsToolStripMenuItem_Click);
             // 
             // TsMapCanvas
             // 
@@ -141,13 +135,13 @@
 
         private System.Windows.Forms.MenuStrip MainMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem mainToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem GenerateTileMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.SaveFileDialog exportFileDialog;
         private System.Windows.Forms.ToolStripMenuItem itemVisibilityToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem itemVisibilityToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem paletteToolStripMenuItem;
         private MapPanel MapPanel;
         private System.Windows.Forms.ToolStripMenuItem localizationSettingsToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }

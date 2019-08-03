@@ -67,6 +67,11 @@ namespace TsMap
             _points = points;
         }
 
+        public bool HasPoints()
+        {
+            return _points != null && _points.Count != 0;
+        }
+
         public PointF[] GetPoints()
         {
             return _points?.ToArray();
@@ -112,10 +117,27 @@ namespace TsMap
         private const int PrefabVegetaionBlockSize = 0x20;
         public int Origin { get; }
         public TsPrefab Prefab { get; }
+        private List<TsPrefabLook> _looks;
+
+        public void AddLook(TsPrefabLook look)
+        {
+            _looks.Add(look);
+        }
+
+        public List<TsPrefabLook> GetLooks()
+        {
+            return _looks;
+        }
+
+        public bool HasLooks()
+        {
+            return _looks != null && _looks.Count != 0;
+        }
 
         public TsPrefabItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
+            _looks = new List<TsPrefabLook>();
             Nodes = new List<ulong>();
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
