@@ -1,7 +1,7 @@
 /*****************************************************************************
  * ets2_files - Structure definitions for the .ppd (0x15 version)
  * file format used in ETS2 and other games by SCS Software
- *  
+ *
  * Copyright (c) mwl4 2016
  *
  *****************************************************************************/
@@ -23,6 +23,8 @@ typedef s16                     i16;
 typedef s8                      i8;
 
 typedef u64                     token_t;
+
+#include "./base/functions.1sc"
 
 struct float3
 {
@@ -53,7 +55,7 @@ struct placement_t
     struct quat_t rot;
 };
 
-struct ppd_node_t
+struct ppd_node_t // sizeof(104)
 {
     u32 m_terrain_point_idx;
     u32 m_terrain_point_count;
@@ -65,35 +67,35 @@ struct ppd_node_t
     i32 m_output_lines[8];
 };
 
-struct ppd_curve_t
+struct ppd_curve_t // sizeof(132)
 {
-    token_t m_name;
-    u32 m_flags;
-    u32 m_leads_to_nodes;
-    struct float3 m_start_pos;
-    struct float3 m_end_pos;
-    struct quat_t m_start_rot;
-    struct quat_t m_end_rot;
-    float m_length;
-    i32 m_next_lines[4];
-    i32 m_prev_lines[4];
-    u32 m_count_next;
-    u32 m_count_prev;
-    i32 m_semaphore_id;
-    token_t m_traffic_rule;
-    u32 navigation_node_index; // version 0x16
+    token_t m_name <read=token_to_string>;      // 0x0
+    u32 m_flags;                                // 0x8
+    u32 m_leads_to_nodes;                       // 0x0C
+    struct float3 m_start_pos;                  // 0x10
+    struct float3 m_end_pos;                    // 0x1C
+    struct quat_t m_start_rot;                  // 0x28
+    struct quat_t m_end_rot;                    // 0x38
+    float m_length;                             // 0x48
+    i32 m_next_lines[4];                        // 0x58
+    i32 m_prev_lines[4];                        // 0x68
+    u32 m_count_next;                           // 0x6C
+    u32 m_count_prev;                           // 0x70
+    i32 m_semaphore_id;                         // 0x74
+    token_t m_traffic_rule;                     // 0x7C
+    u32 navigation_node_index;                  // 0x80 (version 0x16)
 };
 
-struct ppd_sign_t
+struct ppd_sign_t // sizeof(52)
 {
-    token_t m_name;
+    token_t m_name <read=token_to_string>;
     struct float3 m_position;
     struct quat_t m_rotation;
-    token_t m_model;
-    token_t m_part;
+    token_t m_model <read=token_to_string>;
+    token_t m_part <read=token_to_string>;
 };
 
-struct ppd_semaphore_t
+struct ppd_semaphore_t // sizeof(68)
 {
     struct float3 m_position;
     struct quat_t m_rotation;
@@ -101,18 +103,18 @@ struct ppd_semaphore_t
     u32 m_semaphore_id;
     struct float4 m_intervals;
     float m_cycle;
-    token_t m_profile;
+    token_t m_profile <read=token_to_string>;
     u32 m_unknown;
 };
 
-struct ppd_spawn_point_t
-{   
+struct ppd_spawn_point_t // sizeof(32)
+{
     struct float3 m_position;
     struct quat_t m_rotation;
     u32 m_type;
 };
 
-struct ppd_map_point_t
+struct ppd_map_point_t // sizeof(48)
 {
     u32 m_map_visual_flags <format=binary>;
     u32 m_map_nav_flags <format=binary>;
@@ -127,10 +129,10 @@ struct ppd_terrain_point_variant_t
     u32 m_attach1;
 };
 
-struct ppd_trigger_point_t
+struct ppd_trigger_point_t // sizeof(48)
 {
     u32 m_trigger_id;
-    token_t m_trigger_action <format=hex>;
+    token_t m_trigger_action <read=token_to_string>;
     float m_trigger_range;
     float m_trigger_reset_delay;
     float m_trigger_reset_dist;
@@ -139,7 +141,7 @@ struct ppd_trigger_point_t
     s32 m_neighbours[2];
 };
 
-struct ppd_intersection_t
+struct ppd_intersection_t // sizeof(16)
 {
     u32 m_inter_curve_id;
     float m_inter_position;
@@ -211,5 +213,127 @@ struct ppd
 };
 
 ppd file;
+
+// byte 1 of visual flags (map points)
+//     0000 -> one way
+//     0001 -> 1 + 1(2 + 0) Lane
+//     0010 -> 2 + 2(4 + 0) Lane
+//     0011 -> 3 + 3 Lane
+//     0100 -> 4 + 4 Lane
+//     0101 -> 2 + 1 + 2 Lane
+//     0110 -> 3 + 1 + 3 Lane
+//     1000 -> 2 + 1(3 + 0) Lane
+//     1101 -> prefab
+//     1110 -> auto ?
+
+// 0000     -> 0m lane offset
+// 0001     -> 1m lane offset
+// 0010     -> 2m lane offset
+// 0011     -> 5m lane offset
+// 0100     -> 10m lane offset
+// 0101     -> 15m lane offset
+// 0110     -> 20m lane offset
+// 0111     -> 25m lane offset
+
+// byte 2 of visual flags (map points)
+// 00000001 -> Road over
+// 00000010 -> Light BG
+// 00000100 -> Dark BG
+// 00001000 -> Green BG
+// 00010000 -> No outline
+// 00100000 -> No Arrow
+
+// byte 0 of nav flags (map points) (see byte 1)
+// 00000001 -> 0
+// 00000010 -> 1
+// 00000100 -> 2
+// 00001000 -> 3
+// 00010000 -> 4
+// 00100000 -> 5
+// 11111111 -> All
+
+// byte 1 of nav flags (map points)
+// 00000000 -> Byte 0 is Destination node index
+// 00000001 -> Byte 0 are Assigned nodes
+// 00000011 -> Byte 0 is Control node index
+
+//https://github.com/SCSSoftware/BlenderTools/blob/master/addon/io_scs_tools/consts.py
+
+    //Constants represeting map point visual flags.
+
+    // ROAD_SIZE_ONE_WAY = 0x00000000
+    // ROAD_SIZE_1_LANE = 0x00000100
+    // ROAD_SIZE_2_LANE = 0x00000200
+    // ROAD_SIZE_3_LANE = 0x00000300
+    // ROAD_SIZE_4_LANE = 0x00000400
+    // ROAD_SIZE_2_LANE_SPLIT = 0x00000500
+    // ROAD_SIZE_3_LANE_SPLIT = 0x00000600
+    // ROAD_SIZE_4_LANE_SPLIT = 0x00000700
+    // ROAD_SIZE_3_LANE_ONE_WAY = 0x00000800
+    // ROAD_SIZE_MANUAL = 0x00000D00
+    // ROAD_SIZE_AUTO = 0x00000E00
+    // ROAD_SIZE_MASK = 0x00000F00
+    // ROAD_OFFSET_0 = 0x00000000
+    // ROAD_OFFSET_1 = 0x00001000
+    // ROAD_OFFSET_2 = 0x00002000
+    // ROAD_OFFSET_5 = 0x00003000
+    // ROAD_OFFSET_10 = 0x00004000
+    // ROAD_OFFSET_15 = 0x00005000
+    // ROAD_OFFSET_20 = 0x00006000
+    // ROAD_OFFSET_25 = 0x00007000
+    // ROAD_OFFSET_LANE = 0x00008000
+    // ROAD_OFFSET_MASK = 0x0000F000
+    // ROAD_EXT_VALUE_MASK = 0x000000FF
+    // ROAD_OVER = 0x00010000
+    // CUSTOM_COLOR1 = 0x00020000
+    // CUSTOM_COLOR2 = 0x00040000
+    // CUSTOM_COLOR3 = 0x00080000
+    // NO_OUTLINE = 0x00100000
+    // NO_ARROW = 0x00200000
+
+    //Constants representing map point navigation flags.
+
+    // NAV_NODE_0 = 0x00000001
+    // NAV_NODE_1 = 0x00000002
+    // NAV_NODE_2 = 0x00000004
+    // NAV_NODE_3 = 0x00000008
+    // NAV_NODE_4 = 0x00000010
+    // NAV_NODE_5 = 0x00000020
+    // NAV_NODE_6 = 0x00000040
+    // NAV_NODE_CUSTOM_TARGET = 0x00000080
+    // NAV_NODE_ALL = 0x000000FF
+    // NAV_NODE_MASK = 0x000000FF
+    // NAV_NODE_START = 0x00000100
+    // NAV_BASE = 0x00000200
+    // PREFAB_EXIT = 0x00000400
+
+    //Constants used for calculateion of spawn point flag variable.
+
+    // NONE = 0
+    // TRAILER_POS = 1
+    // UNLOAD_EASY_POS = 2
+    // GAS_POS = 3
+    // SERVICE_POS = 4
+    // TRUCKSTOP_POS = 5
+    // WEIGHT_POS = 6
+    // TRUCKDEALER_POS = 7
+    // HOTEL = 8
+    // CUSTOM = 9
+    // PARKING = 10
+    // TASK = 11
+    // MEET_POS = 12
+    // COMPANY_POS = 13
+    // GARAGE_POS = 14
+    // BUY_POS = 15
+    // RECRUITMENT_POS = 16
+    // CAMERA_POINT = 17
+    // BUS_STATION = 18
+    // UNLOAD_MEDIUM_POS = 19
+    // UNLOAD_HARD_POS = 20
+    // UNLOAD_RIGID_POS = 21
+    // WEIGHT_CAT_POS = 22
+    // COMPANY_UNLOAD_POS = 23
+    // TRAILER_SPAWN = 24
+    // LONG_TRAILER_POS = 25
 
 /* eof */

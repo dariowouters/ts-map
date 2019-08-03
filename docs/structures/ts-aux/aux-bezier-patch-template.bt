@@ -1,0 +1,41 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors:
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    u64 m_vegatation_id <read=token_to_string>;
+    u16 m_sparsity;
+    ubyte m_scale;
+} bezier_vegetation_t;
+
+typedef struct
+{
+    byte flags[5];
+    float3 m_control_node[16];
+    u16 m_tesselation_x;
+    u16 m_tesselation_z;
+    float m_uv_rotation;
+    u64 m_node_uid <format=hex>;
+    u32 m_rnd_seed;
+    bezier_vegetation_t m_vegetation[3];
+    u32 m_veg_sphere_count;
+    veg_sphere_t m_veg_sphere[m_veg_sphere_count];
+    u16 m_material_count;
+    u64 m_material[m_material_count] <read=token_to_string>;
+    u16 m_material_color_count;
+    u32 m_material_color[m_material_color_count];
+    u16 dunno1[2];
+    u32 m_padding_count;
+    u32 padding[m_padding_count];
+    u64 dunno2;
+} aux_bezier_patch_t;

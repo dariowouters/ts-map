@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v7.0.2 Script File
 //
-//      File: 
+//      File:
 //   Authors: Dario Wouters
-//   Version: 
-//   Purpose: 
-//  Category: 
-//   History: 
+//   Version:
+//   Purpose:
+//  Category:
+//   History:
 //------------------------------------------------
 
 typedef quad                    s64;
@@ -16,22 +16,25 @@ typedef unsigned long           u32;
 typedef short                   s16;
 typedef unsigned short          u16;
 
+LittleEndian();
+
 typedef struct
 {
-    s32 x; 
+    s32 x;
     s32 y;
     s32 z;
 } int3;
 
 typedef struct
 {
-    float x; 
+    float x;
     float y;
     float z;
 } float3;
 
 #include "functions.1sc"
 
+#include "base-node-template.bt"
 #include "base-road-template.bt"
 #include "base-prefab-template.bt"
 #include "base-company-template.bt"
@@ -82,17 +85,6 @@ typedef struct
 
 typedef struct
 {
-    u64 m_node_uid <format=hex>;
-    int3 m_pos;
-    float3 m_posR;
-    u32 padding;
-    u64 m_backward_node_uid <format=hex>;
-    u64 m_forward_node_uid <format=hex>;
-    u32 padding2;
-} base_node_t;
-
-typedef struct
-{
     u32 m_version;
     u64 m_game_id <read=token_to_string>; // also euro2 in ATS
     u32 padding; // always 3 ??
@@ -108,3 +100,15 @@ typedef struct
 } base_t;
 
 base_t base;
+
+
+// nodeFlags[0]:
+// 00000001 => ??
+// 00000010 => Country border
+// 00000100 => Free rotation
+
+// nodeFlags[1]:
+// 1 -> n countries Forward item
+
+// nodeFlags[2]:
+// 1 -> n countries Backward item

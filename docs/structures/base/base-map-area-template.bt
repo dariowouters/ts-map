@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v7.0.2 Binary Template
 //
-//      File: 
+//      File:
 //   Authors: Dario Wouters
-//   Version: 
-//   Purpose: 
-//  Category: 
-//   History: 
+//   Version:
+//   Purpose:
+//  Category:
+//   History:
 //------------------------------------------------
 
 typedef struct
@@ -22,7 +22,7 @@ typedef struct
 // 0 => visual
 // 1 => Draw over
 // 2 => Draw outline
-// 8 => navigation 
+// 8 => navigation
 
 // color index
 // 0 => road

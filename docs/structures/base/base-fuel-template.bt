@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v7.0.2 Binary Template
 //
-//      File: 
+//      File:
 //   Authors: Dario Wouters
-//   Version: 
-//   Purpose: 
-//  Category: 
-//   History: 
+//   Version:
+//   Purpose:
+//  Category:
+//   History:
 //------------------------------------------------
 
 typedef struct
@@ -16,4 +16,4 @@ typedef struct
     u64 m_prefab_uid <format=hex>;
     u32 m_some_uid_count; // 1.32
     u64 m_some_uids[m_some_uid_count]; // 1.32
-} base_service_t;
+} base_fuel_t;

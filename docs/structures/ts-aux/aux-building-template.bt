@@ -1,0 +1,27 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+
+typedef struct
+{
+    byte m_flags[5];
+    u64 m_scheme_id <read=token_to_string>;
+    u64 m_look_id <read=token_to_string>;
+    u64 m_uid[2] <format=hex>;
+    float dunno;
+    u32 m_seed;
+    float m_stretch;
+    u32 m_some_count;
+    float m_some_value[m_some_count];
+
+} aux_building_t;

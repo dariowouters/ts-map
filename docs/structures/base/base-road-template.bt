@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v7.0.2 Binary Template
 //
-//      File: 
+//      File:
 //   Authors: Dario Wouters
-//   Version: 
-//   Purpose: 
-//  Category: 
-//   History: 
+//   Version:
+//   Purpose:
+//  Category:
+//   History:
 //------------------------------------------------
 
 typedef struct
@@ -39,13 +39,13 @@ typedef struct
     float m_road_terrain_r_coef;
     u64 m_road_terrain_l <read=token_to_string>;
     float m_road_terrain_l_coef;
-    
+
     u64 m_road_look_r <read=token_to_string>;
     u64 m_road_look_l <read=token_to_string>;
     u64 m_road_material <read=token_to_string>;
     railings_t m_railings;
     u64 padding3;
-    u64 m_uids[2];
+    u64 m_node_uids[2] <format=hex>;
     u32 padding4;
 } base_road_t;
 
