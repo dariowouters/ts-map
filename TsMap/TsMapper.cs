@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -387,6 +387,7 @@ namespace TsMap
             foreach (var file in mbd)
             {
                 var mapName = file.GetFileName();
+                IsEts2 = !(mapName == "usa");
 
                 var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
                 if (mapFileDir == null)

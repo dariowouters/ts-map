@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -34,19 +34,10 @@ namespace TsMap.Canvas
             _mapper = new TsMapper(path, mods);
             _palette = new SimpleMapPalette();
 
-            if (path.Contains("American Truck Simulator"))
-            {
-                _startPoint = new PointF(-103000, -54444);
-                _mapper.IsEts2 = false;
-            }
-            else
-            {
-                _startPoint = new PointF(-1000, -4000);
-                _mapper.IsEts2 = true;
-            }
-
             _mapper.Parse();
 
+            if (!_mapper.IsEts2) _startPoint = new PointF(-105000, 15000);
+            else _startPoint = new PointF(-1000, -4000);
             _renderer = new TsMapRenderer(_mapper);
 
             Timer t = new Timer
