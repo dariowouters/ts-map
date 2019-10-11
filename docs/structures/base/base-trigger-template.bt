@@ -13,36 +13,49 @@ typedef struct
 {
     u64 m_action <read=token_to_string>;
     s32 m_overload_tag;
-    if (m_overload_tag > 0)
+
+    if (m_overload_tag > 0) float m_overloaded_value[m_overload_tag];
+
+    if (m_overload_tag == -1 && m_header.m_version >= base_version_136) return;
+
+    s32 m_has_parameters;
+    if (m_has_parameters == 1)
     {
-        float m_overloaded_value[m_overload_tag];
+        u32 m_parameters_length;
+        u32 parameters_padding;
+        char m_parameters[m_parameters_length];
     }
-    s32 m_has_text;
-    if (m_has_text > 0) {
-        u32 m_text_length;
-        u32 text_padding;
-        char m_source_params[m_text_length];
+    else if (m_has_parameters == 3)
+    {
+        u64 m_some_uid;
     }
-    u32 padding[2];
-    u32 m_count;
-    u64 m_some_value[m_count];
+    if (m_header.m_version < base_version_136) u32 padding[2];
+
+    u32 m_target_tag_count;
+    u64 m_target_tag[m_target_tag_count] <read=token_to_string>;
+
+    if (m_header.m_version >= base_version_136) float m_target_range;
 } trigger_action_t;
 
 typedef struct
 {
     byte m_flags[5];
     u32 m_tag_count;
-    u64 m_tags[m_tag_count];
+    u64 m_tags[m_tag_count] <read=token_to_string>;
     u32 m_node_count <bgcolor=0x87D37C, fgcolor=cBlack>;
     u64 m_node_uid[m_node_count];
     u32 m_trigger_actions_count;
     trigger_action_t m_trigger_action[m_trigger_actions_count] <optimize=false>;
-    float m_range;
-    float m_reset_delay;
-    u32 padding;
-    float m_min_speed;
-    float m_max_speed;
-    byte m_flags2[4];
+
+    if (m_header.m_version < base_version_136)
+    {
+        float m_range;
+        float m_reset_delay;
+        u32 padding;
+        float m_min_speed;
+        float m_max_speed;
+        byte m_flags2[4];
+    } else if (m_node_count == 1) float m_radius; // ??
 } base_trigger_t;
 
 

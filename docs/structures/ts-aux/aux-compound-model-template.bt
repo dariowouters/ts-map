@@ -13,7 +13,7 @@
 
 typedef struct
 {
-    u32 m_item_type;
+    u32 m_item_type <read=get_type_name>;
     u64 m_control_node_uid <format=hex>;
     float m_value[10];
     switch (m_item_type)

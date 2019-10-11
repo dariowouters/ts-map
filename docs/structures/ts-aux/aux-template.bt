@@ -34,13 +34,13 @@ typedef struct
     float z;
 } float3;
 
-typedef struct
+typedef struct // sizeof 20
 {
-    float m_x_offset;
-    float m_y_offset;
-    float m_z_offset;
-    float m_radius;
-    u32 m_sphere_type;
+    float m_x_offset; // 0
+    float m_y_offset; // 4
+    float m_z_offset; // 8
+    float m_radius;   // 12
+    u32 m_sphere_type; // 16
 } veg_sphere_t;
 
 #include "../base/functions.1sc"
@@ -57,6 +57,7 @@ typedef struct
 #include "aux-bezier-patch-template.bt"
 #include "aux-curve-template.bt"
 #include "aux-far-model-template.bt"
+#include "aux-hinge-template.bt"
 
 #include "aux-compound-model-template.bt"
 
@@ -84,6 +85,7 @@ typedef struct
         case 0x05:  aux_model_t             m_model;            break;
         case 0x09:  aux_mover_t             m_mover;            break;
         case 0x0B:  aux_no_weather_t        m_no_weather;       break;
+        case 0x0D:  aux_hinge_t             m_hinge;            break;
         case 0x15:  aux_sound_t             m_sound;            break;
         case 0x17:  aux_camera_t            m_camera;           break;
         case 0x24:  base_road_side_item_t   m_road_side_item;   break;

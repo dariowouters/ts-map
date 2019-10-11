@@ -7,7 +7,7 @@ using TsMap.HashFiles;
 namespace TsMap
 {
 
-    public class TsItem
+    public class TsItem // Might want to start keeping seperate items for each (major) version change
     {
         protected const int VegetationSphereBlockSize = 0x14;
 
@@ -380,21 +380,29 @@ namespace TsMap
                     }
                 }
                 var overloadTag = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08);
-                if (overloadTag > 0)
+                fileOffset += 0x04; // set cursor after overloadTag
+
+                if (overloadTag > 0) fileOffset += 0x04 * overloadTag; // set cursor after all overloaded values
+                if (overloadTag == -1 && Sector.Version >= Common.BaseFileVersion136) continue; // triggerAction stops if overloadTag == -1, cursor already at end of overloadTag so just continue
+
+                var hasParameters = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x04; // set cursor after hasParameters
+                if (hasParameters == 1)
                 {
-                    fileOffset += 0x04 * overloadTag;
+                    var parametersLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                    fileOffset += 0x04 + 0x04 + parametersLength; // 0x04(parametersLength) + 0x04(padding) + text(parametersLength * 0x01)
                 }
-                var hasText = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
-                if (hasText > 0)
-                {
-                    var textLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04);
-                    fileOffset += 0x04 + textLength;
-                }
-                var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + 0x08);
-                fileOffset += 0x04 + count * 0x08;
+                else if (hasParameters == 3) fileOffset += 0x08;
+
+                if (Sector.Version < Common.BaseFileVersion136) fileOffset += 0x08;
+
+                var targetTagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x04 + targetTagCount * 0x08; // 0x04(targetTagCount) + targetTags
+                if (Sector.Version >= Common.BaseFileVersion136) fileOffset += 0x04; // cursor after target_range
             }
 
-            fileOffset += 0x18;
+            if (Sector.Version < Common.BaseFileVersion136) fileOffset += 0x18;
+            else if (nodeCount == 1) fileOffset += 0x04; // radius ??
             BlockSize = fileOffset - startOffset;
         }
     }
@@ -422,7 +430,18 @@ namespace TsMap
             Valid = false;
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
-            var tmplTextLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05 + 0x58);
+            var templateCount = 3;
+
+            if (Sector.Version >= Common.BaseFileVersion136)
+            {
+                templateCount = MemoryHelper.ReadUint8(Sector.Stream, fileOffset += 0x05 + 0x20);
+                fileOffset += 0x01;
+            }
+            else fileOffset += 0x05 + 0x10;
+
+            fileOffset += templateCount * 0x18;
+
+            var tmplTextLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
             if (tmplTextLength != 0)
             {
                 fileOffset += 0x04 + tmplTextLength;

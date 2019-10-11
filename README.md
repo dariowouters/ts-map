@@ -4,8 +4,14 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### Support for 1.35 & Washington DLC
+### Support for 1.36 (Open Beta) & Washington DLC
 
+## Export Maps
+Can now export maps as a tiled web map.
+
+[Example with a max zoom level of 4](https://dariowouters.github.io/ts-tile-map-example/)
+
+##### [Source](https://github.com/dariowouters/ts-tile-map-example)
 ## Map mod support
 It can now load map mods.
 
@@ -50,7 +56,8 @@ ATS:
     - Beyond the Baltic Sea
 
 #### Dependencies (NuGet)
-[DotNetZip](https://www.nuget.org/packages/DotNetZip/)
+- [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
+- [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
 
 #### Based on
 [Original project](https://github.com/nlhans/ets2-map)

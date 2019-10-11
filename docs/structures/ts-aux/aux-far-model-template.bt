@@ -11,9 +11,9 @@
 //   History:
 //------------------------------------------------
 
-typedef struct {
-    u64 m_model_id <read=token_to_string>;
-    float3 m_scale;
+typedef struct { // sizeof 20
+    u64 m_model_id <read=token_to_string>; // 0
+    float3 m_scale; // 8
 } far_sub_model_t;
 
 

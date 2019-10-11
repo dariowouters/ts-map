@@ -11,25 +11,25 @@
 //   History:
 //------------------------------------------------
 
-typedef struct
+typedef struct // sizeof 11
 {
-    u64 m_vegatation_id <read=token_to_string>;
-    u16 m_sparsity;
-    ubyte m_scale;
+    u64 m_vegatation_id <read=token_to_string>; // 0
+    u16 m_sparsity; // 8
+    ubyte m_scale; // 10
 } bezier_vegetation_t;
 
 typedef struct
 {
-    byte flags[5];
-    float3 m_control_node[16];
-    u16 m_tesselation_x;
-    u16 m_tesselation_z;
-    float m_uv_rotation;
-    u64 m_node_uid <format=hex>;
-    u32 m_rnd_seed;
-    bezier_vegetation_t m_vegetation[3];
-    u32 m_veg_sphere_count;
-    veg_sphere_t m_veg_sphere[m_veg_sphere_count];
+    byte flags[5]; // 0
+    float3 m_control_node[16]; // 5
+    u16 m_tesselation_x; // 197
+    u16 m_tesselation_z; // 199
+    float m_uv_rotation; // 201
+    u64 m_node_uid <format=hex>; // 205
+    u32 m_rnd_seed; // 213
+    bezier_vegetation_t m_vegetation[3]; // 217
+    u32 m_veg_sphere_count; // 250
+    veg_sphere_t m_veg_sphere[m_veg_sphere_count]; // 254
     u16 m_material_count;
     u64 m_material[m_material_count] <read=token_to_string>;
     u16 m_material_color_count;

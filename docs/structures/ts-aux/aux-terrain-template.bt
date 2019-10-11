@@ -11,50 +11,50 @@
 //   History:
 //------------------------------------------------
 
-typedef struct
+typedef struct // sizeof 16
 {
-    u16 m_val[2];
-    float3 m_vec;
+    u16 m_val[2]; // 0
+    float3 m_vec; // 4
 } terrain_dunno_t;
 
-typedef struct
+typedef struct // sizeof 10
 {
-    u64 m_railing_model <read=token_to_string>;
-    s16 m_railing_offset;
+    u64 m_railing_model <read=token_to_string>; // 0
+    s16 m_railing_offset; // 8
 } railing_t;
 
-typedef struct
+typedef struct // sizeof 16
 {
-    u64 m_vegetation_model <read=token_to_string>;
-    u16 m_veget_sparsity;
-    byte m_veget_hi_poly;
-    byte m_veget_scale;
-    u16 m_veget_from;
-    u16 m_veget_to;
+    u64 m_vegetation_model <read=token_to_string>; // 0
+    u16 m_veget_sparsity; // 8
+    byte m_veget_hi_poly; // 10
+    byte m_veget_scale; // 11
+    u16 m_veget_from; // 12
+    u16 m_veget_to; // 14
 } vegetation_t;
 
-typedef struct
+typedef struct // sizeof 52
 {
-    vegetation_t m_vegetation[3] <optimize=false>;
-    u16 m_veg_from;
-    u16 m_veg_to;
+    vegetation_t m_vegetation[3] <optimize=false>; // 0
+    u16 m_veg_from; // 48
+    u16 m_veg_to; // 50
 } vegetations_t;
 
 
-typedef struct
+typedef struct // sizeof 26
 {
-    u16 m_terrain_size;
-    u64 m_profile <read=token_to_string>;
-    float m_terrain_scale;
-    u64 dunno;
-    float dunno2;
+    u16 m_terrain_size; // 0
+    u64 m_profile <read=token_to_string>; // 2
+    float m_terrain_scale; // 10
+    u64 dunno; // 14
+    float dunno2; // 22
 } terrain_t;
 
 typedef struct
 {
-    u16 m_mat_count;
-    u64 m_material_r[m_mat_count] <read=token_to_string>;
-    u16 m_mat_color_count;
+    u16 m_mat_count;    // 0
+    u64 m_material_r[m_mat_count] <read=token_to_string>; // 2
+    u16 m_mat_color_count; // 2 + (8 * m_mat_count)
     u32 m_material_color[m_mat_color_count];
     u16 m_values[2];
     u32 padding_count;
@@ -67,16 +67,16 @@ typedef struct
 
 typedef struct
 {
-    byte flags[5];
-    u64 m_uid[5] <format=hex>;
-    float dunno;
-    u32 dunno2;
-    railing_t m_railing[3] <optimize=false>;
-    terrain_t m_terrain_r;
-    vegetations_t veg_r;
-    terrain_t m_terrain_l;
-    vegetations_t veg_l;
-    u32 m_veg_sphere_count;
+    byte flags[5]; // 0
+    u64 m_uid[5] <format=hex>; // 5
+    float dunno; // 45
+    u32 dunno2; // 49
+    railing_t m_railing[3] <optimize=false>; // 53
+    terrain_t m_terrain_r; // 83
+    vegetations_t veg_r;    // 109
+    terrain_t m_terrain_l; // 161
+    vegetations_t veg_l;    // 187
+    u32 m_veg_sphere_count; // 239
     veg_sphere_t m_veg_sphere[m_veg_sphere_count] <optimize=false>;
 
     material_t mat1;

@@ -13,6 +13,7 @@ string get_type_name(u32 type)
         case 0x09: return "Mover";
         case 0x0B: return "No Weather";
         case 0x0C: return "City";
+        case 0x0D: return "Hinge";
         case 0x12: return "Overlay";
         case 0x13: return "Ferry";
         case 0x15: return "Sound";
