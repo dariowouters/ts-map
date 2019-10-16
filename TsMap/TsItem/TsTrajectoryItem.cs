@@ -14,15 +14,6 @@ namespace TsMap.TsItem
             else
                 Log.Msg(
                     $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
-
-            return;
-            var fileOffset = startOffset + 0x34; // Set position at start of flags
-
-            var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
-            var ruleCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount) + 0x0C); // 0x04(nodeCount) + nodeUids + 0x0C(flags2 & access_rule)
-            var checkPointCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x1C * ruleCount));
-            fileOffset += 0x04 + (0x10 * checkPointCount) + 0x04;
-            BlockSize = fileOffset - startOffset;
         }
 
         public void TsTrajectoryItem834(int startOffset)

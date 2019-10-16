@@ -14,15 +14,6 @@ namespace TsMap.TsItem
             else
                 Log.Msg(
                     $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
-
-            return;
-            var fileOffset = startOffset + 0x34; // Set position at start of flags
-
-            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05);
-            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count));
-            fileOffset += 0x04 + 0x08;
-            BlockSize = fileOffset - startOffset;
         }
 
         public void TsTrafficRuleItem825(int startOffset)
