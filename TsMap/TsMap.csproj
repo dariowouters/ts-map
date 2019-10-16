@@ -64,7 +64,23 @@
     <Compile Include="Settings.cs" />
     <Compile Include="TsCity.cs" />
     <Compile Include="TsFerryConnection.cs" />
-    <Compile Include="TsItem.cs" />
+    <Compile Include="TsItem\TsBusStopItem.cs" />
+    <Compile Include="TsItem\TsCityItem.cs" />
+    <Compile Include="TsItem\TsCompanyItem.cs" />
+    <Compile Include="TsItem\TsCutPlaneItem.cs" />
+    <Compile Include="TsItem\TsFerryItem.cs" />
+    <Compile Include="TsItem\TsFuelPumpItem.cs" />
+    <Compile Include="TsItem\TsGarageItem.cs" />
+    <Compile Include="TsItem\TsItem.cs" />
+    <Compile Include="TsItem\TsMapAreaItem.cs" />
+    <Compile Include="TsItem\TsMapOverlayItem.cs" />
+    <Compile Include="TsItem\TsPrefabItem.cs" />
+    <Compile Include="TsItem\TsRoadItem.cs" />
+    <Compile Include="TsItem\TsRoadSideItem.cs" />
+    <Compile Include="TsItem\TsServiceItem.cs" />
+    <Compile Include="TsItem\TsTrafficRuleItem.cs" />
+    <Compile Include="TsItem\TsTrajectoryItem.cs" />
+    <Compile Include="TsItem\TsTriggerItem.cs" />
     <Compile Include="TsTypes.cs" />
     <Compile Include="TsMapOverlay.cs" />
     <Compile Include="TsMapper.cs" />
@@ -78,5 +94,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

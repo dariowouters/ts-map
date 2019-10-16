@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TsMap.HashFiles;
+using TsMap.TsItem;
 
 namespace TsMap
 {
