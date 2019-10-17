@@ -47,7 +47,9 @@ namespace TsMap.Canvas
         {
             if (!Directory.Exists(ModFolderBrowserDialog.SelectedPath)) return;
             modPath = SelectedModPathLabel.Text = AppSettings.LastModPath = ModFolderBrowserDialog.SelectedPath;
-            var files = Directory.GetFiles(modPath, "*.scs");
+            var files = Directory.EnumerateFiles(modPath, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(s => s.EndsWith(".scs", StringComparison.OrdinalIgnoreCase) ||
+                            s.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
             _mods = files.Select(x => new Mod(x)).ToList();
             UpdateModList();
             if (gamePath != null) NextBtn.Enabled = true;
