@@ -34,6 +34,21 @@ namespace TsMap
                 (float) (z + width * Math.Sin(angle))
             );
         }
+        private static double Hypotenuse(float x, float y)
+        {
+            return Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+        }
+
+        // https://stackoverflow.com/a/45881662
+        private Tuple<PointF, PointF> GetBezierControlNodes(float startX, float startZ, double startRot, float endX, float endZ, double endRot)
+        {
+            var len = Hypotenuse(endX - startX, endZ - startZ);
+            var ax1 = (float)(Math.Cos(startRot) * len * (1 / 3f));
+            var az1 = (float)(Math.Sin(startRot) * len * (1 / 3f));
+            var ax2 = (float)(Math.Cos(endRot) * len * (1 / 3f));
+            var az2 = (float)(Math.Sin(endRot) * len * (1 / 3f));
+            return new Tuple<PointF, PointF>(new PointF(ax1, az1), new PointF(ax2, az2));
+        }
 
         private static int GetZoomIndex(Rectangle clip, float scale)
         {
@@ -70,6 +85,8 @@ namespace TsMap
 
             var ferryStartTime = DateTime.Now.Ticks;
 
+            var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
+
             if ((renderFlags & RenderFlags.FerryConnections) != RenderFlags.None)
             {
                 var ferryConnections = _mapper.FerryConnections.Where(item => !item.Hidden)
@@ -81,19 +98,52 @@ namespace TsMap
 
                     foreach (var conn in connections)
                     {
-                        var newPoints = new List<PointF>
+                        if (conn.Connections.Count == 0) // no extra nodes -> straight line
                         {
-                            new PointF(conn.StartPortLocation.X, conn.StartPortLocation.Y)
+                            g.DrawLine(ferryPen, conn.StartPortLocation, conn.EndPortLocation);
+                            continue;
+                        }
+
+                        var startYaw = Math.Atan2(conn.Connections[0].Z - conn.StartPortLocation.Y, // get angle of the start port to the first node
+                            conn.Connections[0].X - conn.StartPortLocation.X);
+                        var bezierNodes = GetBezierControlNodes(conn.StartPortLocation.X,
+                            conn.StartPortLocation.Y, startYaw, conn.Connections[0].X, conn.Connections[0].Z,
+                            conn.Connections[0].Rotation);
+
+                        var bezierPoints = new List<PointF>
+                        {
+                            new PointF(conn.StartPortLocation.X, conn.StartPortLocation.Y), // start
+                            new PointF(conn.StartPortLocation.X + bezierNodes.Item1.X, conn.StartPortLocation.Y + bezierNodes.Item1.Y), // control1
+                            new PointF(conn.Connections[0].X - bezierNodes.Item2.X, conn.Connections[0].Z - bezierNodes.Item2.Y), // control2
+                            new PointF(conn.Connections[0].X, conn.Connections[0].Z)
                         };
 
-                        foreach (var connection in conn.connections)
+                        for (var i = 0; i < conn.Connections.Count - 1; i++) // loop all extra nodes
                         {
-                            newPoints.Add(new PointF(connection.X, connection.Y));
-                        }
-                        newPoints.Add(new PointF(conn.EndPortLocation.X, conn.EndPortLocation.Y));
+                            var ferryPoint = conn.Connections[i];
+                            var nextFerryPoint = conn.Connections[i + 1];
 
-                        var pen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
-                        g.DrawCurve(pen, newPoints.ToArray());
+                            bezierNodes = GetBezierControlNodes(ferryPoint.X, ferryPoint.Z, ferryPoint.Rotation,
+                                nextFerryPoint.X, nextFerryPoint.Z, nextFerryPoint.Rotation);
+
+                            bezierPoints.Add(new PointF(ferryPoint.X + bezierNodes.Item1.X, ferryPoint.Z + bezierNodes.Item1.Y)); // control1
+                            bezierPoints.Add(new PointF(nextFerryPoint.X - bezierNodes.Item2.X, nextFerryPoint.Z - bezierNodes.Item2.Y)); // control2
+                            bezierPoints.Add(new PointF(nextFerryPoint.X, nextFerryPoint.Z)); // end
+                        }
+
+                        var lastFerryPoint = conn.Connections[conn.Connections.Count - 1];
+                        var endYaw = Math.Atan2(conn.EndPortLocation.Y - lastFerryPoint.Z, // get angle of the last node to the end port
+                            conn.EndPortLocation.X - lastFerryPoint.X);
+
+                        bezierNodes = GetBezierControlNodes(lastFerryPoint.X,
+                            lastFerryPoint.Z, lastFerryPoint.Rotation, conn.EndPortLocation.X, conn.EndPortLocation.Y,
+                            endYaw);
+
+                        bezierPoints.Add(new PointF(lastFerryPoint.X + bezierNodes.Item1.X, lastFerryPoint.Z + bezierNodes.Item1.Y)); // control1
+                        bezierPoints.Add(new PointF(conn.EndPortLocation.X - bezierNodes.Item2.X, conn.EndPortLocation.Y - bezierNodes.Item2.Y)); // control2
+                        bezierPoints.Add(new PointF(conn.EndPortLocation.X, conn.EndPortLocation.Y)); // end
+
+                        g.DrawBeziers(ferryPen, bezierPoints.ToArray());
                     }
                 }
             }

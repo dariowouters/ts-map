@@ -3,7 +3,22 @@ using System.Drawing;
 
 namespace TsMap
 {
+    public class TsFerryPoint
+    {
+        public float X;
+        public float Z;
+        public double Rotation;
 
+        public TsFerryPoint(float x, float z)
+        {
+            X = x;
+            Z = z;
+        }
+        public void SetRotation(double rot)
+        {
+            Rotation = rot;
+        }
+    }
 
     public class TsFerryConnection
     {
@@ -11,11 +26,17 @@ namespace TsMap
         public PointF StartPortLocation { get; private set; }
         public ulong EndPortToken { get; set; }
         public PointF EndPortLocation { get; private set; }
-        public List<PointF> connections = new List<PointF>();
+        public List<TsFerryPoint> Connections = new List<TsFerryPoint>();
 
-        public void AddConnectionPosition(float x, float z)
+        public void AddConnectionPosition(int index, float x, float z)
         {
-            connections.Add(new PointF(x / 256f, z / 256f));
+            if (Connections.Count > index) return;
+            Connections.Add(new TsFerryPoint(x / 256, z / 256));
+        }
+        public void AddRotation(int index, double rot)
+        {
+            if (Connections.Count <= index) return;
+            Connections[index].SetRotation(rot);
         }
 
         public void SetPortLocation(ulong ferryPortId, float x, float z)

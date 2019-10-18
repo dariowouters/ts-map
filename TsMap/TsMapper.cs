@@ -77,6 +77,7 @@ namespace TsMap
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("@include"))
                     {
                         var path = Helper.GetFilePath(line.Split('"')[1], "def");
@@ -117,6 +118,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("prefab_model"))
                     {
                         token = ScsHash.StringToToken(line.Split('.')[1].Trim());
@@ -170,6 +172,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains(":") && roadLook != null)
                     {
                         var value = line.Substring(line.IndexOf(':') + 1).Trim();
@@ -231,6 +234,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains(":"))
                     {
                         var value = line.Split(':')[1].Trim();
@@ -239,11 +243,21 @@ namespace TsMap
                         {
                             if (key.Contains("connection_positions"))
                             {
+                                var index = int.Parse(key.Split('[')[1].Split(']')[0]);
                                 var vector = value.Split('(')[1].Split(')')[0];
                                 var values = vector.Split(',');
                                 var x = float.Parse(values[0].Replace('.', ','));
                                 var z = float.Parse(values[2].Replace('.', ','));
-                                conn.AddConnectionPosition(x, z);
+                                conn.AddConnectionPosition(index, x, z);
+                            }
+                            else if (key.Contains("connection_directions"))
+                            {
+                                var index = int.Parse(key.Split('[')[1].Split(']')[0]);
+                                var vector = value.Split('(')[1].Split(')')[0];
+                                var values = vector.Split(',');
+                                var x = float.Parse(values[0].Replace('.', ','));
+                                var z = float.Parse(values[2].Replace('.', ','));
+                                conn.AddRotation(index, Math.Atan2(z, x));
                             }
                         }
 
@@ -314,6 +328,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("texture") && !line.Contains("_name"))
                     {
                         var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), line.Split('"')[1]);
