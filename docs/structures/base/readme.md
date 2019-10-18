@@ -18,6 +18,7 @@ File Version | ATS | ETS2 | Extra
 836 | 1.06 | 1.27
 
 From here the game versions are synced between the games
+
 File Version | Game Version(s) | Extra
 :---: | :---: | ---
 836 | 1.28 | ATS moved to same version number as ETS2
