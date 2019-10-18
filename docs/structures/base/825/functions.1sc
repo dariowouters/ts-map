@@ -1,0 +1,63 @@
+string get_type_name(u32 type)
+{
+    switch (type)
+    {
+        case 0x01: return "Building";
+        case 0x02: return "Road";
+        case 0x03: return "Prefab";
+        case 0x04: return "Model";
+        case 0x05: return "Company";
+        case 0x06: return "Service";
+        case 0x07: return "Cutplane";
+        case 0x08: return "Mover";
+        case 0x0A: return "No Weather";
+        case 0x0B: return "City";
+        case 0x0C: return "Hinge";
+        case 0x11: return "Overlay";
+        case 0x12: return "Ferry";
+        case 0x14: return "Sound";
+        case 0x15: return "Garage";
+        case 0x16: return "Camera";
+        case 0x21: return "Trigger";
+        case 0x22: return "Fuel";
+        case 0x23: return "Road Side Item";
+        case 0x24: return "Bus Stop";
+        case 0x25: return "Traffic Area";
+        case 0x26: return "Bezier Patch";
+        case 0x27: return "Compound Model";
+        case 0x29: return "Map Area";
+        case 0x2A: return "Far Model";
+        case 0x2B: return "Curve";
+        default: return "Unk";
+
+    }
+}
+
+const char letters[38] =
+{ '\0', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
+    'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '_'
+};
+
+u64 rem(const u64 num, const u64 div)
+{
+    return num % div;
+}
+
+u64 quot(const u64 num, const u64 div)
+{
+    return num / div;
+}
+
+string token_to_string(const u64 token)
+{
+    string text = "";
+    u64 token_copy = token;
+    do
+    {
+        text += letters[rem(token_copy, 38)];
+        token_copy = quot(token_copy, 38);
+    } while (token_copy != 0);
+    SPrintf(text, "%s (0x%LX)", text, token);
+    return text;
+}

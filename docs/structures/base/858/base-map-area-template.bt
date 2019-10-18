@@ -1,0 +1,31 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 825
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    byte m_flags[5]; // 0
+    u32 m_node_count; // 5
+    u64 m_node_uid[m_node_count]; // 9
+    u32 m_color_index;
+} base_map_area_t;
+
+
+// byte 0 of flags
+// 0 => visual
+// 1 => Draw over
+// 2 => Draw outline
+// 8 => navigation
+
+// color index
+// 0 => road
+// 1 => light
+// 2 => dark
+// 3 => green

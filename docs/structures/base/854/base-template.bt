@@ -1,0 +1,114 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Script File
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 834
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef quad                    s64;
+typedef unsigned quad           u64;
+typedef long                    s32;
+typedef unsigned long           u32;
+typedef short                   s16;
+typedef unsigned short          u16;
+
+LittleEndian();
+
+typedef struct
+{
+    s32 x;
+    s32 y;
+    s32 z;
+} int3;
+
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+} float3;
+
+#include "functions.1sc"
+
+#include "base-node-template.bt"
+#include "base-road-template.bt"
+#include "base-prefab-template.bt"
+#include "base-company-template.bt"
+#include "base-service-template.bt"
+#include "base-cutplane-template.bt"
+#include "base-city-template.bt"
+#include "base-overlay-template.bt"
+#include "base-ferry-template.bt"
+#include "base-garage-template.bt"
+#include "base-trigger-template.bt"
+#include "base-fuel-template.bt"
+#include "base-road-side-item-template.bt"  // signs, lights
+#include "base-bus-stop-template.bt"
+#include "base-traffic-area-template.bt"
+#include "base-trajectory-item-template.bt"
+#include "base-map-area-template.bt"
+
+typedef struct
+{
+    u32 m_type <read=get_type_name, bgcolor=cBlue, fgcolor=cWhite>;
+    u64 m_uid <format=hex>;
+    float3 m_pos;
+    float3 m_posR;
+    float3 m_rot;
+    byte padding[4];
+
+    switch (m_type)
+    {
+        case 0x03: base_road_t            m_road;               break;
+        case 0x04: base_prefab_t          m_prefab;             break;
+        case 0x06: base_company_t         m_company;            break;
+        case 0x07: base_service_t         m_service;            break;
+        case 0x08: base_cutplane_t        m_cutplane;           break;
+        case 0x0C: base_city_t            m_city;               break;
+        case 0x12: base_overlay_t         m_overlay;            break;
+        case 0x13: base_ferry_t           m_ferry;              break;
+        case 0x16: base_garage_t          m_garage;             break;
+        case 0x22: base_trigger_t         m_trigger;            break;
+        case 0x23: base_fuel_t            m_fuel;               break;
+        case 0x24: base_road_side_item_t  m_road_side_item;     break;
+        case 0x25: base_bus_stop_t        m_bus_stop;           break;
+        case 0x26: base_traffic_area_t    m_traffic_area;       break;
+        case 0x29: base_trajectory_item_t m_trajectory_item;    break;
+        case 0x2A: base_map_area_t        m_map_area;           break;
+
+    }
+} base_item_t;
+
+typedef struct
+{
+    u32 m_version;
+    u64 m_game_id <read=token_to_string>; // also euro2 in ATS
+    u32 padding; // always 3 ??
+    u32 m_item_count <bgcolor=cGreen, fgcolor=cBlack>;
+} base_header_t;
+
+typedef struct
+{
+    base_header_t   m_header;
+    base_item_t     m_item[m_header.m_item_count] <optimize=false>;
+    u32             m_node_count <bgcolor=cGreen, fgcolor=cBlack>;
+    base_node_t     m_node[m_node_count] <optimize=false>;
+} base_t;
+
+base_t base;
+
+
+// nodeFlags[0]:
+// 00000001 => ??
+// 00000010 => Country border
+// 00000100 => Free rotation
+
+// nodeFlags[1]:
+// 1 -> n countries Forward item
+
+// nodeFlags[2]:
+// 1 -> n countries Backward item

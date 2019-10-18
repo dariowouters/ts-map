@@ -1,0 +1,27 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 825
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    byte m_flags[5]; // 0
+    u64 m_overlay_uid <read=token_to_string>; // 5
+    u64 m_uid[3]; // 13
+    u32 m_count; // 37
+    u64 m_uid2[m_count];
+    u32 m_count2;
+    u64 m_uid3[m_count2];
+    u32 m_count3;
+    u64 m_uid4[m_count3];
+    u32 m_count4;
+    u64 m_uid5[m_count4];
+    u32 m_count5;
+    u64 m_uid6[m_count5];
+} base_company_t;
