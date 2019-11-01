@@ -36,7 +36,7 @@ namespace TsMap
     public class TsTriggerPoint
     {
         public uint TriggerId;
-        public ulong TriggerActionUid;
+        public ulong TriggerActionToken;
         public float X;
         public float Z;
     }
@@ -231,12 +231,12 @@ namespace TsMap
                 var triggerPoint = new TsTriggerPoint
                 {
                     TriggerId = MemoryHelper.ReadUInt32(_stream, triggerPointBaseOffset),
-                    TriggerActionUid = MemoryHelper.ReadUInt64(_stream, triggerPointBaseOffset + 0x04),
+                    TriggerActionToken = MemoryHelper.ReadUInt64(_stream, triggerPointBaseOffset + 0x04),
                     X = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x1C),
                     Z = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x24),
                 };
                 var pointInVicinity = TriggerPoints.FirstOrDefault(point => // check if any other trigger points with the same id are close
-                    point.TriggerActionUid == triggerPoint.TriggerActionUid &&
+                    point.TriggerActionToken == triggerPoint.TriggerActionToken &&
                     ((triggerPoint.X > point.X - 20 && triggerPoint.X < point.X + 20) ||
                     (triggerPoint.Z > point.Z - 20 && triggerPoint.Z < point.Z + 20)));
                 if (pointInVicinity == null) TriggerPoints.Add(triggerPoint);

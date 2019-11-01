@@ -50,13 +50,6 @@ namespace TsMap.Canvas
             else _startPoint = new PointF(-1000, -4000);
             _renderer = new TsMapRenderer(_mapper);
 
-            Timer t = new Timer
-            {
-                Interval = 1000 / 30
-            };
-            t.Tick += (s, a) => MapPanel.Invalidate();
-            t.Start();
-
             // Panning around
             MapPanel.MouseDown += (s, e) =>
             {
@@ -68,6 +61,7 @@ namespace TsMap.Canvas
             {
                 if (_dragging)
                 {
+                    MapPanel.Invalidate();
                     _startPoint.X -= (e.X - _lastPoint.X) / _scale;
                     _startPoint.Y -= (e.Y - _lastPoint.Y) / _scale;
                 }
@@ -78,6 +72,7 @@ namespace TsMap.Canvas
             {
                 _scale += (e.Delta > 0 ? 1 : -1) * 0.05f * _scale;
                 _scale = Math.Max(_scale, 0.0005f);
+                MapPanel.Invalidate();
             };
 
             MapPanel.Resize += TsMapCanvas_Resize;
@@ -90,17 +85,17 @@ namespace TsMap.Canvas
 
         }
 
-        private void SaveTileImage(int z, int x, int y, PointF pos, float zoom, string exportPath) // z = zoomLevel; x = row tile index; y = column tile index
+        private void SaveTileImage(int z, int x, int y, PointF pos, float zoom, string exportPath, RenderFlags renderFlags) // z = zoomLevel; x = row tile index; y = column tile index
         {
             var bitmap = new Bitmap(tileSize, tileSize);
 
             pos.X = (x == 0) ? pos.X : pos.X + (bitmap.Width / zoom) * x; // get tile start coords
             pos.Y = (y == 0) ? pos.Y : pos.Y + (bitmap.Height / zoom) * y;
 
-            _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height), zoom, pos, _palette, _renderFlags ^ RenderFlags.TextOverlay);
+            _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height), zoom, pos, _palette, renderFlags & ~RenderFlags.TextOverlay);
 
-            Directory.CreateDirectory($"{exportPath}/{z}/{x}");
-            bitmap.Save($"{exportPath}/{z}/{x}/{y}.png", ImageFormat.Png);
+            Directory.CreateDirectory($"{exportPath}/Tiles/{z}/{x}");
+            bitmap.Save($"{exportPath}/Tiles/{z}/{x}/{y}.png", ImageFormat.Png);
             bitmap.Dispose();
         }
         private void ZoomOutAndCenterMap(float targetWidth, float targetHeight, out PointF pos, out float zoom)
@@ -121,22 +116,34 @@ namespace TsMap.Canvas
             }
         }
 
-        private void GenerateTileMap(int zoomLevel, string exportPath)
+        private void GenerateTileMap(int startZoomLevel, int endZoomLevel, string exportPath, bool createTiles, bool saveInfo, RenderFlags renderFlags)
         {
-            ZoomOutAndCenterMap(tileSize, tileSize, out PointF pos, out float zoom); // get zoom and start coords for tile level 0
             _appSettings.LastTileMapPath = exportPath;
             JsonHelper.SaveSettings(_appSettings);
-            JsonHelper.SaveTileMapInfo(exportPath, pos.X, pos.X + tileSize / zoom, pos.Y, pos.Y + tileSize / zoom, zoomLevel);
-            SaveTileImage(0, 0, 0, pos, zoom, exportPath);
 
-            for (int z = 1; z <= zoomLevel; z++) // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+            if (saveInfo || startZoomLevel == 0)
             {
-                ZoomOutAndCenterMap((int)Math.Pow(2, z) * tileSize, (int)Math.Pow(2, z) * tileSize, out pos, out zoom); // get zoom and start coords for current tile level
+                ZoomOutAndCenterMap(tileSize, tileSize, out PointF pos, out float zoom); // get zoom and start coords for tile level 0
+                if (saveInfo)
+                {
+                    JsonHelper.SaveTileMapInfo(exportPath, pos.X, pos.X + tileSize / zoom, pos.Y,
+                        pos.Y + tileSize / zoom, startZoomLevel, endZoomLevel);
+                }
+                if (startZoomLevel == 0 && createTiles)
+                {
+                    SaveTileImage(0, 0, 0, pos, zoom, exportPath, renderFlags);
+                    startZoomLevel++;
+                }
+            }
+            if (!createTiles) return;
+            for (int z = startZoomLevel; z <= endZoomLevel; z++) // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+            {
+                ZoomOutAndCenterMap((int)Math.Pow(2, z) * tileSize, (int)Math.Pow(2, z) * tileSize, out PointF pos, out float zoom); // get zoom and start coords for current tile level
                 for (int x = 0; x < Math.Pow(2, z); x++)
                 {
                     for (int y = 0; y < Math.Pow(2, z); y++)
                     {
-                        SaveTileImage(z, x, y, pos, zoom, exportPath);
+                        SaveTileImage(z, x, y, pos, zoom, exportPath, renderFlags);
                     }
                 }
             }
@@ -161,6 +168,7 @@ namespace TsMap.Canvas
             _itemVisibilityForm.UpdateItemVisibility += (renderFlags) =>
             {
                 _renderFlags = renderFlags;
+                MapPanel.Invalidate();
             };
         }
 
@@ -193,28 +201,34 @@ namespace TsMap.Canvas
                 CityStripComboBox.Items.Clear();
                 CityStripComboBox.Items.AddRange(_mapper.Cities.Where(x => !x.Hidden).ToArray());
                 _localizationSettingsForm.Close();
+                MapPanel.Invalidate();
             };
         }
 
         private void GenerateTileMapToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_tileMapGeneratorForm == null || _tileMapGeneratorForm.IsDisposed) _tileMapGeneratorForm = new TileMapGeneratorForm();
+            if (_tileMapGeneratorForm == null || _tileMapGeneratorForm.IsDisposed) _tileMapGeneratorForm = new TileMapGeneratorForm(_appSettings.LastTileMapPath, _renderFlags);
             _tileMapGeneratorForm.Show();
             _tileMapGeneratorForm.BringToFront();
 
-            _tileMapGeneratorForm.GenerateTileMap += (zoomLevel) => // Called when export button is pressed in TileMapGeneratorForm
+            _tileMapGeneratorForm.GenerateTileMap += (exportPath, startZoomLevel, endZoomLevel, createTiles, exportCities, exportOverlays, saveInfo, renderFlags) => // Called when export button is pressed in TileMapGeneratorForm
             {
-                if (zoomLevel < 0) return;
-                folderBrowserDialog1.Description = "Select where you want the tile map files to be placed";
-                if (_appSettings.LastTileMapPath != null) folderBrowserDialog1.SelectedPath = _appSettings.LastTileMapPath;
-                _tileMapGeneratorForm.Hide();
-                var res = folderBrowserDialog1.ShowDialog();
-                if (res == DialogResult.OK)
+                _tileMapGeneratorForm.Close();
+                _appSettings.LastTileMapPath = exportPath;
+                JsonHelper.SaveSettings(_appSettings);
+                if (exportCities) _mapper.ExportCities(exportPath);
+                if (exportOverlays) _mapper.ExportOverlays(exportPath);
+
+                if (startZoomLevel < 0 || endZoomLevel < 0) return;
+                if (startZoomLevel > endZoomLevel)
                 {
-                    if (!Directory.Exists(folderBrowserDialog1.SelectedPath)) return;
-                    GenerateTileMap(zoomLevel, folderBrowserDialog1.SelectedPath);
-                    MessageBox.Show("Tile map has been generated!", "TsMap - Tile Map Generation Finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    var tmp = startZoomLevel;
+                    startZoomLevel = endZoomLevel;
+                    endZoomLevel = tmp;
                 }
+
+                GenerateTileMap(startZoomLevel, endZoomLevel, exportPath, createTiles, saveInfo, renderFlags);
+                MessageBox.Show("Tile map has been generated!", "TsMap - Tile Map Generation Finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Focus();
             };
         }
@@ -222,12 +236,14 @@ namespace TsMap.Canvas
         private void FullMapToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ZoomOutAndCenterMap(MapPanel.Width, MapPanel.Height, out _startPoint, out _scale);
+            MapPanel.Invalidate();
         }
 
         private void ResetMapToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _scale = 0.2f;
             _startPoint = (!_mapper.IsEts2) ? new PointF(-105000, 15000) : new PointF(-1000, -4000);
+            MapPanel.Invalidate();
         }
 
         private void CityStripComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -235,6 +251,7 @@ namespace TsMap.Canvas
             var city = (TsCityItem)((ToolStripComboBox)sender).SelectedItem;
             _scale = 0.2f;
             _startPoint = new PointF(city.X - 1000, city.Z - 1000);
+            MapPanel.Invalidate();
         }
     }
 }

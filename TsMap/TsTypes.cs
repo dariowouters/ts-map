@@ -6,13 +6,10 @@ namespace TsMap
 
     public static class Common
     {
-        public const int BaseFileVersion130 = 853;
-        public const int BaseFileVersion132 = 855;
-        public const int BaseFileVersion133 = 858;
-        public const int BaseFileVersion136 = 874;
-
         public const int Ets2DlcGuardCount = 8; // TODO: Figure out how to get these dynamically
         public const int AtsDlcGuardCount = 6;
+
+        public const float LaneWidth = 4.5f;
     }
 
     [Flags]

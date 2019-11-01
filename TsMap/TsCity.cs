@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 using TsMap.HashFiles;
 
 namespace TsMap
@@ -9,11 +10,16 @@ namespace TsMap
         private TsMapper _mapper;
 
         public string Name { get; set; }
-        public string NameLocalized { get; set; }
+        [JsonIgnore]
+        public string LocalizationToken { get; set; }
         public string Country { get; set; }
+        [JsonIgnore]
         public ulong Token { get; set; }
+        [JsonIgnore]
         public List<int> XOffsets { get; }
+        [JsonIgnore]
         public List<int> YOffsets { get; }
+        public Dictionary<string, string> LocalizedNames { get; }
 
         public TsCity(TsMapper mapper, string path)
         {
@@ -21,7 +27,7 @@ namespace TsMap
             var file = _mapper.Rfs.GetFileEntry(path);
 
             if (file == null) return;
-
+            LocalizedNames = new Dictionary<string, string>();
             var fileContent = file.Entry.Read();
 
             var lines = Encoding.UTF8.GetString(fileContent).Split('\n');
@@ -31,41 +37,52 @@ namespace TsMap
 
             foreach (var line in lines)
             {
-                if (line.Contains("city_data"))
+                var (validLine, key, value) = SiiHelper.ParseLine(line);
+                if (!validLine) continue;
+
+                if (key == "city_data")
                 {
-                    Token = ScsHash.StringToToken(line.Split('.')[1].Trim());
+                    Token = ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[1]));
                 }
-                else if (line.Contains("city_name") && !line.Contains("uppercase") && !line.Contains("short") && !line.Contains("localized"))
+                else if (key == "city_name")
                 {
                     Name = line.Split('"')[1];
                 }
-                else if (line.Contains("city_name_localized"))
+                else if (key == "city_name_localized")
                 {
-                    NameLocalized = line.Split('"')[1];
-                    NameLocalized = NameLocalized.Substring(2, NameLocalized.Length - 4);
+                    LocalizationToken = value.Split('"')[1];
+                    LocalizationToken = LocalizationToken.Replace("@", "");
                 }
-                else if (line.Contains("country"))
+                else if (key == "country")
                 {
-                    Country = line.Split(':')[1].Trim();
+                    Country = value;
                 }
-                else if (line.Contains("map_x_offsets[]"))
+                else if (key.Contains("map_x_offsets[]"))
                 {
                     if (++offsetCount > 4)
                     {
-                        var offset = 0;
-                        if (int.TryParse(line.Split(':')[1].Trim(), out offset)) XOffsets.Add(offset);
+                        if (int.TryParse(value, out var offset)) XOffsets.Add(offset);
                     }
                     if (offsetCount == 8) offsetCount = 0;
                 }
-                else if (line.Contains("map_y_offsets[]"))
+                else if (key.Contains("map_y_offsets[]"))
                 {
                     if (++offsetCount > 4)
                     {
-                        var offset = 0;
-                        if (int.TryParse(line.Split(':')[1].Trim(), out offset)) YOffsets.Add(offset);
+                        if (int.TryParse(value, out var offset)) YOffsets.Add(offset);
                     }
                 }
             }
+        }
+
+        public void AddLocalizedName(string locale, string name)
+        {
+            if (!LocalizedNames.ContainsKey(locale)) LocalizedNames.Add(locale, name);
+        }
+
+        public string GetLocalizedName(string locale)
+        {
+            return (LocalizedNames.ContainsKey(locale)) ? LocalizedNames[locale] : Name;
         }
     }
 }

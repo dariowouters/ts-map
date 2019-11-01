@@ -30,7 +30,7 @@ namespace TsMap
 
         public float GetWidth()
         {
-            return Offset + 4.5f * LanesLeft.Count + 4.5f * LanesRight.Count;
+            return Offset + Common.LaneWidth * LanesLeft.Count + Common.LaneWidth * LanesRight.Count;
         }
 
     }

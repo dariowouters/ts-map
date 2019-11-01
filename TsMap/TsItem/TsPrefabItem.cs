@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using TsMap.HashFiles;
 
 namespace TsMap.TsItem
 {
@@ -60,7 +61,7 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x18); // 0x18(id & look & variant)
@@ -94,7 +95,7 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
 
@@ -130,7 +131,7 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
 
@@ -163,7 +164,7 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
 
@@ -197,7 +198,7 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // 0x08(prefabId) + 0x08(m_variant)
@@ -225,7 +226,7 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
             }
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // 0x08(prefabId) + 0x08(m_variant)
