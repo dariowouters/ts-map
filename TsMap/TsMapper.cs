@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -642,12 +643,36 @@ namespace TsMap
             {
                 if (company.Hidden) continue;
                 var overlayName = ScsHash.TokenToString(company.OverlayToken);
+                var point = new PointF(company.X, company.Z);
+                if (company.Nodes.Count > 0)
+                {
+                    var prefab = Prefabs.FirstOrDefault(x => x.Uid == company.Nodes[0]);
+                    if (prefab != null)
+                    {
+                        var originNode = GetNodeByUid(prefab.Nodes[0]);
+                        if (prefab.Prefab.PrefabNodes == null) continue;
+                        var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+                        var rot = (float)(originNode.Rotation - Math.PI -
+                                           Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+                        var prefabstartX = originNode.X - mapPointOrigin.X;
+                        var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                        var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
+                        if (companyPos != null)
+                        {
+                            point = RenderHelper.RotatePoint(prefabstartX + companyPos.X, prefabStartZ + companyPos.Z,
+                                rot,
+                                originNode.X, originNode.Z);
+                        }
+                    }
+                }
                 var b = company.Overlay?.GetBitmap();
                 if (b == null) continue;
                 var overlayJObj = new JObject
                 {
-                    ["X"] = company.X,
-                    ["Y"] = company.Z,
+                    ["X"] = point.X,
+                    ["Y"] = point.Y,
                     ["Name"] = overlayName,
                     ["Type"] = "Company",
                     ["Width"] = b.Width,
@@ -723,37 +748,37 @@ namespace TsMap
 
                     switch (spawnPoint.Type)
                     {
-                        case TsSpawnPointType.Fuel:
+                        case TsSpawnPointType.GasPos:
                             {
                                 overlayName = "gas_ico";
                                 overlayJObj["Type"] = "Fuel";
                                 break;
                             }
-                        case TsSpawnPointType.Service:
+                        case TsSpawnPointType.ServicePos:
                             {
                                 overlayName = "service_ico";
                                 overlayJObj["Type"] = "Service";
                                 break;
                             }
-                        case TsSpawnPointType.WeightStation:
+                        case TsSpawnPointType.WeightStationPos:
                             {
                                 overlayName = "weigh_station_ico";
                                 overlayJObj["Type"] = "WeightStation";
                                 break;
                             }
-                        case TsSpawnPointType.TruckDealer:
+                        case TsSpawnPointType.TruckDealerPos:
                             {
                                 overlayName = "dealer_ico";
                                 overlayJObj["Type"] = "TruckDealer";
                                 break;
                             }
-                        case TsSpawnPointType.GarageOutdoor:
+                        case TsSpawnPointType.BuyPos:
                             {
                                 overlayName = "garage_large_ico";
                                 overlayJObj["Type"] = "Garage";
                                 break;
                             }
-                        case TsSpawnPointType.Recruitment:
+                        case TsSpawnPointType.RecruitmentPos:
                             {
                                 overlayName = "recruitment_ico";
                                 overlayJObj["Type"] = "Recruitment";

@@ -66,27 +66,35 @@ namespace TsMap
         MapArea = 0x2A,
     };
 
+
+    // values from https://github.com/SCSSoftware/BlenderTools/blob/master/addon/io_scs_tools/consts.py
     public enum TsSpawnPointType
     {
-        TrailerPickup = 0x01,
-        Unk1, // company related
-        Fuel,
-        Service,
-        Unk2, // seems unused
-        WeightStation,
-        TruckDealer,
-        Unk3, // seems unused
-        Unk4, // seems unused
-        SomeParking, // also shows parking in companies which don't work/show up in game
-        Unk5, // seems unused
-        Unk6, // seems unused
-        JobSelect,
-        GarageIndoor, // manage garage
-        GarageOutdoor, // buy garage
-        Recruitment,
-        Unk7, // seems unused
+        None = 0x00,
+        TrailerPos,
+        UnloadEasyPos,
+        GasPos,
+        ServicePos,
+        TruckStopPos,
+        WeightStationPos,
+        TruckDealerPos,
+        Hotel,
+        Custom,
+        Parking, // also shows parking in companies which don't work/show up in game
+        Task,
+        MeetPos,
+        CompanyPos,
+        GaragePos, // manage garage
+        BuyPos, // buy garage
+        RecruitmentPos,
+        CameraPoint,
         BusStation,
-        Unk8, // Something with companies ; TrailerDropOff ??
-        Unk9, // Something with companies ; TrailerDropOff ??
+        UnloadMediumPos,
+        UnloadHardPos,
+        UnloadRigidPos,
+        WeightCatPos,
+        CompanyUnloadPos,
+        TrailerSpawn,
+        LongTrailerPos,
     }
 }

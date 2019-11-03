@@ -143,11 +143,7 @@ namespace TsMap
                     Z = MemoryHelper.ReadSingle(_stream, spawnPointBaseOffset + 0x08),
                     Type = (TsSpawnPointType)MemoryHelper.ReadUInt32(_stream, spawnPointBaseOffset + 0x1C)
                 };
-                var pointInVicinity = SpawnPoints.FirstOrDefault(point => // check if any other spawn points with the same type are close
-                    point.Type == spawnPoint.Type &&
-                    ((spawnPoint.X > point.X - 4 && spawnPoint.X < point.X + 4) ||
-                    (spawnPoint.Z > point.Z - 4 && spawnPoint.Z < point.Z + 4)));
-                if (pointInVicinity == null) SpawnPoints.Add(spawnPoint);
+                SpawnPoints.Add(spawnPoint);
                 // Log.Msg($"Spawn point of type: {spawnPoint.Type} in {_filePath}");
             }
 
@@ -235,11 +231,7 @@ namespace TsMap
                     X = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x1C),
                     Z = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x24),
                 };
-                var pointInVicinity = TriggerPoints.FirstOrDefault(point => // check if any other trigger points with the same id are close
-                    point.TriggerActionToken == triggerPoint.TriggerActionToken &&
-                    ((triggerPoint.X > point.X - 20 && triggerPoint.X < point.X + 20) ||
-                    (triggerPoint.Z > point.Z - 20 && triggerPoint.Z < point.Z + 20)));
-                if (pointInVicinity == null) TriggerPoints.Add(triggerPoint);
+                TriggerPoints.Add(triggerPoint);
             }
 
             _stream = null;

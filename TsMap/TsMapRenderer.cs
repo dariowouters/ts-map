@@ -363,9 +363,33 @@ namespace TsMap
 
                 foreach (var companyItem in companies) // TODO: Scaling
                 {
+                    var point = new PointF(companyItem.X, companyItem.Z);
+                    if (companyItem.Nodes.Count > 0)
+                    {
+                        var prefab = _mapper.Prefabs.FirstOrDefault(x => x.Uid == companyItem.Nodes[0]);
+                        if (prefab != null)
+                        {
+                            var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
+                            if (prefab.Prefab.PrefabNodes == null) continue;
+                            var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+                            var rot = (float)(originNode.Rotation - Math.PI -
+                                               Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+                            var prefabstartX = originNode.X - mapPointOrigin.X;
+                            var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                            var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
+                            if (companyPos != null)
+                            {
+                                point = RenderHelper.RotatePoint(prefabstartX + companyPos.X,
+                                    prefabStartZ + companyPos.Z, rot,
+                                    originNode.X, originNode.Z);
+                            }
+                        }
+                    }
                     Bitmap b = companyItem.Overlay?.GetBitmap();
                     if (b != null)
-                        g.DrawImage(b, companyItem.X, companyItem.Z, b.Width, b.Height);
+                        g.DrawImage(b, point.X, point.Y, b.Width, b.Height);
                 }
 
                 foreach (var prefab in prefabs) // Draw all prefab overlays
@@ -388,37 +412,37 @@ namespace TsMap
 
                         switch (spawnPoint.Type)
                         {
-                            case TsSpawnPointType.Fuel:
+                            case TsSpawnPointType.GasPos:
                             {
                                 var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("gas_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.Service:
+                            case TsSpawnPointType.ServicePos:
                             {
                                 var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("service_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.WeightStation:
+                            case TsSpawnPointType.WeightStationPos:
                             {
                                 var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("weigh_station_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.TruckDealer:
+                            case TsSpawnPointType.TruckDealerPos:
                             {
                                 var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("dealer_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.GarageOutdoor:
+                            case TsSpawnPointType.BuyPos:
                             {
                                 var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("garage_large_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.Recruitment:
+                            case TsSpawnPointType.RecruitmentPos:
                             {
                                 var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("recruitment_ico"));
                                 b = overlay?.GetBitmap();
