@@ -16,3 +16,12 @@ typedef struct // sizeof 21
     u64 m_node_uid <format=hex>; // 13
 } base_overlay_t;
 
+// flags[0] = Hide for zoom levels
+// 1 = (Nav map, 3D view, zoom 0) (0)
+// 2 = (Nav map, 3D view, zoom 1) (1)
+// 4 = (Nav map, 2D view, zoom 0) (2)
+// 8 = (Nav map, 2D view, zoom 1) (3)
+// 16 = (World map, zoom 0) (4)
+// 32 = (World map, zoom 1) (5)
+// 64 = (World map, zoom 2) (6)
+// 128 = (World map, zoom 3) (7)

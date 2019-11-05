@@ -14,10 +14,10 @@ namespace TsMap.TsItem
             Valid = true;
             if (Sector.Version < 829)
                 TsTriggerItem825(startOffset);
-            else if (Sector.Version >= 829 && Sector.Version < 874)
+            else if (Sector.Version >= 829 && Sector.Version < 875)
                 TsTriggerItem829(startOffset);
-            else if (Sector.Version >= 874)
-                TsTriggerItem874(startOffset);
+            else if (Sector.Version >= 875)
+                TsTriggerItem875(startOffset);
             else
                 Log.Msg(
                     $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
@@ -107,7 +107,7 @@ namespace TsMap.TsItem
             BlockSize = fileOffset - startOffset;
         }
 
-        public void TsTriggerItem874(int startOffset)
+        public void TsTriggerItem875(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
@@ -147,7 +147,7 @@ namespace TsMap.TsItem
                 else if (hasParameters == 3) fileOffset += 0x08; // 0x08 (m_some_uid)
                 var targetTagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
 
-                fileOffset += 0x04 + targetTagCount * 0x08 + 0x04; // 0x04(targetTagCount) + targetTags + 0x04(m_range)
+                fileOffset += 0x04 + targetTagCount * 0x08 + 0x08; // 0x04(targetTagCount) + targetTags + 0x04(m_range & some_new_value)
             }
 
             if (nodeCount == 1) fileOffset += 0x04; // 0x04(m_radius)

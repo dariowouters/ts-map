@@ -11,10 +11,10 @@ namespace TsMap.TsItem
                 TsRoadSideItem825(startOffset);
             else if (Sector.Version >= 846 && Sector.Version < 855)
                 TsRoadSideItem846(startOffset);
-            else if (Sector.Version >= 855 && Sector.Version < 874)
+            else if (Sector.Version >= 855 && Sector.Version < 875)
                 TsRoadSideItem855(startOffset);
-            else if (Sector.Version >= 874)
-                TsRoadSideItem874(startOffset);
+            else if (Sector.Version >= 875)
+                TsRoadSideItem875(startOffset);
             else
                 Log.Msg(
                     $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
@@ -151,7 +151,7 @@ namespace TsMap.TsItem
             }
             BlockSize = fileOffset - startOffset;
         }
-        public void TsRoadSideItem874(int startOffset)
+        public void TsRoadSideItem875(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var templateCount = MemoryHelper.ReadInt8(Sector.Stream, fileOffset += 0x25); // 0x20(flags & sign_id & uid & look & variant)
