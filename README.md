@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for (ATS) 1.36**
+### **Support for (ATS) 1.36 & Utah DLC**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -47,6 +47,7 @@ ATS:
     - New Mexico
     - Oregon
     - Washington
+    - Utah
 - ETS2
     - Base
     - Going East!

@@ -12,7 +12,7 @@ namespace TsMap
         public const int BaseFileVersion136 = 875;
 
         public const int Ets2DlcGuardCount = 8; // TODO: Figure out how to get these dynamically
-        public const int AtsDlcGuardCount = 6;
+        public const int AtsDlcGuardCount = 8;
     }
 
     [Flags]
