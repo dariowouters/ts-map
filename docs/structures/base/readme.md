@@ -28,7 +28,7 @@ File Version | Game Version(s) | Extra
 855 | 1.32
 858 | 1.33 & 1.34
 869 | 1.35
-874 | 1.36
+875 | 1.36
 
 These files are made using [010 editor](https://www.sweetscape.com/010editor/), but if you just want to see the structures you can just read them in a text editor.
 

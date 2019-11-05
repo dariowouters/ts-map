@@ -3,7 +3,7 @@
 //
 //      File:
 //   Authors: Dario Wouters
-//   Version: 874
+//   Version: 875
 //   Purpose:
 //  Category:
 //   History:
@@ -31,6 +31,7 @@ typedef struct
     u32 m_target_tag_count;
     u64 m_target_tag[m_target_tag_count] <read=token_to_string>;
     float m_target_range;
+    u32 some_new_value; // ??
 } trigger_action_t;
 
 typedef struct
