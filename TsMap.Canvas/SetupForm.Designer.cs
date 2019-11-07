@@ -35,14 +35,16 @@
             this.SelectedGamePathLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.modPanel = new System.Windows.Forms.Panel();
+            this.SelectedModPathLabel = new System.Windows.Forms.Label();
             this.ToBottom = new System.Windows.Forms.Button();
+            this.InverseSelection = new System.Windows.Forms.Button();
             this.ToTop = new System.Windows.Forms.Button();
             this.PrioDown = new System.Windows.Forms.Button();
+            this.SelectAll = new System.Windows.Forms.Button();
             this.PrioUp = new System.Windows.Forms.Button();
             this.modList = new System.Windows.Forms.CheckedListBox();
             this.BrowseModBtn = new System.Windows.Forms.Button();
             this.ModFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.SelectedModPathLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.modPanel.SuspendLayout();
             this.SuspendLayout();
@@ -57,7 +59,7 @@
             this.NextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NextBtn.Enabled = false;
-            this.NextBtn.Location = new System.Drawing.Point(3, 465);
+            this.NextBtn.Location = new System.Drawing.Point(3, 494);
             this.NextBtn.Name = "NextBtn";
             this.NextBtn.Size = new System.Drawing.Size(333, 23);
             this.NextBtn.TabIndex = 0;
@@ -107,7 +109,7 @@
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(339, 494);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(339, 520);
             this.flowLayoutPanel1.TabIndex = 4;
             // 
             // modPanel
@@ -116,20 +118,30 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.modPanel.Controls.Add(this.SelectedModPathLabel);
             this.modPanel.Controls.Add(this.ToBottom);
+            this.modPanel.Controls.Add(this.InverseSelection);
             this.modPanel.Controls.Add(this.ToTop);
             this.modPanel.Controls.Add(this.PrioDown);
+            this.modPanel.Controls.Add(this.SelectAll);
             this.modPanel.Controls.Add(this.PrioUp);
             this.modPanel.Controls.Add(this.modList);
             this.modPanel.Controls.Add(this.BrowseModBtn);
             this.modPanel.Location = new System.Drawing.Point(3, 75);
             this.modPanel.Name = "modPanel";
-            this.modPanel.Size = new System.Drawing.Size(333, 384);
+            this.modPanel.Size = new System.Drawing.Size(333, 413);
             this.modPanel.TabIndex = 3;
             this.modPanel.Visible = false;
             // 
+            // SelectedModPathLabel
+            // 
+            this.SelectedModPathLabel.Location = new System.Drawing.Point(6, 0);
+            this.SelectedModPathLabel.Name = "SelectedModPathLabel";
+            this.SelectedModPathLabel.Size = new System.Drawing.Size(318, 19);
+            this.SelectedModPathLabel.TabIndex = 1;
+            this.SelectedModPathLabel.Text = "Select the mod dir.";
+            // 
             // ToBottom
             // 
-            this.ToBottom.Location = new System.Drawing.Point(270, 359);
+            this.ToBottom.Location = new System.Drawing.Point(270, 385);
             this.ToBottom.Name = "ToBottom";
             this.ToBottom.Size = new System.Drawing.Size(54, 23);
             this.ToBottom.TabIndex = 3;
@@ -137,9 +149,19 @@
             this.ToBottom.UseVisualStyleBackColor = true;
             this.ToBottom.Click += new System.EventHandler(this.ToBottom_Click);
             // 
+            // InverseSelection
+            // 
+            this.InverseSelection.Location = new System.Drawing.Point(169, 331);
+            this.InverseSelection.Name = "InverseSelection";
+            this.InverseSelection.Size = new System.Drawing.Size(155, 23);
+            this.InverseSelection.TabIndex = 3;
+            this.InverseSelection.Text = "Inverse Selection";
+            this.InverseSelection.UseVisualStyleBackColor = true;
+            this.InverseSelection.Click += new System.EventHandler(this.InverseSelection_Click);
+            // 
             // ToTop
             // 
-            this.ToTop.Location = new System.Drawing.Point(270, 331);
+            this.ToTop.Location = new System.Drawing.Point(270, 357);
             this.ToTop.Name = "ToTop";
             this.ToTop.Size = new System.Drawing.Size(54, 23);
             this.ToTop.TabIndex = 3;
@@ -149,7 +171,7 @@
             // 
             // PrioDown
             // 
-            this.PrioDown.Location = new System.Drawing.Point(9, 359);
+            this.PrioDown.Location = new System.Drawing.Point(9, 385);
             this.PrioDown.Name = "PrioDown";
             this.PrioDown.Size = new System.Drawing.Size(255, 23);
             this.PrioDown.TabIndex = 2;
@@ -157,9 +179,19 @@
             this.PrioDown.UseVisualStyleBackColor = true;
             this.PrioDown.Click += new System.EventHandler(this.PrioDown_Click);
             // 
+            // SelectAll
+            // 
+            this.SelectAll.Location = new System.Drawing.Point(9, 331);
+            this.SelectAll.Name = "SelectAll";
+            this.SelectAll.Size = new System.Drawing.Size(155, 23);
+            this.SelectAll.TabIndex = 2;
+            this.SelectAll.Text = "Select All";
+            this.SelectAll.UseVisualStyleBackColor = true;
+            this.SelectAll.Click += new System.EventHandler(this.CheckAll_Click);
+            // 
             // PrioUp
             // 
-            this.PrioUp.Location = new System.Drawing.Point(9, 331);
+            this.PrioUp.Location = new System.Drawing.Point(9, 357);
             this.PrioUp.Name = "PrioUp";
             this.PrioUp.Size = new System.Drawing.Size(255, 23);
             this.PrioUp.TabIndex = 2;
@@ -186,21 +218,13 @@
             this.BrowseModBtn.UseVisualStyleBackColor = true;
             this.BrowseModBtn.Click += new System.EventHandler(this.BrowseModBtn_Click);
             // 
-            // SelectedModPathLabel
-            // 
-            this.SelectedModPathLabel.Location = new System.Drawing.Point(6, 0);
-            this.SelectedModPathLabel.Name = "SelectedModPathLabel";
-            this.SelectedModPathLabel.Size = new System.Drawing.Size(318, 19);
-            this.SelectedModPathLabel.TabIndex = 1;
-            this.SelectedModPathLabel.Text = "Select the mod dir.";
-            // 
             // SetupForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(339, 494);
+            this.ClientSize = new System.Drawing.Size(339, 520);
             this.Controls.Add(this.flowLayoutPanel1);
             this.MaximizeBox = false;
             this.Name = "SetupForm";
@@ -228,5 +252,7 @@
         private System.Windows.Forms.Button ToBottom;
         private System.Windows.Forms.Button ToTop;
         private System.Windows.Forms.Label SelectedModPathLabel;
+        private System.Windows.Forms.Button InverseSelection;
+        private System.Windows.Forms.Button SelectAll;
     }
 }

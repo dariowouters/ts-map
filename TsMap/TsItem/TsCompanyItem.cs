@@ -1,14 +1,18 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using TsMap.HashFiles;
 
 namespace TsMap.TsItem
 {
     public class TsCompanyItem : TsItem
     {
+        public ulong OverlayToken { get; private set; }
         public TsMapOverlay Overlay { get; private set; }
 
         public TsCompanyItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
+            Nodes = new List<ulong>();
             if (Sector.Version < 858)
                 TsCompanyItem825(startOffset);
             else if (Sector.Version >= 858)
@@ -24,15 +28,19 @@ namespace TsMap.TsItem
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
-            var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
+            OverlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
 
-            Overlay = Sector.Mapper.LookupOverlay(overlayId);
+            Overlay = Sector.Mapper.LookupOverlay(OverlayToken);
             if (Overlay == null)
             {
                 Valid = false;
-                if (overlayId != 0) Log.Msg($"Could not find Company Overlay with id: {overlayId:X}, in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                if (OverlayToken != 0)
+                    Log.Msg(
+                        $"Could not find Company Overlay: '{ScsHash.TokenToString(OverlayToken)}'({OverlayToken:X}), in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x20); // count
+            Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08)); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])
+
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // count | 0x08 (uid[1] & uid[2])
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count2
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count3
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count4
@@ -46,15 +54,20 @@ namespace TsMap.TsItem
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
-            var overlayId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
+            OverlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
 
-            Overlay = Sector.Mapper.LookupOverlay(overlayId);
+            Overlay = Sector.Mapper.LookupOverlay(OverlayToken);
             if (Overlay == null)
             {
                 Valid = false;
-                if (overlayId != 0) Log.Msg($"Could not find Company Overlay with id: {overlayId:X}, in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                if (OverlayToken != 0)
+                    Log.Msg(
+                        $"Could not find Company Overlay: '{ScsHash.TokenToString(OverlayToken)}'({OverlayToken:X}), in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x20); // count
+
+            Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08)); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])
+
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // count | 0x08 (uid[1] & uid[2])
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count2
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count3
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count4

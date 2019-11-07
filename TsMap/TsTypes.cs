@@ -6,13 +6,9 @@ namespace TsMap
 
     public static class Common
     {
-        public const int BaseFileVersion130 = 853;
-        public const int BaseFileVersion132 = 855;
-        public const int BaseFileVersion133 = 858;
-        public const int BaseFileVersion136 = 875;
-
         public const int Ets2DlcGuardCount = 8; // TODO: Figure out how to get these dynamically
         public const int AtsDlcGuardCount = 8;
+        public const float LaneWidth = 4.5f;
     }
 
     [Flags]
@@ -29,6 +25,32 @@ namespace TsMap
         All = int.MaxValue
     }
 
+    [Flags]
+    public enum ExportFlags
+    {
+        None = 0,
+        TileMapInfo = 1,
+        CityList = 2,
+        CityDimensions = 4,
+        CityLocalizedNames = 8,
+        CountryList = 16,
+        CountryLocalizedNames = 32,
+        OverlayList = 64,
+        OverlayPNGs = 128,
+        All = int.MaxValue
+    }
+
+    public static class FlagMethods
+    {
+        public static bool IsActive(this RenderFlags self, RenderFlags value)
+        {
+            return (self & value) == value;
+        }
+        public static bool IsActive(this ExportFlags self, ExportFlags value)
+        {
+            return (self & value) == value;
+        }
+    }
     public class Mod
     {
         public string ModPath { get; set; }
@@ -69,27 +91,35 @@ namespace TsMap
         MapArea = 0x2A,
     };
 
+
+    // values from https://github.com/SCSSoftware/BlenderTools/blob/master/addon/io_scs_tools/consts.py
     public enum TsSpawnPointType
     {
-        TrailerPickup = 0x01,
-        Unk1, // company related
-        Fuel,
-        Service,
-        Unk2, // seems unused
-        WeightStation,
-        TruckDealer,
-        Unk3, // seems unused
-        Unk4, // seems unused
-        SomeParking, // also shows parking in companies which don't work/show up in game
-        Unk5, // seems unused
-        Unk6, // seems unused
-        JobSelect,
-        GarageIndoor, // manage garage
-        GarageOutdoor, // buy garage
-        Recruitment,
-        Unk7, // seems unused
+        None = 0x00,
+        TrailerPos,
+        UnloadEasyPos,
+        GasPos,
+        ServicePos,
+        TruckStopPos,
+        WeightStationPos,
+        TruckDealerPos,
+        Hotel,
+        Custom,
+        Parking, // also shows parking in companies which don't work/show up in game
+        Task,
+        MeetPos,
+        CompanyPos,
+        GaragePos, // manage garage
+        BuyPos, // buy garage
+        RecruitmentPos,
+        CameraPoint,
         BusStation,
-        Unk8, // Something with companies ; TrailerDropOff ??
-        Unk9, // Something with companies ; TrailerDropOff ??
+        UnloadMediumPos,
+        UnloadHardPos,
+        UnloadRigidPos,
+        WeightCatPos,
+        CompanyUnloadPos,
+        TrailerSpawn,
+        LongTrailerPos,
     }
 }

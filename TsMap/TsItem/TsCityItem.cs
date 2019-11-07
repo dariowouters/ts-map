@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using TsMap.HashFiles;
 
 namespace TsMap.TsItem
 {
@@ -6,7 +7,8 @@ namespace TsMap.TsItem
     {
         public TsCity City { get; private set; }
         public ulong NodeUid { get; private set; }
-
+        public float Width { get; private set; }
+        public float Height { get; private set; }
         public TsCityItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
@@ -23,10 +25,13 @@ namespace TsMap.TsItem
             if (City == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find City with id: {cityId:X}, " +
+                Log.Msg($"Could not find City: '{ScsHash.TokenToString(cityId)}'({cityId:X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            NodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05 + 0x08 + 0x08); // 0x05(flags) + 0x08(cityId) + 0x08(width & height)
+
+            Width = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x05 + 0x08); // 0x05(flags) + 0x08(cityId)
+            Height = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x04); // 0x08(Width)
+            NodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04); // 0x08(height)
             fileOffset += 0x08; // nodeUid
             BlockSize = fileOffset - startOffset;
         }
@@ -34,13 +39,11 @@ namespace TsMap.TsItem
         public override string ToString()
         {
             if (City == null) return "Error";
-            var name = City.Name;
-            if (City.NameLocalized != string.Empty)
-            {
-                var localName = Sector.Mapper.GetLocalizedName(City.NameLocalized);
-                if (localName != null) name = localName;
-            }
-            return $"{City.Country} - {name}";
+            var country = Sector.Mapper.GetCountryByTokenName(City.Country);
+            var countryName = (country == null)
+                ? City.Country
+                : country.GetLocalizedName(Sector.Mapper.SelectedLocalization);
+            return $"{countryName} - {City.GetLocalizedName(Sector.Mapper.SelectedLocalization)}";
         }
     }
 }

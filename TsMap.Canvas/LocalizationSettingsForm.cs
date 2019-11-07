@@ -10,11 +10,12 @@ namespace TsMap.Canvas
 
         public UpdateLocalizationEvent UpdateLocalization;
 
-        public LocalizationSettingsForm(List<string> localizationList, int locIndex)
+        public LocalizationSettingsForm(List<string> localizationList, string locale)
         {
             InitializeComponent();
             localizationComboBox1.DataSource = localizationList;
-            if (locIndex < localizationList.Count) localizationComboBox1.SelectedIndex = locIndex;
+            var index = localizationList.FindIndex(x => x == locale);
+            localizationComboBox1.SelectedIndex = (index != -1) ? index : 0;
         }
 
         private void SubmitBtn_Click(object sender, System.EventArgs e)

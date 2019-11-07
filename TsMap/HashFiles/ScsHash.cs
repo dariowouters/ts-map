@@ -1,8 +1,16 @@
 ﻿// Translated to C#
 // original source https://ideone.com/gpZrQc (by mwl4)
 
+using System.Text;
+
 namespace TsMap.HashFiles
 {
+    internal struct UlDiv
+    {
+        public ulong Quot;
+        public ulong Rem;
+
+    }
     public static class ScsHash
     {
         private static readonly char[] Letters =
@@ -10,6 +18,7 @@ namespace TsMap.HashFiles
             'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
             'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '_'
         };
+
 
         private static ulong PowUl(int num)
         {
@@ -31,7 +40,11 @@ namespace TsMap.HashFiles
 
             return 0;
         }
-
+        private static UlDiv Div(ulong num, ulong divider)
+        {
+            var res = new UlDiv {Rem = num % divider, Quot = num / divider};
+            return res;
+        }
         public static ulong StringToToken(string text)
         {
             ulong res = 0;
@@ -42,6 +55,18 @@ namespace TsMap.HashFiles
             }
 
             return res;
+        }
+        public static string TokenToString(ulong token)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; token != 0; i++)
+            {
+                var res = Div(token, 38);
+                token = res.Quot;
+                sb.Append(Letters[res.Rem]);
+            }
+
+            return sb.ToString();
         }
     }
 }

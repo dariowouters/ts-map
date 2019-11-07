@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using TsMap.HashFiles;
 
 namespace TsMap.TsItem
 {
@@ -106,12 +107,13 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
-            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09));
+            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09);
+            RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 
             if (RoadLook == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find RoadLook with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
+                Log.Msg($"Could not find RoadLook: '{ScsHash.TokenToString(roadLookId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
 

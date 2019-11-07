@@ -173,5 +173,17 @@ namespace TsMap.Canvas
         {
             MoveItemToBottom(modList.SelectedIndex);
         }
+
+        private void InverseSelection_Click(object sender, EventArgs e)
+        {
+            _mods.ForEach(x => x.Load = !x.Load);
+            UpdateModList();
+        }
+
+        private void CheckAll_Click(object sender, EventArgs e)
+        {
+            _mods.ForEach(x => x.Load = true);
+            UpdateModList();
+        }
     }
 }

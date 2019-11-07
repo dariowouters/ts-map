@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using TsMap.HashFiles;
 
 namespace TsMap
 {
@@ -16,47 +17,6 @@ namespace TsMap
         public TsMapRenderer(TsMapper mapper)
         {
             _mapper = mapper;
-        }
-
-        private static PointF RotatePoint(float x, float z, float angle, float rotX, float rotZ)
-        {
-            var s = Math.Sin(angle);
-            var c = Math.Cos(angle);
-            double newX = x - rotX;
-            double newZ = z - rotZ;
-            return new PointF((float) ((newX * c) - (newZ * s) + rotX), (float) ((newX * s) + (newZ * c) + rotZ));
-        }
-
-        private static PointF GetCornerCoords(float x, float z, float width, double angle)
-        {
-            return new PointF(
-                (float) (x + width * Math.Cos(angle)),
-                (float) (z + width * Math.Sin(angle))
-            );
-        }
-        private static double Hypotenuse(float x, float y)
-        {
-            return Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-        }
-
-        // https://stackoverflow.com/a/45881662
-        private Tuple<PointF, PointF> GetBezierControlNodes(float startX, float startZ, double startRot, float endX, float endZ, double endRot)
-        {
-            var len = Hypotenuse(endX - startX, endZ - startZ);
-            var ax1 = (float)(Math.Cos(startRot) * len * (1 / 3f));
-            var az1 = (float)(Math.Sin(startRot) * len * (1 / 3f));
-            var ax2 = (float)(Math.Cos(endRot) * len * (1 / 3f));
-            var az2 = (float)(Math.Sin(endRot) * len * (1 / 3f));
-            return new Tuple<PointF, PointF>(new PointF(ax1, az1), new PointF(ax2, az2));
-        }
-
-        private static int GetZoomIndex(Rectangle clip, float scale)
-        {
-            var smallestSize = (clip.Width > clip.Height) ? clip.Height / scale : clip.Width / scale;
-            if (smallestSize < 1000) return 0;
-            if (smallestSize < 5000) return 1;
-            if (smallestSize < 18500) return 2;
-            return 3;
         }
 
         public void Render(Graphics g, Rectangle clip, float scale, PointF startPoint, MapPalette palette, RenderFlags renderFlags = RenderFlags.All)
@@ -79,7 +39,7 @@ namespace TsMap
                 return;
             }
 
-            var zoomIndex = GetZoomIndex(clip, scale);
+            var zoomIndex = RenderHelper.GetZoomIndex(clip, scale);
 
             var endPoint = new PointF(startPoint.X + clip.Width / scale, startPoint.Y + clip.Height / scale);
 
@@ -87,7 +47,7 @@ namespace TsMap
 
             var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
 
-            if ((renderFlags & RenderFlags.FerryConnections) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.FerryConnections))
             {
                 var ferryConnections = _mapper.FerryConnections.Where(item => !item.Hidden)
                     .ToList();
@@ -106,7 +66,7 @@ namespace TsMap
 
                         var startYaw = Math.Atan2(conn.Connections[0].Z - conn.StartPortLocation.Y, // get angle of the start port to the first node
                             conn.Connections[0].X - conn.StartPortLocation.X);
-                        var bezierNodes = GetBezierControlNodes(conn.StartPortLocation.X,
+                        var bezierNodes = RenderHelper.GetBezierControlNodes(conn.StartPortLocation.X,
                             conn.StartPortLocation.Y, startYaw, conn.Connections[0].X, conn.Connections[0].Z,
                             conn.Connections[0].Rotation);
 
@@ -123,7 +83,7 @@ namespace TsMap
                             var ferryPoint = conn.Connections[i];
                             var nextFerryPoint = conn.Connections[i + 1];
 
-                            bezierNodes = GetBezierControlNodes(ferryPoint.X, ferryPoint.Z, ferryPoint.Rotation,
+                            bezierNodes = RenderHelper.GetBezierControlNodes(ferryPoint.X, ferryPoint.Z, ferryPoint.Rotation,
                                 nextFerryPoint.X, nextFerryPoint.Z, nextFerryPoint.Rotation);
 
                             bezierPoints.Add(new PointF(ferryPoint.X + bezierNodes.Item1.X, ferryPoint.Z + bezierNodes.Item1.Y)); // control1
@@ -135,7 +95,7 @@ namespace TsMap
                         var endYaw = Math.Atan2(conn.EndPortLocation.Y - lastFerryPoint.Z, // get angle of the last node to the end port
                             conn.EndPortLocation.X - lastFerryPoint.X);
 
-                        bezierNodes = GetBezierControlNodes(lastFerryPoint.X,
+                        bezierNodes = RenderHelper.GetBezierControlNodes(lastFerryPoint.X,
                             lastFerryPoint.Z, lastFerryPoint.Rotation, conn.EndPortLocation.X, conn.EndPortLocation.Y,
                             endYaw);
 
@@ -150,7 +110,7 @@ namespace TsMap
             var ferryTime = DateTime.Now.Ticks - ferryStartTime;
 
             var mapAreaStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.MapAreas) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.MapAreas))
             {
                 var mapAreas = _mapper.MapAreas.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -185,7 +145,7 @@ namespace TsMap
                     item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
                 .ToList();
 
-            if ((renderFlags & RenderFlags.Prefabs) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.Prefabs))
             {
                 List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
 
@@ -224,7 +184,7 @@ namespace TsMap
                                         if (!polyPoints.ContainsKey(neighbour)) // New Polygon Neighbour
                                         {
                                             nextPoint = neighbour;
-                                            var newPoint = RotatePoint(
+                                            var newPoint = RenderHelper.RotatePoint(
                                                 prefabstartX + prefabItem.Prefab.MapPoints[nextPoint].X,
                                                 prefabStartZ + prefabItem.Prefab.MapPoints[nextPoint].Z, rot, originNode.X,
                                                 originNode.Z);
@@ -290,24 +250,24 @@ namespace TsMap
 
                                 var cornerCoords = new List<PointF>();
 
-                                var coords = GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
-                                    (4.5f * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw + Math.PI / 2);
+                                var coords = RenderHelper.GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
+                                    (Common.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw + Math.PI / 2);
 
-                                cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
+                                cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
-                                coords = GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
-                                    (4.5f * neighbourLaneCount + neighbourPoint.LaneOffset) / 2f,
+                                coords = RenderHelper.GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
+                                    (Common.LaneWidth * neighbourLaneCount + neighbourPoint.LaneOffset) / 2f,
                                     roadYaw + Math.PI / 2);
-                                cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
+                                cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
-                                coords = GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
-                                    (4.5f * neighbourLaneCount + mapPoint.LaneOffset) / 2f,
+                                coords = RenderHelper.GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
+                                    (Common.LaneWidth * neighbourLaneCount + mapPoint.LaneOffset) / 2f,
                                     roadYaw - Math.PI / 2);
-                                cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
+                                cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
-                                coords = GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
-                                    (4.5f * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
-                                cornerCoords.Add(RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
+                                coords = RenderHelper.GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
+                                    (Common.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
+                                cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 TsPrefabLook prefabLook = new TsPrefabPolyLook(cornerCoords)
                                 {
@@ -331,7 +291,7 @@ namespace TsMap
             var prefabTime = DateTime.Now.Ticks - prefabStartTime;
 
             var roadStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.Roads) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.Roads))
             {
                 var roads = _mapper.Roads.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -377,7 +337,7 @@ namespace TsMap
             var roadTime = DateTime.Now.Ticks - roadStartTime;
 
             var mapOverlayStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.MapOverlays) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.MapOverlays))
             {
                 var overlays = _mapper.MapOverlays.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -394,7 +354,7 @@ namespace TsMap
             var mapOverlayTime = DateTime.Now.Ticks - mapOverlayStartTime;
 
             var mapOverlay2StartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.MapOverlays) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.MapOverlays))
             {
                 var companies = _mapper.Companies.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -403,9 +363,33 @@ namespace TsMap
 
                 foreach (var companyItem in companies) // TODO: Scaling
                 {
+                    var point = new PointF(companyItem.X, companyItem.Z);
+                    if (companyItem.Nodes.Count > 0)
+                    {
+                        var prefab = _mapper.Prefabs.FirstOrDefault(x => x.Uid == companyItem.Nodes[0]);
+                        if (prefab != null)
+                        {
+                            var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
+                            if (prefab.Prefab.PrefabNodes == null) continue;
+                            var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+                            var rot = (float)(originNode.Rotation - Math.PI -
+                                               Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+                            var prefabstartX = originNode.X - mapPointOrigin.X;
+                            var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                            var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
+                            if (companyPos != null)
+                            {
+                                point = RenderHelper.RotatePoint(prefabstartX + companyPos.X,
+                                    prefabStartZ + companyPos.Z, rot,
+                                    originNode.X, originNode.Z);
+                            }
+                        }
+                    }
                     Bitmap b = companyItem.Overlay?.GetBitmap();
                     if (b != null)
-                        g.DrawImage(b, companyItem.X, companyItem.Z, b.Width, b.Height);
+                        g.DrawImage(b, point.X, point.Y, b.Width, b.Height);
                 }
 
                 foreach (var prefab in prefabs) // Draw all prefab overlays
@@ -421,46 +405,46 @@ namespace TsMap
                     var prefabStartZ = originNode.Z - mapPointOrigin.Z;
                     foreach (var spawnPoint in prefab.Prefab.SpawnPoints)
                     {
-                        var newPoint = RotatePoint(prefabstartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
+                        var newPoint = RenderHelper.RotatePoint(prefabstartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
                             originNode.X, originNode.Z);
 
                         Bitmap b = null;
 
                         switch (spawnPoint.Type)
                         {
-                            case TsSpawnPointType.Fuel:
+                            case TsSpawnPointType.GasPos:
                             {
-                                var overlay = _mapper.LookupOverlay(0x11C686A54F);
+                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("gas_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.Service:
+                            case TsSpawnPointType.ServicePos:
                             {
-                                var overlay = _mapper.LookupOverlay(0x2358E7493388A97);
+                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("service_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.WeightStation:
+                            case TsSpawnPointType.WeightStationPos:
                             {
-                                var overlay = _mapper.LookupOverlay(0xD50E1058FBBF179F);
+                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("weigh_station_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.TruckDealer:
+                            case TsSpawnPointType.TruckDealerPos:
                             {
-                                var overlay = _mapper.LookupOverlay(0xEE210C8438914);
+                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("dealer_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.GarageOutdoor:
+                            case TsSpawnPointType.BuyPos:
                             {
-                                var overlay = _mapper.LookupOverlay(0x4572831B4D58CC5B);
+                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("garage_large_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
-                            case TsSpawnPointType.Recruitment:
+                            case TsSpawnPointType.RecruitmentPos:
                             {
-                                var overlay = _mapper.LookupOverlay(0x1E18DD7A560F3E5A);
+                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("recruitment_ico"));
                                 b = overlay?.GetBitmap();
                                 break;
                             }
@@ -473,15 +457,15 @@ namespace TsMap
                     var lastId = -1;
                     foreach (var triggerPoint in prefab.Prefab.TriggerPoints) // trigger points in prefabs: garage, hotel, ...
                     {
-                        var newPoint = RotatePoint(prefabstartX + triggerPoint.X, prefabStartZ + triggerPoint.Z, rot,
+                        var newPoint = RenderHelper.RotatePoint(prefabstartX + triggerPoint.X, prefabStartZ + triggerPoint.Z, rot,
                             originNode.X, originNode.Z);
 
                         if (triggerPoint.TriggerId == lastId) continue;
                         lastId = (int) triggerPoint.TriggerId;
 
-                        if (triggerPoint.TriggerActionUid == 0x18991B7A99E279C) // parking trigger
+                        if (triggerPoint.TriggerActionToken == ScsHash.StringToToken("hud_parking")) // parking trigger
                         {
-                            var overlay = _mapper.LookupOverlay(0x2358E762E112CD4);
+                            var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("parking_ico"));
                             Bitmap b = overlay?.GetBitmap();
 
                             if (b != null)
@@ -517,7 +501,7 @@ namespace TsMap
             var mapOverlay2Time = DateTime.Now.Ticks - mapOverlay2StartTime;
 
             var cityStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.CityNames) != RenderFlags.None) // TODO: Fix position and scaling
+            if (renderFlags.IsActive(RenderFlags.CityNames)) // TODO: Fix position and scaling
             {
                 var cities = _mapper.Cities.Where(item => !item.Hidden).ToList();
 
@@ -525,13 +509,7 @@ namespace TsMap
 
                 foreach (var city in cities)
                 {
-                    var name = city.City.Name;
-
-                    if (city.City.NameLocalized != string.Empty)
-                    {
-                        var localName = _mapper.GetLocalizedName(city.City.NameLocalized);
-                        if (localName != null) name = localName;
-                    }
+                    var name = city.City.GetLocalizedName(_mapper.SelectedLocalization);
 
                     var node = _mapper.GetNodeByUid(city.NodeUid);
                     var coords = (node == null) ? new PointF(city.X, city.Z) : new PointF(node.X, node.Z);
@@ -551,7 +529,7 @@ namespace TsMap
 
             g.ResetTransform();
             var elapsedTime = DateTime.Now.Ticks - startTime;
-            if ((renderFlags & RenderFlags.TextOverlay) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.TextOverlay))
             {
                 g.DrawString(
                     $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {startPoint.X}, y: {startPoint.Y}, scale: {scale}",
