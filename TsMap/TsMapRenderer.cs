@@ -47,7 +47,7 @@ namespace TsMap
 
             var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
 
-            if ((renderFlags & RenderFlags.FerryConnections) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.FerryConnections))
             {
                 var ferryConnections = _mapper.FerryConnections.Where(item => !item.Hidden)
                     .ToList();
@@ -110,7 +110,7 @@ namespace TsMap
             var ferryTime = DateTime.Now.Ticks - ferryStartTime;
 
             var mapAreaStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.MapAreas) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.MapAreas))
             {
                 var mapAreas = _mapper.MapAreas.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -145,7 +145,7 @@ namespace TsMap
                     item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
                 .ToList();
 
-            if ((renderFlags & RenderFlags.Prefabs) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.Prefabs))
             {
                 List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
 
@@ -291,7 +291,7 @@ namespace TsMap
             var prefabTime = DateTime.Now.Ticks - prefabStartTime;
 
             var roadStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.Roads) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.Roads))
             {
                 var roads = _mapper.Roads.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -337,7 +337,7 @@ namespace TsMap
             var roadTime = DateTime.Now.Ticks - roadStartTime;
 
             var mapOverlayStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.MapOverlays) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.MapOverlays))
             {
                 var overlays = _mapper.MapOverlays.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -354,7 +354,7 @@ namespace TsMap
             var mapOverlayTime = DateTime.Now.Ticks - mapOverlayStartTime;
 
             var mapOverlay2StartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.MapOverlays) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.MapOverlays))
             {
                 var companies = _mapper.Companies.Where(item =>
                         item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
@@ -501,7 +501,7 @@ namespace TsMap
             var mapOverlay2Time = DateTime.Now.Ticks - mapOverlay2StartTime;
 
             var cityStartTime = DateTime.Now.Ticks;
-            if ((renderFlags & RenderFlags.CityNames) != RenderFlags.None) // TODO: Fix position and scaling
+            if (renderFlags.IsActive(RenderFlags.CityNames)) // TODO: Fix position and scaling
             {
                 var cities = _mapper.Cities.Where(item => !item.Hidden).ToList();
 
@@ -529,7 +529,7 @@ namespace TsMap
 
             g.ResetTransform();
             var elapsedTime = DateTime.Now.Ticks - startTime;
-            if ((renderFlags & RenderFlags.TextOverlay) != RenderFlags.None)
+            if (renderFlags.IsActive(RenderFlags.TextOverlay))
             {
                 g.DrawString(
                     $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {startPoint.X}, y: {startPoint.Y}, scale: {scale}",

@@ -29,16 +29,22 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Generate TileMap Info");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Localized Names");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Generate City List", new System.Windows.Forms.TreeNode[] {
+            treeNode2});
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Localized Names");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Generate Country List", new System.Windows.Forms.TreeNode[] {
+            treeNode4});
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Export As PNG");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Generate Overlay List", new System.Windows.Forms.TreeNode[] {
+            treeNode6});
             this.GenerateBtn = new System.Windows.Forms.Button();
-            this.WarningLabel = new System.Windows.Forms.Label();
             this.StartLabel = new System.Windows.Forms.Label();
             this.EndLabel = new System.Windows.Forms.Label();
             this.StartZoomLevelBox = new System.Windows.Forms.NumericUpDown();
             this.EndZoomLevelBox = new System.Windows.Forms.NumericUpDown();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.GenCityListCheck = new System.Windows.Forms.CheckBox();
-            this.GenOverlaysCheck = new System.Windows.Forms.CheckBox();
-            this.GenTileMapInfoCheck = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.CityNamesCheckBox = new System.Windows.Forms.CheckBox();
             this.MapAreasCheckBox = new System.Windows.Forms.CheckBox();
@@ -48,6 +54,7 @@
             this.PrefabsCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.GenTilesCheck = new System.Windows.Forms.CheckBox();
+            this.triStateTreeView1 = new TsMap.Canvas.TriStateTreeView();
             ((System.ComponentModel.ISupportInitialize)(this.StartZoomLevelBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EndZoomLevelBox)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -55,28 +62,18 @@
             // 
             // GenerateBtn
             // 
-            this.GenerateBtn.Location = new System.Drawing.Point(12, 138);
+            this.GenerateBtn.Location = new System.Drawing.Point(10, 185);
             this.GenerateBtn.Name = "GenerateBtn";
-            this.GenerateBtn.Size = new System.Drawing.Size(389, 23);
+            this.GenerateBtn.Size = new System.Drawing.Size(298, 23);
             this.GenerateBtn.TabIndex = 2;
             this.GenerateBtn.Text = "Generate";
             this.GenerateBtn.UseVisualStyleBackColor = true;
             this.GenerateBtn.Click += new System.EventHandler(this.GenerateBtn_Click);
             // 
-            // WarningLabel
-            // 
-            this.WarningLabel.AutoSize = true;
-            this.WarningLabel.ForeColor = System.Drawing.Color.Red;
-            this.WarningLabel.Location = new System.Drawing.Point(9, 122);
-            this.WarningLabel.Name = "WarningLabel";
-            this.WarningLabel.Size = new System.Drawing.Size(381, 13);
-            this.WarningLabel.TabIndex = 3;
-            this.WarningLabel.Text = "Level 8 = detailed city view on normal ets2 map, takes quite a while to generate";
-            // 
             // StartLabel
             // 
             this.StartLabel.AutoSize = true;
-            this.StartLabel.Location = new System.Drawing.Point(9, 35);
+            this.StartLabel.Location = new System.Drawing.Point(7, 35);
             this.StartLabel.Name = "StartLabel";
             this.StartLabel.Size = new System.Drawing.Size(29, 13);
             this.StartLabel.TabIndex = 4;
@@ -85,7 +82,7 @@
             // EndLabel
             // 
             this.EndLabel.AutoSize = true;
-            this.EndLabel.Location = new System.Drawing.Point(99, 35);
+            this.EndLabel.Location = new System.Drawing.Point(97, 35);
             this.EndLabel.Name = "EndLabel";
             this.EndLabel.Size = new System.Drawing.Size(26, 13);
             this.EndLabel.TabIndex = 4;
@@ -93,7 +90,7 @@
             // 
             // StartZoomLevelBox
             // 
-            this.StartZoomLevelBox.Location = new System.Drawing.Point(46, 33);
+            this.StartZoomLevelBox.Location = new System.Drawing.Point(44, 33);
             this.StartZoomLevelBox.Maximum = new decimal(new int[] {
             18,
             0,
@@ -105,7 +102,7 @@
             // 
             // EndZoomLevelBox
             // 
-            this.EndZoomLevelBox.Location = new System.Drawing.Point(133, 33);
+            this.EndZoomLevelBox.Location = new System.Drawing.Point(131, 33);
             this.EndZoomLevelBox.Maximum = new decimal(new int[] {
             18,
             0,
@@ -120,51 +117,12 @@
             0,
             0});
             // 
-            // GenCityListCheck
-            // 
-            this.GenCityListCheck.AutoSize = true;
-            this.GenCityListCheck.Location = new System.Drawing.Point(12, 79);
-            this.GenCityListCheck.Name = "GenCityListCheck";
-            this.GenCityListCheck.Size = new System.Drawing.Size(109, 17);
-            this.GenCityListCheck.TabIndex = 5;
-            this.GenCityListCheck.Text = "Generate City List";
-            this.toolTip1.SetToolTip(this.GenCityListCheck, "Creates a json file with all cities (w/ localization)\r\nand their location and cou" +
-        "ntry");
-            this.GenCityListCheck.UseVisualStyleBackColor = true;
-            this.GenCityListCheck.CheckedChanged += new System.EventHandler(this.GenCityListCheck_CheckedChanged);
-            // 
-            // GenOverlaysCheck
-            // 
-            this.GenOverlaysCheck.AutoSize = true;
-            this.GenOverlaysCheck.Location = new System.Drawing.Point(12, 102);
-            this.GenOverlaysCheck.Name = "GenOverlaysCheck";
-            this.GenOverlaysCheck.Size = new System.Drawing.Size(137, 17);
-            this.GenOverlaysCheck.TabIndex = 5;
-            this.GenOverlaysCheck.Text = "Generate Overlay Items";
-            this.toolTip1.SetToolTip(this.GenOverlaysCheck, "Creates a json file with all overlay locations\r\nand saves the overlays as png fil" +
-        "es");
-            this.GenOverlaysCheck.UseVisualStyleBackColor = true;
-            this.GenOverlaysCheck.CheckedChanged += new System.EventHandler(this.GenOverlaysCheck_CheckedChanged);
-            // 
-            // GenTileMapInfoCheck
-            // 
-            this.GenTileMapInfoCheck.AutoSize = true;
-            this.GenTileMapInfoCheck.Checked = true;
-            this.GenTileMapInfoCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.GenTileMapInfoCheck.Location = new System.Drawing.Point(12, 56);
-            this.GenTileMapInfoCheck.Name = "GenTileMapInfoCheck";
-            this.GenTileMapInfoCheck.Size = new System.Drawing.Size(132, 17);
-            this.GenTileMapInfoCheck.TabIndex = 5;
-            this.GenTileMapInfoCheck.Text = "Generate TileMap Info";
-            this.toolTip1.SetToolTip(this.GenTileMapInfoCheck, "Creates a json file with the map limits\r\nand selected zoom levels\r\n");
-            this.GenTileMapInfoCheck.UseVisualStyleBackColor = true;
-            // 
             // CityNamesCheckBox
             // 
             this.CityNamesCheckBox.AutoSize = true;
             this.CityNamesCheckBox.Checked = true;
             this.CityNamesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CityNamesCheckBox.Location = new System.Drawing.Point(101, 75);
+            this.CityNamesCheckBox.Location = new System.Drawing.Point(15, 143);
             this.CityNamesCheckBox.Name = "CityNamesCheckBox";
             this.CityNamesCheckBox.Size = new System.Drawing.Size(76, 17);
             this.CityNamesCheckBox.TabIndex = 11;
@@ -188,7 +146,7 @@
             this.FerryConnectionsCheckBox.AutoSize = true;
             this.FerryConnectionsCheckBox.Checked = true;
             this.FerryConnectionsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(101, 52);
+            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(15, 120);
             this.FerryConnectionsCheckBox.Name = "FerryConnectionsCheckBox";
             this.FerryConnectionsCheckBox.Size = new System.Drawing.Size(108, 17);
             this.FerryConnectionsCheckBox.TabIndex = 10;
@@ -212,7 +170,7 @@
             this.MapOverlaysCheckBox.AutoSize = true;
             this.MapOverlaysCheckBox.Checked = true;
             this.MapOverlaysCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.MapOverlaysCheckBox.Location = new System.Drawing.Point(101, 29);
+            this.MapOverlaysCheckBox.Location = new System.Drawing.Point(15, 97);
             this.MapOverlaysCheckBox.Name = "MapOverlaysCheckBox";
             this.MapOverlaysCheckBox.Size = new System.Drawing.Size(88, 17);
             this.MapOverlaysCheckBox.TabIndex = 9;
@@ -239,9 +197,9 @@
             this.groupBox1.Controls.Add(this.MapAreasCheckBox);
             this.groupBox1.Controls.Add(this.RoadsCheckBox);
             this.groupBox1.Controls.Add(this.FerryConnectionsCheckBox);
-            this.groupBox1.Location = new System.Drawing.Point(185, 7);
+            this.groupBox1.Location = new System.Drawing.Point(183, 7);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(216, 112);
+            this.groupBox1.Size = new System.Drawing.Size(125, 172);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Items To Render";
@@ -251,7 +209,7 @@
             this.GenTilesCheck.AutoSize = true;
             this.GenTilesCheck.Checked = true;
             this.GenTilesCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.GenTilesCheck.Location = new System.Drawing.Point(12, 12);
+            this.GenTilesCheck.Location = new System.Drawing.Point(10, 12);
             this.GenTilesCheck.Name = "GenTilesCheck";
             this.GenTilesCheck.Size = new System.Drawing.Size(95, 17);
             this.GenTilesCheck.TabIndex = 5;
@@ -259,21 +217,52 @@
             this.GenTilesCheck.UseVisualStyleBackColor = true;
             this.GenTilesCheck.CheckedChanged += new System.EventHandler(this.GenTilesCheck_CheckedChanged);
             // 
+            // triStateTreeView1
+            // 
+            this.triStateTreeView1.Location = new System.Drawing.Point(10, 59);
+            this.triStateTreeView1.Name = "triStateTreeView1";
+            treeNode1.Checked = true;
+            treeNode1.Name = "GenTileMapInfo";
+            treeNode1.StateImageIndex = 1;
+            treeNode1.Text = "Generate TileMap Info";
+            treeNode2.Name = "GenCityLocalizedNames";
+            treeNode2.StateImageIndex = 0;
+            treeNode2.Text = "Localized Names";
+            treeNode3.Name = "GenCityList";
+            treeNode3.StateImageIndex = 0;
+            treeNode3.Text = "Generate City List";
+            treeNode4.Name = "GenCountryLocalizedNames";
+            treeNode4.StateImageIndex = 0;
+            treeNode4.Text = "Localized Names";
+            treeNode5.Name = "GenCountryList";
+            treeNode5.StateImageIndex = 0;
+            treeNode5.Text = "Generate Country List";
+            treeNode6.Name = "GenOverlayPNGs";
+            treeNode6.StateImageIndex = 0;
+            treeNode6.Text = "Export As PNG";
+            treeNode7.Name = "GenOverlayList";
+            treeNode7.StateImageIndex = 0;
+            treeNode7.Text = "Generate Overlay List";
+            this.triStateTreeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode3,
+            treeNode5,
+            treeNode7});
+            this.triStateTreeView1.Size = new System.Drawing.Size(166, 120);
+            this.triStateTreeView1.TabIndex = 13;
+            // 
             // TileMapGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(413, 170);
+            this.ClientSize = new System.Drawing.Size(319, 215);
+            this.Controls.Add(this.triStateTreeView1);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.GenOverlaysCheck);
             this.Controls.Add(this.GenTilesCheck);
-            this.Controls.Add(this.GenTileMapInfoCheck);
-            this.Controls.Add(this.GenCityListCheck);
             this.Controls.Add(this.EndZoomLevelBox);
             this.Controls.Add(this.StartZoomLevelBox);
             this.Controls.Add(this.EndLabel);
             this.Controls.Add(this.StartLabel);
-            this.Controls.Add(this.WarningLabel);
             this.Controls.Add(this.GenerateBtn);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -292,16 +281,12 @@
         #endregion
 
         private System.Windows.Forms.Button GenerateBtn;
-        private System.Windows.Forms.Label WarningLabel;
         private System.Windows.Forms.Label StartLabel;
         private System.Windows.Forms.Label EndLabel;
         private System.Windows.Forms.NumericUpDown StartZoomLevelBox;
         private System.Windows.Forms.NumericUpDown EndZoomLevelBox;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.CheckBox GenCityListCheck;
-        private System.Windows.Forms.CheckBox GenOverlaysCheck;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.CheckBox GenTileMapInfoCheck;
         private System.Windows.Forms.CheckBox CityNamesCheckBox;
         private System.Windows.Forms.CheckBox MapAreasCheckBox;
         private System.Windows.Forms.CheckBox FerryConnectionsCheckBox;
@@ -310,5 +295,6 @@
         private System.Windows.Forms.CheckBox PrefabsCheckBox;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox GenTilesCheck;
+        private TriStateTreeView triStateTreeView1;
     }
 }

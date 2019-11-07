@@ -19,6 +19,7 @@ namespace TsMap
         public string CountryCode { get; }
         public float X { get; }
         public float Y { get; }
+        [JsonIgnore]
         public Dictionary<string, string> LocalizedNames { get; }
 
         public TsCountry(TsMapper mapper, string path)

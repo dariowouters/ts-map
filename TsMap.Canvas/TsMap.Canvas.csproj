@@ -82,6 +82,9 @@
       <DependentUpon>SetupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SimpleMapPalette.cs" />
+    <Compile Include="TriStateTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TsMapCanvas.cs">
       <SubType>Form</SubType>
     </Compile>

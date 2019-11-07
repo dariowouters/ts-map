@@ -551,11 +551,17 @@ namespace TsMap
                     $" map files and {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms total.");
         }
 
+        public void ExportInfo(ExportFlags exportFlags, string exportPath)
+        {
+            if (exportFlags.IsActive(ExportFlags.CityList)) ExportCities(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.CountryList)) ExportCountries(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.OverlayList)) ExportOverlays(exportFlags, exportPath);
+        }
+
         /// <summary>
         /// Creates a json file with the positions and names (w/ localizations) of all cities
         /// </summary>
-        /// <param name="path"></param>
-        public void ExportCities(string path)
+        public void ExportCities(ExportFlags exportFlags, string path)
         {
             if (!Directory.Exists(path)) return;
             var citiesJArr = new JArray();
@@ -574,24 +580,29 @@ namespace TsMap
                 {
                     Log.Msg($"Could not find country for {city.City.Name}");
                 }
+
+                if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
+                    cityJObj["LocalizedNames"] = JObject.FromObject(city.City.LocalizedNames);
+
                 citiesJArr.Add(cityJObj);
             }
             File.WriteAllText(Path.Combine(path, "Cities.json"), citiesJArr.ToString(Formatting.Indented));
-            ExportCountries(path);
         }
         /// <summary>
         /// Creates a json file with the positions and names (w/ localizations) of all countries
         /// </summary>
-        /// <param name="path"></param>
-        public void ExportCountries(string path)
+        public void ExportCountries(ExportFlags exportFlags, string path)
         {
             if (!Directory.Exists(path)) return;
-            var countriesJObj = new JArray();
+            var countriesJArr = new JArray();
             foreach (var country in _countriesLookup.Values)
             {
-                countriesJObj.Add(JObject.FromObject(country));
+                var countryJObj = JObject.FromObject(country);
+                if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
+                    countryJObj["LocalizedNames"] = JObject.FromObject(country.LocalizedNames);
+                countriesJArr.Add(countryJObj);
             }
-            File.WriteAllText(Path.Combine(path, "Countries.json"), countriesJObj.ToString(Formatting.Indented));
+            File.WriteAllText(Path.Combine(path, "Countries.json"), countriesJArr.ToString(Formatting.Indented));
         }
 
         /// <summary>
@@ -612,11 +623,14 @@ namespace TsMap
         /// 128 = (World map, zoom 3) (7)
         /// </remarks>
         /// <param name="path"></param>
-        public void ExportOverlays(string path)
+        public void ExportOverlays(ExportFlags exportFlags, string path)
         {
             if (!Directory.Exists(path)) return;
+
+            var saveAsPNG = exportFlags.IsActive(ExportFlags.OverlayPNGs);
+
             var overlayPath = Path.Combine(path, "Overlays");
-            Directory.CreateDirectory(overlayPath);
+            if (saveAsPNG) Directory.CreateDirectory(overlayPath);
 
             var overlaysJArr = new JArray();
             foreach (var overlay in MapOverlays)
@@ -636,7 +650,7 @@ namespace TsMap
                     ["Height"] = b.Height,
                 };
                 overlaysJArr.Add(overlayJObj);
-                if (!File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                     b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
             }
             foreach (var company in Companies)
@@ -679,7 +693,7 @@ namespace TsMap
                     ["Height"] = b.Height,
                 };
                 overlaysJArr.Add(overlayJObj);
-                if (!File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                     b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
             }
             foreach (var trigger in Triggers)
@@ -698,7 +712,7 @@ namespace TsMap
                     ["Height"] = b.Height,
                 };
                 overlaysJArr.Add(overlayJObj);
-                if (!File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                     b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
             }
             foreach (var ferry in FerryConnections)
@@ -717,7 +731,7 @@ namespace TsMap
                     ["Height"] = b.Height,
                 };
                 overlaysJArr.Add(overlayJObj);
-                if (!File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                     b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
             }
 
@@ -795,7 +809,7 @@ namespace TsMap
                     overlayJObj["Width"] = b.Width;
                     overlayJObj["Height"] = b.Height;
                     overlaysJArr.Add(overlayJObj);
-                    if (!File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                    if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                         b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
 
                 }
@@ -825,7 +839,7 @@ namespace TsMap
                     overlayJObj["Width"] = b.Width;
                     overlayJObj["Height"] = b.Height;
                     overlaysJArr.Add(overlayJObj);
-                    if (!File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                    if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                         b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
                 }
             }

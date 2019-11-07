@@ -26,6 +26,32 @@ namespace TsMap
         All = int.MaxValue
     }
 
+    [Flags]
+    public enum ExportFlags
+    {
+        None = 0,
+        TileMapInfo = 1,
+        CityList = 2,
+        CityDimensions = 4,
+        CityLocalizedNames = 8,
+        CountryList = 16,
+        CountryLocalizedNames = 32,
+        OverlayList = 64,
+        OverlayPNGs = 128,
+        All = int.MaxValue
+    }
+
+    public static class FlagMethods
+    {
+        public static bool IsActive(this RenderFlags self, RenderFlags value)
+        {
+            return (self & value) == value;
+        }
+        public static bool IsActive(this ExportFlags self, ExportFlags value)
+        {
+            return (self & value) == value;
+        }
+    }
     public class Mod
     {
         public string ModPath { get; set; }

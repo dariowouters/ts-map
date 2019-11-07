@@ -211,13 +211,12 @@ namespace TsMap.Canvas
             _tileMapGeneratorForm.Show();
             _tileMapGeneratorForm.BringToFront();
 
-            _tileMapGeneratorForm.GenerateTileMap += (exportPath, startZoomLevel, endZoomLevel, createTiles, exportCities, exportOverlays, saveInfo, renderFlags) => // Called when export button is pressed in TileMapGeneratorForm
+            _tileMapGeneratorForm.GenerateTileMap += (exportPath, startZoomLevel, endZoomLevel, createTiles, exportFlags, renderFlags) => // Called when export button is pressed in TileMapGeneratorForm
             {
                 _tileMapGeneratorForm.Close();
                 _appSettings.LastTileMapPath = exportPath;
                 JsonHelper.SaveSettings(_appSettings);
-                if (exportCities) _mapper.ExportCities(exportPath);
-                if (exportOverlays) _mapper.ExportOverlays(exportPath);
+                _mapper.ExportInfo(exportFlags, exportPath);
 
                 if (startZoomLevel < 0 || endZoomLevel < 0) return;
                 if (startZoomLevel > endZoomLevel)
@@ -227,7 +226,7 @@ namespace TsMap.Canvas
                     endZoomLevel = tmp;
                 }
 
-                GenerateTileMap(startZoomLevel, endZoomLevel, exportPath, createTiles, saveInfo, renderFlags);
+                GenerateTileMap(startZoomLevel, endZoomLevel, exportPath, createTiles, (exportFlags & ExportFlags.TileMapInfo) == ExportFlags.TileMapInfo, renderFlags);
                 MessageBox.Show("Tile map has been generated!", "TsMap - Tile Map Generation Finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Focus();
             };

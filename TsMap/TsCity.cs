@@ -19,6 +19,7 @@ namespace TsMap
         public List<int> XOffsets { get; }
         [JsonIgnore]
         public List<int> YOffsets { get; }
+        [JsonIgnore]
         public Dictionary<string, string> LocalizedNames { get; }
 
         public TsCity(TsMapper mapper, string path)

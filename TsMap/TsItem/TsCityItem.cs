@@ -7,7 +7,8 @@ namespace TsMap.TsItem
     {
         public TsCity City { get; private set; }
         public ulong NodeUid { get; private set; }
-
+        public float Width { get; private set; }
+        public float Height { get; private set; }
         public TsCityItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
@@ -27,7 +28,10 @@ namespace TsMap.TsItem
                 Log.Msg($"Could not find City: '{ScsHash.TokenToString(cityId)}'({cityId:X}), " +
                         $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
             }
-            NodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05 + 0x08 + 0x08); // 0x05(flags) + 0x08(cityId) + 0x08(width & height)
+
+            Width = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x05 + 0x08); // 0x05(flags) + 0x08(cityId)
+            Height = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x04); // 0x08(Width)
+            NodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04); // 0x08(height)
             fileOffset += 0x08; // nodeUid
             BlockSize = fileOffset - startOffset;
         }
