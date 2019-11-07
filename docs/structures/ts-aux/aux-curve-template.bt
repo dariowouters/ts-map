@@ -1,0 +1,32 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    byte flags[5]; // 0
+    u64 m_model_id <read=token_to_string>; // 5
+    u64 m_node_uid[2] <format=hex>; // 13
+    float m_value; // 29
+    u32 m_seed; // 33
+    float m_stretch; // 37
+    float m_value; // 41
+    u64 m_terrain_id <read=token_to_string>; // 45
+    u32 m_terrain_mat_color; // 53
+    u64 m_first <read=token_to_string>; // 57
+    u64 m_last <read=token_to_string>; // 65
+    u64 m_center <read=token_to_string>; // 73
+    u64 m_look_id <read=token_to_string>; // 81
+    u32 m_node_count; // 89
+    u32 m_dunno[m_node_count]; // 93
+
+} aux_curve_t;

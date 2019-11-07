@@ -1,0 +1,56 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 825
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 56
+{
+    u16 m_size; // 0
+    u16 m_veg_detail; // 2
+    u64 m_terrain_id <read=token_to_string>; // 4
+    float m_coef; // 12
+    vegetation_t m_vegetation[2]; // 16
+    u64 m_profile_id <read=token_to_string>; // 48
+} node_look_t;
+
+typedef struct // sizeof 32
+{
+    u64 name <read=token_to_string>; // 0
+    u64 model_1 <read=token_to_string>; // 8
+    u16 sparsity_1; // 16
+    byte scale_1; // 18
+    byte padding; // 19
+    u64 model_2 <read=token_to_string>; // 20
+    u16 sparsity_2; // 28
+    byte scale_2; // 30
+    byte padding; // 31
+} prefab_vegetation_t;
+
+typedef struct
+{
+    byte m_flags[5]; // 0
+    u64 m_id <read=token_to_string>; // 5
+    u64 m_look <read=token_to_string>; // 13
+    u64 m_variant <read=token_to_string>; // 21
+    u32 m_node_count; // 29
+    u64 m_node_uids[m_node_count] <format=hex>; // 33
+    u32 m_connected_item_count;
+    u64 m_connected_item_uid[m_connected_item_count] <format=hex>; // service point UIDs (gas station); signs
+    u64 m_some_uid <format=hex>; // Ferry point uid ?
+    byte m_origin;
+    byte padding;
+    node_look_t m_node_look[m_node_count];
+    u32 m_prefab_veg_count;
+    prefab_vegetation_t m_vegetation[m_prefab_veg_count];
+    u32 padding2;
+    u32 m_veg_sphere_count;
+    veg_sphere_t veg_sphere[m_veg_sphere_count];
+} base_prefab_t;
+
+// m_flags[1] => dlc_guard

@@ -1,0 +1,19 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 825
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 29
+{
+    byte m_flags[5]; // 0
+    u64 m_city_id <read=token_to_string>; // 5
+    float m_width; // 13
+    float m_height; // 17
+    u64 m_node_uid <format=hex>; // 21
+} base_city_t;

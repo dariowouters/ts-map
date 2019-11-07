@@ -1,0 +1,66 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 854
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 10
+{
+    u64 m_railing_model <read=token_to_string>; // 0
+    s16 m_railing_offset; // 8
+} railing_t;
+
+typedef struct // sizeof 60
+{
+    railing_t m_railing_r_1; // 0
+    railing_t m_railing_l_1; // 10
+    railing_t m_railing_r_2; // 20
+    railing_t m_railing_l_2; // 30
+    railing_t m_railing_r_3; // 40
+    railing_t m_railing_l_3; // 50
+} railings_t;
+
+typedef struct // sizeof 201
+{
+    byte m_flags[9]; // 0
+    u64 m_road_type_id <read=token_to_string>; // 9
+    u64 m_road_variant_r <read=token_to_string>; // 17
+    u64 m_road_variant_l <read=token_to_string>; // 25
+
+    u64 m_road_r_edge_r <read=token_to_string>; // 33
+    u64 m_road_r_edge_l <read=token_to_string>; // 41
+    u64 m_road_l_edge_r <read=token_to_string>; // 49
+    u64 m_road_l_edge_l <read=token_to_string>; // 57
+    u64 m_road_terrain_r <read=token_to_string>; // 65
+    float m_road_terrain_r_coef; // 73
+    u64 m_road_terrain_l <read=token_to_string>; // 77
+    float m_road_terrain_l_coef; // 85
+
+    u64 m_road_look_r <read=token_to_string>; // 89
+    u64 m_road_look_l <read=token_to_string>; // 97
+
+    u64 m_road_material_id <read=token_to_string>; // 105
+    railings_t m_railings; // 113
+
+    u64 padding; // 173
+    u64 m_node_uid[2] <format=hex>; // 181
+    float m_unk; // 197
+} base_road_t;
+
+
+// byte 3 of flags
+//      00000010 -> hidden on map
+// byte 7
+//      40 -> left shoulder blocked
+//      80 -> right shoulder blocked
+//      C0 -> both shoulders blocked
+// byte 8
+//      10 -> gps avoid
+
+
+// m_flags[6] => dlc_guard

@@ -28,35 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.GameFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.NextBtn = new System.Windows.Forms.Button();
             this.loadMods = new System.Windows.Forms.CheckBox();
             this.BrowseBtn = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.SelectedGamePathLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.modPanel = new System.Windows.Forms.Panel();
+            this.ToBottom = new System.Windows.Forms.Button();
+            this.ToTop = new System.Windows.Forms.Button();
             this.PrioDown = new System.Windows.Forms.Button();
             this.PrioUp = new System.Windows.Forms.Button();
             this.modList = new System.Windows.Forms.CheckedListBox();
             this.BrowseModBtn = new System.Windows.Forms.Button();
-            this.modFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.ToTop = new System.Windows.Forms.Button();
-            this.ToBottom = new System.Windows.Forms.Button();
+            this.ModFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.SelectedModPathLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.modPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // folderBrowserDialog1
+            // GameFolderBrowserDialog
             // 
-            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
-            this.folderBrowserDialog1.ShowNewFolderButton = false;
+            this.GameFolderBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            this.GameFolderBrowserDialog.ShowNewFolderButton = false;
             // 
             // NextBtn
             // 
             this.NextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NextBtn.Enabled = false;
-            this.NextBtn.Location = new System.Drawing.Point(3, 447);
+            this.NextBtn.Location = new System.Drawing.Point(3, 465);
             this.NextBtn.Name = "NextBtn";
             this.NextBtn.Size = new System.Drawing.Size(333, 23);
             this.NextBtn.TabIndex = 0;
@@ -85,19 +86,19 @@
             this.BrowseBtn.UseVisualStyleBackColor = true;
             this.BrowseBtn.Click += new System.EventHandler(this.BrowseBtn_Click);
             // 
-            // label1
+            // SelectedGamePathLabel
             // 
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(333, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Select the game dir.";
+            this.SelectedGamePathLabel.Location = new System.Drawing.Point(3, 0);
+            this.SelectedGamePathLabel.Name = "SelectedGamePathLabel";
+            this.SelectedGamePathLabel.Size = new System.Drawing.Size(333, 13);
+            this.SelectedGamePathLabel.TabIndex = 1;
+            this.SelectedGamePathLabel.Text = "Select the game dir.";
             // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.flowLayoutPanel1.Controls.Add(this.label1);
+            this.flowLayoutPanel1.Controls.Add(this.SelectedGamePathLabel);
             this.flowLayoutPanel1.Controls.Add(this.BrowseBtn);
             this.flowLayoutPanel1.Controls.Add(this.loadMods);
             this.flowLayoutPanel1.Controls.Add(this.modPanel);
@@ -113,6 +114,7 @@
             // 
             this.modPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.modPanel.Controls.Add(this.SelectedModPathLabel);
             this.modPanel.Controls.Add(this.ToBottom);
             this.modPanel.Controls.Add(this.ToTop);
             this.modPanel.Controls.Add(this.PrioDown);
@@ -121,13 +123,33 @@
             this.modPanel.Controls.Add(this.BrowseModBtn);
             this.modPanel.Location = new System.Drawing.Point(3, 75);
             this.modPanel.Name = "modPanel";
-            this.modPanel.Size = new System.Drawing.Size(333, 366);
+            this.modPanel.Size = new System.Drawing.Size(333, 384);
             this.modPanel.TabIndex = 3;
             this.modPanel.Visible = false;
             // 
+            // ToBottom
+            // 
+            this.ToBottom.Location = new System.Drawing.Point(270, 359);
+            this.ToBottom.Name = "ToBottom";
+            this.ToBottom.Size = new System.Drawing.Size(54, 23);
+            this.ToBottom.TabIndex = 3;
+            this.ToBottom.Text = "Bottom";
+            this.ToBottom.UseVisualStyleBackColor = true;
+            this.ToBottom.Click += new System.EventHandler(this.ToBottom_Click);
+            // 
+            // ToTop
+            // 
+            this.ToTop.Location = new System.Drawing.Point(270, 331);
+            this.ToTop.Name = "ToTop";
+            this.ToTop.Size = new System.Drawing.Size(54, 23);
+            this.ToTop.TabIndex = 3;
+            this.ToTop.Text = "Top";
+            this.ToTop.UseVisualStyleBackColor = true;
+            this.ToTop.Click += new System.EventHandler(this.ToTop_Click);
+            // 
             // PrioDown
             // 
-            this.PrioDown.Location = new System.Drawing.Point(9, 340);
+            this.PrioDown.Location = new System.Drawing.Point(9, 359);
             this.PrioDown.Name = "PrioDown";
             this.PrioDown.Size = new System.Drawing.Size(255, 23);
             this.PrioDown.TabIndex = 2;
@@ -137,7 +159,7 @@
             // 
             // PrioUp
             // 
-            this.PrioUp.Location = new System.Drawing.Point(9, 312);
+            this.PrioUp.Location = new System.Drawing.Point(9, 331);
             this.PrioUp.Name = "PrioUp";
             this.PrioUp.Size = new System.Drawing.Size(255, 23);
             this.PrioUp.TabIndex = 2;
@@ -148,7 +170,7 @@
             // modList
             // 
             this.modList.FormattingEnabled = true;
-            this.modList.Location = new System.Drawing.Point(9, 32);
+            this.modList.Location = new System.Drawing.Point(9, 51);
             this.modList.Name = "modList";
             this.modList.Size = new System.Drawing.Size(315, 274);
             this.modList.TabIndex = 1;
@@ -156,7 +178,7 @@
             // 
             // BrowseModBtn
             // 
-            this.BrowseModBtn.Location = new System.Drawing.Point(9, 3);
+            this.BrowseModBtn.Location = new System.Drawing.Point(9, 22);
             this.BrowseModBtn.Name = "BrowseModBtn";
             this.BrowseModBtn.Size = new System.Drawing.Size(315, 23);
             this.BrowseModBtn.TabIndex = 0;
@@ -164,25 +186,13 @@
             this.BrowseModBtn.UseVisualStyleBackColor = true;
             this.BrowseModBtn.Click += new System.EventHandler(this.BrowseModBtn_Click);
             // 
-            // ToTop
+            // SelectedModPathLabel
             // 
-            this.ToTop.Location = new System.Drawing.Point(270, 312);
-            this.ToTop.Name = "ToTop";
-            this.ToTop.Size = new System.Drawing.Size(54, 23);
-            this.ToTop.TabIndex = 3;
-            this.ToTop.Text = "Top";
-            this.ToTop.UseVisualStyleBackColor = true;
-            this.ToTop.Click += new System.EventHandler(this.ToTop_Click);
-            // 
-            // ToBottom
-            // 
-            this.ToBottom.Location = new System.Drawing.Point(270, 340);
-            this.ToBottom.Name = "ToBottom";
-            this.ToBottom.Size = new System.Drawing.Size(54, 23);
-            this.ToBottom.TabIndex = 3;
-            this.ToBottom.Text = "Bottom";
-            this.ToBottom.UseVisualStyleBackColor = true;
-            this.ToBottom.Click += new System.EventHandler(this.ToBottom_Click);
+            this.SelectedModPathLabel.Location = new System.Drawing.Point(6, 0);
+            this.SelectedModPathLabel.Name = "SelectedModPathLabel";
+            this.SelectedModPathLabel.Size = new System.Drawing.Size(318, 19);
+            this.SelectedModPathLabel.TabIndex = 1;
+            this.SelectedModPathLabel.Text = "Select the mod dir.";
             // 
             // SetupForm
             // 
@@ -203,19 +213,20 @@
         }
 
         #endregion
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.FolderBrowserDialog GameFolderBrowserDialog;
         private System.Windows.Forms.Button NextBtn;
         private System.Windows.Forms.CheckBox loadMods;
         private System.Windows.Forms.Button BrowseBtn;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label SelectedGamePathLabel;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Panel modPanel;
         private System.Windows.Forms.CheckedListBox modList;
         private System.Windows.Forms.Button BrowseModBtn;
         private System.Windows.Forms.Button PrioDown;
         private System.Windows.Forms.Button PrioUp;
-        private System.Windows.Forms.FolderBrowserDialog modFolderBrowserDialog;
+        private System.Windows.Forms.FolderBrowserDialog ModFolderBrowserDialog;
         private System.Windows.Forms.Button ToBottom;
         private System.Windows.Forms.Button ToTop;
+        private System.Windows.Forms.Label SelectedModPathLabel;
     }
 }

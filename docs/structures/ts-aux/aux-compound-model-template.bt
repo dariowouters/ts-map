@@ -1,0 +1,42 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    u32 m_item_type <read=get_type_name>;
+    u64 m_control_node_uid <format=hex>;
+    float m_value[10];
+    switch (m_item_type)
+    {
+        case 0x01:  aux_terrain_t           m_terrain;          break;
+        case 0x02:  aux_building_t          m_building;         break;
+        case 0x05:  aux_model_t             m_model;            break;
+        case 0x09:  aux_mover_t             m_mover;            break;
+        case 0x24:  base_road_side_item_t   m_road_side_item;   break;
+        case 0x27:  aux_bezier_patch_t      m_bezier_patch;     break;
+        case 0x2C:  aux_curve_t             m_curve;            break;
+        default: MessageBox("Could not find type");
+    }
+
+} sub_item_t;
+
+typedef struct
+{
+    byte flags[5];
+    u64 m_node_uid <format=hex>;
+    u32 m_sub_model_count;
+    sub_item_t sub_item[m_sub_model_count] <optimize=false>;
+    u32 m_node_count;
+    base_node_t sub_nodes[m_node_count];
+
+} aux_compound_model_t;

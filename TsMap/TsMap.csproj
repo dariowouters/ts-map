@@ -33,8 +33,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DotNetZip, Version=1.11.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotNetZip.1.11.0\lib\net20\DotNetZip.dll</HintPath>
+    <Reference Include="DotNetZip, Version=1.13.3.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.13.3\lib\net40\DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,14 +55,32 @@
     <Compile Include="HashFiles\ScsRootFile.cs" />
     <Compile Include="HashFiles\Helper.cs" />
     <Compile Include="HashFiles\ScsHash.cs" />
+    <Compile Include="JsonHelper.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="MapPalette.cs" />
     <Compile Include="MemoryHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HashFiles\RootFileSystem.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="TsCity.cs" />
     <Compile Include="TsFerryConnection.cs" />
-    <Compile Include="TsItem.cs" />
+    <Compile Include="TsItem\TsBusStopItem.cs" />
+    <Compile Include="TsItem\TsCityItem.cs" />
+    <Compile Include="TsItem\TsCompanyItem.cs" />
+    <Compile Include="TsItem\TsCutPlaneItem.cs" />
+    <Compile Include="TsItem\TsFerryItem.cs" />
+    <Compile Include="TsItem\TsFuelPumpItem.cs" />
+    <Compile Include="TsItem\TsGarageItem.cs" />
+    <Compile Include="TsItem\TsItem.cs" />
+    <Compile Include="TsItem\TsMapAreaItem.cs" />
+    <Compile Include="TsItem\TsMapOverlayItem.cs" />
+    <Compile Include="TsItem\TsPrefabItem.cs" />
+    <Compile Include="TsItem\TsRoadItem.cs" />
+    <Compile Include="TsItem\TsRoadSideItem.cs" />
+    <Compile Include="TsItem\TsServiceItem.cs" />
+    <Compile Include="TsItem\TsTrafficRuleItem.cs" />
+    <Compile Include="TsItem\TsTrajectoryItem.cs" />
+    <Compile Include="TsItem\TsTriggerItem.cs" />
     <Compile Include="TsTypes.cs" />
     <Compile Include="TsMapOverlay.cs" />
     <Compile Include="TsMapper.cs" />
@@ -73,5 +94,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

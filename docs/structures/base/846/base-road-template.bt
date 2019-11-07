@@ -1,0 +1,91 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 846
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 10
+{
+    u64 m_railing_model <read=token_to_string>; // 0
+    s16 m_railing_offset; // 8
+} railing_t;
+
+typedef struct // sizeof 12
+{
+    u64 m_model_id <read=token_to_string>; // 0
+    s16 m_offset; // 8
+    u16 m_distance; // 10 (*100)
+} model_t;
+
+typedef struct // sizeof 24
+{
+    byte padding[24];
+} stamp_t;
+
+typedef struct
+{
+    byte m_flags[9]; // 0
+    u64 m_road_type_id <read=token_to_string>; // 9
+    u64 padding <read=token_to_string>; // 17 ??
+    u64 m_road_look_r <read=token_to_string>; // 25
+    u64 m_road_variant_r <read=token_to_string>; // 33
+    u64 m_road_look_l <read=token_to_string>; // 41
+    u64 m_road_variant_l <read=token_to_string>; // 49
+    u64 m_road_edge_r_r <read=token_to_string>; // 57
+    u64 m_road_edge_r_l <read=token_to_string>; // 65
+    u64 m_road_edge_l_r <read=token_to_string>; // 73
+    u64 m_road_edge_l_l <read=token_to_string>; // 81
+    u64 m_road_material_id <read=token_to_string>; // 89
+    u64 m_node_uid[2] <format=hex>; // 97
+    railing_t railing_r[3] <optimize=false>; // 113
+    model_t model_r[2] <optimize=false>; // 143
+    u64 terrain_shader_r <read=token_to_string>; // 167
+    u16 terrain_size_r; // 175 (*10)
+    u64 terrain_r <read=token_to_string>; // 177
+    float terrain_coeff_r; // 185
+    vegetation_t vegetation_r[3] <optimize=false>; // 189
+    u64 m_sidewalk_model_r <read=token_to_string>; // 237
+    u16 road_height_offset_r; // 245
+    byte padding4[2]; // 247
+    railing_t railing_l[3] <optimize=false>; // 249
+    model_t model_l[2] <optimize=false>; // 279
+    u64 terrain_shader_l <read=token_to_string>; // 303
+    u16 terrain_size_l; // 311 (*10)
+    u64 terrain_l <read=token_to_string>; // 313
+    float terrain_coeff_l; // 321
+
+    vegetation_t vegetation_l[3] <optimize=false>; // 325
+
+    u64 m_sidewalk_model_r <read=token_to_string>; // 373
+    u16 road_height_offset_l; // 381 (*100)
+    byte padding6[14]; // 383
+    u32 m_rnd_seed; // 397
+    u64 m_veg_center_model <read=token_to_string>; // 401
+    u16 m_veg_center_density; // 409
+    byte m_veg_center_scale; // 413
+    byte m_veg_center_offset; // 414 (*2)
+    byte padding7[8]; // 415
+    u32 m_stamp_count; // 421
+    stamp_t m_stamp[m_stamp_count]; // 425
+
+    u32 m_veg_sphere_count;
+    veg_sphere_t veg_sphere[m_veg_sphere_count] <optimize=false>;
+} base_road_t;
+
+
+// byte 3 of flags
+//      00000010 -> hidden on map
+// byte 7
+//      40 -> left shoulder blocked
+//      80 -> right shoulder blocked
+//      C0 -> both shoulders blocked
+// byte 8
+//      10 -> gps avoid
+
+
+// m_flags[6] => dlc_guard

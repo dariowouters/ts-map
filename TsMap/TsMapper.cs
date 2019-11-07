@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TsMap.HashFiles;
+using TsMap.TsItem;
 
 namespace TsMap
 {
     public class TsMapper
     {
         private readonly string _gameDir;
+        public Settings AppSettings { get; set; }
         private List<Mod> _mods;
 
         public RootFileSystem Rfs;
@@ -37,6 +39,11 @@ namespace TsMap
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
+
+        public float minX = float.MaxValue;
+        public float maxX = float.MinValue;
+        public float minZ = float.MaxValue;
+        public float maxZ = float.MinValue;
 
         private List<TsSector> Sectors { get; set; }
 
@@ -70,6 +77,7 @@ namespace TsMap
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("@include"))
                     {
                         var path = Helper.GetFilePath(line.Split('"')[1], "def");
@@ -110,6 +118,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("prefab_model"))
                     {
                         token = ScsHash.StringToToken(line.Split('.')[1].Trim());
@@ -163,6 +172,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains(":") && roadLook != null)
                     {
                         var value = line.Substring(line.IndexOf(':') + 1).Trim();
@@ -224,6 +234,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains(":"))
                     {
                         var value = line.Split(':')[1].Trim();
@@ -232,11 +243,21 @@ namespace TsMap
                         {
                             if (key.Contains("connection_positions"))
                             {
+                                var index = int.Parse(key.Split('[')[1].Split(']')[0]);
                                 var vector = value.Split('(')[1].Split(')')[0];
                                 var values = vector.Split(',');
                                 var x = float.Parse(values[0].Replace('.', ','));
                                 var z = float.Parse(values[2].Replace('.', ','));
-                                conn.AddConnectionPosition(x, z);
+                                conn.AddConnectionPosition(index, x, z);
+                            }
+                            else if (key.Contains("connection_directions"))
+                            {
+                                var index = int.Parse(key.Split('[')[1].Split(']')[0]);
+                                var vector = value.Split('(')[1].Split(')')[0];
+                                var values = vector.Split(',');
+                                var x = float.Parse(values[0].Replace('.', ','));
+                                var z = float.Parse(values[2].Replace('.', ','));
+                                conn.AddRotation(index, Math.Atan2(z, x));
                             }
                         }
 
@@ -307,6 +328,7 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("texture") && !line.Contains("_name"))
                     {
                         var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), line.Split('"')[1]);
@@ -382,6 +404,7 @@ namespace TsMap
             foreach (var file in mbd)
             {
                 var mapName = file.GetFileName();
+                IsEts2 = !(mapName == "usa");
 
                 var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
                 if (mapFileDir == null)
@@ -496,6 +519,14 @@ namespace TsMap
                     key = string.Empty;
                 }
             }
+        }
+
+        public void UpdateEdgeCoords(TsNode node)
+        {
+            if (minX > node.X) minX = node.X;
+            if (maxX < node.X) maxX = node.X;
+            if (minZ > node.Z) minZ = node.Z;
+            if (maxZ < node.Z) maxZ = node.Z;
         }
 
         public TsNode GetNodeByUid(ulong uid)

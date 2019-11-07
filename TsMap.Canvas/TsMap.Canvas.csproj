@@ -46,11 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageExportOptionForm.cs">
+    <Compile Include="TileMapGeneratorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImageExportOptionForm.Designer.cs">
-      <DependentUpon>ImageExportOptionForm.cs</DependentUpon>
+    <Compile Include="TileMapGeneratorForm.Designer.cs">
+      <DependentUpon>TileMapGeneratorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ItemVisibilityForm.cs">
       <SubType>Form</SubType>
@@ -88,8 +88,8 @@
     <Compile Include="TsMapCanvas.Designer.cs">
       <DependentUpon>TsMapCanvas.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="ImageExportOptionForm.resx">
-      <DependentUpon>ImageExportOptionForm.cs</DependentUpon>
+    <EmbeddedResource Include="TileMapGeneratorForm.resx">
+      <DependentUpon>TileMapGeneratorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ItemVisibilityForm.resx">
       <DependentUpon>ItemVisibilityForm.cs</DependentUpon>

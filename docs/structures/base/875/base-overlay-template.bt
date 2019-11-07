@@ -1,0 +1,27 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 825
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 21
+{
+    byte m_flags[5]; // 0
+    u64 m_overlay_id <read=token_to_string>; // 5
+    u64 m_node_uid <format=hex>; // 13
+} base_overlay_t;
+
+// flags[0] = Hide for zoom levels
+// 1 = (Nav map, 3D view, zoom 0) (0)
+// 2 = (Nav map, 3D view, zoom 1) (1)
+// 4 = (Nav map, 2D view, zoom 0) (2)
+// 8 = (Nav map, 2D view, zoom 1) (3)
+// 16 = (World map, zoom 0) (4)
+// 32 = (World map, zoom 1) (5)
+// 64 = (World map, zoom 2) (6)
+// 128 = (World map, zoom 3) (7)
