@@ -87,16 +87,18 @@ namespace TsMap.Canvas
 
         private void SaveTileImage(int z, int x, int y, PointF pos, float zoom, string exportPath, RenderFlags renderFlags) // z = zoomLevel; x = row tile index; y = column tile index
         {
-            var bitmap = new Bitmap(tileSize, tileSize);
+            using (var bitmap = new Bitmap(tileSize, tileSize))
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                pos.X = (x == 0) ? pos.X : pos.X + (bitmap.Width / zoom) * x; // get tile start coords
+                pos.Y = (y == 0) ? pos.Y : pos.Y + (bitmap.Height / zoom) * y;
 
-            pos.X = (x == 0) ? pos.X : pos.X + (bitmap.Width / zoom) * x; // get tile start coords
-            pos.Y = (y == 0) ? pos.Y : pos.Y + (bitmap.Height / zoom) * y;
+                _renderer.Render(g, new Rectangle(0, 0, bitmap.Width, bitmap.Height), zoom, pos, _palette,
+                    renderFlags & ~RenderFlags.TextOverlay);
 
-            _renderer.Render(Graphics.FromImage(bitmap), new Rectangle(0, 0, bitmap.Width, bitmap.Height), zoom, pos, _palette, renderFlags & ~RenderFlags.TextOverlay);
-
-            Directory.CreateDirectory($"{exportPath}/Tiles/{z}/{x}");
-            bitmap.Save($"{exportPath}/Tiles/{z}/{x}/{y}.png", ImageFormat.Png);
-            bitmap.Dispose();
+                Directory.CreateDirectory($"{exportPath}/Tiles/{z}/{x}");
+                bitmap.Save($"{exportPath}/Tiles/{z}/{x}/{y}.png", ImageFormat.Png);
+            }
         }
         private void ZoomOutAndCenterMap(float targetWidth, float targetHeight, out PointF pos, out float zoom)
         {

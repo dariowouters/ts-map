@@ -14,6 +14,9 @@ namespace TsMap
 
         private int[] zoomCaps = { 1000, 5000, 18500, 45000 };
 
+        private readonly Font _defaultFont = new Font("Arial", 10.0f, FontStyle.Bold);
+        private readonly SolidBrush _cityShadowColor = new SolidBrush(Color.FromArgb(210, 0, 0, 0));
+
         public TsMapRenderer(TsMapper mapper)
         {
             _mapper = mapper;
@@ -31,11 +34,9 @@ namespace TsMap
             g.PixelOffsetMode = PixelOffsetMode.None;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            var defaultFont = new Font("Arial", 10.0f, FontStyle.Bold);
-
             if (_mapper == null)
             {
-                g.DrawString("Map object not initialized", defaultFont, palette.Error, 5, 5);
+                g.DrawString("Map object not initialized", _defaultFont, palette.Error, 5, 5);
                 return;
             }
 
@@ -44,13 +45,12 @@ namespace TsMap
             var endPoint = new PointF(startPoint.X + clip.Width / scale, startPoint.Y + clip.Height / scale);
 
             var ferryStartTime = DateTime.Now.Ticks;
-
-            var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
-
             if (renderFlags.IsActive(RenderFlags.FerryConnections))
             {
                 var ferryConnections = _mapper.FerryConnections.Where(item => !item.Hidden)
                     .ToList();
+
+                var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
 
                 foreach (var ferryConnection in ferryConnections)
                 {
@@ -106,6 +106,7 @@ namespace TsMap
                         g.DrawBeziers(ferryPen, bezierPoints.ToArray());
                     }
                 }
+                ferryPen.Dispose();
             }
             var ferryTime = DateTime.Now.Ticks - ferryStartTime;
 
@@ -331,7 +332,9 @@ namespace TsMap
 
                     var roadWidth = road.RoadLook.GetWidth();
 
-                    g.DrawCurve(new Pen(palette.Road, roadWidth), road.GetPoints()?.ToArray());
+                    var roadPen = new Pen(palette.Road, roadWidth);
+                    g.DrawCurve(roadPen, road.GetPoints()?.ToArray());
+                    roadPen.Dispose();
                 }
             }
             var roadTime = DateTime.Now.Ticks - roadStartTime;
@@ -520,10 +523,10 @@ namespace TsMap
                     }
 
                     var textSize = g.MeasureString(name, cityFont);
-
-                    g.DrawString(name, cityFont, new SolidBrush(Color.FromArgb(210, 0, 0, 0)), coords.X + 2, coords.Y + 2);
+                    g.DrawString(name, cityFont, _cityShadowColor, coords.X + 2, coords.Y + 2);
                     g.DrawString(name, cityFont, palette.CityName, coords.X, coords.Y);
                 }
+                cityFont.Dispose();
             }
             var cityTime = DateTime.Now.Ticks - cityStartTime;
 
@@ -533,16 +536,16 @@ namespace TsMap
             {
                 g.DrawString(
                     $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {startPoint.X}, y: {startPoint.Y}, scale: {scale}",
-                    defaultFont, Brushes.WhiteSmoke, 5, 5);
+                    _defaultFont, Brushes.WhiteSmoke, 5, 5);
 
                 //g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), 5, 20, 150, 150);
-                //g.DrawString($"Road: {roadTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 40);
-                //g.DrawString($"Prefab: {prefabTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 55);
-                //g.DrawString($"Ferry: {ferryTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 70);
-                //g.DrawString($"MapOverlay: {mapOverlayTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 85);
-                //g.DrawString($"MapOverlay2: {mapOverlay2Time / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 100);
-                //g.DrawString($"MapArea: {mapAreaTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 115);
-                //g.DrawString($"City: {cityTime / TimeSpan.TicksPerMillisecond}ms", defaultFont, Brushes.White, 10, 130);
+                //g.DrawString($"Road: {roadTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 40);
+                //g.DrawString($"Prefab: {prefabTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 55);
+                //g.DrawString($"Ferry: {ferryTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 70);
+                //g.DrawString($"MapOverlay: {mapOverlayTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 85);
+                //g.DrawString($"MapOverlay2: {mapOverlay2Time / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 100);
+                //g.DrawString($"MapArea: {mapAreaTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 115);
+                //g.DrawString($"City: {cityTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 130);
             }
 
         }
