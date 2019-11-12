@@ -13,7 +13,7 @@ namespace TsMap.Canvas
         {
             InitializeComponent();
             folderBrowserDialog1.Description = "Select where you want the tile map files to be placed";
-            folderBrowserDialog1.SelectedPath = SettingsManager.Current.Settings.LastTileMapPath;
+            folderBrowserDialog1.SelectedPath = SettingsManager.Current.Settings.TileGenerator.LastTileMapPath;
 
             PrefabsCheckBox.Checked = SettingsManager.Current.Settings.TileGenerator.RenderFlags.IsActive(RenderFlags.Prefabs);
             RoadsCheckBox.Checked = SettingsManager.Current.Settings.TileGenerator.RenderFlags.IsActive(RenderFlags.Roads);
@@ -98,8 +98,20 @@ namespace TsMap.Canvas
             {
                 MessageBox.Show("Cannot set start zoom level lower than end zoom level");
                 return;
-            }                  
+            }        
 
+            if (Convert.ToInt32(txtMapPadding.Text) <= 0)
+            {
+                MessageBox.Show("Map padding is invalid. Must be greater than 0");
+                return;
+            }
+
+            if (Convert.ToInt32(txtTileSize.Text) <= 0)
+            {
+                MessageBox.Show("Tile size is invalid. Must be greater than 0");
+            }
+
+           
             SettingsManager.Current.Settings.TileGenerator.ExportFlags = GetExportFlags();
             SettingsManager.Current.Settings.TileGenerator.MapPadding = Convert.ToInt32(txtMapPadding.Text);
             SettingsManager.Current.Settings.TileGenerator.TileSize = Convert.ToInt32(txtTileSize.Text);
