@@ -63,10 +63,12 @@ namespace TsMap.Canvas
 
         private void NextBtn_Click(object sender, EventArgs e)
         {
+            SettingsManager.Current.Settings.Mods = _mods;
+
             SettingsManager.Current.SaveSettings();
 
             Cursor = Cursors.WaitCursor;
-            new TsMapCanvas(this, GameFolderBrowserDialog.SelectedPath, _mods).Show();
+            new TsMapCanvas(this).Show();
             Hide();
         }
 

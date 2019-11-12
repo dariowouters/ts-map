@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TsMap
@@ -16,7 +17,7 @@ namespace TsMap
             this.Settings = JsonHelper.LoadSettings();
 
             // managing default palette
-            if (this.Settings.Palette == null)
+            if (this.Settings.Palette == null || (this.Settings.Palette != null && this.Settings.Palette.Background == null))
                 this.Settings.Palette = new MapPaletteSettings(new MapPalette());
 
             if (this.Settings.TileGenerator == null)
@@ -58,6 +59,7 @@ namespace TsMap
         public string LastTileMapPath { get; set; }
         public MapPaletteSettings Palette { get; set; }
         public TilesGeneratorSettings TileGenerator { get; set; }
+        public List<Mod> Mods { get; set; }
     }
 
     public class TilesGeneratorSettings
