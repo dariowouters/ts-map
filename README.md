@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for (ATS) 1.36 & Utah DLC**
+### **Support for 1.36, Utah & Road to the Black Sea DLC**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -55,6 +55,7 @@ ATS:
     - Vive la France !
     - Italia
     - Beyond the Baltic Sea
+    - Road to the Black Sea
 
 #### Dependencies (NuGet)
 - [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
