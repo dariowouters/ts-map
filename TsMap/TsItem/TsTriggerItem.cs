@@ -132,17 +132,17 @@ namespace TsMap.TsItem
                 if (hasOverride < 0) continue;
                 fileOffset += 0x04 * hasOverride; // set cursor after override values
 
-                var hasParameters = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
-                fileOffset += 0x04; // set cursor after hasParameters
-                if (hasParameters == 1)
+                var parameterCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x04; // set cursor after parameterCount
+
+                for (var j = 0; j < parameterCount; j++)
                 {
-                    var parametersLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
-                    fileOffset += 0x04 + 0x04 + parametersLength; // 0x04(parametersLength) + 0x04(padding) + text(parametersLength * 0x01)
+                    var paramLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                    fileOffset += 0x04 + 0x04 + paramLength; // 0x04(paramLength) + 0x04(padding) + (param)
                 }
-                else if (hasParameters == 3) fileOffset += 0x08; // 0x08 (m_some_uid)
                 var targetTagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
 
-                fileOffset += 0x04 + targetTagCount * 0x08 + 0x08; // 0x04(targetTagCount) + targetTags + 0x04(m_range & some_new_value)
+                fileOffset += 0x04 + targetTagCount * 0x08 + 0x08; // 0x04(targetTagCount) + targetTags + 0x04(m_range & m_type)
             }
 
             if (nodeCount == 1) fileOffset += 0x04; // 0x04(m_radius)
