@@ -6,7 +6,7 @@ namespace TsMap
 
     public static class Common
     {
-        public const int Ets2DlcGuardCount = 8; // TODO: Figure out how to get these dynamically
+        public const int Ets2DlcGuardCount = 10; // TODO: Figure out how to get these dynamically
         public const int AtsDlcGuardCount = 8;
         public const float LaneWidth = 4.5f;
     }
