@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace TsMap
@@ -70,25 +70,34 @@ namespace TsMap
 
     public enum TsItemType
     {
-        Building = 0x01,
-        Road = 0x03,
-        Prefab = 0x04,
-        Model = 0x05,
-        Company = 0x06,
-        Service = 0x07,
-        CutPlane = 0x08,
-        Dunno = 0x09,
-        City = 0x0C,
-        MapOverlay = 0x12,
-        Ferry = 0x13,
-        Garage = 0x16,
-        Trigger = 0x22,
-        FuelPump = 0x23,
-        RoadSideItem = 0x24,
-        BusStop = 0x25,
-        TrafficRule = 0x26,
-        TrajectoryItem = 0x29,
-        MapArea = 0x2A,
+        Terrain = 1,
+        Building = 2,
+        Road = 3,
+        Prefab = 4,
+        Model = 5,
+        Company = 6,
+        Service = 7,
+        CutPlane = 8,
+        Mover = 9,
+        NoWeather = 11,
+        City = 12,
+        Hinge = 13,
+        MapOverlay = 18,
+        Ferry = 19,
+        Sound = 21,
+        Garage = 22,
+        CameraPoint = 23,
+        Trigger = 34,
+        FuelPump = 35, // services
+        RoadSideItem = 36, // sign
+        BusStop = 37,
+        TrafficRule = 38, // traffic_area
+        BezierPatch = 39,
+        Compound = 40,
+        TrajectoryItem = 41,
+        MapArea = 42,
+        FarModel = 43,
+        Curve = 44
     };
 
 
