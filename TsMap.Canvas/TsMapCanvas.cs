@@ -230,8 +230,8 @@ namespace TsMap.Canvas
 
                 MapPanel.Enabled = false;
 
-                Task.Run(() =>
-                {
+                //Task.Run(() =>
+                //{
                     UpdateProgress("Loading map...", true);
 
                     _tilesGeneratorMapper = this.CreateMapper();
@@ -260,7 +260,7 @@ namespace TsMap.Canvas
                         Focus();
                         MapPanel.Enabled = true;
                     }));       
-               });
+               //});
             };
         }
 
