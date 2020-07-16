@@ -44,8 +44,8 @@ namespace TsMap.HashFiles
         public string GetFileName()
         {
             var lastSlash = _entryPath.LastIndexOf('/');
-            var firstPeriod = _entryPath.IndexOf('.');
-            return _entryPath.Substring(lastSlash + 1, firstPeriod - lastSlash - 1);
+            var lastPeriod = _entryPath.LastIndexOf('.');
+            return _entryPath.Substring(lastSlash + 1, lastPeriod - lastSlash - 1);
         }
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace TsMap.HashFiles
         /// </summary>
         public string GetExtension()
         {
-            var firstPeriod = _entryPath.IndexOf('.');
-            return _entryPath.Substring(firstPeriod + 1);
+            var lastPeriod = _entryPath.LastIndexOf('.');
+            return _entryPath.Substring(lastPeriod + 1);
         }
     }
 

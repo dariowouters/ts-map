@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using TsMap.HashFiles;
 
 namespace TsMap.TsItem
 {
     public class TsTriggerItem : TsItem
     {
+        public string OverlayName { get; private set; }
         public TsMapOverlay Overlay { get; private set; }
 
         public TsTriggerItem(TsSector sector, int startOffset) : base(sector, startOffset)
@@ -34,9 +36,10 @@ namespace TsMap.TsItem
             for (var i = 0; i < triggerActionCount; i++)
             {
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
-                if (action == 0x18991B7A99E279C) // hud_parking
+                if (action == ScsHash.StringToToken("hud_parking"))
                 {
-                    Overlay = Sector.Mapper.LookupOverlay(0x2358E762E112CD4);
+                    OverlayName = "parking_ico";
+                    Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken(OverlayName));
                     if (Overlay == null)
                     {
                         Console.WriteLine("Could not find parking overlay");
@@ -73,9 +76,10 @@ namespace TsMap.TsItem
             for (var i = 0; i < triggerActionCount; i++)
             {
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
-                if (action == 0x18991B7A99E279C) // hud_parking
+                if (action == ScsHash.StringToToken("hud_parking"))
                 {
-                    Overlay = Sector.Mapper.LookupOverlay(0x2358E762E112CD4);
+                    OverlayName = "parking_ico";
+                    Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken(OverlayName));
                     if (Overlay == null)
                     {
                         Console.WriteLine("Could not find parking overlay");
@@ -117,9 +121,10 @@ namespace TsMap.TsItem
             for (var i = 0; i < triggerActionCount; i++)
             {
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
-                if (action == 0x18991B7A99E279C) // hud_parking
+                if (action == ScsHash.StringToToken("hud_parking"))
                 {
-                    Overlay = Sector.Mapper.LookupOverlay(0x2358E762E112CD4);
+                    OverlayName = "parking_ico";
+                    Overlay = Sector.Mapper.LookupOverlay(ScsHash.StringToToken(OverlayName));
                     if (Overlay == null)
                     {
                         Console.WriteLine("Could not find parking overlay");

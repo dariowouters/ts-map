@@ -8,7 +8,7 @@ namespace TsMap
     public class JsonHelper
     {
         private static readonly string _settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ts-map");
-        public static void SaveTileMapInfo(string path, float x1, float x2, float y1, float y2, int maxZoom)
+        public static void SaveTileMapInfo(string path, float x1, float x2, float y1, float y2, int minZoom, int maxZoom)
         {
             var tileMapInfo = new JObject
             {
@@ -16,6 +16,7 @@ namespace TsMap
                 ["x2"] = x2,
                 ["y1"] = y1,
                 ["y2"] = y2,
+                ["minZoom"] = minZoom,
                 ["maxZoom"] = maxZoom
             };
 
