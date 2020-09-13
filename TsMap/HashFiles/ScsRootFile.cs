@@ -57,7 +57,7 @@ using static Helper;
             Br = new BinaryReader(File.OpenRead(_path));
             Entries = new Dictionary<string, ScsZipEntry>();
 
-            var entryCount = (short) ReadUInt16(Br, -22 + 10, SeekOrigin.End);
+            var entryCount = ReadUInt16(Br, -22 + 10, SeekOrigin.End);
 
             var fileOffset = 0;
 
@@ -88,7 +88,6 @@ using static Helper;
 
                 Entries.Add(entry.Name, entry);
             }
-
         }
 
         public override ScsEntry GetEntry(string name)
