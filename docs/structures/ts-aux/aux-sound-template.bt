@@ -1,0 +1,22 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 33
+{
+    byte flags[5]; // 0
+    u64 m_sound_id <read=token_to_string>; // 5
+    float m_full_intensity_distance; // 13
+    float m_activation_distance; // 17
+    u32 m_extra_flags; // 21
+    u64 m_node_uid; // 25
+} aux_sound_t;

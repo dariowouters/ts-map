@@ -1,0 +1,21 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors:
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+
+typedef struct
+{
+    byte m_flags[5];
+    float m_width; // *2
+    float m_heigth; // *2
+    u64 m_node_uid;
+} aux_no_weather_t;

@@ -57,7 +57,7 @@ using static Helper;
             Br = new BinaryReader(File.OpenRead(_path));
             Entries = new Dictionary<string, ScsZipEntry>();
 
-            var entryCount = (short) ReadUInt16(Br, -22 + 10, SeekOrigin.End);
+            var entryCount = ReadUInt16(Br, -22 + 10, SeekOrigin.End);
 
             var fileOffset = 0;
 
@@ -88,7 +88,6 @@ using static Helper;
 
                 Entries.Add(entry.Name, entry);
             }
-
         }
 
         public override ScsEntry GetEntry(string name)
@@ -192,67 +191,78 @@ using static Helper;
 
             var rootDir = GetEntry(RootDirHash);
 
-            if (rootDir == null) // Try to add important sub directories directly
+            if (rootDir == null || rootDir.Size == 0) // Try to add important sub directories directly
             {
                 var defEntry = (ScsHashEntry) GetEntry("def");
                 if (defEntry != null)
                 {
                     var dir = _rfs.GetDirectory("def");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("def", defEntry);
+                    dir = _rfs.GetDirectory("def");
                     dir?.AddHashEntry(defEntry);
+                }
+                var defWorldEntry = (ScsHashEntry)GetEntry("def/world");
+                if (defWorldEntry != null)
+                {
+                    var dir = _rfs.GetDirectory("def/world");
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("def/world", defWorldEntry);
+                    dir = _rfs.GetDirectory("def/world");
+                    dir?.AddHashEntry(defWorldEntry);
                 }
                 var mapEntry = (ScsHashEntry) GetEntry("map");
                 if (mapEntry != null)
                 {
                     var dir = _rfs.GetDirectory("map");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("map", mapEntry);
+                    dir = _rfs.GetDirectory("map");
                     dir?.AddHashEntry(mapEntry);
                 }
                 var materialEntry = (ScsHashEntry) GetEntry("material");
                 if (materialEntry != null)
                 {
                     var dir = _rfs.GetDirectory("material");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("material", materialEntry);
+                    dir = _rfs.GetDirectory("material");
                     dir?.AddHashEntry(materialEntry);
                 }
                 var prefabEntry = (ScsHashEntry) GetEntry("prefab");
                 if (prefabEntry != null)
                 {
                     var dir = _rfs.GetDirectory("prefab");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("prefab", prefabEntry);
+                    dir = _rfs.GetDirectory("prefab");
                     dir?.AddHashEntry(prefabEntry);
                 }
                 var prefab2Entry = (ScsHashEntry) GetEntry("prefab2");
                 if (prefab2Entry != null)
                 {
                     var dir = _rfs.GetDirectory("prefab2");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("prefab2", prefab2Entry);
+                    dir = _rfs.GetDirectory("prefab2");
                     dir?.AddHashEntry(prefab2Entry);
                 }
                 var modelEntry = (ScsHashEntry) GetEntry("model");
                 if (modelEntry != null)
                 {
                     var dir = _rfs.GetDirectory("model");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("model", modelEntry);
+                    dir = _rfs.GetDirectory("model");
                     dir?.AddHashEntry(modelEntry);
                 }
                 var model2Entry = (ScsHashEntry) GetEntry("model2");
                 if (model2Entry != null)
                 {
                     var dir = _rfs.GetDirectory("model2");
-
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("model2", model2Entry);
+                    dir = _rfs.GetDirectory("model2");
                     dir?.AddHashEntry(model2Entry);
                 }
                 var localeEntry = (ScsHashEntry) GetEntry("locale");
                 if (localeEntry != null)
                 {
                     var dir = _rfs.GetDirectory("locale");
-                    if (dir == null)
-                    {
-                        _rfs.GetRootDirectory()?.AddDirectoryManually("locale", localeEntry);
-                        dir = _rfs.GetDirectory("locale");
-                        if (dir == null) Log.Msg("Fuck");
-                    }
+                    if (dir == null) _rfs.GetRootDirectory()?.AddDirectoryManually("locale", localeEntry);
+                    dir = _rfs.GetDirectory("locale");
                     dir?.AddHashEntry(localeEntry);
                 }
             }

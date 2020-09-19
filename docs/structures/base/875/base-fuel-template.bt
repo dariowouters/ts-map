@@ -1,0 +1,19 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 855
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    byte m_flags[5]; // 0
+    u64 m_node_uid <format=hex>; // 5
+    u64 m_prefab_uid <format=hex>; // 13
+    u32 m_sub_item_uid_count; // 21
+    u64 m_sub_item_uids[m_sub_item_uid_count]; // 25
+} base_fuel_t;

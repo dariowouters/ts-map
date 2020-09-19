@@ -1,0 +1,20 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors:
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    byte flags[5]; // 0
+    u32 m_tag_count; // 5
+    u64 m_tags[m_tag_count] <read=token_to_string>; // 9
+    u64 m_node_uid <format=hex>;
+} aux_camera_t;

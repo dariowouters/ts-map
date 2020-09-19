@@ -1,0 +1,55 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 829
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct
+{
+    u64 m_action <read=token_to_string>; // 0
+
+    s32 m_override_tag; // 8
+
+    if (m_override_tag > 0) float m_override_value[m_override_tag];
+
+    s32 m_has_parameters;
+    if (m_has_parameters == 1)
+    {
+        u32 m_parameters_length;
+        u32 parameters_padding;
+        char m_parameters[m_parameters_length];
+    }
+    else if (m_has_parameters == 3)
+    {
+        u64 m_some_uid;
+    }
+    u32 padding[2];
+    u32 m_target_tag_count;
+    u64 m_target_tag[m_target_tag_count] <read=token_to_string>;
+} trigger_action_t;
+
+typedef struct
+{
+    byte m_flags[5]; // 0
+    u32 m_tag_count; // 5
+    u64 m_tags[m_tag_count] <read=token_to_string>; // 9
+    u32 m_node_count <bgcolor=0x87D37C, fgcolor=cBlack>;
+    u64 m_node_uid[m_node_count];
+    u32 m_trigger_actions_count;
+    trigger_action_t m_trigger_action[m_trigger_actions_count] <optimize=false>;
+
+    float m_range;
+    float m_reset_delay;
+    float m_unk;
+    float m_min_speed;
+    float m_max_speed;
+    byte m_flags2[4];
+} base_trigger_t;
+
+
+// m_flags[1] => dlc_guard

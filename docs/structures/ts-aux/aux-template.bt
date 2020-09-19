@@ -1,0 +1,108 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef quad                    s64;
+typedef unsigned quad           u64;
+typedef long                    s32;
+typedef unsigned long           u32;
+typedef short                   s16;
+typedef unsigned short          u16;
+
+LittleEndian();
+
+typedef struct
+{
+    s32 x;
+    s32 y;
+    s32 z;
+} int3;
+
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+} float3;
+
+typedef struct // sizeof 20
+{
+    float m_x_offset; // 0
+    float m_y_offset; // 4
+    float m_z_offset; // 8
+    float m_radius;   // 12
+    u32 m_sphere_type; // 16
+} veg_sphere_t;
+
+#include "../base/functions.1sc"
+#include "../base/base-node-template.bt"
+
+#include "aux-terrain-template.bt"
+#include "aux-building-template.bt"
+#include "aux-model-template.bt"
+#include "aux-mover-template.bt"
+#include "aux-no-weather-template.bt"
+#include "aux-sound-template.bt"
+#include "aux-camera-template.bt"
+#include "../base/base-road-side-item-template.bt"
+#include "aux-bezier-patch-template.bt"
+#include "aux-curve-template.bt"
+#include "aux-far-model-template.bt"
+#include "aux-hinge-template.bt"
+
+#include "aux-compound-model-template.bt"
+
+typedef struct
+{
+    u32 m_version;
+    u64 m_game_id <read=token_to_string>; // also euro2 in ATS
+    u32 padding; // always 3 ??
+    u32 m_item_count <bgcolor=cGreen, fgcolor=cBlack>;
+} aux_header_t;
+
+typedef struct
+{
+    u32 m_type <read=get_type_name, bgcolor=cBlue, fgcolor=cWhite>;
+    u64 m_uid <format=hex>;
+    float3 m_pos;
+    float3 m_posR;
+    float3 m_rot;
+    byte padding[4];
+
+    switch (m_type)
+    {
+        case 0x01:  aux_terrain_t           m_terrain;          break;
+        case 0x02:  aux_building_t          m_building;         break;
+        case 0x05:  aux_model_t             m_model;            break;
+        case 0x09:  aux_mover_t             m_mover;            break;
+        case 0x0B:  aux_no_weather_t        m_no_weather;       break;
+        case 0x0D:  aux_hinge_t             m_hinge;            break;
+        case 0x15:  aux_sound_t             m_sound;            break;
+        case 0x17:  aux_camera_t            m_camera;           break;
+        case 0x24:  base_road_side_item_t   m_road_side_item;   break;
+        case 0x27:  aux_bezier_patch_t      m_bezier_patch;     break;
+        case 0x28:  aux_compound_model_t    m_compound_model;   break;
+        case 0x2B:  aux_far_model_t         m_far_model;        break;
+        case 0x2C:  aux_curve_t             m_curve;            break;
+        default: MessageBox("Could not find type");
+    }
+} aux_item_t;
+
+typedef struct
+{
+    aux_header_t    m_header;
+    aux_item_t      aux_item[m_header.m_item_count] <optimize=false>;
+    u32             m_node_count <bgcolor=cGreen, fgcolor=cBlack>;
+    base_node_t     m_node[m_node_count] <optimize=false>;
+} aux_t;
+
+aux_t aux;

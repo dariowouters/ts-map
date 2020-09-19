@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TsMap.HashFiles;
+using TsMap.TsItem;
 
 namespace TsMap
 {
@@ -16,13 +20,12 @@ namespace TsMap
         public bool IsEts2 = true;
 
         private List<string> _sectorFiles;
-        public int SelectedLocalization = 0;
+        public string SelectedLocalization = "";
         public List<string> LocalizationList = new List<string>();
-
-        public Dictionary<string, string> LocalizedNames = new Dictionary<string, string>();
 
         private readonly Dictionary<ulong, TsPrefab> _prefabLookup = new Dictionary<ulong, TsPrefab>();
         private readonly Dictionary<ulong, TsCity> _citiesLookup = new Dictionary<ulong, TsCity>();
+        private readonly Dictionary<ulong, TsCountry> _countriesLookup = new Dictionary<ulong, TsCountry>();
         private readonly Dictionary<ulong, TsRoadLook> _roadLookup = new Dictionary<ulong, TsRoadLook>();
         private readonly Dictionary<ulong, TsMapOverlay> _overlayLookup = new Dictionary<ulong, TsMapOverlay>();
         private readonly List<TsFerryConnection> _ferryConnectionLookup = new List<TsFerryConnection>();
@@ -37,6 +40,11 @@ namespace TsMap
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
+
+        public float minX = float.MaxValue;
+        public float maxX = float.MinValue;
+        public float minZ = float.MaxValue;
+        public float maxZ = float.MinValue;
 
         private List<TsSector> Sectors { get; set; }
 
@@ -70,6 +78,7 @@ namespace TsMap
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 foreach (var line in lines)
                 {
+                    if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("@include"))
                     {
                         var path = Helper.GetFilePath(line.Split('"')[1], "def");
@@ -77,6 +86,42 @@ namespace TsMap
                         if (city.Token != 0 && !_citiesLookup.ContainsKey(city.Token))
                         {
                             _citiesLookup.Add(city.Token, city);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ParseCountryFiles()
+        {
+            var defDirectory = Rfs.GetDirectory("def");
+            if (defDirectory == null)
+            {
+                Log.Msg("[Country] Could not read 'def' dir");
+                return;
+            }
+
+            var countryFiles = defDirectory.GetFiles("country");
+            if (countryFiles == null)
+            {
+                Log.Msg("Could not read country files");
+                return;
+            }
+
+            foreach (var countryFile in countryFiles)
+            {
+                var data = countryFile.Entry.Read();
+                var lines = Encoding.UTF8.GetString(data).Split('\n');
+                foreach (var line in lines)
+                {
+                    if (line.TrimStart().StartsWith("#")) continue;
+                    if (line.Contains("@include"))
+                    {
+                        var path = Helper.GetFilePath(line.Split('"')[1], "def");
+                        var country = new TsCountry(this, path);
+                        if (country.Token != 0 && !_countriesLookup.ContainsKey(country.Token))
+                        {
+                            _countriesLookup.Add(country.Token, country);
                         }
                     }
                 }
@@ -101,26 +146,30 @@ namespace TsMap
 
             foreach (var prefabFile in prefabFiles)
             {
+                if (!prefabFile.GetFileName().StartsWith("prefab")) continue;
                 var data = prefabFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
 
                 var token = 0UL;
                 var path = "";
                 var category = "";
-
                 foreach (var line in lines)
                 {
-                    if (line.Contains("prefab_model"))
+                    var (validLine, key, value) = SiiHelper.ParseLine(line);
+                    if (validLine)
                     {
-                        token = ScsHash.StringToToken(line.Split('.')[1].Trim());
-                    }
-                    else if (line.Contains("prefab_desc"))
-                    {
-                        path = Helper.GetFilePath(line.Split('"')[1]);
-                    }
-                    else if (line.Contains("category"))
-                    {
-                        category = line.Split('"')[1];
+                        if (key == "prefab_model")
+                        {
+                            token = ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[1]));
+                        }
+                        else if (key == "prefab_desc")
+                        {
+                            path = Helper.GetFilePath(value.Split('"')[1]);
+                        }
+                        else if (key == "category")
+                        {
+                            category = value.Split('"')[1];
+                        }
                     }
 
                     if (line.Contains("}") && token != 0 && path != "")
@@ -157,34 +206,33 @@ namespace TsMap
 
             foreach (var roadLookFile in roadLookFiles)
             {
+                if (!roadLookFile.GetFileName().StartsWith("road")) continue;
                 var data = roadLookFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 TsRoadLook roadLook = null;
 
                 foreach (var line in lines)
                 {
-                    if (line.Contains(":") && roadLook != null)
+                    var (validLine, key, value) = SiiHelper.ParseLine(line);
+                    if (validLine)
                     {
-                        var value = line.Substring(line.IndexOf(':') + 1).Trim();
-                        var key = line.Substring(0, line.IndexOf(':')).Trim();
-                        switch (key)
+                        if (key == "road_look")
                         {
-                            case "lanes_left[]":
-                                roadLook.LanesLeft.Add(value);
-                                break;
-
-                            case "lanes_right[]":
-                                roadLook.LanesRight.Add(value);
-                                break;
-                            case "road_offset":
-                                float.TryParse(value.Replace('.', ','), out roadLook.Offset);
-                                break;
+                            roadLook = new TsRoadLook(ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[1].Trim('{'))));
                         }
-                    }
-
-                    if (line.Contains("road_look"))
-                    {
-                        roadLook = new TsRoadLook(ScsHash.StringToToken(line.Split('.')[1].Trim('{').Trim()));
+                        if (roadLook == null) continue;
+                        if (key == "lanes_left[]")
+                        {
+                            roadLook.LanesLeft.Add(value);
+                        }
+                        else if (key == "lanes_right[]")
+                        {
+                            roadLook.LanesRight.Add(value);
+                        }
+                        else if (key == "road_offset")
+                        {
+                            roadLook.Offset = float.Parse(value.Replace('.', ','));
+                        }
                     }
 
                     if (line.Contains("}") && roadLook != null)
@@ -224,23 +272,32 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
-                    if (line.Contains(":"))
+                    var (validLine, key, value) = SiiHelper.ParseLine(line);
+                    if (validLine)
                     {
-                        var value = line.Split(':')[1].Trim();
-                        var key = line.Split(':')[0].Trim();
                         if (conn != null)
                         {
                             if (key.Contains("connection_positions"))
                             {
+                                var index = int.Parse(key.Split('[')[1].Split(']')[0]);
                                 var vector = value.Split('(')[1].Split(')')[0];
                                 var values = vector.Split(',');
                                 var x = float.Parse(values[0].Replace('.', ','));
                                 var z = float.Parse(values[2].Replace('.', ','));
-                                conn.AddConnectionPosition(x, z);
+                                conn.AddConnectionPosition(index, x, z);
+                            }
+                            else if (key.Contains("connection_directions"))
+                            {
+                                var index = int.Parse(key.Split('[')[1].Split(']')[0]);
+                                var vector = value.Split('(')[1].Split(')')[0];
+                                var values = vector.Split(',');
+                                var x = float.Parse(values[0].Replace('.', ','));
+                                var z = float.Parse(values[2].Replace('.', ','));
+                                conn.AddRotation(index, Math.Atan2(z, x));
                             }
                         }
 
-                        if (line.Contains("ferry_connection"))
+                        if (key == "ferry_connection")
                         {
                             var portIds = value.Split('.');
                             conn = new TsFerryConnection
@@ -262,7 +319,7 @@ namespace TsMap
             }
         }
 
-        private void ParseOverlays()
+        private void ParseOverlays() // TODO: Fix Road overlays and company (road_quarry & quarry) from interfering (or however you spell that)
         {
             var uiMapDirectory = Rfs.GetDirectory("material/ui/map");
             if (uiMapDirectory == null)
@@ -278,17 +335,6 @@ namespace TsMap
                 return;
             }
 
-            var uiMapRoadDirectory = Rfs.GetDirectory("material/ui/map/road");
-            if (uiMapRoadDirectory != null)
-            {
-                var data = uiMapRoadDirectory.GetFiles(".mat");
-                if (data != null) matFiles.AddRange(data);
-            }
-            else
-            {
-                Log.Msg("Could not read 'material/ui/map/road' dir");
-            }
-
             var uiCompanyDirectory = Rfs.GetDirectory("material/ui/company/small");
             if (uiCompanyDirectory != null)
             {
@@ -300,6 +346,17 @@ namespace TsMap
                 Log.Msg("Could not read 'material/ui/company/small' dir");
             }
 
+            var uiMapRoadDirectory = Rfs.GetDirectory("material/ui/map/road");
+            if (uiMapRoadDirectory != null)
+            {
+                var data = uiMapRoadDirectory.GetFiles(".mat");
+                if (data != null) matFiles.AddRange(data);
+            }
+            else
+            {
+                Log.Msg("Could not read 'material/ui/map/road' dir");
+            }
+
             foreach (var matFile in matFiles)
             {
                 var data = matFile.Entry.Read();
@@ -307,9 +364,11 @@ namespace TsMap
 
                 foreach (var line in lines)
                 {
-                    if (line.Contains("texture") && !line.Contains("_name"))
+                    var (validLine, key, value) = SiiHelper.ParseLine(line);
+                    if (!validLine) continue;
+                    if (key == "texture")
                     {
-                        var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), line.Split('"')[1]);
+                        var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), value.Split('"')[1]);
 
                         var tobjData = Rfs.GetFileEntry(tobjPath)?.Entry?.Read();
 
@@ -339,6 +398,7 @@ namespace TsMap
         {
             var startTime = DateTime.Now.Ticks;
             ParseCityFiles();
+            ParseCountryFiles();
             Log.Msg($"Loaded city files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             startTime = DateTime.Now.Ticks;
@@ -382,6 +442,7 @@ namespace TsMap
             foreach (var file in mbd)
             {
                 var mapName = file.GetFileName();
+                IsEts2 = !(mapName == "usa");
 
                 var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
                 if (mapFileDir == null)
@@ -391,6 +452,46 @@ namespace TsMap
                 }
 
                 _sectorFiles.AddRange(mapFileDir.GetFiles(".base").Select(x => x.GetPath()).ToList());
+            }
+        }
+
+        private void ParseLocaleFile(ScsFile localeFile, string locale)
+        {
+            if (localeFile == null) return;
+            var entryContents = localeFile.Entry.Read();
+            var magic = MemoryHelper.ReadUInt32(entryContents, 0);
+            var fileContents = (magic == 21720627) ? Helper.Decrypt3Nk(entryContents) : Encoding.UTF8.GetString(entryContents);
+            if (fileContents == null)
+            {
+                Log.Msg($"Could not read locale file '{localeFile.GetPath()}'");
+                return;
+            }
+
+            var key = string.Empty;
+
+            foreach (var l in fileContents.Split('\n'))
+            {
+                if (!l.Contains(':')) continue;
+
+                if (l.Contains("key[]"))
+                {
+                    key = l.Split('"')[1];
+                }
+                else if (l.Contains("val[]"))
+                {
+                    var val = l.Split('"')[1];
+                    if (key != string.Empty && val != string.Empty)
+                    {
+                        var cities = _citiesLookup.Values.Where(x => x.LocalizationToken == key);
+                        foreach (var city in cities)
+                        {
+                            _citiesLookup[city.Token].AddLocalizedName(locale, val);
+                        }
+
+                        var country = _countriesLookup.Values.FirstOrDefault(x => x.LocalizationToken == key);
+                        if (country != null) _countriesLookup[country.Token].AddLocalizedName(locale, val);
+                    }
+                }
             }
         }
 
@@ -405,11 +506,15 @@ namespace TsMap
             foreach (var localeDirDirectory in localeDir.Directories)
             {
                 LocalizationList.Add(localeDirDirectory.Value.GetCurrentDirectoryName());
+                foreach (var localeFile in localeDirDirectory.Value.Files)
+                {
+                    ParseLocaleFile(localeFile.Value, localeDirDirectory.Value.GetCurrentDirectoryName());
+                }
             }
         }
 
         /// <summary>
-        /// Parse through all .scs files and retreive all necessary files
+        /// Parse through all .scs files and retrieve all necessary files
         /// </summary>
         public void Parse()
         {
@@ -432,14 +537,12 @@ namespace TsMap
 
             Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
-            ReadLocalizationOptions();
-
             ParseDefFiles();
             ParseMapFiles();
 
+            ReadLocalizationOptions();
 
             if (_sectorFiles == null) return;
-
             var preMapParseTime = DateTime.Now.Ticks;
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
@@ -448,59 +551,326 @@ namespace TsMap
                     $" map files and {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms total.");
         }
 
-        public void UpdateLocalization(int locIndex)
+        public void ExportInfo(ExportFlags exportFlags, string exportPath)
         {
-            LocalizedNames = new Dictionary<string, string>();
-            if (locIndex < 0) return;
-            SelectedLocalization = locIndex;
-            if (locIndex == 0 || locIndex >= LocalizationList.Count) return;
-            var localFile = Rfs.GetFileEntry($"locale/{LocalizationList[locIndex]}/local.sii");
-            if (localFile == null)
+            if (exportFlags.IsActive(ExportFlags.CityList)) ExportCities(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.CountryList)) ExportCountries(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.OverlayList)) ExportOverlays(exportFlags, exportPath);
+        }
+
+        /// <summary>
+        /// Creates a json file with the positions and names (w/ localizations) of all cities
+        /// </summary>
+        public void ExportCities(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+            var citiesJArr = new JArray();
+            foreach (var city in Cities)
             {
-                Log.Msg($"Could not find locale file for '{LocalizationList[locIndex]}'");
-                return;
-            }
-
-            var fileContents = Helper.Decrypt3Nk(localFile.Entry.Read());
-            if (fileContents == null)
-            {
-                Log.Msg($"Could not decrypt locale file '{localFile.GetPath()}'");
-                return;
-            }
-
-            var key = string.Empty;
-            var saveValues = false;
-
-            foreach (var l in fileContents.Split('\n'))
-            {
-                if (l.Contains("#+ Names of cities")) saveValues = true;
-                if (!saveValues) continue;
-                if (l.Contains("#@}")) break;
-                if(!l.Contains(':')) continue;
-
-
-                if (l.Contains("key[]"))
+                if (city.Hidden) continue;
+                var cityJObj = JObject.FromObject(city.City);
+                cityJObj["X"] = city.X;
+                cityJObj["Y"] = city.Z;
+                if (_countriesLookup.ContainsKey(ScsHash.StringToToken(city.City.Country)))
                 {
-                    key = l.Split('"')[1];
+                    var country = _countriesLookup[ScsHash.StringToToken(city.City.Country)];
+                    cityJObj["CountryId"] = country.CountryId;
                 }
-                else if (l.Contains("val[]"))
+                else
                 {
-                    var val = l.Split('"')[1];
-                    if (key != string.Empty && val != string.Empty)
+                    Log.Msg($"Could not find country for {city.City.Name}");
+                }
+
+                if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
+                    cityJObj["LocalizedNames"] = JObject.FromObject(city.City.LocalizedNames);
+
+                citiesJArr.Add(cityJObj);
+            }
+            File.WriteAllText(Path.Combine(path, "Cities.json"), citiesJArr.ToString(Formatting.Indented));
+        }
+        /// <summary>
+        /// Creates a json file with the positions and names (w/ localizations) of all countries
+        /// </summary>
+        public void ExportCountries(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+            var countriesJArr = new JArray();
+            foreach (var country in _countriesLookup.Values)
+            {
+                var countryJObj = JObject.FromObject(country);
+                if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
+                    countryJObj["LocalizedNames"] = JObject.FromObject(country.LocalizedNames);
+                countriesJArr.Add(countryJObj);
+            }
+            File.WriteAllText(Path.Combine(path, "Countries.json"), countriesJArr.ToString(Formatting.Indented));
+        }
+
+        /// <summary>
+        /// Saves all overlays as .png images.
+        /// Creates a json file with all positions of said overlays
+        /// </summary>
+        /// <remarks>
+        /// ZoomLevelVisibility flags: Multiple can be selected at the same time,
+        /// eg. if value is 3 then 0 and 1 are both selected
+        /// Selected = hidden (0-7 => numbers in game editor)
+        /// 1 = (Nav map, 3D view, zoom 0) (0)
+        /// 2 = (Nav map, 3D view, zoom 1) (1)
+        /// 4 = (Nav map, 2D view, zoom 0) (2)
+        /// 8 = (Nav map, 2D view, zoom 1) (3)
+        /// 16 = (World map, zoom 0) (4)
+        /// 32 = (World map, zoom 1) (5)
+        /// 64 = (World map, zoom 2) (6)
+        /// 128 = (World map, zoom 3) (7)
+        /// </remarks>
+        /// <param name="path"></param>
+        public void ExportOverlays(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            var saveAsPNG = exportFlags.IsActive(ExportFlags.OverlayPNGs);
+
+            var overlayPath = Path.Combine(path, "Overlays");
+            if (saveAsPNG) Directory.CreateDirectory(overlayPath);
+
+            var overlaysJArr = new JArray();
+            foreach (var overlay in MapOverlays)
+            {
+                if (overlay.Hidden) continue;
+                var overlayName = overlay.OverlayName;
+                var b = overlay.Overlay?.GetBitmap();
+                if (b == null) continue;
+                var overlayJObj = new JObject
+                {
+                    ["X"] = overlay.X,
+                    ["Y"] = overlay.Z,
+                    ["ZoomLevelVisibility"] = overlay.ZoomLevelVisibility,
+                    ["Name"] = overlayName,
+                    ["Type"] = "Overlay",
+                    ["Width"] = b.Width,
+                    ["Height"] = b.Height,
+                };
+                overlaysJArr.Add(overlayJObj);
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+            }
+            foreach (var company in Companies)
+            {
+                if (company.Hidden) continue;
+                var overlayName = ScsHash.TokenToString(company.OverlayToken);
+                var point = new PointF(company.X, company.Z);
+                if (company.Nodes.Count > 0)
+                {
+                    var prefab = Prefabs.FirstOrDefault(x => x.Uid == company.Nodes[0]);
+                    if (prefab != null)
                     {
-                        if (!LocalizedNames.ContainsKey(key))
+                        var originNode = GetNodeByUid(prefab.Nodes[0]);
+                        if (prefab.Prefab.PrefabNodes == null) continue;
+                        var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+                        var rot = (float)(originNode.Rotation - Math.PI -
+                                           Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+                        var prefabstartX = originNode.X - mapPointOrigin.X;
+                        var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                        var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
+                        if (companyPos != null)
                         {
-                            LocalizedNames.Add(key, val);
+                            point = RenderHelper.RotatePoint(prefabstartX + companyPos.X, prefabStartZ + companyPos.Z,
+                                rot,
+                                originNode.X, originNode.Z);
                         }
                     }
-                    key = string.Empty;
                 }
+                var b = company.Overlay?.GetBitmap();
+                if (b == null) continue;
+                var overlayJObj = new JObject
+                {
+                    ["X"] = point.X,
+                    ["Y"] = point.Y,
+                    ["Name"] = overlayName,
+                    ["Type"] = "Company",
+                    ["Width"] = b.Width,
+                    ["Height"] = b.Height,
+                };
+                overlaysJArr.Add(overlayJObj);
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+            }
+            foreach (var trigger in Triggers)
+            {
+                if (trigger.Hidden) continue;
+                var overlayName = trigger.OverlayName;
+                var b = trigger.Overlay?.GetBitmap();
+                if (b == null) continue;
+                var overlayJObj = new JObject
+                {
+                    ["X"] = trigger.X,
+                    ["Y"] = trigger.Z,
+                    ["Name"] = overlayName,
+                    ["Type"] = "Parking",
+                    ["Width"] = b.Width,
+                    ["Height"] = b.Height,
+                };
+                overlaysJArr.Add(overlayJObj);
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+            }
+            foreach (var ferry in FerryConnections)
+            {
+                if (ferry.Hidden) continue;
+                var overlayName = ScsHash.TokenToString(ferry.OverlayToken);
+                var b = ferry.Overlay?.GetBitmap();
+                if (b == null) continue;
+                var overlayJObj = new JObject
+                {
+                    ["X"] = ferry.X,
+                    ["Y"] = ferry.Z,
+                    ["Name"] = overlayName,
+                    ["Type"] = (ferry.Train) ? "Train" : "Ferry",
+                    ["Width"] = b.Width,
+                    ["Height"] = b.Height,
+                };
+                overlaysJArr.Add(overlayJObj);
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+            }
+
+            foreach (var prefab in Prefabs)
+            {
+                if (prefab.Hidden) continue;
+                var originNode = GetNodeByUid(prefab.Nodes[0]);
+                if (prefab.Prefab.PrefabNodes == null) continue;
+                var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+                var rot = (float) (originNode.Rotation - Math.PI -
+                                   Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+                var prefabStartX = originNode.X - mapPointOrigin.X;
+                var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                foreach (var spawnPoint in prefab.Prefab.SpawnPoints)
+                {
+                    var newPoint = RenderHelper.RotatePoint(prefabStartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
+                        originNode.X, originNode.Z);
+
+                    var overlayJObj = new JObject
+                    {
+                        ["X"] = newPoint.X,
+                        ["Y"] = newPoint.Y,
+                    };
+
+                    string overlayName;
+
+                    switch (spawnPoint.Type)
+                    {
+                        case TsSpawnPointType.GasPos:
+                            {
+                                overlayName = "gas_ico";
+                                overlayJObj["Type"] = "Fuel";
+                                break;
+                            }
+                        case TsSpawnPointType.ServicePos:
+                            {
+                                overlayName = "service_ico";
+                                overlayJObj["Type"] = "Service";
+                                break;
+                            }
+                        case TsSpawnPointType.WeightStationPos:
+                            {
+                                overlayName = "weigh_station_ico";
+                                overlayJObj["Type"] = "WeightStation";
+                                break;
+                            }
+                        case TsSpawnPointType.TruckDealerPos:
+                            {
+                                overlayName = "dealer_ico";
+                                overlayJObj["Type"] = "TruckDealer";
+                                break;
+                            }
+                        case TsSpawnPointType.BuyPos:
+                            {
+                                overlayName = "garage_large_ico";
+                                overlayJObj["Type"] = "Garage";
+                                break;
+                            }
+                        case TsSpawnPointType.RecruitmentPos:
+                            {
+                                overlayName = "recruitment_ico";
+                                overlayJObj["Type"] = "Recruitment";
+                                break;
+                            }
+                        default:
+                            continue;
+                    }
+
+                    overlayJObj["Name"] = overlayName;
+                    var overlay = LookupOverlay(ScsHash.StringToToken(overlayName));
+                    var b = overlay.GetBitmap();
+                    if (b == null) continue;
+                    overlayJObj["Width"] = b.Width;
+                    overlayJObj["Height"] = b.Height;
+                    overlaysJArr.Add(overlayJObj);
+                    if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                        b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+
+                }
+
+                var lastId = -1;
+                foreach (var triggerPoint in prefab.Prefab.TriggerPoints)
+                {
+                    var newPoint = RenderHelper.RotatePoint(prefabStartX + triggerPoint.X, prefabStartZ + triggerPoint.Z, rot,
+                        originNode.X, originNode.Z);
+
+                    if (triggerPoint.TriggerId == lastId) continue;
+                    lastId = (int)triggerPoint.TriggerId;
+                    var overlayJObj = new JObject
+                    {
+                        ["X"] = newPoint.X,
+                        ["Y"] = newPoint.Y,
+                        ["Name"] = "parking_ico",
+                        ["Type"] = "Parking",
+                    };
+
+                    if (triggerPoint.TriggerActionToken != ScsHash.StringToToken("hud_parking")) continue;
+
+                    const string overlayName = "parking_ico";
+                    var overlay = LookupOverlay(ScsHash.StringToToken(overlayName));
+                    var b = overlay.GetBitmap();
+                    if (b == null) continue;
+                    overlayJObj["Width"] = b.Width;
+                    overlayJObj["Height"] = b.Height;
+                    overlaysJArr.Add(overlayJObj);
+                    if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
+                        b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+                }
+            }
+            File.WriteAllText(Path.Combine(path, "Overlays.json"), overlaysJArr.ToString(Formatting.Indented));
+        }
+
+        public void UpdateEdgeCoords(TsNode node)
+        {
+            if (minX > node.X) minX = node.X;
+            if (maxX < node.X) maxX = node.X;
+            if (minZ > node.Z) minZ = node.Z;
+            if (maxZ < node.Z) maxZ = node.Z;
+        }
+
+        public void UpdateLocalization(int index)
+        {
+            if (index < LocalizationList.Count)
+            {
+                SelectedLocalization = LocalizationList[index];
             }
         }
 
         public TsNode GetNodeByUid(ulong uid)
         {
             return Nodes.ContainsKey(uid) ? Nodes[uid] : null;
+        }
+
+        public TsCountry GetCountryByTokenName(string name)
+        {
+            var token = ScsHash.StringToToken(name);
+            return _countriesLookup.ContainsKey(token) ? _countriesLookup[token] : null;
         }
 
         public TsRoadLook LookupRoadLook(ulong lookId)
@@ -516,11 +886,6 @@ namespace TsMap
         public TsCity LookupCity(ulong cityId)
         {
             return _citiesLookup.ContainsKey(cityId) ? _citiesLookup[cityId] : null;
-        }
-
-        public string GetLocalizedName(string template)
-        {
-            return LocalizedNames.FirstOrDefault(x => x.Key == template).Value;
         }
 
         public TsMapOverlay LookupOverlay(ulong overlayId)

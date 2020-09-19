@@ -1,0 +1,89 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 16
+{
+    u16 m_val[2]; // 0
+    float3 m_vec; // 4
+} terrain_dunno_t;
+
+typedef struct // sizeof 10
+{
+    u64 m_railing_model <read=token_to_string>; // 0
+    s16 m_railing_offset; // 8
+} railing_t;
+
+typedef struct // sizeof 16
+{
+    u64 m_vegetation_model <read=token_to_string>; // 0
+    u16 m_veget_sparsity; // 8
+    byte m_veget_hi_poly; // 10
+    byte m_veget_scale; // 11
+    u16 m_veget_from; // 12
+    u16 m_veget_to; // 14
+} vegetation_t;
+
+typedef struct // sizeof 52
+{
+    vegetation_t m_vegetation[3] <optimize=false>; // 0
+    u16 m_veg_from; // 48
+    u16 m_veg_to; // 50
+} vegetations_t;
+
+
+typedef struct // sizeof 26
+{
+    u16 m_terrain_size; // 0
+    u64 m_profile <read=token_to_string>; // 2
+    float m_terrain_scale; // 10
+    u64 dunno; // 14
+    float dunno2; // 22
+} terrain_t;
+
+typedef struct
+{
+    u16 m_mat_count;    // 0
+    u64 m_material_r[m_mat_count] <read=token_to_string>; // 2
+    u16 m_mat_color_count; // 2 + (8 * m_mat_count)
+    u32 m_material_color[m_mat_color_count];
+    u16 m_values[2];
+    u32 padding_count;
+    u32 padding[padding_count];
+    u32 m_count;
+    terrain_dunno_t dunno[m_count];
+    u32 m_count2;
+    terrain_dunno_t dunno2[m_count2];
+} material_t; // ?
+
+typedef struct
+{
+    byte flags[5]; // 0
+    u64 m_uid[5] <format=hex>; // 5
+    float dunno; // 45
+    u32 dunno2; // 49
+    railing_t m_railing[3] <optimize=false>; // 53
+    terrain_t m_terrain_r; // 83
+    vegetations_t veg_r;    // 109
+    terrain_t m_terrain_l; // 161
+    vegetations_t veg_l;    // 187
+    u32 m_veg_sphere_count; // 239
+    veg_sphere_t m_veg_sphere[m_veg_sphere_count] <optimize=false>;
+
+    material_t mat1;
+
+    material_t mat2;
+
+    byte padding3[0x20];
+
+
+} aux_terrain_t;

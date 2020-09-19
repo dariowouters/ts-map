@@ -1,0 +1,27 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.1 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version:
+//   Purpose:
+//  Category:
+// File Mask:
+//  ID Bytes:
+//   History:
+//------------------------------------------------
+
+
+typedef struct // sizeof 56
+{
+    u64 m_node_uid <format=hex>; // 0
+    int3 m_pos; // 8
+    float3 m_posR; // 20
+    u32 padding; // 32
+    u64 m_backward_item_uid <format=hex>; // 36
+    u64 m_forward_item_uid <format=hex>; // 44
+    byte m_node_flags; // 52
+    byte m_forward_country_id; // 53
+    byte m_backward_country_id; // 54
+    byte m_node_flags; // 55
+} base_node_t;

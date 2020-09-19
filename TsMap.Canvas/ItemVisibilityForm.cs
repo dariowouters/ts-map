@@ -8,12 +8,12 @@ namespace TsMap.Canvas
         public ItemVisibilityForm(RenderFlags renderFlags)
         {
             InitializeComponent();
-            PrefabsCheckBox.Checked = (renderFlags & RenderFlags.Prefabs) == RenderFlags.Prefabs;
-            RoadsCheckBox.Checked = (renderFlags & RenderFlags.Roads) == RenderFlags.Roads;
-            MapAreasCheckBox.Checked = (renderFlags & RenderFlags.MapAreas) == RenderFlags.MapAreas;
-            MapOverlaysCheckBox.Checked = (renderFlags & RenderFlags.MapOverlays) == RenderFlags.MapOverlays;
-            FerryConnectionsCheckBox.Checked = (renderFlags & RenderFlags.FerryConnections) == RenderFlags.FerryConnections;
-            CityNamesCheckBox.Checked = (renderFlags & RenderFlags.CityNames) == RenderFlags.CityNames;
+            PrefabsCheckBox.Checked = renderFlags.IsActive(RenderFlags.Prefabs);
+            RoadsCheckBox.Checked = renderFlags.IsActive(RenderFlags.Roads);
+            MapAreasCheckBox.Checked = renderFlags.IsActive(RenderFlags.MapAreas);
+            MapOverlaysCheckBox.Checked = renderFlags.IsActive(RenderFlags.MapOverlays);
+            FerryConnectionsCheckBox.Checked = renderFlags.IsActive(RenderFlags.FerryConnections);
+            CityNamesCheckBox.Checked = renderFlags.IsActive(RenderFlags.CityNames);
         }
 
         public delegate void UpdateItemVisibilityEvent(RenderFlags renderFlags);

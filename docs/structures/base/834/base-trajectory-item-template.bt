@@ -1,0 +1,41 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File:
+//   Authors: Dario Wouters
+//   Version: 834
+//   Purpose:
+//  Category:
+//   History:
+//------------------------------------------------
+
+typedef struct // sizeof 20
+{
+    u32 m_unk; // 0
+    u32 m_unk; // 4
+    float m_unk2; // 8
+    float m_unk2; // 12
+    float m_unk2; // 16
+} trajectory_rule_t;
+
+typedef struct
+{
+    u64 m_route_token <read=token_to_string>;
+    u64 m_checkpoint_token <read=token_to_string>;
+} route_checkpoint_t;
+
+typedef struct
+{
+    byte m_flags[5]; // 0
+    u32 m_node_count; // 5
+    u64 m_uid[m_node_count]; // 9
+    byte m_flags2[4];
+    u32 m_count;
+    u32 m_access_rule_count;
+    u64 m_access_rule[m_access_rule_count] <read=token_to_string>;
+    u32 m_route_rule_count;
+    trajectory_rule_t m_route_rule[m_route_rule_count] <optimize=false>;
+    u32 m_checkpoint_count;
+    route_checkpoint_t m_checkpoint[m_checkpoint_count];
+    u32 padding2;
+} base_trajectory_item_t;

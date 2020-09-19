@@ -10,6 +10,7 @@ namespace TsMap
         public float Z;
         public float RotX;
         public float RotZ;
+        public int LaneCount;
     }
 
     public struct TsMapPoint
@@ -22,6 +23,7 @@ namespace TsMap
         public byte PrefabColorFlags;
         public int NeighbourCount;
         public List<int> Neighbours;
+        public sbyte ControlNodeIndex;
     }
 
     public class TsSpawnPoint
@@ -34,7 +36,7 @@ namespace TsMap
     public class TsTriggerPoint
     {
         public uint TriggerId;
-        public ulong TriggerActionUid;
+        public ulong TriggerActionToken;
         public float X;
         public float Z;
     }
@@ -46,11 +48,13 @@ namespace TsMap
         private const int SpawnPointBlockSize = 0x20;
         private const int TriggerPointBlockSize = 0x30;
 
-        private readonly string _filePath;
+        public string FilePath { get; }
         public ulong Token { get; }
         public string Category { get; }
 
         private byte[] _stream;
+
+        public bool ValidRoad { get; private set; }
 
         public List<TsPrefabNode> PrefabNodes { get; private set; }
         public List<TsSpawnPoint> SpawnPoints { get; private set; }
@@ -59,11 +63,11 @@ namespace TsMap
 
         public TsPrefab(TsMapper mapper, string filePath, ulong token, string category)
         {
-            _filePath = filePath;
+            FilePath = filePath;
             Token = token;
             Category = category;
 
-            var file = mapper.Rfs.GetFileEntry(_filePath);
+            var file = mapper.Rfs.GetFileEntry(FilePath);
 
             if (file == null) return;
 
@@ -85,12 +89,14 @@ namespace TsMap
 
             if (version < 0x15)
             {
-                Log.Msg($"{_filePath} file version ({version}) too low, min. is {0x15}");
+                Log.Msg($"{FilePath} file version ({version}) too low, min. is {0x15}");
                 return;
             }
 
             var nodeCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
-            var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x10);
+            var navCurveCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
+            ValidRoad = navCurveCount != 0;
+            var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var triggerPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
 
@@ -111,6 +117,20 @@ namespace TsMap
                     RotX = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x1C),
                     RotZ = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x24),
                 };
+
+                int laneCount = 0;
+                var nodeFileOffset = nodeBaseOffset + 0x24;
+                for (var j = 0; j < 8; j++)
+                {
+                    if (MemoryHelper.ReadInt32(_stream, nodeFileOffset += 0x04) != -1) laneCount++;
+                }
+
+                for (var j = 0; j < 8; j++)
+                {
+                    if (MemoryHelper.ReadInt32(_stream, nodeFileOffset += 0x04) != -1) laneCount++;
+                }
+                node.LaneCount = laneCount;
+
                 PrefabNodes.Add(node);
             }
 
@@ -123,11 +143,7 @@ namespace TsMap
                     Z = MemoryHelper.ReadSingle(_stream, spawnPointBaseOffset + 0x08),
                     Type = (TsSpawnPointType)MemoryHelper.ReadUInt32(_stream, spawnPointBaseOffset + 0x1C)
                 };
-                var pointInVicinity = SpawnPoints.FirstOrDefault(point => // check if any other spawn points with the same type are close
-                    point.Type == spawnPoint.Type &&
-                    ((spawnPoint.X > point.X - 4 && spawnPoint.X < point.X + 4) ||
-                    (spawnPoint.Z > point.Z - 4 && spawnPoint.Z < point.Z + 4)));
-                if (pointInVicinity == null) SpawnPoints.Add(spawnPoint);
+                SpawnPoints.Add(spawnPoint);
                 // Log.Msg($"Spawn point of type: {spawnPoint.Type} in {_filePath}");
             }
 
@@ -137,6 +153,7 @@ namespace TsMap
                 var roadLookFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x01);
                 var laneTypeFlags = (byte) (roadLookFlags & 0x0F);
                 var laneOffsetFlags = (byte)(roadLookFlags >> 4);
+                var controlNodeIndexFlags = MemoryHelper.ReadInt8(_stream, mapPointBaseOffset + 0x04);
                 int laneOffset;
                 switch (laneOffsetFlags)
                 {
@@ -162,13 +179,22 @@ namespace TsMap
                     case 6: laneCount = 7; break;
                     case 8: laneCount = 3; break;
                     case 13: laneCount = -1; break;
-                    case 14: laneCount = 2; break; // auto ; temp set at 2
+                    case 14: laneCount = -2; break; // auto
                     default:
                         laneCount = 1;
                         // Log.Msg($"Unknown LaneType: {laneTypeFlags}");
                         break;
                 }
-
+                sbyte controlNodeIndex = -1;
+                switch (controlNodeIndexFlags)
+                {
+                    case 1: controlNodeIndex = 0; break;
+                    case 2: controlNodeIndex = 1; break;
+                    case 4: controlNodeIndex = 2; break;
+                    case 8: controlNodeIndex = 3; break;
+                    case 16: controlNodeIndex = 4; break;
+                    case 32: controlNodeIndex = 5; break;
+                }
                 var prefabColorFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x02);
 
                 var navFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x05);
@@ -183,7 +209,8 @@ namespace TsMap
                     X = MemoryHelper.ReadSingle(_stream, mapPointBaseOffset + 0x08),
                     Z = MemoryHelper.ReadSingle(_stream, mapPointBaseOffset + 0x10),
                     Neighbours = new List<int>(),
-                    NeighbourCount = MemoryHelper.ReadInt32(_stream, mapPointBaseOffset + 0x14 + (0x04 * 6))
+                    NeighbourCount = MemoryHelper.ReadInt32(_stream, mapPointBaseOffset + 0x14 + (0x04 * 6)),
+                    ControlNodeIndex = controlNodeIndex
                 };
 
                 for (var x = 0; x < point.NeighbourCount; x++)
@@ -200,15 +227,11 @@ namespace TsMap
                 var triggerPoint = new TsTriggerPoint
                 {
                     TriggerId = MemoryHelper.ReadUInt32(_stream, triggerPointBaseOffset),
-                    TriggerActionUid = MemoryHelper.ReadUInt64(_stream, triggerPointBaseOffset + 0x04),
+                    TriggerActionToken = MemoryHelper.ReadUInt64(_stream, triggerPointBaseOffset + 0x04),
                     X = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x1C),
                     Z = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x24),
                 };
-                var pointInVicinity = TriggerPoints.FirstOrDefault(point => // check if any other trigger points with the same id are close
-                    point.TriggerActionUid == triggerPoint.TriggerActionUid &&
-                    ((triggerPoint.X > point.X - 20 && triggerPoint.X < point.X + 20) ||
-                    (triggerPoint.Z > point.Z - 20 && triggerPoint.Z < point.Z + 20)));
-                if (pointInVicinity == null) TriggerPoints.Add(triggerPoint);
+                TriggerPoints.Add(triggerPoint);
             }
 
             _stream = null;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using TsMap.TsItem;
 
 namespace TsMap
 {
@@ -30,11 +31,11 @@ namespace TsMap
 
         public void Parse()
         {
-            Version = BitConverter.ToInt32(Stream, 0x0); // 853 = 1.31+
+            Version = BitConverter.ToInt32(Stream, 0x0);
 
-            if (Version < 846)
+            if (Version < 825)
             {
-                Log.Msg($"{FilePath} version ({Version}) is too low, min. is 846");
+                Log.Msg($"{FilePath} version ({Version}) is too low, min. is 825");
                 return;
             }
 
@@ -47,7 +48,8 @@ namespace TsMap
             for (var i = 0; i < itemCount; i++)
             {
                 var type = (TsItemType)MemoryHelper.ReadUInt32(Stream, lastOffset);
-                
+                if (Version <= 825) type++; // after version 825 all types were pushed up 1
+
                 switch (type)
                 {
                     case TsItemType.Road:
@@ -163,6 +165,7 @@ namespace TsMap
             for (var i = 0; i < nodeCount; i++)
             {
                 TsNode node = new TsNode(this, lastOffset += 0x04);
+                Mapper.UpdateEdgeCoords(node);
                 if (!Mapper.Nodes.ContainsKey(node.Uid))
                     Mapper.Nodes.Add(node.Uid, node);
                 lastOffset += 0x34;
