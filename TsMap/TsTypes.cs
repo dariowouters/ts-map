@@ -89,6 +89,7 @@ namespace TsMap
         TrafficRule = 0x26,
         TrajectoryItem = 0x29,
         MapArea = 0x2A,
+        Cutscene = 0x2E,
     };
 
 
