@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace TsMap
@@ -95,31 +95,31 @@ namespace TsMap
     // values from https://github.com/SCSSoftware/BlenderTools/blob/master/addon/io_scs_tools/consts.py
     public enum TsSpawnPointType
     {
-        None = 0x00,
-        TrailerPos,
-        UnloadEasyPos,
-        GasPos,
-        ServicePos,
-        TruckStopPos,
-        WeightStationPos,
-        TruckDealerPos,
-        Hotel,
-        Custom,
-        Parking, // also shows parking in companies which don't work/show up in game
-        Task,
-        MeetPos,
-        CompanyPos,
-        GaragePos, // manage garage
-        BuyPos, // buy garage
-        RecruitmentPos,
-        CameraPoint,
-        BusStation,
-        UnloadMediumPos,
-        UnloadHardPos,
-        UnloadRigidPos,
-        WeightCatPos,
-        CompanyUnloadPos,
-        TrailerSpawn,
-        LongTrailerPos,
+        None = 0,
+        TrailerPos = 1,
+        UnloadEasyPos = 2,
+        GasPos = 3,
+        ServicePos = 4,
+        TruckStopPos = 5,
+        WeightStationPos = 6,
+        TruckDealerPos = 7,
+        Hotel = 8,
+        Custom = 9,
+        Parking = 10, // also shows parking in companies which don't work/show up in game
+        Task = 11,
+        MeetPos = 12,
+        CompanyPos = 13,
+        GaragePos = 14, // manage garage
+        BuyPos = 15, // buy garage
+        RecruitmentPos = 16,
+        CameraPoint = 17,
+        BusStation = 18,
+        UnloadMediumPos = 19,
+        UnloadHardPos = 20,
+        UnloadRigidPos = 21,
+        WeightCatPos = 22,
+        CompanyUnloadPos = 23,
+        TrailerSpawn = 24,
+        LongTrailerPos = 25,
     }
 }
