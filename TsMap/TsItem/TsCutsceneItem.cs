@@ -1,0 +1,40 @@
+﻿using System.IO;
+
+namespace TsMap.TsItem
+{
+    public class TsCutsceneItem : TsItem
+    {
+        public TsCutsceneItem(TsSector sector, int startOffset) : base(sector, startOffset)
+        {
+            Valid = false;
+
+            if (Sector.Version >= 884)
+                TsCutsceneItem844(startOffset);
+            else
+                Log.Msg(
+                    $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
+        }
+
+        public void TsCutsceneItem844(int startOffset)
+        {
+            var fileOffset = startOffset + 0x34; // Set position at start of flags
+            var tagsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
+            var actionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagsCount) + 0x08); // 0x04(tagsCount) + tags + 0x08(node_uid)
+            fileOffset += 0x04; // 0x04(actionCount)
+            for (var i = 0; i < actionCount; ++i)
+            {
+                var numParamCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                var stringParamCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x04 * numParamCount)); // 0x04
+                fileOffset += 0x04; // 0x04(stringParamCount)
+                for (var s = 0; s < stringParamCount; ++s)
+                {
+                    var textLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                    fileOffset += 0x04 + 0x04 + textLength; // 0x04(textLength, could be Uint64) + 0x04(padding) + textLength
+                }
+                var targetTagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x04 + (targetTagCount * 0x08) + 0x08; // 0x04(targetTagCount) + targetTags + 0x08(target_range + action_flags)
+            }
+            BlockSize = fileOffset - startOffset;
+        }
+    }
+}

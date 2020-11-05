@@ -97,7 +97,9 @@ namespace TsMap
         TrajectoryItem = 41,
         MapArea = 42,
         FarModel = 43,
-        Curve = 44
+        Curve = 44,
+        Camera = 45,
+        Cutscene = 46,
     };
 
 
