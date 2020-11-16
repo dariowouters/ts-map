@@ -153,6 +153,12 @@ namespace TsMap
                         if (item.Valid) Mapper.MapAreas.Add(item);
                         break;
                     }
+                    case TsItemType.Cutscene:
+                    {
+                        var item = new TsCutsceneItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
                     default:
                     {
                         Log.Msg($"Unknown Type: {type} in {Path.GetFileName(FilePath)} @ {lastOffset}");
@@ -169,6 +175,12 @@ namespace TsMap
                 if (!Mapper.Nodes.ContainsKey(node.Uid))
                     Mapper.Nodes.Add(node.Uid, node);
                 lastOffset += 0x34;
+            }
+
+            lastOffset += 0x04;
+            if (lastOffset != Stream.Length)
+            {
+                Log.Msg($"File '{Path.GetFileName(FilePath)}' was not read correctly. Read offset was at 0x{lastOffset:X} while file is 0x{Stream.Length:X} bytes long.");
             }
         }
 
