@@ -31,6 +31,12 @@ namespace TsMap.Canvas
         private PointF _startPoint;
         private float _scale = 0.2f;
 
+        PointF oldPos = new PointF(0, 0);
+
+        int savedZoomLevel = 0;
+
+        float movement = 0;
+
         public TsMapCanvas(SetupForm f)
         {
             InitializeComponent();
@@ -104,6 +110,14 @@ namespace TsMap.Canvas
                     pos.X = (x == 0) ? pos.X : pos.X + (bitmap.Width / zoom) * x; // get tile start coords
                     pos.Y = (y == 0) ? pos.Y : pos.Y + (bitmap.Height / zoom) * y;
 
+                    if (z == savedZoomLevel && oldPos.Y != 0 && oldPos.X != 0 && movement == 0)
+                    {
+                        float difference = Math.Abs(oldPos.Y - pos.Y);
+                        movement = difference / SettingsManager.Current.Settings.TileGenerator.TileSize;
+
+                        Console.WriteLine($"{difference}, scale: {difference / SettingsManager.Current.Settings.TileGenerator.TileSize}");
+                    }
+
                     _tilesGeneratorRenderer.Render(g, new Rectangle(0, 0, bitmap.Width, bitmap.Height), zoom, pos, _palette,
                         renderFlags & ~RenderFlags.TextOverlay);
 
@@ -131,7 +145,9 @@ namespace TsMap.Canvas
         }
 
         private void GenerateTileMap(int startZoomLevel, int endZoomLevel, string exportPath, bool createTiles, bool saveInfo, RenderFlags renderFlags)
-        { 
+        {
+            savedZoomLevel = endZoomLevel;
+
             if (saveInfo || startZoomLevel == 0)
             {
                 ZoomOutAndCenterMap(SettingsManager.Current.Settings.TileGenerator.TileSize, SettingsManager.Current.Settings.TileGenerator.TileSize, out PointF pos, out float zoom); // get zoom and start coords for tile level 0
@@ -157,6 +173,8 @@ namespace TsMap.Canvas
                     for (int y = 0; y < Math.Pow(2, z); y++)
                     {
                         SaveTileImage(z, x, y, pos, zoom, exportPath, renderFlags);
+
+                        oldPos = pos;
                     }
                 }
             }
