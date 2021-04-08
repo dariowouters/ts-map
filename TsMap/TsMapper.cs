@@ -42,10 +42,11 @@ namespace TsMap
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
-        public float minX = float.MaxValue;
-        public float maxX = float.MinValue;
-        public float minZ = float.MaxValue;
-        public float maxZ = float.MinValue;
+        public float  minX        = float.MaxValue;
+        public float  maxX        = float.MinValue;
+        public float  minZ        = float.MaxValue;
+        public float  maxZ        = float.MinValue;
+        public string gameVersion = "";
 
         private List<TsSector> Sectors { get; set; }
 
@@ -496,6 +497,11 @@ namespace TsMap
             }
         }
 
+        private void ParseVersionFile( ScsFile versionFile ) {
+            byte[] content = versionFile.Entry.Read();
+            this.gameVersion = Encoding.UTF8.GetString( content, 0, content.Length ).Split( '\n' )[ 0 ];
+        }
+
         private void ReadLocalizationOptions()
         {
             var localeDir = Rfs.GetDirectory("locale");
@@ -538,6 +544,7 @@ namespace TsMap
 
             Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
+            ParseVersionFile( this.Rfs.GetFileEntry( "version.txt" ) );
             ParseDefFiles();
             ParseMapFiles();
 
