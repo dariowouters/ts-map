@@ -65,6 +65,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="TsCity.cs" />
     <Compile Include="TsCountry.cs" />
+    <Compile Include="TsDlc.cs" />
     <Compile Include="TsFerryConnection.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
