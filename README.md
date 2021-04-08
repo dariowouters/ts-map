@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for 1.39 and Colorado DLC**
+### **Support for 1.40 and Iberia DLC**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -58,6 +58,7 @@ ATS:
     - Italia
     - Beyond the Baltic Sea
     - Road to the Black Sea
+    - Iberia
 
 #### Dependencies (NuGet)
 - [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
