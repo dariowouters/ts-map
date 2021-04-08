@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Newtonsoft.Json;
 using TsMap.HashFiles;
@@ -63,8 +64,8 @@ namespace TsMap
                 {
                     var vector = value.Split('(')[1].Split(')')[0];
                     var values = vector.Split(',');
-                    X = float.Parse(values[0].Replace('.', ','));
-                    Y = float.Parse(values[2].Replace('.', ','));
+                    X = float.Parse(values[0], CultureInfo.InvariantCulture);
+                    Y = float.Parse(values[2], CultureInfo.InvariantCulture);
                 }
             }
         }

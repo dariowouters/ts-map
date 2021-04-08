@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -231,7 +232,7 @@ namespace TsMap
                         }
                         else if (key == "road_offset")
                         {
-                            roadLook.Offset = float.Parse(value.Replace('.', ','));
+                            roadLook.Offset = float.Parse(value, CultureInfo.InvariantCulture);
                         }
                     }
 
@@ -282,8 +283,8 @@ namespace TsMap
                                 var index = int.Parse(key.Split('[')[1].Split(']')[0]);
                                 var vector = value.Split('(')[1].Split(')')[0];
                                 var values = vector.Split(',');
-                                var x = float.Parse(values[0].Replace('.', ','));
-                                var z = float.Parse(values[2].Replace('.', ','));
+                                var x = float.Parse(values[0], CultureInfo.InvariantCulture);
+                                var z = float.Parse(values[2], CultureInfo.InvariantCulture);
                                 conn.AddConnectionPosition(index, x, z);
                             }
                             else if (key.Contains("connection_directions"))
@@ -291,8 +292,8 @@ namespace TsMap
                                 var index = int.Parse(key.Split('[')[1].Split(']')[0]);
                                 var vector = value.Split('(')[1].Split(')')[0];
                                 var values = vector.Split(',');
-                                var x = float.Parse(values[0].Replace('.', ','));
-                                var z = float.Parse(values[2].Replace('.', ','));
+                                var x = float.Parse(values[0], CultureInfo.InvariantCulture);
+                                var z = float.Parse(values[2], CultureInfo.InvariantCulture);
                                 conn.AddRotation(index, Math.Atan2(z, x));
                             }
                         }
