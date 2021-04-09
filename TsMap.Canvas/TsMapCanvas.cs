@@ -3,20 +3,21 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using TsMap.TsItem;
 
 namespace TsMap.Canvas {
     public partial class TsMapCanvas : Form {
+        private readonly TsMapper                 _mapper;
+        private readonly TsMapRenderer            _renderer;
         private          bool                     _dragging;
         private          ItemVisibilityForm       _itemVisibilityForm;
         private          PointF                   _lastPoint;
         private          LocalizationSettingsForm _localizationSettingsForm;
-        private readonly TsMapper                 _mapper;
 
-        private          MapPalette        _palette;
-        private          PaletteEditorForm _paletteEditorForm;
-        private readonly TsMapRenderer     _renderer;
+        private MapPalette        _palette;
+        private PaletteEditorForm _paletteEditorForm;
 
         private RenderFlags _renderFlags = RenderFlags.All;
         private float       _scale       = 0.2f;
@@ -258,48 +259,53 @@ namespace TsMap.Canvas {
             this._tileMapGeneratorForm.GenerateTileMap +=
                 () => // Called when export button is pressed in TileMapGeneratorForm
                 {
-                    this._tileMapGeneratorForm.Close();
-
-                    this.MapPanel.Enabled = false;
-
-                    //Task.Run(() =>
-                    //{
-                    this.UpdateProgress( "Loading map...", true );
-
-                    this._tilesGeneratorMapper = this.CreateMapper();
-
-                    this._tilesGeneratorMapper.Parse();
-
-                    this.UpdateProgress( "Loading renderer...", true );
-
-                    this._tilesGeneratorRenderer = this.CreateRenderer( this._tilesGeneratorMapper );
-
-                    this.UpdateProgress( "Generating tiles...", true );
-
-                    this._tilesGeneratorMapper.ExportInfo( SettingsManager.Current.Settings.TileGenerator.ExportFlags,
-                                                           SettingsManager.Current.Settings.TileGenerator
-                                                                          .LastTileMapPath );
-
-                    this.GenerateTileMap( SettingsManager.Current.Settings.TileGenerator.StartZoomLevel,
-                                          SettingsManager.Current.Settings.TileGenerator.EndZoomLevel,
-                                          SettingsManager.Current.Settings.TileGenerator.LastTileMapPath,
-                                          SettingsManager.Current.Settings.TileGenerator.GenerateTiles,
-                                          ( SettingsManager.Current.Settings.TileGenerator.ExportFlags
-                                            & ExportFlags.TileMapInfo )
-                                          == ExportFlags.TileMapInfo,
-                                          SettingsManager.Current.Settings.TileGenerator.RenderFlags );
-
-                    MessageBox.Show( "Tile map has been generated!", "TsMap - Tile Map Generation Finished",
-                                     MessageBoxButtons.OK, MessageBoxIcon.Information );
-
-                    this.UpdateProgress( "Ready.", false );
-
-                    this.Invoke( new Action( () => {
-                        this.Focus();
-                        this.MapPanel.Enabled = true;
-                    } ) );
-                    //});
+                    var th = new Thread( this.GenerateTilesMap );
+                    th.Start();
                 };
+        }
+
+        private void GenerateTilesMap() {
+            this._tileMapGeneratorForm.Close();
+
+            this.MapPanel.Enabled = false;
+
+            //Task.Run(() =>
+            //{
+            this.UpdateProgress( "Loading map...", true );
+
+            this._tilesGeneratorMapper = this.CreateMapper();
+
+            this._tilesGeneratorMapper.Parse();
+
+            this.UpdateProgress( "Loading renderer...", true );
+
+            this._tilesGeneratorRenderer = this.CreateRenderer( this._tilesGeneratorMapper );
+
+            this.UpdateProgress( "Generating tiles...", true );
+
+            this._tilesGeneratorMapper.ExportInfo( SettingsManager.Current.Settings.TileGenerator.ExportFlags,
+                                                   SettingsManager.Current.Settings.TileGenerator
+                                                                  .LastTileMapPath );
+
+            this.GenerateTileMap( SettingsManager.Current.Settings.TileGenerator.StartZoomLevel,
+                                  SettingsManager.Current.Settings.TileGenerator.EndZoomLevel,
+                                  SettingsManager.Current.Settings.TileGenerator.LastTileMapPath,
+                                  SettingsManager.Current.Settings.TileGenerator.GenerateTiles,
+                                  ( SettingsManager.Current.Settings.TileGenerator.ExportFlags
+                                    & ExportFlags.TileMapInfo )
+                                  == ExportFlags.TileMapInfo,
+                                  SettingsManager.Current.Settings.TileGenerator.RenderFlags );
+
+            MessageBox.Show( "Tile map has been generated!", "TsMap - Tile Map Generation Finished",
+                             MessageBoxButtons.OK, MessageBoxIcon.Information );
+
+            this.UpdateProgress( "Ready.", false );
+
+            this.Invoke( new Action( () => {
+                this.Focus();
+                this.MapPanel.Enabled = true;
+            } ) );
+            //});
         }
 
         private void FullMapToolStripMenuItem_Click( object sender, EventArgs e ) {
