@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -40,6 +42,15 @@ namespace TsMap {
             if ( !File.Exists( Path.Combine( _settingsPath, "Settings.json" ) ) ) return new Settings();
             return JsonConvert.DeserializeObject< Settings >( File.ReadAllText( Path.Combine( _settingsPath,
                                                                                    "Settings.json" ) ) );
+        }
+        
+        public static void SaveRoadPoints(List<dynamic> points)
+        {
+            Directory.CreateDirectory(_settingsPath);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            serializer.MaxJsonLength = Int32.MaxValue;
+            File.WriteAllText(Path.Combine(_settingsPath, "RoadPoints.json"), serializer.Serialize(points));
         }
     }
 }

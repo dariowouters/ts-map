@@ -4,7 +4,7 @@ using System.IO;
 namespace TsMap {
     public static class Common {
         // TODO: Loop on each dlc_*.scs file. If we found "features[]: map" on it, it's a map dlc.
-        public const int   Ets2DlcGuardCount = 10; // TODO: Figure out how to get these dynamically
+        public const int   Ets2DlcGuardCount = 12; // TODO: Figure out how to get these dynamically
         public const int   AtsDlcGuardCount  = 15;
         public const float LaneWidth         = 4.5f;
     }
