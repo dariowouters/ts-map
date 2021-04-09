@@ -54,6 +54,10 @@
             this.PrefabsCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.GenTilesCheck = new System.Windows.Forms.CheckBox();
+            this.txtTileSize = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblMapPadding = new System.Windows.Forms.Label();
+            this.txtMapPadding = new System.Windows.Forms.TextBox();
             this.triStateTreeView1 = new TsMap.Canvas.TriStateTreeView();
             ((System.ComponentModel.ISupportInitialize)(this.StartZoomLevelBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EndZoomLevelBox)).BeginInit();
@@ -62,7 +66,7 @@
             // 
             // GenerateBtn
             // 
-            this.GenerateBtn.Location = new System.Drawing.Point(10, 185);
+            this.GenerateBtn.Location = new System.Drawing.Point(10, 211);
             this.GenerateBtn.Name = "GenerateBtn";
             this.GenerateBtn.Size = new System.Drawing.Size(298, 23);
             this.GenerateBtn.TabIndex = 2;
@@ -217,6 +221,38 @@
             this.GenTilesCheck.UseVisualStyleBackColor = true;
             this.GenTilesCheck.CheckedChanged += new System.EventHandler(this.GenTilesCheck_CheckedChanged);
             // 
+            // txtTileSize
+            // 
+            this.txtTileSize.Location = new System.Drawing.Point(60, 185);
+            this.txtTileSize.Name = "txtTileSize";
+            this.txtTileSize.Size = new System.Drawing.Size(63, 20);
+            this.txtTileSize.TabIndex = 14;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 188);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(47, 13);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Tile Size";
+            // 
+            // lblMapPadding
+            // 
+            this.lblMapPadding.AutoSize = true;
+            this.lblMapPadding.Location = new System.Drawing.Point(162, 188);
+            this.lblMapPadding.Name = "lblMapPadding";
+            this.lblMapPadding.Size = new System.Drawing.Size(70, 13);
+            this.lblMapPadding.TabIndex = 16;
+            this.lblMapPadding.Text = "Map Padding";
+            // 
+            // txtMapPadding
+            // 
+            this.txtMapPadding.Location = new System.Drawing.Point(238, 185);
+            this.txtMapPadding.Name = "txtMapPadding";
+            this.txtMapPadding.Size = new System.Drawing.Size(69, 20);
+            this.txtMapPadding.TabIndex = 17;
+            // 
             // triStateTreeView1
             // 
             this.triStateTreeView1.Location = new System.Drawing.Point(10, 59);
@@ -255,7 +291,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(319, 215);
+            this.ClientSize = new System.Drawing.Size(319, 243);
+            this.Controls.Add(this.txtMapPadding);
+            this.Controls.Add(this.lblMapPadding);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.txtTileSize);
             this.Controls.Add(this.triStateTreeView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.GenTilesCheck);
@@ -296,5 +336,9 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox GenTilesCheck;
         private TriStateTreeView triStateTreeView1;
+        private System.Windows.Forms.TextBox txtTileSize;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblMapPadding;
+        private System.Windows.Forms.TextBox txtMapPadding;
     }
 }
