@@ -126,13 +126,19 @@ namespace TsMap.Canvas {
             }
         }
 
+        private float MapWidth() =>
+            this._tilesGeneratorMapper.maxX
+            - this._tilesGeneratorMapper.minX
+            + SettingsManager.Current.Settings.TileGenerator.MapPadding * 2;
+
+        private float MapHeight() =>
+            this._tilesGeneratorMapper.maxZ
+            - this._tilesGeneratorMapper.minZ
+            + SettingsManager.Current.Settings.TileGenerator.MapPadding * 2;
+
         private void ZoomOutAndCenterMap( float targetWidth, float targetHeight, out PointF pos, out float zoom ) {
-            float mapWidth = this._tilesGeneratorMapper.maxX
-                             - this._tilesGeneratorMapper.minX
-                             + SettingsManager.Current.Settings.TileGenerator.MapPadding * 2;
-            float mapHeight = this._tilesGeneratorMapper.maxZ
-                              - this._tilesGeneratorMapper.minZ
-                              + SettingsManager.Current.Settings.TileGenerator.MapPadding * 2;
+            float mapWidth  = this.MapWidth();
+            float mapHeight = this.MapHeight();
             if ( mapWidth > mapHeight ) // get the scale to have the map edge to edge on the biggest axis (with padding)
             {
                 zoom = targetWidth / mapWidth;
@@ -170,7 +176,11 @@ namespace TsMap.Canvas {
                                           SettingsManager.Current.Settings.TileGenerator.TileSize, out PointF pos,
                                           out float zoom ); // get zoom and start coords for tile level 0
                 if ( saveInfo )
-                    JsonHelper.SaveTileMapInfo( exportPath, pos.X,
+                    JsonHelper.SaveTileMapInfo( exportPath,
+                                                this.MapWidth(),
+                                                this.MapHeight(),
+                                                SettingsManager.Current.Settings.TileGenerator.TileSize,
+                                                pos.X,
                                                 pos.X + SettingsManager.Current.Settings.TileGenerator.TileSize / zoom,
                                                 pos.Y,
                                                 pos.Y + SettingsManager.Current.Settings.TileGenerator.TileSize / zoom,

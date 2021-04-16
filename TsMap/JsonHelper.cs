@@ -11,6 +11,9 @@ namespace TsMap {
             Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "ts-map" );
 
         public static void SaveTileMapInfo( string path,
+                                            float  width,
+                                            float  height,
+                                            int    tileSize,
                                             float  x1,
                                             float  x2,
                                             float  y1,
@@ -18,15 +21,40 @@ namespace TsMap {
                                             int    minZoom,
                                             int    maxZoom,
                                             string gameVersion ) {
+            // TODO Set transposition factor as const or use a dynamic value
             var tileMapInfo = new JObject {
-                [ "x1" ]          = x1,
-                [ "x2" ]          = x2,
-                [ "y1" ]          = y1,
-                [ "y2" ]          = y2,
-                [ "minZoom" ]     = minZoom,
-                [ "maxZoom" ]     = maxZoom,
-                [ "gameVersion" ] = gameVersion,
-                [ "generatedAt" ] = DateTime.Now
+                [ "map" ] = new JObject {
+                    [ "maxX" ] = width,
+                    // [ "maxX2" ]    = x2,
+                    [ "maxY" ] = height,
+                    // [ "maxY2" ]    = y2,
+                    [ "tileSize" ] = tileSize,
+                    [ "minZoom" ]  = minZoom,
+                    [ "maxZoom" ]  = maxZoom
+                },
+                [ "transposition" ] = new JObject {
+                    [ "x" ] = new JObject {
+                        [ "factor" ] = 1.087326,
+                        [ "offset" ] = 57157
+                    },
+                    [ "y" ] = new JObject {
+                        [ "factor" ] = 1.087326,
+                        [ "offset" ] = 59287
+                    }
+                },
+                [ "game" ] = new JObject {
+                    [ "version" ]     = gameVersion,
+                    [ "generatedAt" ] = DateTime.Now
+                }
+
+                // [ "x1" ]          = x1,
+                // [ "x2" ]          = x2,
+                // [ "y1" ]          = y1,
+                // [ "y2" ]          = y2,
+                // [ "minZoom" ]     = minZoom,
+                // [ "maxZoom" ]     = maxZoom,
+                // [ "gameVersion" ] = gameVersion,
+                // [ "generatedAt" ] = DateTime.Now
             };
             Directory.CreateDirectory( path );
             File.WriteAllText( Path.Combine( path, "TileMapInfo.json" ), tileMapInfo.ToString( Formatting.Indented ) );
@@ -43,14 +71,13 @@ namespace TsMap {
             return JsonConvert.DeserializeObject< Settings >( File.ReadAllText( Path.Combine( _settingsPath,
                                                                                    "Settings.json" ) ) );
         }
-        
-        public static void SaveRoadPoints(List<dynamic> points)
-        {
-            Directory.CreateDirectory(_settingsPath);
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            serializer.MaxJsonLength = Int32.MaxValue;
-            File.WriteAllText(Path.Combine(_settingsPath, "RoadPoints.json"), serializer.Serialize(points));
+        public static void SaveRoadPoints( List< dynamic > points ) {
+            Directory.CreateDirectory( _settingsPath );
+            var serializer = new JavaScriptSerializer();
+
+            serializer.MaxJsonLength = int.MaxValue;
+            File.WriteAllText( Path.Combine( _settingsPath, "RoadPoints.json" ), serializer.Serialize( points ) );
         }
     }
 }
