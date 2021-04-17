@@ -4,6 +4,7 @@ using System.IO;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TsMap.TsTileMapInfo;
 
 namespace TsMap {
     public class JsonHelper {
@@ -11,9 +12,9 @@ namespace TsMap {
             Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "ts-map" );
 
         public static void SaveTileMapInfo( string path,
+                                            string tileMapInfoStructure,
                                             TsGame game,
-                                            float  width,
-                                            float  height,
+                                            int    mapPadding,
                                             int    tileSize,
                                             float  x1,
                                             float  x2,
@@ -22,42 +23,13 @@ namespace TsMap {
                                             int    minZoom,
                                             int    maxZoom,
                                             string gameVersion ) {
-            // TODO Set transposition factor as const or use a dynamic value
-            var tileMapInfo = new JObject {
-                [ "map" ] = new JObject {
-                    [ "maxX" ]     = width,
-                    [ "maxY" ]     = height,
-                    [ "tileSize" ] = tileSize,
-                    [ "minZoom" ]  = minZoom,
-                    [ "maxZoom" ]  = maxZoom
-                },
-                [ "transposition" ] = new JObject {
-                    [ "x" ] = new JObject {
-                        [ "factor" ] = 1.087326,
-                        [ "offset" ] = 57157
-                    },
-                    [ "y" ] = new JObject {
-                        [ "factor" ] = 1.087326,
-                        [ "offset" ] = 59287
-                    }
-                },
-                [ "game" ] = new JObject {
-                    [ "id" ]          = game.code,
-                    [ "game" ]        = game.code,
-                    [ "name" ]        = game.FullName(),
-                    [ "version" ]     = gameVersion,
-                    [ "generatedAt" ] = DateTime.Now
-                }
+            JObject tileMapInfo = new TsTileMapDefault()
+                .TileMapInfo( game, mapPadding, tileSize, x1, x2, y1, y2, minZoom, maxZoom, gameVersion );
 
-                // [ "x1" ]          = x1,
-                // [ "x2" ]          = x2,
-                // [ "y1" ]          = y1,
-                // [ "y2" ]          = y2,
-                // [ "minZoom" ]     = minZoom,
-                // [ "maxZoom" ]     = maxZoom,
-                // [ "gameVersion" ] = gameVersion,
-                // [ "generatedAt" ] = DateTime.Now
-            };
+            if ( tileMapInfoStructure == TsTileMapJagfxDash.Name )
+                tileMapInfo = new TsTileMapJagfxDash()
+                    .TileMapInfo( game, mapPadding, tileSize, x1, x2, y1, y2, minZoom, maxZoom, gameVersion );
+
             Directory.CreateDirectory( path );
             File.WriteAllText( Path.Combine( path, "TileMapInfo.json" ), tileMapInfo.ToString( Formatting.Indented ) );
         }

@@ -26,8 +26,9 @@ namespace TsMap.Canvas
             StartZoomLevelBox.Value = SettingsManager.Current.Settings.TileGenerator.StartZoomLevel;
             GenTilesCheck.Checked = SettingsManager.Current.Settings.TileGenerator.GenerateTiles;
 
-            txtMapPadding.Text = SettingsManager.Current.Settings.TileGenerator.MapPadding.ToString();
-            txtTileSize.Text = SettingsManager.Current.Settings.TileGenerator.TileSize.ToString();
+            txtMapPadding.Text         = SettingsManager.Current.Settings.TileGenerator.MapPadding.ToString();
+            txtTileSize.Text           = SettingsManager.Current.Settings.TileGenerator.TileSize.ToString();
+            this.tileMapStructure.Text = SettingsManager.Current.Settings.TileGenerator.TileMapInfoStructure;
 
             triStateTreeView1.ItemChecked += (TreeNode node) =>
             {
@@ -111,14 +112,14 @@ namespace TsMap.Canvas
                 MessageBox.Show("Tile size is invalid. Must be greater than 0");
             }
 
-           
-            SettingsManager.Current.Settings.TileGenerator.ExportFlags = GetExportFlags();
-            SettingsManager.Current.Settings.TileGenerator.MapPadding = Convert.ToInt32(txtMapPadding.Text);
-            SettingsManager.Current.Settings.TileGenerator.TileSize = Convert.ToInt32(txtTileSize.Text);
-            SettingsManager.Current.Settings.TileGenerator.RenderFlags = GetRenderFlags();
-            SettingsManager.Current.Settings.TileGenerator.GenerateTiles = GenTilesCheck.Checked;
-            SettingsManager.Current.Settings.TileGenerator.StartZoomLevel = startZoomLevel;
-            SettingsManager.Current.Settings.TileGenerator.EndZoomLevel = endZoomLevel;
+            SettingsManager.Current.Settings.TileGenerator.TileMapInfoStructure = this.tileMapStructure.Text;
+            SettingsManager.Current.Settings.TileGenerator.ExportFlags          = GetExportFlags();
+            SettingsManager.Current.Settings.TileGenerator.MapPadding           = Convert.ToInt32(txtMapPadding.Text);
+            SettingsManager.Current.Settings.TileGenerator.TileSize             = Convert.ToInt32(txtTileSize.Text);
+            SettingsManager.Current.Settings.TileGenerator.RenderFlags          = GetRenderFlags();
+            SettingsManager.Current.Settings.TileGenerator.GenerateTiles        = GenTilesCheck.Checked;
+            SettingsManager.Current.Settings.TileGenerator.StartZoomLevel       = startZoomLevel;
+            SettingsManager.Current.Settings.TileGenerator.EndZoomLevel         = endZoomLevel;
 
             SettingsManager.Current.SaveSettings();
 

@@ -88,6 +88,9 @@
     <Compile Include="TsItem\TsTrafficRuleItem.cs" />
     <Compile Include="TsItem\TsTrajectoryItem.cs" />
     <Compile Include="TsItem\TsTriggerItem.cs" />
+    <Compile Include="TsTileMapInfo\ITsTileMapInfo.cs" />
+    <Compile Include="TsTileMapInfo\TsTileMapDefault.cs" />
+    <Compile Include="TsTileMapInfo\TsTileMapJagfxDash.cs" />
     <Compile Include="TsTypes.cs" />
     <Compile Include="TsMapOverlay.cs" />
     <Compile Include="TsMapper.cs" />
@@ -101,6 +104,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
