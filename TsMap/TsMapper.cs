@@ -16,6 +16,7 @@ namespace TsMap {
         private readonly Dictionary< ulong, TsCountry >    _countriesLookup = new Dictionary< ulong, TsCountry >();
         private readonly List< TsFerryConnection >         _ferryConnectionLookup = new List< TsFerryConnection >();
         private readonly string                            _gameDir;
+        private readonly List< Mod >                       _mods;
         private readonly Dictionary< ulong, TsMapOverlay > _overlayLookup = new Dictionary< ulong, TsMapOverlay >();
 
         private readonly Dictionary< ulong, TsPrefab >   _prefabLookup    = new Dictionary< ulong, TsPrefab >();
@@ -29,11 +30,11 @@ namespace TsMap {
         public readonly Dictionary< ulong, TsNode > Nodes   = new Dictionary< ulong, TsNode >();
         public readonly List< TsPrefabItem >        Prefabs = new List< TsPrefabItem >();
 
-        public readonly  List< TsRoadItem >    Roads    = new List< TsRoadItem >();
-        public readonly  List< TsTriggerItem > Triggers = new List< TsTriggerItem >();
-        private readonly List< Mod >           _mods;
+        public readonly List< TsRoadItem >    Roads    = new List< TsRoadItem >();
+        public readonly List< TsTriggerItem > Triggers = new List< TsTriggerItem >();
 
         private List< string > _sectorFiles;
+        public  TsGame         Game;
         public  string         gameVersion      = "";
         public  bool           IsEts2           = true;
         public  List< string > LocalizationList = new List< string >();
@@ -325,6 +326,7 @@ namespace TsMap {
         /// </summary>
         private void ParseDefFiles() {
             long startTime = DateTime.Now.Ticks;
+            this.ParseGameName();
             this.ParseCityFiles();
             this.ParseCountryFiles();
             Log.Msg( $"Loaded city files in {( DateTime.Now.Ticks - startTime ) / TimeSpan.TicksPerMillisecond}ms" );
@@ -426,6 +428,10 @@ namespace TsMap {
             // TODO: List all DLC files and parse it
             var currentDlcFile = "dlc_fr.manifest.sii";
             this.TsDlcs.Add( new TsDlc( this, currentDlcFile ) );
+        }
+
+        private void ParseGameName() {
+            this.Game = new TsGame( this );
         }
 
         private void ReadLocalizationOptions() {

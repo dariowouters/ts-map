@@ -177,6 +177,7 @@ namespace TsMap.Canvas {
                                           out float zoom ); // get zoom and start coords for tile level 0
                 if ( saveInfo )
                     JsonHelper.SaveTileMapInfo( exportPath,
+                                                this._mapper.Game,
                                                 this.MapWidth(),
                                                 this.MapHeight(),
                                                 SettingsManager.Current.Settings.TileGenerator.TileSize,
@@ -184,7 +185,10 @@ namespace TsMap.Canvas {
                                                 pos.X + SettingsManager.Current.Settings.TileGenerator.TileSize / zoom,
                                                 pos.Y,
                                                 pos.Y + SettingsManager.Current.Settings.TileGenerator.TileSize / zoom,
-                                                startZoomLevel, endZoomLevel, this._mapper.gameVersion );
+                                                startZoomLevel,
+                                                endZoomLevel,
+                                                this._mapper.gameVersion );
+
                 if ( startZoomLevel == 0 && createTiles ) {
                     this.SaveTileImage( 0, 0, 0, pos, zoom, exportPath, renderFlags );
                     startZoomLevel++;

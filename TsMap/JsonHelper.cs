@@ -11,6 +11,7 @@ namespace TsMap {
             Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "ts-map" );
 
         public static void SaveTileMapInfo( string path,
+                                            TsGame game,
                                             float  width,
                                             float  height,
                                             int    tileSize,
@@ -24,10 +25,8 @@ namespace TsMap {
             // TODO Set transposition factor as const or use a dynamic value
             var tileMapInfo = new JObject {
                 [ "map" ] = new JObject {
-                    [ "maxX" ] = width,
-                    // [ "maxX2" ]    = x2,
-                    [ "maxY" ] = height,
-                    // [ "maxY2" ]    = y2,
+                    [ "maxX" ]     = width,
+                    [ "maxY" ]     = height,
                     [ "tileSize" ] = tileSize,
                     [ "minZoom" ]  = minZoom,
                     [ "maxZoom" ]  = maxZoom
@@ -43,6 +42,9 @@ namespace TsMap {
                     }
                 },
                 [ "game" ] = new JObject {
+                    [ "id" ]          = game.code,
+                    [ "game" ]        = game.code,
+                    [ "name" ]        = game.FullName(),
                     [ "version" ]     = gameVersion,
                     [ "generatedAt" ] = DateTime.Now
                 }

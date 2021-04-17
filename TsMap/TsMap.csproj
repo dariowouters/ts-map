@@ -69,6 +69,7 @@
     <Compile Include="TsCountry.cs" />
     <Compile Include="TsDlc.cs" />
     <Compile Include="TsFerryConnection.cs" />
+    <Compile Include="TsGame.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
     <Compile Include="TsItem\TsCompanyItem.cs" />
