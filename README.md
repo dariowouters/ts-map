@@ -1,6 +1,13 @@
 # TS Map - Map renderer
 #### Euro Truck Simulator 2 and American Truck Simulator
 
+[![GitHub Version](https://img.shields.io/github/v/release/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
+[![GitHub Commit since](https://img.shields.io/github/commits-since/JAGFx/ts-map/v0.9?style=flat-square)](https://github.com/JAGFx/ts-map/releases)
+[![GitHub Release Download](https://img.shields.io/github/downloads/JAGFx/ts-map/total?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
+[![Github Licence](https://img.shields.io/github/license/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/blob/master/README.md)
+[![GitHub Release Date](https://img.shields.io/github/release-date/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
+[![Discord](https://img.shields.io/discord/764915323693826059.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/C4EEaHmPRs)
+
 ## About
 
 This project are written on C#. This app are used to exctact datas from the game file and export as Json files or Png files
@@ -9,9 +16,9 @@ The main purpose about it, it's the map extraction. It's can create image of the
 
 You can use it on the opensource map like OpenLayer.
 
-It's made for SCS Software game, especialy Euro Truck Simulator 2 and American Truck Simulator
+It's made for SCS Software game, especially Euro Truck Simulator 2 and American Truck Simulator
 
-![Plop](docs/preview.png)
+![Preview](docs/preview.png)
 
 
 ## What's can do ?
@@ -32,7 +39,7 @@ This project can:
 |Promod|Euro Truck Simulator 2 *|v2.50|N/A|
 |Promod Canada|American Truck Simulator *|v2.50|N/A|
 
-> Note: The tested mods load and get drawn but I haven't looked at anything specific so it's always possible there will be some items missing or things will get drawn that shouldn't.
+> *The tested mods load and get drawn but I haven't looked at anything specific so it's always possible there will be some items missing or things will get drawn that shouldn't.
 
 ### DLC Supported
 
