@@ -1,68 +1,62 @@
-# Euro Truck Simulator 2 / American Truck Simulator Map Renderer
+# TS Map - Map renderer
 
-This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferry lines and city names.
+## About
 
-![Preview of the map](/docs/preview.jpg "Preview of the map")
+This project are written on C#. This app are used to exctact datas from the game file and export as Json files or Png files
 
-### **Support for 1.40 and Iberia DLC**
+The main purpose about it, it's the map extraction. It's can create image of the game map.
 
-## Export Maps
-Can now export maps as a tiled web map.
+You can use it on the opensource map like OpenLayer.
 
-[Example with a max zoom level of 4](https://dariowouters.github.io/ts-tile-map-example/)
+![Plop](docs/preview.png)
 
-##### [Source](https://github.com/dariowouters/ts-tile-map-example)
-## Map mod support
-It can now load map mods.
 
-Making all/specific map mods supported won't be a priority for me.
+## What's can do ?
 
-### Tested* map mods:
+This project can: 
 
-ETS2:
-- Promods V2.50
-- Rusmap V1.8.1
-- The Great Steppe V1.2
-- Paris Rebuild V2.3
-- ScandinaviaMod V0.4
-- Emden V1.02c (Doesn't show city name)
-- Sardinia map V0.9 (Can't load some dds files)
-- PJ Indo Map v2.5 (Can't load an overlay)
+- Read the SCS files
+- Extract POI( Ferry connexion, companies, route name, etc... )
+- Extract cities list and position
+- Generate map tiles
 
-ATS:
-- Coast to Coast V2.6 (Can't load some dds files)
-- US Expansion V2.4 (C2C Compatible)
-- CanaDream Open Beta (ATS 1.32)
-- Tonopah REBUILT V1.0.2
-- Mexico Extremo 2.0.5
-- Viva Mexico v2.4.8
+### Map available
 
-\* The tested mods load and get drawn but I haven't looked at anything specific so it's always possible there will be some items missing or things will get drawn that shouldn't.
+|Map|Game|Version|Release|
+|---|---|---|---|
+|Base|Euro Truck Simulator 2|v1.40.3.3|N/A|
+|Base|American Trucksimulator *|v1.40.3.3|N/A|
+|Promod|Euro Truck Simulator 2 *|v2.50|N/A|
+|Promod Canada|American Trucksimulator *|v2.50|N/A|
 
-## Supported maps / DLC
-- ATS
-    - Base
-    - Nevada
-    - Arizona
-    - New Mexico
-    - Oregon
-    - Washington
-    - Utah
-    - Idaho
-    - Colorado
-- ETS2
-    - Base
-    - Going East!
-    - Scandinavia
-    - Vive la France !
-    - Italia
-    - Beyond the Baltic Sea
-    - Road to the Black Sea
-    - Iberia
+> Note: The tested mods load and get drawn but I haven't looked at anything specific so it's always possible there will be some items missing or things will get drawn that shouldn't.
+
+### DLC Supported
+
+|Game|Name|Release|
+|---|---|---|
+|Going East|Euro Truck Simulator 2|N/A|
+|Scandinavia|Euro Truck Simulator 2|N/A|
+|Vive La France|Euro Truck Simulator 2|N/A|
+|Italia|Euro Truck Simulator 2|N/A|
+|Beyond the Baltic Sea|Euro Truck Simulator 2|N/A|
+|Road to the Black Sea|Euro Truck Simulator 2|N/A|
+|Arizona|American Trucksimulator|N/A|
+|New Mexico|American Trucksimulator|N/A|
+|Oregon|American Trucksimulator|N/A|
+|Washington|American Trucksimulator|N/A|
+|Utah|American Trucksimulator|N/A|
+|Colorado|American Trucksimulator|N/A|
+
 
 #### Dependencies (NuGet)
 - [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
 
 #### Based on
-[Original project](https://github.com/nlhans/ets2-map)
+Fork of [dariowouters/ts-map](https://github.com/dariowouters/ts-mapp)
+
+## License
+Under the [MIT License](LICENSE)
+
+© JAGFx - hey@emmanuel-smith.me
