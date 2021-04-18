@@ -326,7 +326,7 @@ namespace TsMap {
         /// </summary>
         private void ParseDefFiles() {
             long startTime = DateTime.Now.Ticks;
-            this.ParseGameName();
+            this.Game = new TsGame( this );
             this.ParseCityFiles();
             this.ParseCountryFiles();
             Log.Msg( $"Loaded city files in {( DateTime.Now.Ticks - startTime ) / TimeSpan.TicksPerMillisecond}ms" );
@@ -428,10 +428,6 @@ namespace TsMap {
             // TODO: List all DLC files and parse it
             var currentDlcFile = "dlc_fr.manifest.sii";
             this.TsDlcs.Add( new TsDlc( this, currentDlcFile ) );
-        }
-
-        private void ParseGameName() {
-            this.Game = new TsGame( this );
         }
 
         private void ReadLocalizationOptions() {
