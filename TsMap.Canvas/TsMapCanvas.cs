@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using TsMap.TsItem;
@@ -85,19 +86,21 @@ namespace TsMap.Canvas {
                 f.Close();
                 this._tileMapGeneratorForm?.Close();
             };
+
+            Version appVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            this.version.Text = $@"Version: v{appVersion}";
         }
 
-        private TsMapper CreateMapper() =>
-            new TsMapper( SettingsManager.Current.Settings.LastGamePath, SettingsManager.Current.Settings.Mods );
+        private TsMapper CreateMapper() => new TsMapper( SettingsManager.Current.Settings.LastGamePath, SettingsManager.Current.Settings.Mods );
 
         private TsMapRenderer CreateRenderer( TsMapper mapper ) => new TsMapRenderer( mapper );
 
-        private void SaveTileImage( int z,
-                                    int x,
-                                    int y,
-                                    PointF pos,
-                                    float zoom,
-                                    string exportPath,
+        private void SaveTileImage( int         z,
+                                    int         x,
+                                    int         y,
+                                    PointF      pos,
+                                    float       zoom,
+                                    string      exportPath,
                                     RenderFlags renderFlags ) // z = zoomLevel; x = row tile index; y = column tile index
         {
             using ( var bitmap = new Bitmap( SettingsManager.Current.Settings.TileGenerator.TileSize,
