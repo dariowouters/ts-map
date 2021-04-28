@@ -2,7 +2,7 @@
 #### Euro Truck Simulator 2 and American Truck Simulator
 
 [![GitHub Version](https://img.shields.io/github/v/release/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
-[![GitHub Commit since](https://img.shields.io/github/commits-since/JAGFx/ts-map/v0.9?style=flat-square)](https://github.com/JAGFx/ts-map/releases)
+[![GitHub Commit since](https://img.shields.io/github/commits-since/JAGFx/ts-map/v0.10?style=flat-square)](https://github.com/JAGFx/ts-map/releases)
 [![GitHub Release Download](https://img.shields.io/github/downloads/JAGFx/ts-map/total?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
 [![Github Licence](https://img.shields.io/github/license/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/blob/master/README.md)
 [![GitHub Release Date](https://img.shields.io/github/release-date/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
@@ -35,7 +35,7 @@ This project can:
 
 |Map|Game|Version|Release|
 |---|---|---|---|
-|Base|Euro Truck Simulator 2|v1.40.3.3|N/A|
+|Base|Euro Truck Simulator 2|v1.40.3.25|N/A|
 |Base|American Truck Simulator *|v1.40.3.3|Not enough DLC|
 |Promod|Euro Truck Simulator 2 *|v2.55|N/A|
 |Promod Canada|American Truck Simulator *|v1.0.1|Not enough DLC|
@@ -46,12 +46,12 @@ This project can:
 
 |Game|Name|Release|
 |---|---|---|
-|Going East|Euro Truck Simulator 2|N/A|
-|Scandinavia|Euro Truck Simulator 2|N/A|
-|Vive La France|Euro Truck Simulator 2|N/A|
-|Italia|Euro Truck Simulator 2|N/A|
-|Beyond the Baltic Sea|Euro Truck Simulator 2|N/A|
-|Road to the Black Sea|Euro Truck Simulator 2|N/A|
+|Going East|Euro Truck Simulator 2|v0.10|
+|Scandinavia|Euro Truck Simulator 2|v0.10|
+|Vive La France|Euro Truck Simulator 2|v0.10|
+|Italia|Euro Truck Simulator 2|v0.10|
+|Beyond the Baltic Sea|Euro Truck Simulator 2|v0.10|
+|Road to the Black Sea|Euro Truck Simulator 2|v0.10|
 |Arizona|American Truck Simulator|N/A|
 |New Mexico|American Truck Simulator|N/A|
 |Oregon|American Truck Simulator|N/A|
