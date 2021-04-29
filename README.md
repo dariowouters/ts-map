@@ -35,9 +35,9 @@ This project can:
 
 |Map|Game|Version|Release|
 |---|---|---|---|
-|Base|Euro Truck Simulator 2|v1.40.3.25|N/A|
+|Base|Euro Truck Simulator 2|v1.40.3.25|[Download](https://github.com/JAGFx/ts-map/releases/download/v0.10/jagfx-map-ets2.tar.gz)|
 |Base|American Truck Simulator *|v1.40.3.3|Not enough DLC|
-|Promod|Euro Truck Simulator 2 *|v2.55|N/A|
+|Promod|Euro Truck Simulator 2 *|v2.55|[Download](https://github.com/JAGFx/ts-map/releases/download/v0.10/jagfx-map-promod.tar.gz)|
 |Promod Canada|American Truck Simulator *|v1.0.1|Not enough DLC|
 
 > *The tested mods load and get drawn but I haven't looked at anything specific so it's always possible there will be some items missing or things will get drawn that shouldn't.
