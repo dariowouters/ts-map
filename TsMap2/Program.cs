@@ -1,21 +1,29 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
 using TsMap2.Factory.Json;
 using TsMap2.Model;
-using TsMap2.Task;
+using TsMap2.ScsHash;
+using TsMap2.Work;
 
 namespace TsMap2 {
     internal class Program {
         private static void Main( string[] args ) {
             Console.WriteLine( "Hello World!" );
-            var fk = new TsSettingsJsonFactory( new Settings { Name = "plop" } );
 
-            fk.Save();
-            JObject l = fk.Load();
-            Console.WriteLine( l );
+            // Load settings file
+            var settingsJsonFactory =
+                new TsSettingsJsonFactory< Settings >( new Settings { Name = "plop", GamePath = "S:\\Games\\Steam\\steamapps\\common\\Euro Truck Simulator 2" } );
+            settingsJsonFactory.Save();
+            Settings settings = settingsJsonFactory.Load();
+            Console.WriteLine( settings );
 
-            var t = new Work();
-            t.Run();
+            // Create the TsMapper
+            var rfs    = new RootFileSystem( settings.GamePath );
+            var mapper = new TsMapperContext( rfs );
+            mapper.SetSettings( settings );
+
+            // Do a work
+            var w = new AWork( mapper );
+            w.Run();
         }
     }
 }

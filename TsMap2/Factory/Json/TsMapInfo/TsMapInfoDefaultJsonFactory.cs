@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json.Linq;
 
 namespace TsMap2.Factory.Json.TsMapInfo {
-    public class TsMapInfoDefaultJsonFactory : Factory, ITsMapInfoJsonFactory {
+    public class TsMapInfoDefaultJsonFactory< T > : JsonFactory< T >, ITsMapInfoJsonFactory {
         public JObject TileMapInfo( int    gameCode,
                                     string gameName,
                                     string gameVersion,
@@ -20,6 +20,8 @@ namespace TsMap2.Factory.Json.TsMapInfo {
 
         public override string GetSavingPath() => throw new NotImplementedException();
 
-        public override JObject JsonData() => throw new NotImplementedException();
+        public override T Convert( JObject raw ) => throw new NotImplementedException();
+
+        public override JObject RawData() => throw new NotImplementedException();
     }
 }
