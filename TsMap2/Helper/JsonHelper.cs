@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,8 +6,6 @@ namespace TsMap2.Helper {
     public static class JsonHelper {
         public static void SaveFile( string fileName, string path, JObject data ) {
             string fullPath = Path.Combine( path, fileName );
-
-            Console.WriteLine( fullPath );
 
             Directory.CreateDirectory( path );
             File.WriteAllTextAsync( fullPath, JsonConvert.SerializeObject( data, Formatting.Indented ) );

@@ -1,20 +1,23 @@
 ﻿using System;
 using TsMap2.Factory.Json;
+using TsMap2.Job;
 using TsMap2.Model;
 using TsMap2.ScsHash;
-using TsMap2.Work;
 
 namespace TsMap2 {
     internal class Program {
         private static void Main( string[] args ) {
-            Console.WriteLine( "Hello World!" );
+            Console.WriteLine( "===============================" );
+            Console.WriteLine( "> TsMap2 - &copy; 2021 JAGFx" );
+            Console.WriteLine( "> v0.0.0.0" );
+            Console.WriteLine( "===============================" );
+            Console.WriteLine( "" );
 
             // Load settings file
             var settingsJsonFactory =
-                new TsSettingsJsonFactory< Settings >( new Settings { Name = "plop", GamePath = "S:\\Games\\Steam\\steamapps\\common\\Euro Truck Simulator 2" } );
+                new TsSettingsJsonFactory< Settings >( new Settings { Name = "plop", GamePath = "/media/equinox/Documents/Projects/ETS/Euro Truck Simulator 2" } );
             settingsJsonFactory.Save();
             Settings settings = settingsJsonFactory.Load();
-            Console.WriteLine( settings );
 
             // Create the TsMapper
             var rfs    = new RootFileSystem( settings.GamePath );
@@ -22,8 +25,9 @@ namespace TsMap2 {
             mapper.SetSettings( settings );
 
             // Do a work
-            var w = new AWork( mapper );
-            w.Run();
+            Console.WriteLine( "== Game detection ==" );
+            var j = new DetectGameJob( mapper );
+            j.Run();
         }
     }
 }
