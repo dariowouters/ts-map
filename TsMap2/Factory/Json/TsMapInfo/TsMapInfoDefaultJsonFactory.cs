@@ -1,14 +1,8 @@
 using System;
 using Newtonsoft.Json.Linq;
 
-namespace TsMap2.Factory.TsMapInfo {
-    public class TsMapInfoJagfx : IFactory, ITsMapInfoFile {
-        public string GetFileName() => ITsMapInfoFile.FileName;
-
-        public string GetSavingPath() => throw new NotImplementedException();
-
-        public JObject JsonData() => throw new NotImplementedException();
-
+namespace TsMap2.Factory.Json.TsMapInfo {
+    public class TsMapInfoDefaultJsonFactory : Factory, ITsMapInfoJsonFactory {
         public JObject TileMapInfo( int    gameCode,
                                     string gameName,
                                     string gameVersion,
@@ -21,5 +15,11 @@ namespace TsMap2.Factory.TsMapInfo {
                                     int    minZoom,
                                     int    maxZoom ) =>
             throw new NotImplementedException();
+
+        public override string GetFileName() => ITsMapInfoJsonFactory.Filename;
+
+        public override string GetSavingPath() => throw new NotImplementedException();
+
+        public override JObject JsonData() => throw new NotImplementedException();
     }
 }

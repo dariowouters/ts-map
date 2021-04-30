@@ -1,8 +1,8 @@
 using Newtonsoft.Json.Linq;
 
-namespace TsMap2.Factory.TsMapInfo {
-    public interface ITsMapInfoFile {
-        public const string FileName = "TileMapInfo.json";
+namespace TsMap2.Factory.Json.TsMapInfo {
+    public interface ITsMapInfoJsonFactory {
+        public const string Filename = "TileMapInfo.json";
 
         JObject TileMapInfo( int    gameCode,
                              string gameName,
