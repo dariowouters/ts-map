@@ -1,8 +1,7 @@
 ﻿using System;
-using TsMap2.Factory.Json;
+using TsMap2.Helper;
 using TsMap2.Job;
-using TsMap2.Model;
-using TsMap2.ScsHash;
+using TsMap2.Job.Parse;
 
 namespace TsMap2 {
     internal class Program {
@@ -13,21 +12,20 @@ namespace TsMap2 {
             Console.WriteLine( "===============================" );
             Console.WriteLine( "" );
 
-            // Load settings file
-            var settingsJsonFactory =
-                new TsSettingsJsonFactory< Settings >( new Settings { Name = "plop", GamePath = "/media/equinox/Documents/Projects/ETS/Euro Truck Simulator 2" } );
-            settingsJsonFactory.Save();
-            Settings settings = settingsJsonFactory.Load();
+            try {
+                var store = StoreHelper.Instance;
 
-            // Create the TsMapper
-            var rfs    = new RootFileSystem( settings.GamePath );
-            var mapper = new TsMapperContext( rfs );
-            mapper.SetSettings( settings );
+                var s = new SettingsLoadJob();
+                s.RunAndWait();
 
-            // Do a work
-            Console.WriteLine( "== Game detection ==" );
-            var j = new DetectGameJob( mapper );
-            j.Run();
+                var c = new ParseScsFilesJob();
+                c.Run();
+
+                Console.WriteLine( $@"Game: {store.Game.FullName()}" );
+            } catch ( Exception e ) {
+                Console.WriteLine( e );
+                throw;
+            }
         }
     }
 }
