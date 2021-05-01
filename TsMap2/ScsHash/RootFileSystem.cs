@@ -14,7 +14,7 @@ namespace TsMap2.ScsHash {
             this._entryPath = path;
         }
 
-        private ScsEntry Entry { get; }
+        public ScsEntry Entry { get; }
 
         /// <summary>
         ///     Will return full path

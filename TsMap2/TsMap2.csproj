@@ -9,6 +9,8 @@
     <ItemGroup>
         <PackageReference Include="DotNetZip" Version="1.15.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00909"/>
     </ItemGroup>
 
 </Project>
