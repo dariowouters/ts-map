@@ -7,6 +7,8 @@ namespace TsMap2.Factory.Json {
 
         public abstract string GetSavingPath();
 
+        public abstract string GetLoadingPath();
+
         public abstract T Convert( JObject raw );
 
         public abstract JObject RawData();
@@ -16,7 +18,7 @@ namespace TsMap2.Factory.Json {
         }
 
         public T Load() {
-            JObject raw = JsonHelper.LoadFile( this.GetFileName(), this.GetSavingPath() );
+            JObject raw = JsonHelper.LoadFile( this.GetFileName(), this.GetLoadingPath() );
             return this.Convert( raw );
         }
     }

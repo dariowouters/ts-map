@@ -6,7 +6,7 @@ namespace TsMap2.Job.Parse {
     public class ParseGameJob : ThreadJob {
         protected override void Do() {
             Console.WriteLine( "[START] ParseGameJob" );
-            Console.WriteLine( this.Store().Settings.GamePath );
+            // Console.WriteLine( this.Store().Settings.GamePath );
 
             ScsFile ets2File = this.Store().Rfs.GetFileEntry( TsSiiDef.Ets2LogoScene );
             ScsFile atsFile  = this.Store().Rfs.GetFileEntry( TsSiiDef.AtsLogoScene );

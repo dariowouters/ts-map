@@ -18,7 +18,8 @@ namespace TsMap2.Factory.Json.TsMapInfo {
 
         public override string GetFileName() => ITsMapInfoJsonFactory.Filename;
 
-        public override string GetSavingPath() => throw new NotImplementedException();
+        public override string GetSavingPath()  => throw new NotImplementedException();
+        public override string GetLoadingPath() => throw new NotImplementedException();
 
         public override T Convert( JObject raw ) => throw new NotImplementedException();
 

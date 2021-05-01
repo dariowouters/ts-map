@@ -4,7 +4,7 @@ using TsMap2.Model;
 
 namespace TsMap2.Job {
     public class SettingsLoadJob : ThreadJob {
-        public TsSettingsJsonFactory< Settings > SettingFactory = new TsSettingsJsonFactory< Settings >( new Settings() );
+        public TsSettingsJsonFactory SettingFactory = new TsSettingsJsonFactory( new Settings() );
 
         protected override void Do() {
             Console.WriteLine( "[START] SettingJob" );
