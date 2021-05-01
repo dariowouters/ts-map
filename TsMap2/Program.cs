@@ -18,8 +18,6 @@ namespace TsMap2 {
             Log.Information( "Hello, world!" );
 
             try {
-                var store = StoreHelper.Instance;
-
                 var s = new SettingsLoadJob();
                 s.RunAndWait();
 
