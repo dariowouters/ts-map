@@ -1,10 +1,12 @@
+using System.Collections.Generic;
 using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Helper {
     public sealed class StoreHelper {
-        public TsGame         Game = new TsGame();
-        public RootFileSystem Rfs;
+        public Dictionary< ulong, TsCountry > Countries = new Dictionary< ulong, TsCountry >();
+        public TsGame                         Game      = new TsGame();
+        public RootFileSystem                 Rfs;
 
         // --
 
@@ -18,9 +20,16 @@ namespace TsMap2.Helper {
 
         public static StoreHelper Instance { get; } = new StoreHelper();
 
+        // ---
+
         public void SetSetting( Settings settings ) {
             this.Settings = settings;
             this.Rfs      = new RootFileSystem( settings.Ets2Path );
+        }
+
+        public void AddCountry( TsCountry tsCountry ) {
+            if ( tsCountry.Token != 0 && !this.Countries.ContainsKey( tsCountry.Token ) )
+                this.Countries.Add( tsCountry.Token, tsCountry );
         }
     }
 }
