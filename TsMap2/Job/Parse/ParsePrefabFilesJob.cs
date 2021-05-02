@@ -62,8 +62,6 @@ namespace TsMap2.Job.Parse {
             Log.Information( "[Job][Prefab] Loaded. Found: {0}", this.Store().Prefabs.Count );
         }
 
-        public override string JobName() => "ParsePrefabFiles";
-
         protected override void OnEnd() { }
 
         private TsPrefab Parse( string path, ulong token, string category ) {

@@ -12,8 +12,6 @@ namespace TsMap2.Job {
             Log.Information( "[Job][Setting] Loaded" );
         }
 
-        public override string JobName() => "Setting";
-
         protected override void OnEnd() { }
     }
 }

@@ -43,8 +43,6 @@ namespace TsMap2.Job.Parse {
             Log.Information( "[Job][Country] Loaded. Found: {0}", this.Store().Countries.Count );
         }
 
-        public override string JobName() => "ParseCountryFilesJob";
-
         protected override void OnEnd() { }
 
         private TsCountry Parse( string path ) {

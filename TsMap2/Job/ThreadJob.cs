@@ -7,7 +7,7 @@ namespace TsMap2.Job {
 
         protected abstract void Do();
 
-        public abstract string JobName();
+        public string JobName() => this.GetType().Name;
 
         protected abstract void OnEnd();
 

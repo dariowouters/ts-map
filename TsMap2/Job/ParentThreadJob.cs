@@ -9,7 +9,7 @@ namespace TsMap2.Job {
 
         public Task t { get; set; }
 
-        public abstract string JobName();
+        public string JobName() => this.GetType().Name;
 
         protected abstract void Do();
 

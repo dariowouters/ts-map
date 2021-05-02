@@ -32,7 +32,5 @@ namespace TsMap2.Job.Parse {
         }
 
         protected override void OnEnd() { }
-
-        public override string JobName() => "ParseGameJob";
     }
 }
