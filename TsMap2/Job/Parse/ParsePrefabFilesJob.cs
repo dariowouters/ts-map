@@ -13,18 +13,19 @@ namespace TsMap2.Job.Parse {
 
             ScsDirectory worldDirectory = this.Store().Rfs.GetDirectory( ScsPath.Def.WorldPath );
             if ( worldDirectory == null ) {
-                Log.Error( "Could not read 'def/world' dir" );
+                Log.Error( "[Job][Prefab] Could not read '{0}' dir", ScsPath.Def.WorldPath );
                 return;
             }
 
             List< ScsFile > prefabFiles = worldDirectory.GetFiles( ScsPath.Def.PrefabFileName );
             if ( prefabFiles == null ) {
-                Log.Error( "Could not read prefab files" );
+                Log.Error( "[Job][Prefab] Could not read {0} files", ScsPath.Def.PrefabFileName );
                 return;
             }
 
             foreach ( ScsFile prefabFile in prefabFiles ) {
                 if ( !prefabFile.GetFileName().StartsWith( "prefab" ) ) continue;
+
                 byte[]   data  = prefabFile.Entry.Read();
                 string[] lines = Encoding.UTF8.GetString( data ).Split( '\n' );
 
@@ -50,10 +51,7 @@ namespace TsMap2.Job.Parse {
 
                     if ( !line.Contains( "}" ) || token == 0 || path == "" ) continue;
 
-                    var prefab = new TsPrefab( token, category );
-                    prefab = this.Parse( prefab, path );
-
-                    this.Store().AddPrefab( prefab );
+                    this.Store().AddPrefab( this.Parse( path, token, category ) );
 
                     token    = 0;
                     path     = "";
@@ -68,32 +66,27 @@ namespace TsMap2.Job.Parse {
 
         protected override void OnEnd() { }
 
-        private TsPrefab Parse( TsPrefab prefab, string path ) {
-            prefab.PrefabNodes   = new List< TsPrefabNode >();
-            prefab.SpawnPoints   = new List< TsSpawnPoint >();
-            prefab.MapPoints     = new List< TsMapPoint >();
-            prefab.TriggerPoints = new List< TsTriggerPoint >();
-
+        private TsPrefab Parse( string path, ulong token, string category ) {
             var fileOffset = 0x0;
 
             ScsFile file = this.Store().Rfs.GetFileEntry( path );
 
-            if ( file == null ) return prefab;
+            if ( file == null ) return null;
 
             byte[] stream  = file.Entry.Read();
             int    version = MemoryHelper.ReadInt32( stream, fileOffset );
 
             if ( version < 0x15 ) {
                 Log.Error( "{0} file version ({1}) too low, min. is {0x15}", path, version );
-                return prefab;
+                return null;
             }
 
-            var nodeCount     = BitConverter.ToInt32( stream, fileOffset += 0x04 );
-            var navCurveCount = BitConverter.ToInt32( stream, fileOffset += 0x04 );
-            prefab.ValidRoad = navCurveCount != 0;
-            var spawnPointCount   = BitConverter.ToInt32( stream, fileOffset += 0x0C );
-            var mapPointCount     = BitConverter.ToInt32( stream, fileOffset += 0x0C );
-            var triggerPointCount = BitConverter.ToInt32( stream, fileOffset += 0x04 );
+            var  nodeCount         = BitConverter.ToInt32( stream, fileOffset += 0x04 );
+            var  navCurveCount     = BitConverter.ToInt32( stream, fileOffset += 0x04 );
+            bool validRoad         = navCurveCount != 0;
+            var  spawnPointCount   = BitConverter.ToInt32( stream, fileOffset += 0x0C );
+            var  mapPointCount     = BitConverter.ToInt32( stream, fileOffset += 0x0C );
+            var  triggerPointCount = BitConverter.ToInt32( stream, fileOffset += 0x04 );
 
             if ( version > 0x15 ) fileOffset += 0x04; // http://modding.scssoft.com/wiki/Games/ETS2/Modding_guides/1.30#Prefabs
 
@@ -101,6 +94,18 @@ namespace TsMap2.Job.Parse {
             int spawnPointOffset   = MemoryHelper.ReadInt32( stream, fileOffset += 0x10 );
             int mapPointOffset     = MemoryHelper.ReadInt32( stream, fileOffset += 0x10 );
             int triggerPointOffset = MemoryHelper.ReadInt32( stream, fileOffset += 0x04 );
+
+            return new TsPrefab( token,
+                                 category,
+                                 validRoad,
+                                 this.ParsePrefabNodes( stream, nodeCount, nodeOffset ),
+                                 this.ParseSpawnPoint( stream, spawnPointCount, spawnPointOffset ),
+                                 this.ParseMapPoints( stream, mapPointCount, mapPointOffset ),
+                                 this.ParseTriggerPoint( stream, triggerPointCount, triggerPointOffset ) );
+        }
+
+        private List< TsPrefabNode > ParsePrefabNodes( byte[] stream, int nodeCount, int nodeOffset ) {
+            var prefabNodes = new List< TsPrefabNode >();
 
             for ( var i = 0; i < nodeCount; i++ ) {
                 int nodeBaseOffset = nodeOffset + i * TsPrefab.NodeBlockSize;
@@ -123,8 +128,14 @@ namespace TsMap2.Job.Parse {
 
                 node.LaneCount = laneCount;
 
-                prefab.PrefabNodes.Add( node );
+                prefabNodes.Add( node );
             }
+
+            return prefabNodes;
+        }
+
+        private List< TsSpawnPoint > ParseSpawnPoint( byte[] stream, int spawnPointCount, int spawnPointOffset ) {
+            var spawnPoints = new List< TsSpawnPoint >();
 
             for ( var i = 0; i < spawnPointCount; i++ ) {
                 int spawnPointBaseOffset = spawnPointOffset + i * TsPrefab.SpawnPointBlockSize;
@@ -133,9 +144,15 @@ namespace TsMap2.Job.Parse {
                     Z    = MemoryHelper.ReadSingle( stream, spawnPointBaseOffset + 0x08 ),
                     Type = (TsSpawnPointType) MemoryHelper.ReadUInt32( stream, spawnPointBaseOffset + 0x1C )
                 };
-                prefab.SpawnPoints.Add( spawnPoint );
+                spawnPoints.Add( spawnPoint );
                 // Log.Msg($"Spawn point of type: {spawnPoint.Type} in {_filePath}");
             }
+
+            return spawnPoints;
+        }
+
+        private List< TsMapPoint > ParseMapPoints( byte[] stream, int mapPointCount, int mapPointOffset ) {
+            var mapPoints = new List< TsMapPoint >();
 
             for ( var i = 0; i < mapPointCount; i++ ) {
                 int   mapPointBaseOffset    = mapPointOffset + i * TsPrefab.MapPointBlockSize;
@@ -198,8 +215,14 @@ namespace TsMap2.Job.Parse {
 
                 for ( var x = 0; x < point.NeighbourCount; x++ ) point.Neighbours.Add( MemoryHelper.ReadInt32( stream, mapPointBaseOffset + 0x14 + x * 0x04 ) );
 
-                prefab.MapPoints.Add( point );
+                mapPoints.Add( point );
             }
+
+            return mapPoints;
+        }
+
+        private List< TsTriggerPoint > ParseTriggerPoint( byte[] stream, int triggerPointCount, int triggerPointOffset ) {
+            var triggerPoints = new List< TsTriggerPoint >();
 
             for ( var i = 0; i < triggerPointCount; i++ ) {
                 int triggerPointBaseOffset = triggerPointOffset + i * TsPrefab.TriggerPointBlockSize;
@@ -209,10 +232,10 @@ namespace TsMap2.Job.Parse {
                     X                  = MemoryHelper.ReadSingle( stream, triggerPointBaseOffset + 0x1C ),
                     Z                  = MemoryHelper.ReadSingle( stream, triggerPointBaseOffset + 0x24 )
                 };
-                prefab.TriggerPoints.Add( triggerPoint );
+                triggerPoints.Add( triggerPoint );
             }
 
-            return prefab;
+            return triggerPoints;
         }
     }
 }

@@ -5,8 +5,8 @@ using TsMap2.Scs;
 namespace TsMap2.Helper {
     public sealed class StoreHelper {
         public Dictionary< ulong, TsCountry > Countries = new Dictionary< ulong, TsCountry >();
-        public TsGame                         Game      = new TsGame();
-        public Dictionary< ulong, TsPrefab >  Prefabs   = new Dictionary< ulong, TsPrefab >();
+        public TsGame                         Game;
+        public Dictionary< ulong, TsPrefab >  Prefabs = new Dictionary< ulong, TsPrefab >();
         public RootFileSystem                 Rfs;
 
         // --

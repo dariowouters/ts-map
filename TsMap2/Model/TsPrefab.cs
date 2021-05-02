@@ -41,20 +41,31 @@ namespace TsMap2.Model {
         public const int SpawnPointBlockSize   = 0x20;
         public const int TriggerPointBlockSize = 0x30;
 
-        public TsPrefab( ulong token, string category ) {
-            this.Token    = token;
-            this.Category = category;
+        public TsPrefab( ulong                  token,
+                         string                 category,
+                         bool                   validRoad,
+                         List< TsPrefabNode >   prefabNodes,
+                         List< TsSpawnPoint >   spawnPoints,
+                         List< TsMapPoint >     mapPoints,
+                         List< TsTriggerPoint > triggerPoints ) {
+            this.Token         = token;
+            this.Category      = category;
+            this.ValidRoad     = validRoad;
+            this.PrefabNodes   = prefabNodes;
+            this.SpawnPoints   = spawnPoints;
+            this.MapPoints     = mapPoints;
+            this.TriggerPoints = triggerPoints;
         }
 
         public ulong  Token    { get; }
         public string Category { get; }
 
 
-        public bool ValidRoad { get; set; }
+        public bool ValidRoad { get; }
 
-        public List< TsPrefabNode >   PrefabNodes   { get; set; }
-        public List< TsSpawnPoint >   SpawnPoints   { get; set; }
-        public List< TsMapPoint >     MapPoints     { get; set; }
-        public List< TsTriggerPoint > TriggerPoints { get; set; }
+        public List< TsPrefabNode >   PrefabNodes   { get; }
+        public List< TsSpawnPoint >   SpawnPoints   { get; }
+        public List< TsMapPoint >     MapPoints     { get; }
+        public List< TsTriggerPoint > TriggerPoints { get; }
     }
 }
