@@ -6,6 +6,7 @@ namespace TsMap2.Helper {
     public sealed class StoreHelper {
         public Dictionary< ulong, TsCountry > Countries = new Dictionary< ulong, TsCountry >();
         public TsGame                         Game      = new TsGame();
+        public Dictionary< ulong, TsPrefab >  Prefabs   = new Dictionary< ulong, TsPrefab >();
         public RootFileSystem                 Rfs;
 
         // --
@@ -30,6 +31,11 @@ namespace TsMap2.Helper {
         public void AddCountry( TsCountry tsCountry ) {
             if ( tsCountry.Token != 0 && !this.Countries.ContainsKey( tsCountry.Token ) )
                 this.Countries.Add( tsCountry.Token, tsCountry );
+        }
+
+        public void AddPrefab( TsPrefab prefab ) {
+            if ( prefab.Token != 0 && !this.Prefabs.ContainsKey( prefab.Token ) )
+                this.Prefabs.Add( prefab.Token, prefab );
         }
     }
 }

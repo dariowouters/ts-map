@@ -72,8 +72,18 @@
         public const string GameVersion = "version.txt";
 
         public static class Def {
+            public const string DefFolderName = "def";
+
+            // -- TsGame
             public const string Ets2LogoScene = "def/ets2_logo_scene.sii";
             public const string AtsLogoScene  = "def/ats_logo_scene.sii";
+
+            // -- TsCountry
+            public const string CountryFileName = "country";
+
+            // -- TsPrefab
+            public const string WorldPath      = "def/world";
+            public const string PrefabFileName = "prefab";
         }
     }
 }
