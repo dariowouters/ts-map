@@ -20,7 +20,7 @@ namespace TsMap2.Helper {
 
         public void SetSetting( Settings settings ) {
             this.Settings = settings;
-            this.Rfs      = new RootFileSystem( settings.GamePath );
+            this.Rfs      = new RootFileSystem( settings.Ets2Path );
         }
     }
 }

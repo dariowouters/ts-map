@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Linq;
+using TsMap2.Helper;
 using TsMap2.Model;
 
 namespace TsMap2.Factory.Json {
@@ -7,11 +8,11 @@ namespace TsMap2.Factory.Json {
 
         private Settings _settings { get; }
 
-        public override string GetFileName() => "Settings.json";
+        public override string GetFileName() => AppPath.SettingFileName;
 
-        public override string GetSavingPath() => "Output/";
+        public override string GetSavingPath() => AppPath.HomeDirApp;
 
-        public override string GetLoadingPath() => "Output/";
+        public override string GetLoadingPath() => AppPath.HomeDirApp;
 
         public override Settings Convert( JObject raw ) => raw.ToObject< Settings >();
 

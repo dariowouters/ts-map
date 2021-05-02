@@ -10,8 +10,8 @@ namespace TsMap2.Job.Parse {
             // Console.WriteLine( this.Store().Settings.GamePath );
 
             // --- Kind of game
-            ScsFile ets2File = this.Store().Rfs.GetFileEntry( TsSiiDef.Ets2LogoScene );
-            ScsFile atsFile  = this.Store().Rfs.GetFileEntry( TsSiiDef.AtsLogoScene );
+            ScsFile ets2File = this.Store().Rfs.GetFileEntry( ScsPath.Def.Ets2LogoScene );
+            ScsFile atsFile  = this.Store().Rfs.GetFileEntry( ScsPath.Def.AtsLogoScene );
 
             if ( ets2File != null ) // Log.Msg( "ETS2 detected" );
                 this.Store().Game.Code = TsGame.GAME_ETS;
@@ -22,7 +22,7 @@ namespace TsMap2.Job.Parse {
 
 
             // --- Game version
-            ScsFile versionFile = this.Store().Rfs.GetFileEntry( TsSiiDef.GameVersion );
+            ScsFile versionFile = this.Store().Rfs.GetFileEntry( ScsPath.GameVersion );
             byte[]  content     = versionFile.Entry.Read();
 
             this.Store().Game.Version = Encoding.UTF8.GetString( content ).Split( '\n' )[ 0 ];

@@ -15,7 +15,7 @@ namespace TsMap2 {
 
             LoggerHelper.Init();
 
-            Log.Information( "Hello, world!" );
+            Log.Information( "HomeDir: {0}", AppPath.HomeDirApp );
 
             try {
                 var s = new SettingsLoadJob();

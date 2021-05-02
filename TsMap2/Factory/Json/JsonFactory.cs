@@ -14,11 +14,17 @@ namespace TsMap2.Factory.Json {
         public abstract JObject RawData();
 
         public void Save() {
-            JsonHelper.SaveFile( this.GetFileName(), this.GetSavingPath(), this.RawData() );
+            this.Save( this.GetSavingPath() );
         }
 
-        public T Load() {
-            JObject raw = JsonHelper.LoadFile( this.GetFileName(), this.GetLoadingPath() );
+        public T Load() => this.Load( this.GetLoadingPath() );
+
+        public void Save( string savingPath ) {
+            JsonHelper.SaveFile( this.GetFileName(), savingPath, this.RawData() );
+        }
+
+        public T Load( string loadingPath ) {
+            JObject raw = JsonHelper.LoadFile( this.GetFileName(), loadingPath );
             return this.Convert( raw );
         }
     }

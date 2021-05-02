@@ -68,9 +68,12 @@
         LongTrailerPos   = 25
     }
 
-    public static class TsSiiDef {
-        public const string Ets2LogoScene = "def/ets2_logo_scene.sii";
-        public const string AtsLogoScene  = "def/ats_logo_scene.sii";
-        public const string GameVersion   = "version.txt";
+    public static class ScsPath {
+        public const string GameVersion = "version.txt";
+
+        public static class Def {
+            public const string Ets2LogoScene = "def/ets2_logo_scene.sii";
+            public const string AtsLogoScene  = "def/ats_logo_scene.sii";
+        }
     }
 }

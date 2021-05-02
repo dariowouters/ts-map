@@ -1,10 +1,17 @@
 ﻿using System;
 using System.IO;
 
-namespace TsMap2 {
+namespace TsMap2.Helper {
     public static class Common {
-        public const float  LaneWidth = 4.5f;
-        public const string LogPath   = "Logs/log_.txt";
+        public const float LaneWidth = 4.5f;
+    }
+
+    public static class AppPath {
+        // -- Settings
+        public const  string SettingFileName = "Settings.json";
+        public static string HomeDirApp => Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), "TsMap2" );
+
+        public static string LogPath => Path.Combine( HomeDirApp, "Logs/log_.txt" );
     }
 
 

@@ -6,7 +6,7 @@ namespace TsMap2.Helper {
             Log.Logger = new LoggerConfiguration()
                          .MinimumLevel.Debug()
                          .WriteTo.Console()
-                         .WriteTo.File( Common.LogPath, rollingInterval: RollingInterval.Day )
+                         .WriteTo.File( AppPath.LogPath, rollingInterval: RollingInterval.Day )
                          .CreateLogger();
         }
     }
