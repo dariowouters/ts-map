@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using TsMap2.Helper;
 
-namespace TsMap2.ScsHash {
+namespace TsMap2.Scs {
     internal class ScsHeader {
         public uint   Magic       { get; set; }
         public ushort Version     { get; set; }

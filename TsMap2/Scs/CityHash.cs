@@ -38,7 +38,7 @@
 
 using TsMap2.Helper;
 
-namespace TsMap2.ScsHash {
+namespace TsMap2.Scs {
     public static class CityHash {
         // Some primes between 2^63 and 2^64 for various uses.
         private const ulong K0 = 0xc3a5c85c97cb3127UL;

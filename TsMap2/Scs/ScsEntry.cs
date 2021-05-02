@@ -2,7 +2,7 @@
 using System.Text;
 using Ionic.Zlib;
 
-namespace TsMap2.ScsHash {
+namespace TsMap2.Scs {
     public abstract class ScsEntry {
         public abstract ScsRootFile GetRootFile();
 

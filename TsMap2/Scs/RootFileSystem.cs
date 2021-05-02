@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using TsMap2.Helper;
 
-namespace TsMap2.ScsHash {
+namespace TsMap2.Scs {
     public class ScsFile {
         private readonly string _entryPath;
 

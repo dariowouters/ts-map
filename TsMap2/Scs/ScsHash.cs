@@ -3,7 +3,7 @@
 
 using System.Text;
 
-namespace TsMap2.ScsHash {
+namespace TsMap2.Scs {
     internal struct UlDiv {
         public ulong Quot;
         public ulong Rem;

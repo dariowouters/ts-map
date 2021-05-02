@@ -1,4 +1,4 @@
-﻿namespace TsMap2 {
+﻿namespace TsMap2.Scs {
     public static class ScsConst {
         public const int Ets2DlcGuardCount = 12; // TODO: Figure out how to get these dynamically
         public const int AtsDlcGuardCount  = 15;

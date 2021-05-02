@@ -1,5 +1,5 @@
 using TsMap2.Model;
-using TsMap2.ScsHash;
+using TsMap2.Scs;
 
 namespace TsMap2.Helper {
     public sealed class StoreHelper {

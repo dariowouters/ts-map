@@ -1,7 +1,7 @@
 using System.Text;
 using Serilog;
 using TsMap2.Model;
-using TsMap2.ScsHash;
+using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse {
     public class ParseGameJob : ThreadJob {
@@ -27,7 +27,7 @@ namespace TsMap2.Job.Parse {
 
             this.Store().Game.Version = Encoding.UTF8.GetString( content ).Split( '\n' )[ 0 ];
 
-            Log.Debug( "[Job][Game] Loaded. Game: {0} | Version: {1}", this.Store().Game.FullName(), this.Store().Game.Version );
+            Log.Information( "[Job][Game] Loaded. Game: {0} | Version: {1}", this.Store().Game.FullName(), this.Store().Game.Version );
         }
 
         protected override void OnEnd() { }

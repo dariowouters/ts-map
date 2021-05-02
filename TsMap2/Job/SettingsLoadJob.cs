@@ -9,7 +9,7 @@ namespace TsMap2.Job {
         protected override void Do() {
             Log.Debug( "[Job][Setting] Loading" );
             this.Store().SetSetting( this.SettingFactory.Load() );
-            Log.Debug( "[Job][Setting] Loaded" );
+            Log.Information( "[Job][Setting] Loaded" );
         }
 
         public override string JobName() => "Setting";
