@@ -59,4 +59,14 @@ namespace TsMap2.Helper {
 
         public override string ToString() => Path.GetFileName( this.ModPath );
     }
+
+    public class JobException : Exception {
+        public JobException( string message, string jobName, object context ) : base( message ) {
+            this.JobName = jobName;
+            this.Context = context;
+        }
+
+        public string JobName { get; }
+        public object Context { get; }
+    }
 }

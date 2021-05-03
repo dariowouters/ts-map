@@ -24,8 +24,7 @@ namespace TsMap2 {
                 var c = new ParseScsFilesJob();
                 c.Run();
             } catch ( Exception e ) {
-                Log.Error( e, "Something went wrong" );
-                throw;
+                Log.Error( "Unexpected Exception: {0} | Stack: {1}", e.Message, e.StackTrace );
             } finally {
                 Log.CloseAndFlush();
             }

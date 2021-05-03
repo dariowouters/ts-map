@@ -1,3 +1,4 @@
+using System.IO;
 using Newtonsoft.Json.Linq;
 using TsMap2.Helper;
 
@@ -27,5 +28,13 @@ namespace TsMap2.Factory.Json {
             JObject raw = JsonHelper.LoadFile( this.GetFileName(), loadingPath );
             return this.Convert( raw );
         }
+
+        public bool FileExist( string path ) => File.Exists( path );
+
+        public bool FileExist() => this.FileExist( Path.Combine( this.GetLoadingPath(), this.GetFileName() ) );
+
+        public bool DirExist( string path ) => Directory.Exists( path );
+
+        public bool DirExist() => this.DirExist( this.GetLoadingPath() );
     }
 }
