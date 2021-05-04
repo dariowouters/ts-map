@@ -69,7 +69,8 @@
     }
 
     public static class ScsPath {
-        public const string GameVersion = "version.txt";
+        public const string GameVersion      = "version.txt";
+        public const string ScsFileExtension = "sii";
 
         public static class Def {
             public const string DefFolderName = "def";
@@ -84,6 +85,9 @@
             // -- TsPrefab
             public const string WorldPath      = "def/world";
             public const string PrefabFileName = "prefab";
+
+            // -- TsFerryConnection
+            public const string FerryConnectionPath = "def/ferry/connection";
         }
     }
 }

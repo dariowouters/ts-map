@@ -15,6 +15,9 @@ namespace TsMap2 {
 
             LoggerHelper.Init();
 
+            // FIXME: Crash sometime with Zlib zip.
+            // Check here: https://stackoverflow.com/questions/19621888/decompress-bytes-using-deflatestream
+
             Log.Information( "HomeDir: {0}", AppPath.HomeDirApp );
 
             try {
