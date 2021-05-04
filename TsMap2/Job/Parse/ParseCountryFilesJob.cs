@@ -11,16 +11,24 @@ namespace TsMap2.Job.Parse {
         protected override void Do() {
             Log.Debug( "[Job][Country] Loading" );
 
+            // --- Check RFS
+            if ( this.Store().Rfs == null )
+                throw new JobException( "[Job][Country] The root file system was not initialized. Check the game path", this.JobName(), null );
+
             ScsDirectory defDirectory = this.Store().Rfs.GetDirectory( ScsPath.Def.DefFolderName );
             if ( defDirectory == null ) {
-                Log.Error( "[Job][Country] Could not read '{0]' dir", ScsPath.Def.DefFolderName );
-                return;
+                var message = $"[Job][Country] Could not read '{ScsPath.Def.DefFolderName}' dir";
+                throw new JobException( message, this.JobName(), ScsPath.Def.DefFolderName );
+                // Log.Error( "[Job][Country] Could not read '{0]' dir", ScsPath.Def.DefFolderName );
+                // return;
             }
 
             List< ScsFile > countryFiles = defDirectory.GetFiles( ScsPath.Def.CountryFileName );
             if ( countryFiles == null ) {
-                Log.Error( "[Job][Country] Could not read {0} files", ScsPath.Def.CountryFileName );
-                return;
+                var message = $"[Job][Country] Could not read {ScsPath.Def.DefFolderName} files";
+                throw new JobException( message, this.JobName(), ScsPath.Def.DefFolderName );
+                // Log.Error( "[Job][Country] Could not read {0} files", ScsPath.Def.CountryFileName );
+                // return;
             }
 
             foreach ( ScsFile countryFile in countryFiles ) {

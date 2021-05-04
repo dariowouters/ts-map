@@ -3,8 +3,8 @@ using TsMap2.Helper;
 using TsMap2.Model;
 
 namespace TsMap2.Factory.Json {
-    public class TsSettingsJsonFactory : JsonFactory< Settings > {
-        public TsSettingsJsonFactory( Settings settings ) => this._settings = settings;
+    public class SettingsJsonFactory : JsonFactory< Settings > {
+        public SettingsJsonFactory( Settings settings ) => this._settings = settings;
 
         private Settings _settings { get; }
 

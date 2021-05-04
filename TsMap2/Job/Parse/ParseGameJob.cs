@@ -1,5 +1,6 @@
 using System.Text;
 using Serilog;
+using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
@@ -8,6 +9,10 @@ namespace TsMap2.Job.Parse {
         protected override void Do() {
             Log.Debug( "[Job][Game] Loading" );
             // Console.WriteLine( this.Store().Settings.GamePath );
+
+            // --- Check RFS
+            if ( this.Store().Rfs == null )
+                throw new JobException( "[Job][Game] The root file system was not initialized. Check the game path", this.JobName(), null );
 
             // --- Kind of game
             ScsFile ets2File = this.Store().Rfs.GetFileEntry( ScsPath.Def.Ets2LogoScene );

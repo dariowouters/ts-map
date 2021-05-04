@@ -25,7 +25,7 @@ namespace TsMap2.Helper {
 
         public void SetSetting( Settings settings ) {
             this.Settings = settings;
-            this.Rfs      = new RootFileSystem( settings.Ets2Path );
+            this.Rfs      = new RootFileSystem( settings.GetActiveGamePath() );
         }
 
         public void AddCountry( TsCountry tsCountry ) {

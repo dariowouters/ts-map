@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Model;
@@ -11,16 +12,23 @@ namespace TsMap2.Job.Parse {
         protected override void Do() {
             Log.Debug( "[Job][Prefab] Loading" );
 
+            // --- Check RFS
+            if ( this.Store().Rfs == null )
+                throw new JobException( "[Job][Prefab] The root file system was not initialized. Check the game path", this.JobName(), null );
+
             ScsDirectory worldDirectory = this.Store().Rfs.GetDirectory( ScsPath.Def.WorldPath );
             if ( worldDirectory == null ) {
-                Log.Error( "[Job][Prefab] Could not read '{0}' dir", ScsPath.Def.WorldPath );
-                return;
+                var message = $"[Job][Prefab] Could not read '{ScsPath.Def.WorldPath}' dir";
+                throw new JobException( message, this.JobName(), ScsPath.Def.WorldPath );
+                // Log.Error( "[Job][Prefab] Could not read '{0}' dir", ScsPath.Def.WorldPath );
             }
 
             List< ScsFile > prefabFiles = worldDirectory.GetFiles( ScsPath.Def.PrefabFileName );
             if ( prefabFiles == null ) {
-                Log.Error( "[Job][Prefab] Could not read {0} files", ScsPath.Def.PrefabFileName );
-                return;
+                var message = $"[Job][Prefab] Could not read {ScsPath.Def.PrefabFileName} files";
+                throw new JobException( message, this.JobName(), ScsPath.Def.PrefabFileName );
+                // Log.Error( "[Job][Prefab] Could not read {0} files", ScsPath.Def.PrefabFileName );
+                // return;
             }
 
             foreach ( ScsFile prefabFile in prefabFiles ) {
@@ -75,8 +83,10 @@ namespace TsMap2.Job.Parse {
             int    version = MemoryHelper.ReadInt32( stream, fileOffset );
 
             if ( version < 0x15 ) {
-                Log.Error( "{0} file version ({1}) too low, min. is {0x15}", path, version );
-                return null;
+                var message = $"[Job][Prefab] {path} file version ({version}) too low, min. is {0x15}";
+                throw new JobException( message, this.JobName(), new JObject { path, version } );
+                // Log.Error( "{0} file version ({1}) too low, min. is {0x15}", path, version );
+                // return null;
             }
 
             var  nodeCount         = BitConverter.ToInt32( stream, fileOffset += 0x04 );
