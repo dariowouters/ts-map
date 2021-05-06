@@ -88,6 +88,9 @@
 
             // -- TsFerryConnection
             public const string FerryConnectionPath = "def/ferry/connection";
+
+            // -- TsCity
+            public const string CityFileName = "city";
         }
     }
 }

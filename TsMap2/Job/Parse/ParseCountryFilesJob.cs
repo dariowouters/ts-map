@@ -25,8 +25,8 @@ namespace TsMap2.Job.Parse {
 
             List< ScsFile > countryFiles = defDirectory.GetFiles( ScsPath.Def.CountryFileName );
             if ( countryFiles == null ) {
-                var message = $"[Job][Country] Could not read {ScsPath.Def.DefFolderName} files";
-                throw new JobException( message, this.JobName(), ScsPath.Def.DefFolderName );
+                var message = $"[Job][Country] Could not read {ScsPath.Def.CountryFileName} files";
+                throw new JobException( message, this.JobName(), ScsPath.Def.CountryFileName );
                 // Log.Error( "[Job][Country] Could not read {0} files", ScsPath.Def.CountryFileName );
                 // return;
             }
