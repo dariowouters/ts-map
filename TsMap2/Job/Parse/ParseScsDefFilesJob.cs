@@ -6,9 +6,8 @@ namespace TsMap2.Job.Parse {
             this.AddJob( new ParseCountryFilesJob() );
             this.AddJob( new ParseRoadLookFilesJob() );
             this.AddJob( new ParsePrefabFilesJob() );
-
-            // FIXME This may occur crash ?!
             this.AddJob( new ParseFerryConnectionsFilesJob() );
+            this.AddJob( new ParseOverlaysJob() );
         }
 
         protected override void OnEnd() { }

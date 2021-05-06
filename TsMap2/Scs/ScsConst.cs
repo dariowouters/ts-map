@@ -71,6 +71,7 @@
     public static class ScsPath {
         public const string GameVersion      = "version.txt";
         public const string ScsFileExtension = "sii";
+        public const string ScsMatExtension  = "mat";
 
         public static class Def {
             public const string DefFolderName = "def";
@@ -94,6 +95,11 @@
 
             // -- TsRoadLook
             public const string RoadLook = "road_look";
+
+            // -- TsOverlay
+            public const string MaterialUiMapPath     = "material/ui/map";
+            public const string MaterialUiCompanyPath = "material/ui/company/small";
+            public const string MaterialUiRoadPath    = "material/ui/map/road";
         }
     }
 }

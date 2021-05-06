@@ -2,6 +2,8 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using Serilog;
+using TsMap2.Model;
 
 namespace TsMap2.Helper {
     public static class ScsHelper {
@@ -136,6 +138,141 @@ namespace TsMap2.Helper {
 
             val = Trim( val );
             return ( true, key, val );
+        }
+    }
+
+    public static class ScsOverlayHelper {
+        public static Color8888[] ParseUncompressed( string fileName, byte[] stream, uint width, uint height ) {
+            if ( ( stream.Length - 128 ) / 4 < width * height ) {
+                Log.Warning( $"Invalid DDS file (size), '{fileName}'" );
+                return null;
+            }
+
+            var fileOffset = 0x7C;
+
+            var pixelData = new Color8888[ width * height ];
+
+            for ( var i = 0; i < width * height; i++ ) {
+                uint rgba = MemoryHelper.ReadUInt32( stream, fileOffset += 0x04 );
+                pixelData[ i ] = new Color8888( (byte) ( ( rgba >> 0x18 ) & 0xFF ), (byte) ( ( rgba >> 0x10 ) & 0xFF ), (byte) ( ( rgba >> 0x08 ) & 0xFF ),
+                                                (byte) ( rgba             & 0xFF ) );
+            }
+
+            return pixelData;
+        }
+
+        public static Color8888[] ParseDxt3( byte[] stream, uint width, uint height ) // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        {
+            var fileOffset = 0x80;
+            var pixelData  = new Color8888[ width * height ];
+            for ( var y = 0; y < height; y += 4 )
+            for ( var x = 0; x < width; x += 4 ) {
+                int baseOffset = fileOffset;
+
+                var color0 = new Color565( BitConverter.ToUInt16( stream, fileOffset += 0x08 ) );
+                var color1 = new Color565( BitConverter.ToUInt16( stream, fileOffset += 0x02 ) );
+
+                Color565 color2 = (double) 2 / 3 * color0 + (double) 1 / 3 * color1;
+                Color565 color3 = (double) 1 / 3 * color0 + (double) 2 / 3 * color1;
+
+                var colors = new[] {
+                    new Color8888( color0, 0xFF ), // bit code 00
+                    new Color8888( color1, 0xFF ), // bit code 01
+                    new Color8888( color2, 0xFF ), // bit code 10
+                    new Color8888( color3, 0xFF )  // bit code 11
+                };
+
+                fileOffset += 0x02;
+                for ( var i = 0; i < 4; i++ ) {
+                    byte colorRow = stream[ fileOffset                        + i ];
+                    var  alphaRow = BitConverter.ToUInt16( stream, baseOffset + i * 2 );
+
+                    for ( var j = 0; j < 4; j++ ) {
+                        int  colorIndex = ( colorRow >> ( j * 2 ) ) & 3;
+                        int  alpha      = ( alphaRow >> ( j * 4 ) ) & 15;
+                        long pos        = y * width + i * width + x + j;
+                        pixelData[ pos ] = colors[ colorIndex ];
+                        pixelData[ pos ].SetAlpha( (byte) ( alpha / 15f * 255 ) );
+                    }
+                }
+
+                fileOffset += 0x04;
+            }
+
+            return pixelData;
+        }
+
+        public static Color8888[]
+            ParseDxt5( byte[] stream, uint width, uint height ) // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        {
+            var fileOffset = 0x80;
+            var pixelData  = new Color8888[ width * height ];
+            for ( var y = 0; y < height; y += 4 )
+            for ( var x = 0; x < width; x += 4 ) {
+                var alphas = new byte[ 8 ];
+                alphas[ 0 ] = stream[ fileOffset ];
+                alphas[ 1 ] = stream[ fileOffset += 0x01 ];
+
+                if ( alphas[ 0 ] > alphas[ 1 ] ) {
+                    // 6 interpolated alpha values.
+                    alphas[ 2 ] = (byte) ( (double) 6 / 7 * alphas[ 0 ] + (double) 1 / 7 * alphas[ 1 ] ); // bit code 010
+                    alphas[ 3 ] = (byte) ( (double) 5 / 7 * alphas[ 0 ] + (double) 2 / 7 * alphas[ 1 ] ); // bit code 011
+                    alphas[ 4 ] = (byte) ( (double) 4 / 7 * alphas[ 0 ] + (double) 3 / 7 * alphas[ 1 ] ); // bit code 100
+                    alphas[ 5 ] = (byte) ( (double) 3 / 7 * alphas[ 0 ] + (double) 4 / 7 * alphas[ 1 ] ); // bit code 101
+                    alphas[ 6 ] = (byte) ( (double) 2 / 7 * alphas[ 0 ] + (double) 5 / 7 * alphas[ 1 ] ); // bit code 110
+                    alphas[ 7 ] = (byte) ( (double) 1 / 7 * alphas[ 0 ] + (double) 6 / 7 * alphas[ 1 ] ); // bit code 111
+                } else {
+                    // 4 interpolated alpha values.
+                    alphas[ 2 ] = (byte) ( (double) 4 / 5 * alphas[ 0 ] + (double) 1 / 5 * alphas[ 1 ] ); // bit code 010
+                    alphas[ 3 ] = (byte) ( (double) 3 / 5 * alphas[ 0 ] + (double) 2 / 5 * alphas[ 1 ] ); // bit code 011
+                    alphas[ 4 ] = (byte) ( (double) 2 / 5 * alphas[ 0 ] + (double) 3 / 5 * alphas[ 1 ] ); // bit code 100
+                    alphas[ 5 ] = (byte) ( (double) 1 / 5 * alphas[ 0 ] + (double) 4 / 5 * alphas[ 1 ] ); // bit code 101
+                    alphas[ 6 ] = 0;                                                                      // bit code 110
+                    alphas[ 7 ] = 255;                                                                    // bit code 111
+                }
+
+                ulong alphaTexelUlongData = MemoryHelper.ReadUInt64( stream, fileOffset += 0x01 );
+
+                ulong alphaTexelData =
+                    alphaTexelUlongData & 0xFFFFFFFFFFFF; // remove 2 excess bytes (read 8 bytes only need 6)
+
+                var alphaTexels = new byte[ 16 ];
+                for ( var j = 0; j < 2; j++ ) {
+                    ulong alphaTexelRowData = ( alphaTexelData >> ( j * 0x18 ) ) & 0xFFFFFF;
+                    for ( var i = 0; i < 8; i++ ) {
+                        ulong index = ( alphaTexelRowData >> ( i * 0x03 ) ) & 0x07;
+                        alphaTexels[ i + j * 8 ] = alphas[ index ];
+                    }
+                }
+
+                var color0 = new Color565( MemoryHelper.ReadUInt16( stream, fileOffset += 0x06 ) );
+                var color1 = new Color565( MemoryHelper.ReadUInt16( stream, fileOffset += 0x02 ) );
+
+                Color565 color2 = (double) 2 / 3 * color0 + (double) 1 / 3 * color1;
+                Color565 color3 = (double) 1 / 3 * color0 + (double) 2 / 3 * color1;
+
+                var colors = new[] {
+                    new Color8888( color0, 0xFF ), // bit code 00
+                    new Color8888( color1, 0xFF ), // bit code 01
+                    new Color8888( color2, 0xFF ), // bit code 10
+                    new Color8888( color3, 0xFF )  // bit code 11
+                };
+
+                uint colorTexelData = MemoryHelper.ReadUInt32( stream, fileOffset += 0x02 );
+                for ( var j = 3; j >= 0; j-- ) {
+                    uint colorTexelRowData = ( colorTexelData >> ( j * 0x08 ) ) & 0xFF;
+                    for ( var i = 0; i < 4; i++ ) {
+                        uint index = ( colorTexelRowData >> ( i * 0x02 ) ) & 0x03;
+                        var  pos   = (uint) ( y * width + j * width + x + i );
+                        pixelData[ pos ] = colors[ index ];
+                        pixelData[ pos ].SetAlpha( alphaTexels[ j * 4 + i ] );
+                    }
+                }
+
+                fileOffset += 0x04;
+            }
+
+            return pixelData;
         }
     }
 }

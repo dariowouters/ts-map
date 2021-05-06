@@ -5,12 +5,13 @@ using TsMap2.Scs;
 
 namespace TsMap2.Helper {
     public sealed class StoreHelper {
-        public Dictionary< ulong, TsCity >     Cities           = new Dictionary< ulong, TsCity >();
-        public Dictionary< ulong, TsCountry >  Countries        = new Dictionary< ulong, TsCountry >();
-        public List< TsFerryConnection >       FerryConnections = new List< TsFerryConnection >();
-        public TsGame                          Game;
-        public Dictionary< ulong, TsPrefab >   Prefabs   = new Dictionary< ulong, TsPrefab >();
-        public Dictionary< ulong, TsRoadLook > RoadLooks = new Dictionary< ulong, TsRoadLook >();
+        public Dictionary< ulong, TsCity >       Cities           = new Dictionary< ulong, TsCity >();
+        public Dictionary< ulong, TsCountry >    Countries        = new Dictionary< ulong, TsCountry >();
+        public List< TsFerryConnection >         FerryConnections = new List< TsFerryConnection >();
+        public TsGame                            Game;
+        public Dictionary< ulong, TsMapOverlay > Overlays  = new Dictionary< ulong, TsMapOverlay >();
+        public Dictionary< ulong, TsPrefab >     Prefabs   = new Dictionary< ulong, TsPrefab >();
+        public Dictionary< ulong, TsRoadLook >   RoadLooks = new Dictionary< ulong, TsRoadLook >();
 
         // --
 
@@ -61,6 +62,11 @@ namespace TsMap2.Helper {
         public void AddRoadLook( TsRoadLook roadLook ) {
             if ( roadLook.Token != 0 && !this.RoadLooks.ContainsKey( roadLook.Token ) )
                 this.RoadLooks.Add( roadLook.Token, roadLook );
+        }
+
+        public void AddOverlay( TsMapOverlay mapOverlay ) {
+            if ( !this.Overlays.ContainsKey( mapOverlay.Token ) )
+                this.Overlays.Add( mapOverlay.Token, mapOverlay );
         }
     }
 }
