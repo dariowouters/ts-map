@@ -91,6 +91,9 @@
 
             // -- TsCity
             public const string CityFileName = "city";
+
+            // -- TsRoadLook
+            public const string RoadLook = "road_look";
         }
     }
 }
