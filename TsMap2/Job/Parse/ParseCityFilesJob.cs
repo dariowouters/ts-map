@@ -47,16 +47,16 @@ namespace TsMap2.Job.Parse {
             ScsFile file = this.Store().Rfs.GetFileEntry( path );
 
             if ( file == null ) return null;
-            // LocalizedNames = new Dictionary< string, string >();
             byte[] fileContent = file.Entry.Read();
 
-            string[] lines       = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
-            var      offsetCount = 0;
-            var      XOffsets    = new List< int >();
-            var      YOffsets    = new List< int >();
-            ulong    Token       = 0;
-            string   Name        = null;
-            string   Country     = null;
+            string[] lines             = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
+            var      offsetCount       = 0;
+            var      XOffsets          = new List< int >();
+            var      YOffsets          = new List< int >();
+            ulong    Token             = 0;
+            string   Name              = null;
+            string   Country           = null;
+            string   LocalizationToken = null;
 
             foreach ( string line in lines ) {
                 ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
@@ -66,11 +66,8 @@ namespace TsMap2.Job.Parse {
                     Token = ScsHash.StringToToken( ScsSiiHelper.Trim( value.Split( '.' )[ 1 ] ) );
                 else if ( key == "city_name" )
                     Name = line.Split( '"' )[ 1 ];
-                // else if (key == "city_name_localized")
-                // {
-                //     LocalizationToken = value.Split('"')[1];
-                //     LocalizationToken = LocalizationToken.Replace("@", "");
-                // }
+                else if ( key == "city_name_localized" )
+                    LocalizationToken = value.Split( '"' )[ 1 ].Replace( "@", "" );
                 else if ( key == "country" )
                     Country = value;
                 else if ( key.Contains( "map_x_offsets[]" ) ) {
@@ -85,7 +82,7 @@ namespace TsMap2.Job.Parse {
                             YOffsets.Add( offset );
             }
 
-            return new TsCity( Name, Country, Token, XOffsets, YOffsets );
+            return new TsCity( Name, Country, Token, LocalizationToken, XOffsets, YOffsets );
         }
     }
 }
