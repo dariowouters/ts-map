@@ -90,11 +90,13 @@ namespace TsMap2.Scs {
         public override ScsRootFile GetRootFile() => this.Hf;
 
         public override byte[] Read() {
-            this.Hf.Br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
-            byte[] buff = this.Hf.Br.ReadBytes( this.CompressedSize );
-            return this.IsCompressed()
-                       ? this.Inflate( buff )
-                       : buff;
+            lock ( this.Hf.Br.BaseStream ) {
+                this.Hf.Br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
+                byte[] buff = this.Hf.Br.ReadBytes( this.CompressedSize );
+                return this.IsCompressed()
+                           ? this.Inflate( buff )
+                           : buff;
+            }
         }
 
         public override byte[] Inflate( byte[] buff ) => ZlibStream.UncompressBuffer( buff );
