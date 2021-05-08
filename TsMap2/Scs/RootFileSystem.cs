@@ -75,7 +75,7 @@ namespace TsMap2.Scs {
 
         private Dictionary< ulong, ScsDirectory > Directories { get; }
 
-        private Dictionary< ulong, ScsFile > Files { get; }
+        public Dictionary< ulong, ScsFile > Files { get; }
 
         public void AddHashEntry( ScsHashEntry entry ) {
             if ( entry == null ) return;

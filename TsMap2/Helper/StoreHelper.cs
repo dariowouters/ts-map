@@ -9,9 +9,10 @@ namespace TsMap2.Helper {
         public Dictionary< ulong, TsCountry >    Countries        = new Dictionary< ulong, TsCountry >();
         public List< TsFerryConnection >         FerryConnections = new List< TsFerryConnection >();
         public TsGame                            Game;
-        public Dictionary< ulong, TsMapOverlay > Overlays  = new Dictionary< ulong, TsMapOverlay >();
-        public Dictionary< ulong, TsPrefab >     Prefabs   = new Dictionary< ulong, TsPrefab >();
-        public Dictionary< ulong, TsRoadLook >   RoadLooks = new Dictionary< ulong, TsRoadLook >();
+        public List< string >                    MapSectorFile = new List< string >();
+        public Dictionary< ulong, TsMapOverlay > Overlays      = new Dictionary< ulong, TsMapOverlay >();
+        public Dictionary< ulong, TsPrefab >     Prefabs       = new Dictionary< ulong, TsPrefab >();
+        public Dictionary< ulong, TsRoadLook >   RoadLooks     = new Dictionary< ulong, TsRoadLook >();
 
         // --
 

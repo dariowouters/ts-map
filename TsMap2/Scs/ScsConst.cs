@@ -101,5 +101,12 @@
             public const string MaterialUiCompanyPath = "material/ui/company/small";
             public const string MaterialUiRoadPath    = "material/ui/map/road";
         }
+
+        public static class Map {
+            // -- TsMap
+            public const string MapDirectory     = "map";
+            public const string MapExtension     = "mbd";
+            public const string MapFileExtension = ".base";
+        }
     }
 }
