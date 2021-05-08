@@ -16,17 +16,17 @@ namespace TsMap2.Job {
         protected abstract void OnEnd();
 
         public void Run() {
-            this.t = Task.Factory.StartNew( () => {
-                this.Do();
-
-                foreach ( KeyValuePair< string, ThreadJob > keyValuePair in this._jobPool ) {
-                    ThreadJob job = keyValuePair.Value;
-
-                    job.Run();
-                }
-            } );
-
             try {
+                this.t = Task.Factory.StartNew( () => {
+                    this.Do();
+
+                    foreach ( KeyValuePair< string, ThreadJob > keyValuePair in this._jobPool ) {
+                        ThreadJob job = keyValuePair.Value;
+
+                        job.Run();
+                    }
+                } );
+
                 this.t.Wait();
             } catch ( Exception e ) {
                 Console.WriteLine( e );
