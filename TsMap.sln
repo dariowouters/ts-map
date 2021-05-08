@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap.Canvas", "TsMap.Canva
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap2", "TsMap2\TsMap2.csproj", "{874795BA-A24F-4809-A54F-E86AC8A7100F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap2.UI", "TsMap2.UI\TsMap2.UI.csproj", "{8D897FDC-638F-4144-9B7C-DE559F4371A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap2.UI", "TsMap2.UI\TsMap2.UI.csproj", "{65DB856A-1FBD-4ADF-A9EE-BFCF323F5A9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +31,10 @@ Global
 		{874795BA-A24F-4809-A54F-E86AC8A7100F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{874795BA-A24F-4809-A54F-E86AC8A7100F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{874795BA-A24F-4809-A54F-E86AC8A7100F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D897FDC-638F-4144-9B7C-DE559F4371A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D897FDC-638F-4144-9B7C-DE559F4371A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D897FDC-638F-4144-9B7C-DE559F4371A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D897FDC-638F-4144-9B7C-DE559F4371A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65DB856A-1FBD-4ADF-A9EE-BFCF323F5A9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65DB856A-1FBD-4ADF-A9EE-BFCF323F5A9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65DB856A-1FBD-4ADF-A9EE-BFCF323F5A9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65DB856A-1FBD-4ADF-A9EE-BFCF323F5A9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

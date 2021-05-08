@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.ReactiveUI;
 
 namespace TsMap2.UI {
     internal class Program {
@@ -13,6 +14,7 @@ namespace TsMap2.UI {
         public static AppBuilder BuildAvaloniaApp() =>
             AppBuilder.Configure< App >()
                       .UsePlatformDetect()
-                      .LogToTrace();
+                      .LogToTrace()
+                      .UseReactiveUI();
     }
 }

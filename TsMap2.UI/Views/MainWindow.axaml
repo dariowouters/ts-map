@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TsMap2.UI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="TsMap2.UI.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="TsMap2.UI"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="False"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+
+        <DockPanel>
+            <Border Padding="10" DockPanel.Dock="Top">
+                <Border.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.1" />
+                </Border.Background>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Plop" />
+                    <Button Content="Plop" />
+                    <Button Content="Plop" />
+                </StackPanel>
+            </Border>
+            <Grid DockPanel.Dock="Right" Width="400">
+                <Grid.Background>
+                    <SolidColorBrush Color="White" Opacity="0.05" />
+                </Grid.Background>
+                <StackPanel>
+                    <Button>Right</Button>
+                </StackPanel>
+            </Grid>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Command="{Binding BuyMusicCommand}">Plop</Button>
+                <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </StackPanel>
+        </DockPanel>
+    </Panel>
+
+</Window>
