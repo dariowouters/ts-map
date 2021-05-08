@@ -1,4 +1,4 @@
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParseScsDefFilesJob : ParentThreadJob {
         protected override void Do() {
             this.AddJob( new ParseGameJob() );

@@ -7,7 +7,7 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParseFerryConnectionsFilesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][FerryConnections] Loading" );
@@ -67,13 +67,13 @@ namespace TsMap2.Job.Parse {
 
                     if ( !line.Contains( "}" ) || ferryConnection == null ) continue;
 
-                    this.Store().AddFerryConnection( ferryConnection );
+                    this.Store().Def.AddFerryConnection( ferryConnection );
 
                     ferryConnection = null;
                 }
             }
 
-            Log.Information( "[Job][FerryConnections] Loaded. Found: {0}", this.Store().FerryConnections.Count );
+            Log.Information( "[Job][FerryConnections] Loaded. Found: {0}", this.Store().Def.FerryConnections.Count );
         }
 
         protected override void OnEnd() { }

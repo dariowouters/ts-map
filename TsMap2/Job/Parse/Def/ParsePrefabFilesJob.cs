@@ -7,7 +7,7 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParsePrefabFilesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][Prefab] Loading" );
@@ -59,7 +59,7 @@ namespace TsMap2.Job.Parse {
 
                     if ( !line.Contains( "}" ) || token == 0 || path == "" ) continue;
 
-                    this.Store().AddPrefab( this.Parse( path, token, category ) );
+                    this.Store().Def.AddPrefab( this.Parse( path, token, category ) );
 
                     token    = 0;
                     path     = "";
@@ -67,7 +67,7 @@ namespace TsMap2.Job.Parse {
                 }
             }
 
-            Log.Information( "[Job][Prefab] Loaded. Found: {0}", this.Store().Prefabs.Count );
+            Log.Information( "[Job][Prefab] Loaded. Found: {0}", this.Store().Def.Prefabs.Count );
         }
 
         protected override void OnEnd() { }
@@ -106,13 +106,13 @@ namespace TsMap2.Job.Parse {
             return new TsPrefab( token,
                                  category,
                                  validRoad,
-                                 this.ParsePrefabNodes( stream, nodeCount, nodeOffset ),
-                                 this.ParseSpawnPoint( stream, spawnPointCount, spawnPointOffset ),
-                                 this.ParseMapPoints( stream, mapPointCount, mapPointOffset ),
-                                 this.ParseTriggerPoint( stream, triggerPointCount, triggerPointOffset ) );
+                                 ParsePrefabNodes( stream, nodeCount, nodeOffset ),
+                                 ParseSpawnPoint( stream, spawnPointCount, spawnPointOffset ),
+                                 ParseMapPoints( stream, mapPointCount, mapPointOffset ),
+                                 ParseTriggerPoint( stream, triggerPointCount, triggerPointOffset ) );
         }
 
-        private List< TsPrefabNode > ParsePrefabNodes( byte[] stream, int nodeCount, int nodeOffset ) {
+        private static List< TsPrefabNode > ParsePrefabNodes( byte[] stream, int nodeCount, int nodeOffset ) {
             var prefabNodes = new List< TsPrefabNode >();
 
             for ( var i = 0; i < nodeCount; i++ ) {
@@ -142,7 +142,7 @@ namespace TsMap2.Job.Parse {
             return prefabNodes;
         }
 
-        private List< TsSpawnPoint > ParseSpawnPoint( byte[] stream, int spawnPointCount, int spawnPointOffset ) {
+        private static List< TsSpawnPoint > ParseSpawnPoint( byte[] stream, int spawnPointCount, int spawnPointOffset ) {
             var spawnPoints = new List< TsSpawnPoint >();
 
             for ( var i = 0; i < spawnPointCount; i++ ) {
@@ -159,7 +159,7 @@ namespace TsMap2.Job.Parse {
             return spawnPoints;
         }
 
-        private List< TsMapPoint > ParseMapPoints( byte[] stream, int mapPointCount, int mapPointOffset ) {
+        private static List< TsMapPoint > ParseMapPoints( byte[] stream, int mapPointCount, int mapPointOffset ) {
             var mapPoints = new List< TsMapPoint >();
 
             for ( var i = 0; i < mapPointCount; i++ ) {
@@ -229,7 +229,7 @@ namespace TsMap2.Job.Parse {
             return mapPoints;
         }
 
-        private List< TsTriggerPoint > ParseTriggerPoint( byte[] stream, int triggerPointCount, int triggerPointOffset ) {
+        private static List< TsTriggerPoint > ParseTriggerPoint( byte[] stream, int triggerPointCount, int triggerPointOffset ) {
             var triggerPoints = new List< TsTriggerPoint >();
 
             for ( var i = 0; i < triggerPointCount; i++ ) {

@@ -5,7 +5,7 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParseCityFilesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][City] Loading" );
@@ -34,11 +34,11 @@ namespace TsMap2.Job.Parse {
                     if ( !line.Contains( "@include" ) ) continue;
 
                     string path = ScsHelper.GetFilePath( line.Split( '"' )[ 1 ], "def" );
-                    this.Store().AddCity( this.Parse( path ) );
+                    this.Store().Def.AddCity( this.Parse( path ) );
                 }
             }
 
-            Log.Information( "[Job][City] Loaded. Found: {0}", this.Store().Cities.Count );
+            Log.Information( "[Job][City] Loaded. Found: {0}", this.Store().Def.Cities.Count );
         }
 
         protected override void OnEnd() { }
@@ -51,38 +51,38 @@ namespace TsMap2.Job.Parse {
 
             string[] lines             = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
             var      offsetCount       = 0;
-            var      XOffsets          = new List< int >();
-            var      YOffsets          = new List< int >();
-            ulong    Token             = 0;
-            string   Name              = null;
-            string   Country           = null;
-            string   LocalizationToken = null;
+            var      xOffsets          = new List< int >();
+            var      yOffsets          = new List< int >();
+            ulong    token             = 0;
+            string   name              = null;
+            string   country           = null;
+            string   localizationToken = null;
 
             foreach ( string line in lines ) {
                 ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
                 if ( !validLine ) continue;
 
                 if ( key == "city_data" )
-                    Token = ScsHash.StringToToken( ScsSiiHelper.Trim( value.Split( '.' )[ 1 ] ) );
+                    token = ScsHash.StringToToken( ScsSiiHelper.Trim( value.Split( '.' )[ 1 ] ) );
                 else if ( key == "city_name" )
-                    Name = line.Split( '"' )[ 1 ];
+                    name = line.Split( '"' )[ 1 ];
                 else if ( key == "city_name_localized" )
-                    LocalizationToken = value.Split( '"' )[ 1 ].Replace( "@", "" );
+                    localizationToken = value.Split( '"' )[ 1 ].Replace( "@", "" );
                 else if ( key == "country" )
-                    Country = value;
+                    country = value;
                 else if ( key.Contains( "map_x_offsets[]" ) ) {
                     if ( ++offsetCount > 4 )
                         if ( int.TryParse( value, out int offset ) )
-                            XOffsets.Add( offset );
+                            xOffsets.Add( offset );
 
                     if ( offsetCount == 8 ) offsetCount = 0;
                 } else if ( key.Contains( "map_y_offsets[]" ) )
                     if ( ++offsetCount > 4 )
                         if ( int.TryParse( value, out int offset ) )
-                            YOffsets.Add( offset );
+                            yOffsets.Add( offset );
             }
 
-            return new TsCity( Name, Country, Token, LocalizationToken, XOffsets, YOffsets );
+            return new TsCity( name, country, token, localizationToken, xOffsets, yOffsets );
         }
     }
 }

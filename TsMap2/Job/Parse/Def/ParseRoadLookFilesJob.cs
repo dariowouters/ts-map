@@ -6,7 +6,7 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParseRoadLookFilesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][RoadLook] Loading" );
@@ -50,11 +50,11 @@ namespace TsMap2.Job.Parse {
                     }
 
                     if ( line.Contains( "}" ) && roadLook != null )
-                        this.Store().AddRoadLook( roadLook );
+                        this.Store().Def.AddRoadLook( roadLook );
                 }
             }
 
-            Log.Information( "[Job][RoadLook] Loaded. Found: {0}", this.Store().RoadLooks.Count );
+            Log.Information( "[Job][RoadLook] Loaded. Found: {0}", this.Store().Def.RoadLooks.Count );
         }
 
         protected override void OnEnd() { }

@@ -9,7 +9,7 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParseOverlaysJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][MapOverlay] Loading" );
@@ -55,28 +55,27 @@ namespace TsMap2.Job.Parse {
                 foreach ( string line in lines ) {
                     ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
                     if ( !validLine ) continue;
-                    if ( key == "texture" ) {
-                        string tobjPath = ScsHelper.CombinePath( matFile.GetLocalPath(), value.Split( '"' )[ 1 ] );
+                    if ( key != "texture" ) continue;
 
-                        byte[] tobjData = this.Store().Rfs.GetFileEntry( tobjPath )?.Entry?.Read();
+                    string objPath = ScsHelper.CombinePath( matFile.GetLocalPath(), value.Split( '"' )[ 1 ] );
 
-                        if ( tobjData == null ) break;
+                    byte[] objData = this.Store().Rfs.GetFileEntry( objPath )?.Entry?.Read();
 
-                        string path =
-                            ScsHelper.GetFilePath( Encoding.UTF8.GetString( tobjData, 0x30, tobjData.Length - 0x30 ) );
+                    if ( objData == null ) break;
 
-                        string name = matFile.GetFileName();
-                        if ( name.StartsWith( "map" ) ) continue;
-                        if ( name.StartsWith( "road_" ) ) name = name.Substring( 5 );
+                    string path = ScsHelper.GetFilePath( Encoding.UTF8.GetString( objData, 0x30, objData.Length - 0x30 ) );
 
-                        ulong token = ScsHash.StringToToken( name );
+                    string name = matFile.GetFileName();
+                    if ( name.StartsWith( "map" ) ) continue;
+                    if ( name.StartsWith( "road_" ) ) name = name.Substring( 5 );
 
-                        this.Store().AddOverlay( this.Parse( path, token ) );
-                    }
+                    ulong token = ScsHash.StringToToken( name );
+
+                    this.Store().Def.AddOverlay( this.Parse( path, token ) );
                 }
             }
 
-            Log.Information( "[Job][MapOverlay] Loaded. Found: {0}", this.Store().Overlays.Count );
+            Log.Information( "[Job][MapOverlay] Loaded. Found: {0}", this.Store().Def.Overlays.Count );
         }
 
         protected override void OnEnd() { }
@@ -105,7 +104,7 @@ namespace TsMap2.Job.Parse {
                 return new TsMapOverlay( overlayBitmap, token );
             }
 
-            Log.Warning( $"Map Overlay file not found, {0}", path );
+            Log.Warning( "Map Overlay file not found, {0}", path );
             return null;
         }
 
@@ -121,8 +120,8 @@ namespace TsMap2.Job.Parse {
             uint height = MemoryHelper.ReadUInt32( stream, 0x0C );
             uint width  = MemoryHelper.ReadUInt32( stream, 0x10 );
 
-            uint        fourCc         = MemoryHelper.ReadUInt32( stream, 0x54 );
-            Color8888[] overlayRawData = null;
+            uint        fourCc = MemoryHelper.ReadUInt32( stream, 0x54 );
+            Color8888[] overlayRawData;
 
             if ( fourCc == 861165636 )
                 overlayRawData = ScsOverlayHelper.ParseDxt3( stream, width, height );

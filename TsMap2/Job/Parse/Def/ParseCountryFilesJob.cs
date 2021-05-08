@@ -6,7 +6,7 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Def {
     public class ParseCountryFilesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][Country] Loading" );
@@ -42,13 +42,13 @@ namespace TsMap2.Job.Parse {
                     string path = ScsHelper.GetFilePath( line.Split( '"' )[ 1 ], ScsPath.Def.DefFolderName );
                     // var    country = new TsCountry();
 
-                    this.Store().AddCountry( this.Parse( path ) );
+                    this.Store().Def.AddCountry( this.Parse( path ) );
                     // if ( country.Token != 0 && !this._countriesLookup.ContainsKey( country.Token ) )
                     //     this._countriesLookup.Add( country.Token, country );
                 }
             }
 
-            Log.Information( "[Job][Country] Loaded. Found: {0}", this.Store().Countries.Count );
+            Log.Information( "[Job][Country] Loaded. Found: {0}", this.Store().Def.Countries.Count );
         }
 
         protected override void OnEnd() { }
