@@ -35,6 +35,7 @@ namespace TsMap2.Job.Parse {
             }
 
 
+            var sectorFiles = new List< string >();
             foreach ( ScsFile file in mbd ) {
                 string mapName = file.GetFileName();
                 // this.IsEts2 = !( mapName == "usa" );
@@ -45,10 +46,11 @@ namespace TsMap2.Job.Parse {
                     throw new JobException( message, this.JobName(), mapName );
                 }
 
-                var sectorFiles = new List< string >();
-                sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
+                sectorFiles = mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList();
+                // sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
 
-                foreach ( string sectorFile in sectorFiles ) this.Parse( sectorFile );
+                foreach ( string sectorFile in sectorFiles )
+                    this.Parse( sectorFile );
             }
 
             // if ( _sectorFiles.Count <= 0 ) {
@@ -57,10 +59,10 @@ namespace TsMap2.Job.Parse {
 
             // long preMapParseTime = DateTime.Now.Ticks;
             // this.Store().Sectors = _sectorFiles.Select( file => new TsSector( this, file ) ).ToList();
-            // this.Store().Sectors.ForEach( sec => sec.Parse() );
+            // sectorFiles.ForEach( this.Parse );
             // this.Store().Sectors.ForEach( sec => sec.ClearFileData() );
 
-            Log.Information( "[Job][MapFiles] RoadItems: {0}", this.Store().Map.RoadItems.Count );
+            Log.Information( "[Job][MapFiles] Loaded. RoadItems: {0}", this.Store().Map.RoadItems.Count );
         }
 
         protected override void OnEnd() { }

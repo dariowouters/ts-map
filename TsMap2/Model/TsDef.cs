@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Serilog;
 using TsMap2.Scs;
 
 namespace TsMap2.Model {
@@ -21,19 +20,15 @@ namespace TsMap2.Model {
 
 
         public void AddRoadLook( TsRoadLook roadLook ) {
-            if ( roadLook.Token != 0 && !this.RoadLooks.ContainsKey( roadLook.Token ) ) {
-                Log.Debug( "R: {0}", roadLook.Token );
+            if ( roadLook.Token != 0 && !this.RoadLooks.ContainsKey( roadLook.Token ) ) // Log.Debug( "R: {0}", roadLook.Token );
                 this.RoadLooks.Add( roadLook.Token, roadLook );
-            }
         }
 
-        public TsRoadLook LookupRoadLook( ulong lookId ) {
-            Log.Debug( "L: {0}", lookId );
-
-            return this.RoadLooks.ContainsKey( lookId )
-                       ? this.RoadLooks[ lookId ]
-                       : null;
-        }
+        public TsRoadLook LookupRoadLook( ulong lookId ) =>
+            // Log.Debug( "L: {0}", lookId );
+            this.RoadLooks.ContainsKey( lookId )
+                ? this.RoadLooks[ lookId ]
+                : null;
 
         public TsPrefab LookupPrefab( ulong prefabId ) =>
             this.Prefabs.ContainsKey( prefabId )
