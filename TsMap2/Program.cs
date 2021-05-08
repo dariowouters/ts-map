@@ -3,6 +3,7 @@ using Serilog;
 using TsMap2.Helper;
 using TsMap2.Job;
 using TsMap2.Job.Parse;
+using TsMap2.Job.Parse.Def;
 
 namespace TsMap2 {
     internal class Program {
@@ -14,9 +15,6 @@ namespace TsMap2 {
             // Console.WriteLine( "" );
 
             LoggerHelper.Init();
-
-            // FIXME: Crash sometime with Zlib zip.
-            // Check here: https://stackoverflow.com/questions/19621888/decompress-bytes-using-deflatestream
 
             Log.Information( "HomeDir: {0}", AppPath.HomeDirApp );
 
