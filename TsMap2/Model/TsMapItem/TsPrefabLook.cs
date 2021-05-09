@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace TsMap {
+namespace TsMap2.Model.TsMapItem {
     public abstract class TsPrefabLook {
         protected readonly List< PointF > Points;
 

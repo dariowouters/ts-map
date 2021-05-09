@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Serilog;
-using TsMap;
 using TsMap2.Helper;
 using TsMap2.Scs;
 
