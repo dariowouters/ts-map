@@ -4,23 +4,26 @@ using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsItem {
-        public const int    VegetationSphereBlockSize    = 0x14;
-        public const int    VegetationSphereBlockSize825 = 0x10;
-        protected    TsNode EndNode;
-        protected    ulong  EndNodeUid;
-        protected    TsNode StartNode;
-        protected    ulong  StartNodeUid;
+        protected const int VegetationSphereBlockSize    = 0x14;
+        protected const int VegetationSphereBlockSize825 = 0x10;
 
-        public TsItem( ulong startNodeUid, ulong endNodeUid, ulong uid, int blockSize, bool valid, TsItemType type, float x, float z, bool hidden ) {
-            this.StartNodeUid = startNodeUid;
-            this.EndNodeUid   = endNodeUid;
-            this.Uid          = uid;
-            this.BlockSize    = blockSize;
-            this.Valid        = valid;
-            this.Type         = type;
-            this.X            = x;
-            this.Z            = z;
-            this.Hidden       = hidden;
+        protected readonly TsSector Sector;
+        protected          TsNode   EndNode;
+        protected          ulong    EndNodeUid;
+        protected          TsNode   StartNode;
+        protected          ulong    StartNodeUid;
+
+        public TsItem( TsSector sector, int offset ) {
+            this.Sector = sector;
+
+            int fileOffset = offset;
+
+            this.Type = (TsItemType) MemoryHelper.ReadUInt32( this.Sector.Stream, fileOffset );
+
+            this.Uid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x04 );
+
+            this.X = MemoryHelper.ReadSingle( this.Sector.Stream, fileOffset += 0x08 );
+            this.Z = MemoryHelper.ReadSingle( this.Sector.Stream, fileOffset += 0x08 );
         }
 
         public ulong Uid { get; }
@@ -37,13 +40,13 @@ namespace TsMap2.Model.TsMapItem {
         public bool       Hidden { get; protected set; }
 
         public TsNode GetStartNode() {
-            return this.StartNode ??= _store().Map.GetNodeByUid( this.StartNodeUid );
+            return this.StartNode ??= Store().Map.GetNodeByUid( this.StartNodeUid );
         }
 
         public TsNode GetEndNode() {
-            return this.EndNode ??= _store().Map.GetNodeByUid( this.EndNodeUid );
+            return this.EndNode ??= Store().Map.GetNodeByUid( this.EndNodeUid );
         }
 
-        private static StoreHelper _store() => StoreHelper.Instance;
+        protected static StoreHelper Store() => StoreHelper.Instance;
     }
 }

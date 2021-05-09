@@ -79,5 +79,12 @@ namespace TsMap2.Model {
             if ( !this.Overlays.ContainsKey( mapOverlay.Token ) )
                 this.Overlays.Add( mapOverlay.Token, mapOverlay );
         }
+
+        public void AddFerryPortLocation( ulong ferryPortId, float x, float z ) {
+            IEnumerable< TsFerryConnection > ferry =
+                this.FerryConnections.Where( item => item.StartPortToken  == ferryPortId
+                                                     || item.EndPortToken == ferryPortId );
+            foreach ( TsFerryConnection connection in ferry ) connection.SetPortLocation( ferryPortId, x, z );
+        }
     }
 }

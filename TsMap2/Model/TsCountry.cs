@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace TsMap2.Model {
     public class TsCountry {
@@ -17,5 +18,17 @@ namespace TsMap2.Model {
             this.X           = x;
             this.Y           = y;
         }
+
+        [ JsonIgnore ] public string                       LocalizationToken { get; }
+        [ JsonIgnore ] public Dictionary< string, string > LocalizedNames    { get; }
+
+        public void AddLocalizedName( string locale, string name ) {
+            if ( !this.LocalizedNames.ContainsKey( locale ) ) this.LocalizedNames.Add( locale, name );
+        }
+
+        public string GetLocalizedName( string locale ) =>
+            this.LocalizedNames.ContainsKey( locale )
+                ? this.LocalizedNames[ locale ]
+                : this.Name;
     }
 }

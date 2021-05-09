@@ -3,9 +3,9 @@ using TsMap2.Scs;
 
 namespace TsMap2.Helper {
     public sealed class StoreHelper {
-        public TsDef  Def = new TsDef();
-        public TsGame Game;
-        public TsMap  Map = new TsMap();
+        public TsDef       Def = new TsDef();
+        public TsGame      Game;
+        public Model.TsMap Map = new Model.TsMap();
 
         // --
 

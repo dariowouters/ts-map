@@ -7,7 +7,8 @@ namespace TsMap2.Model {
         public string Ets2Path     = "C:\\Plop";
         public string FallbackGame = TsGame.GAME_ETS;
         public string Name;
-        public string OutputPath = Path.Combine( AppPath.HomeDirApp, "Output" );
+        public string OutputPath           = Path.Combine( AppPath.HomeDirApp, "Output" );
+        public string SelectedLocalization = "";
 
         public string GetActiveGamePath() {
             if ( this.FallbackGame == TsGame.GAME_ETS )

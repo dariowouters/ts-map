@@ -4,6 +4,9 @@ namespace TsMap2.Model.TsMapItem {
     public class TsSector {
         public readonly TsItemType ItemType;
         private         bool       _empty;
+        public          ulong      Uid;
+        public          float      X;
+        public          float      Z;
 
         public TsSector( TsItemType itemType, string filePath, int version, byte[] stream ) {
             this.ItemType = itemType;

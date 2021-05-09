@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Serilog;
-using TsMap2.Factory.TsItems;
 using TsMap2.Helper;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
@@ -58,11 +57,18 @@ namespace TsMap2.Job.Parse {
             // }
 
             // long preMapParseTime = DateTime.Now.Ticks;
-            // this.Store().Sectors = _sectorFiles.Select( file => new TsSector( this, file ) ).ToList();
+            // this.Store().Sectors = _sectorFiles.Select( file => new TsSector( sector, file ) ).ToList();
             // sectorFiles.ForEach( this.Parse );
             // this.Store().Sectors.ForEach( sec => sec.ClearFileData() );
 
-            Log.Information( "[Job][MapFiles] Loaded. RoadItems: {0}", this.Store().Map.RoadItems.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Roads: {0}",            this.Store().Map.Roads.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Prefabs: {0}",          this.Store().Map.Prefabs.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Companies: {0}",        this.Store().Map.Companies.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Cities: {0}",           this.Store().Map.Cities.Count );
+            Log.Information( "[Job][MapFiles] Loaded. MapOverlays: {0}",      this.Store().Map.MapOverlays.Count );
+            Log.Information( "[Job][MapFiles] Loaded. FerryConnections: {0}", this.Store().Map.FerryConnections.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Triggers: {0}",         this.Store().Map.Triggers.Count );
+            Log.Information( "[Job][MapFiles] Loaded. MapAreas: {0}",         this.Store().Map.MapAreas.Count );
         }
 
         protected override void OnEnd() { }
@@ -95,44 +101,101 @@ namespace TsMap2.Job.Parse {
                 sector = new TsSector( type, path, version, stream );
                 if ( version <= 825 ) type++; // after version 825 all types were pushed up 1
 
+                TsItem item;
                 switch ( type ) {
                     case TsItemType.Road: {
-                        TsRoadItem item = new TsRoadItemFactory( sector ).Retrieve( lastOffset );
-
-                        // var item = new TsRoadItem( this, lastOffset );
+                        item       =  new TsRoadItem( sector, lastOffset );
                         lastOffset += item.BlockSize;
-                        if ( item.Valid ) this.Store().Map.RoadItems.Add( item );
+                        if ( item.Valid ) this.Store().Map.Roads.Add( (TsRoadItem) item );
                         break;
                     }
-                    case TsItemType.Terrain:        break;
-                    case TsItemType.Building:       break;
-                    case TsItemType.Prefab:         break;
-                    case TsItemType.Model:          break;
-                    case TsItemType.Company:        break;
-                    case TsItemType.Service:        break;
-                    case TsItemType.CutPlane:       break;
-                    case TsItemType.Mover:          break;
-                    case TsItemType.NoWeather:      break;
-                    case TsItemType.City:           break;
-                    case TsItemType.Hinge:          break;
-                    case TsItemType.MapOverlay:     break;
-                    case TsItemType.Ferry:          break;
-                    case TsItemType.Sound:          break;
-                    case TsItemType.Garage:         break;
-                    case TsItemType.CameraPoint:    break;
-                    case TsItemType.Trigger:        break;
-                    case TsItemType.FuelPump:       break;
-                    case TsItemType.RoadSideItem:   break;
-                    case TsItemType.BusStop:        break;
-                    case TsItemType.TrafficRule:    break;
-                    case TsItemType.BezierPatch:    break;
-                    case TsItemType.Compound:       break;
-                    case TsItemType.TrajectoryItem: break;
-                    case TsItemType.MapArea:        break;
-                    case TsItemType.FarModel:       break;
-                    case TsItemType.Curve:          break;
-                    case TsItemType.Camera:         break;
-                    case TsItemType.Cutscene:       break;
+                    case TsItemType.Prefab: {
+                        item       =  new TsPrefabItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.Prefabs.Add( (TsPrefabItem) item );
+                        break;
+                    }
+                    case TsItemType.Company: {
+                        item       =  new TsCompanyItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.Companies.Add( (TsCompanyItem) item );
+                        break;
+                    }
+                    case TsItemType.Service: {
+                        item       =  new TsServiceItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.CutPlane: {
+                        item       =  new TsCutPlaneItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.City: {
+                        item       =  new TsCityItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.Cities.Add( (TsCityItem) item );
+                        break;
+                    }
+                    case TsItemType.MapOverlay: {
+                        item       =  new TsMapOverlayItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.MapOverlays.Add( (TsMapOverlayItem) item );
+                        break;
+                    }
+                    case TsItemType.Ferry: {
+                        item       =  new TsFerryItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.FerryConnections.Add( (TsFerryItem) item );
+                        break;
+                    }
+                    case TsItemType.Garage: {
+                        item       =  new TsGarageItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.Trigger: {
+                        item       =  new TsTriggerItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.Triggers.Add( (TsTriggerItem) item );
+                        break;
+                    }
+                    case TsItemType.FuelPump: {
+                        item       =  new TsFuelPumpItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.RoadSideItem: {
+                        item       =  new TsRoadSideItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.BusStop: {
+                        item       =  new TsBusStopItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.TrafficRule: {
+                        item       =  new TsTrafficRuleItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.TrajectoryItem: {
+                        item       =  new TsTrajectoryItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.MapArea: {
+                        item       =  new TsMapAreaItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        if ( item.Valid ) this.Store().Map.MapAreas.Add( (TsMapAreaItem) item );
+                        break;
+                    }
+                    case TsItemType.Cutscene: {
+                        item       =  new TsCutsceneItem( sector, lastOffset );
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
                     default: {
                         Log.Warning( "Unknown Type: {0} in {1} @ {2}", type, Path.GetFileName( path ), lastOffset );
                         break;
