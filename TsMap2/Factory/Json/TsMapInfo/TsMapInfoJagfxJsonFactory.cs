@@ -23,6 +23,6 @@ namespace TsMap2.Factory.Json.TsMapInfo {
 
         public override T Convert( JObject raw ) => throw new NotImplementedException();
 
-        public override JObject RawData() => throw new NotImplementedException();
+        public override JContainer RawData() => throw new NotImplementedException();
     }
 }

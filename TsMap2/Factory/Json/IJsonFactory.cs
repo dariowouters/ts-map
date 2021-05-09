@@ -8,7 +8,7 @@ namespace TsMap2.Factory.Json {
         void   Save();
         T      Load();
 
-        JObject RawData();
+        JContainer RawData();
 
         T Convert( JObject raw );
     }

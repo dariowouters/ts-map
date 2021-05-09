@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace TsMap2.Helper {
     public static class JsonHelper {
-        public static void SaveFile( string fileName, string path, JObject data ) {
+        public static void SaveFile( string fileName, string path, JContainer data ) {
             string fullPath = Path.Combine( path, fileName );
 
             Directory.CreateDirectory( path );

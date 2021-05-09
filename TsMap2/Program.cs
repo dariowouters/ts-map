@@ -2,6 +2,7 @@
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Job;
+using TsMap2.Job.Export;
 using TsMap2.Job.Parse;
 using TsMap2.Job.Parse.Def;
 
@@ -27,6 +28,9 @@ namespace TsMap2 {
 
                 var m = new ParseMapFilesJob();
                 m.RunAndWait();
+
+                var e = new ExportJob();
+                e.Run();
             } catch ( Exception e ) {
                 Log.Error( "Unexpected Exception: {0} | Stack: {1}", e.GetBaseException().Message, e.GetBaseException().StackTrace );
                 Log.Error( "Unexpected Exception: {0} | Stack: {1}", e.Message,                    e.StackTrace );

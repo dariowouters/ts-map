@@ -1,15 +1,22 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using TsMap2.Helper;
+using TsMap2.Model;
 
 namespace TsMap2.Factory.Json {
-    public class TsCitiesJsonFactory< T > : JsonFactory< T > {
-        public override string GetFileName() => "Cities.json";
+    public class TsCitiesJsonFactory : JsonFactory< List< TsCity > > {
+        public TsCitiesJsonFactory( List< TsCity > cities ) => this._cities = cities;
+        private List< TsCity > _cities { get; }
 
-        public override string GetSavingPath()  => throw new NotImplementedException();
+        public override string GetFileName() => AppPath.CitiesFileName;
+
+        public override string GetSavingPath() => this.Store.Settings.OutputPath;
+
         public override string GetLoadingPath() => throw new NotImplementedException();
 
-        public override T Convert( JObject raw ) => throw new NotImplementedException();
+        public override List< TsCity > Convert( JObject raw ) => raw.ToObject< List< TsCity > >();
 
-        public override JObject RawData() => throw new NotImplementedException();
+        public override JContainer RawData() => JArray.FromObject( this._cities );
     }
 }

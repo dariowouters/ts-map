@@ -16,6 +16,6 @@ namespace TsMap2.Factory.Json {
 
         public override Settings Convert( JObject raw ) => raw.ToObject< Settings >();
 
-        public override JObject RawData() => JObject.FromObject( this._settings );
+        public override JContainer RawData() => JObject.FromObject( this._settings );
     }
 }

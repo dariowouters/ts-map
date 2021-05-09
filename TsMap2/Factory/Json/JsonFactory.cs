@@ -4,7 +4,8 @@ using TsMap2.Helper;
 
 namespace TsMap2.Factory.Json {
     public abstract class JsonFactory< T > : IJsonFactory< T > {
-        public abstract string GetFileName();
+        protected       StoreHelper Store => StoreHelper.Instance;
+        public abstract string      GetFileName();
 
         public abstract string GetSavingPath();
 
@@ -12,7 +13,7 @@ namespace TsMap2.Factory.Json {
 
         public abstract T Convert( JObject raw );
 
-        public abstract JObject RawData();
+        public abstract JContainer RawData();
 
         public void Save() {
             this.Save( this.GetSavingPath() );

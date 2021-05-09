@@ -1,33 +1,46 @@
-﻿using System.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TsMap2.Helper;
+﻿using System.Collections.Generic;
+using Serilog;
+using TsMap2.Factory.Json;
+using TsMap2.Model;
+using TsMap2.Model.TsMapItem;
+using TsMap2.Scs;
 
 namespace TsMap2.Job.Export {
     public class ExportCitiesJob : ThreadJob {
         protected override void Do() {
-            if ( !Directory.Exists( this.Store().Settings.OutputPath ) ) return;
-            var citiesJArr = new JArray();
+            // if ( !Directory.Exists( this.Store().Settings.OutputPath ) ) return;
 
-            // TODO: Continue here: Use one only array
-            // foreach ( TsCityItem city in this.Cities ) {
-            //     if ( city.Hidden ) continue;
-            //     JObject cityJObj = JObject.FromObject( city.City );
-            //     cityJObj[ "X" ] = city.X;
-            //     cityJObj[ "Y" ] = city.Z;
-            //     if ( this._countriesLookup.ContainsKey( ScsHash.StringToToken( city.City.Country ) ) ) {
-            //         TsCountry country = this._countriesLookup[ ScsHash.StringToToken( city.City.Country ) ];
-            //         cityJObj[ "CountryId" ] = country.CountryId;
-            //     } else
-            //         Log.Warning( $"Could not find country for {city.City.Name}" );
-            //
-            //     if ( exportFlags.IsActive( ExportFlags.CityLocalizedNames ) )
-            //         cityJObj[ "LocalizedNames" ] = JObject.FromObject( city.City.LocalizedNames );
-            //
-            //     citiesJArr.Add( cityJObj );
-            // }
+            var cities = new List< TsCity >();
 
-            File.WriteAllText( Path.Combine( this.Store().Settings.OutputPath, AppPath.CitiesFileName ), citiesJArr.ToString( Formatting.Indented ) );
+            // TODO: Match country code between city and country
+            foreach ( KeyValuePair< ulong, TsCity > kv in this.Store().Def.Cities ) {
+                TsCity city = kv.Value;
+
+                // if ( city.Hidden ) continue;
+
+                TsMapCityItem item = this.Store().Map.Cities.Find( c => c.City.Token == city.Token );
+
+                if ( item != null ) {
+                    city.X = item.X;
+                    city.Y = item.Z;
+                }
+
+                if ( this.Store().Def.Countries.ContainsKey( ScsHash.StringToToken( city.CountryName ) ) ) {
+                    TsCountry country = this.Store().Def.Countries[ ScsHash.StringToToken( city.CountryName ) ];
+                    city.Country = country;
+                    // cityJObj[ "CountryId" ] = country.CountryId;
+                } else
+                    Log.Warning( $"Could not find country for {city.Name}" );
+
+                // if ( exportFlags.IsActive( ExportFlags.CityLocalizedNames ) )
+                // cityJObj[ "LocalizedNames" ] = JObject.FromObject( city.City.LocalizedNames );
+
+                // citiesJArr.Add( cityJObj );
+                cities.Add( city );
+            }
+
+            var cityFactory = new TsCitiesJsonFactory( cities );
+            cityFactory.Save();
         }
 
         protected override void OnEnd() { }

@@ -37,9 +37,9 @@ namespace TsMap2.Model.TsMapItem {
 
         public override string ToString() {
             if ( this.City == null ) return "Error";
-            TsCountry country = Store().Def.GetCountryByTokenName( this.City.Country );
+            TsCountry country = Store().Def.GetCountryByTokenName( this.City.CountryName );
             string countryName = country == null
-                                     ? this.City.Country
+                                     ? this.City.CountryName
                                      : country.GetLocalizedName( Store().Settings.SelectedLocalization );
             return $"{countryName} - {this.City.GetLocalizedName( Store().Settings.SelectedLocalization )}";
         }
