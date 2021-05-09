@@ -8,5 +8,7 @@
 
     <Application.Styles>
         <FluentTheme Mode="Dark" />
+        <StyleInclude Source="avares://TsMap2.UI/Icons.axaml" />
+        <StyleInclude Source="avares://TsMap2.UI/Button.axaml" />
     </Application.Styles>
 </Application>

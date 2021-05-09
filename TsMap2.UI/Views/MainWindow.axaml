@@ -28,15 +28,42 @@
         </ExperimentalAcrylicBorder>
 
         <DockPanel>
-            <Border Padding="10" DockPanel.Dock="Top">
+            <Border Padding="0" DockPanel.Dock="Top">
                 <Border.Background>
                     <SolidColorBrush Color="Black" Opacity="0.1" />
                 </Border.Background>
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Plop" />
-                    <Button Content="Plop" />
-                    <Button Content="Plop" />
-                </StackPanel>
+                <Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                        HorizontalAlignment="Center">
+                                <PathIcon Margin="5, 0, 0,0" Data="{StaticResource store_microsoft_regular}" />
+                                <TextBlock Margin="10,5">Export</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                        HorizontalAlignment="Center">
+                                <PathIcon Margin="5, 0, 0,0" Data="{StaticResource store_microsoft_regular}" />
+                                <TextBlock Margin="10,5">Setting</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Right">
+                        <!-- <Button> -->
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Margin="5, 0, 10, 0">
+                            <TextBlock Margin="10">Ready</TextBlock>
+                            <Ellipse
+                                Width="10"
+                                Height="10"
+                                Fill="Green" />
+                        </StackPanel>
+                        <!-- </Button> -->
+                    </StackPanel>
+                </Grid>
             </Border>
             <Grid DockPanel.Dock="Right" Width="400">
                 <Grid.Background>
