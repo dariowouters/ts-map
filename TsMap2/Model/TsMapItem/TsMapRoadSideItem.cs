@@ -3,8 +3,8 @@ using Serilog;
 using TsMap2.Helper;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsRoadSideItem : TsItem {
-        public TsRoadSideItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapRoadSideItem : TsMapItem {
+        public TsMapRoadSideItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
             if ( this.Sector.Version < 846 )
                 this.TsRoadSideItem825( startOffset );

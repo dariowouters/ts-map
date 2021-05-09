@@ -4,8 +4,8 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsMapOverlayItem : TsItem {
-        public TsMapOverlayItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapMapOverlayItem : TsMapItem {
+        public TsMapMapOverlayItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             this.TsMapOverlayItem825( startOffset );
         }

@@ -3,8 +3,8 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsMapAreaItem : TsItem {
-        public TsMapAreaItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapMapAreaItem : TsMapItem {
+        public TsMapMapAreaItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             this.TsMapAreaItem825( startOffset );
         }

@@ -2,8 +2,8 @@
 using Serilog;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsBusStopItem : TsItem {
-        public TsBusStopItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapBusStopItem : TsMapItem {
+        public TsMapBusStopItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
             if ( this.Sector.Version < 836 || this.Sector.Version >= 847 )
                 this.TsBusStopItem825( startOffset );

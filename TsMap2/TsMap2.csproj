@@ -13,8 +13,4 @@
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00909"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Helper\MapItem"/>
-    </ItemGroup>
-
 </Project>

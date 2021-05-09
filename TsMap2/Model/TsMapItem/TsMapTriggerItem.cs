@@ -5,8 +5,8 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsTriggerItem : TsItem {
-        public TsTriggerItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapTriggerItem : TsMapItem {
+        public TsMapTriggerItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             if ( this.Sector.Version < 829 )
                 this.TsTriggerItem825( startOffset );

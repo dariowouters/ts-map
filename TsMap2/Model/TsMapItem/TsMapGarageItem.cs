@@ -3,8 +3,8 @@ using Serilog;
 using TsMap2.Helper;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsGarageItem : TsItem {
-        public TsGarageItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapGarageItem : TsMapItem {
+        public TsMapGarageItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
             int fileOffset = startOffset + 0x34; // Set position at start of flags
             if ( this.Sector.Version < 855 )

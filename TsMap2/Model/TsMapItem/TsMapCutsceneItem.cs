@@ -3,8 +3,8 @@ using Serilog;
 using TsMap2.Helper;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsCutsceneItem : TsItem {
-        public TsCutsceneItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapCutsceneItem : TsMapItem {
+        public TsMapCutsceneItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
 
             if ( this.Sector.Version >= 884 )

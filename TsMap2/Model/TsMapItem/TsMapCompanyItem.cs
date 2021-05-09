@@ -5,8 +5,8 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsCompanyItem : TsItem {
-        public TsCompanyItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapCompanyItem : TsMapItem {
+        public TsMapCompanyItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             this.Nodes = new List< ulong >();
             if ( this.Sector.Version < 858 )

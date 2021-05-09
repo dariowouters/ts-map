@@ -8,7 +8,7 @@ using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
-    public class ParsePrefabFilesJob : ThreadJob {
+    public class ParseDefPrefabsJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][Prefab] Loading" );
 

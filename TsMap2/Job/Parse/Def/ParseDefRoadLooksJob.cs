@@ -7,7 +7,7 @@ using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
-    public class ParseRoadLookFilesJob : ThreadJob {
+    public class ParseDefRoadLooksJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][RoadLook] Loading" );
 

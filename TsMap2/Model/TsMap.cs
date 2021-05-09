@@ -3,14 +3,14 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Model {
     public class TsMap {
-        public readonly List< TsCityItem >          Cities           = new List< TsCityItem >();
-        public readonly List< TsCompanyItem >       Companies        = new List< TsCompanyItem >();
-        public readonly List< TsFerryItem >         FerryConnections = new List< TsFerryItem >();
-        public readonly List< TsMapAreaItem >       MapAreas         = new List< TsMapAreaItem >();
-        public readonly List< TsMapOverlayItem >    MapOverlays      = new List< TsMapOverlayItem >();
-        public readonly List< TsPrefabItem >        Prefabs          = new List< TsPrefabItem >();
-        public readonly List< TsRoadItem >          Roads            = new List< TsRoadItem >();
-        public readonly List< TsTriggerItem >       Triggers         = new List< TsTriggerItem >();
+        public readonly List< TsMapCityItem >       Cities           = new List< TsMapCityItem >();
+        public readonly List< TsMapCompanyItem >    Companies        = new List< TsMapCompanyItem >();
+        public readonly List< TsMapFerryItem >      FerryConnections = new List< TsMapFerryItem >();
+        public readonly List< TsMapMapAreaItem >    MapAreas         = new List< TsMapMapAreaItem >();
+        public readonly List< TsMapMapOverlayItem > MapOverlays      = new List< TsMapMapOverlayItem >();
+        public readonly List< TsMapPrefabItem >     Prefabs          = new List< TsMapPrefabItem >();
+        public readonly List< TsMapRoadItem >       Roads            = new List< TsMapRoadItem >();
+        public readonly List< TsMapTriggerItem >    Triggers         = new List< TsMapTriggerItem >();
         public          Dictionary< ulong, TsNode > Nodes            = new Dictionary< ulong, TsNode >();
 
         public TsNode GetNodeByUid( ulong uid ) =>

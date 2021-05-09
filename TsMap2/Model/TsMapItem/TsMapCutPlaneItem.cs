@@ -1,8 +1,8 @@
 ﻿using TsMap2.Helper;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsCutPlaneItem : TsItem {
-        public TsCutPlaneItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapCutPlaneItem : TsMapItem {
+        public TsMapCutPlaneItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
             this.TsCutPlaneItem825( startOffset );
         }

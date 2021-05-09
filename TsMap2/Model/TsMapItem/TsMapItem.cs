@@ -3,7 +3,7 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsItem {
+    public class TsMapItem {
         protected const int VegetationSphereBlockSize    = 0x14;
         protected const int VegetationSphereBlockSize825 = 0x10;
 
@@ -13,7 +13,7 @@ namespace TsMap2.Model.TsMapItem {
         protected          TsNode   StartNode;
         protected          ulong    StartNodeUid;
 
-        public TsItem( TsSector sector, int offset ) {
+        public TsMapItem( TsSector sector, int offset ) {
             this.Sector = sector;
 
             int fileOffset = offset;

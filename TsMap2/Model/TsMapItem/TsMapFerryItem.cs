@@ -2,8 +2,8 @@
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsFerryItem : TsItem {
-        public TsFerryItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapFerryItem : TsMapItem {
+        public TsMapFerryItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             this.TsFeryItem825( startOffset );
         }

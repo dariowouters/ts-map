@@ -4,9 +4,9 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsCityItem : TsItem // TODO: Add zoom levels/range to show city names and icons correctly
+    public class TsMapCityItem : TsMapItem // TODO: Add zoom levels/range to show city names and icons correctly
     {
-        public TsCityItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapCityItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             this.TsCityItem825( startOffset );
         }

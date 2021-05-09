@@ -10,7 +10,7 @@ using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
-    public class ParseOverlaysJob : ThreadJob {
+    public class ParseDefOverlaysJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][MapOverlay] Loading" );
 

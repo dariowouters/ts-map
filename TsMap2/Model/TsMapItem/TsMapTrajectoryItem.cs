@@ -3,8 +3,8 @@ using Serilog;
 using TsMap2.Helper;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsTrajectoryItem : TsItem {
-        public TsTrajectoryItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapTrajectoryItem : TsMapItem {
+        public TsMapTrajectoryItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
             if ( this.Sector.Version < 846 )
                 this.TsTrajectoryItem834( startOffset );

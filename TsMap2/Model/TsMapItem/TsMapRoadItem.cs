@@ -6,12 +6,12 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsRoadItem : TsItem {
+    public class TsMapRoadItem : TsMapItem {
         private const int StampBlockSize = 0x18;
 
         private List< PointF > _points;
 
-        public TsRoadItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapRoadItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = true;
             if ( sector.Version < 829 )
                 this.TsRoadItem825( startOffset );

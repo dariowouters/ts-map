@@ -3,8 +3,8 @@ using Serilog;
 using TsMap2.Helper;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsFuelPumpItem : TsItem {
-        public TsFuelPumpItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+    public class TsMapFuelPumpItem : TsMapItem {
+        public TsMapFuelPumpItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid = false;
             if ( this.Sector.Version < 855 )
                 this.TsFuelPumpItem825( startOffset );

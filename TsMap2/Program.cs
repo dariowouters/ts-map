@@ -22,11 +22,11 @@ namespace TsMap2 {
                 var s = new SettingsLoadJob();
                 s.RunAndWait();
 
-                var c = new ParseScsDefFilesJob();
+                var c = new ParseScsDefJob();
                 c.Run();
 
-                var m = new ParseScsMapJob();
-                m.Run();
+                var m = new ParseMapFilesJob();
+                m.RunAndWait();
             } catch ( Exception e ) {
                 Log.Error( "Unexpected Exception: {0} | Stack: {1}", e.GetBaseException().Message, e.GetBaseException().StackTrace );
                 Log.Error( "Unexpected Exception: {0} | Stack: {1}", e.Message,                    e.StackTrace );

@@ -7,7 +7,7 @@ using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
-    public class ParseCountryFilesJob : ThreadJob {
+    public class ParseDefCountriesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][Country] Loading" );
 

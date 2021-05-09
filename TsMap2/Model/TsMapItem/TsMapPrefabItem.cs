@@ -6,13 +6,13 @@ using TsMap2.Helper;
 using TsMap2.Scs;
 
 namespace TsMap2.Model.TsMapItem {
-    public class TsPrefabItem : TsItem {
+    public class TsMapPrefabItem : TsMapItem {
         private const    int                  NodeLookBlockSize        = 0x3A;
         private const    int                  NodeLookBlockSize825     = 0x38;
         private const    int                  PrefabVegetaionBlockSize = 0x20;
         private readonly List< TsPrefabLook > _looks;
 
-        public TsPrefabItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapPrefabItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
             this.Valid  = true;
             this._looks = new List< TsPrefabLook >();
             this.Nodes  = new List< ulong >();
