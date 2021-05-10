@@ -28,12 +28,14 @@
         </ExperimentalAcrylicBorder>
 
         <DockPanel>
+            <!-- Menu bar -->
             <Border Padding="0" DockPanel.Dock="Top">
                 <Border.Background>
                     <SolidColorBrush Color="Black" Opacity="0.1" />
                 </Border.Background>
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <!-- Export -->
                         <Button>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                                         HorizontalAlignment="Center">
@@ -41,6 +43,8 @@
                                 <TextBlock Margin="10,5">Export</TextBlock>
                             </StackPanel>
                         </Button>
+
+                        <!-- Setting -->
                         <Button>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                                         HorizontalAlignment="Center">
@@ -65,18 +69,110 @@
                     </StackPanel>
                 </Grid>
             </Border>
+            <!-- ./Menu bar -->
+            <!-- Right zone -->
             <Grid DockPanel.Dock="Right" Width="400">
                 <Grid.Background>
                     <SolidColorBrush Color="White" Opacity="0.05" />
                 </Grid.Background>
-                <StackPanel>
-                    <Button>Right</Button>
+                <StackPanel Margin="5">
+                    <TabControl>
+                        <!-- Map tab -->
+                        <TabItem Header="Info">
+                            <TabItem.Content>
+                                <StackPanel>
+                                    <Grid Column="2" Row="2" Margin="0, 15, 0, 0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Game name -->
+                                        <TextBlock Grid.Column="0" Grid.Row="0">Game</TextBlock>
+                                        <TextBlock Grid.Column="1" Grid.Row="0">B</TextBlock>
+
+                                        <!-- Game version -->
+                                        <TextBlock Grid.Column="0" Grid.Row="1">Version</TextBlock>
+                                        <TextBlock Grid.Column="1" Grid.Row="1">D</TextBlock>
+
+                                        <!-- X -->
+                                        <TextBlock Grid.Column="0" Grid.Row="2">X</TextBlock>
+                                        <TextBlock Grid.Column="1" Grid.Row="2">D</TextBlock>
+
+                                        <!-- Y -->
+                                        <TextBlock Grid.Column="0" Grid.Row="3">Y</TextBlock>
+                                        <TextBlock Grid.Column="1" Grid.Row="3">D</TextBlock>
+
+                                        <!-- Scale -->
+                                        <TextBlock Grid.Column="0" Grid.Row="4">Scale</TextBlock>
+                                        <TextBlock Grid.Column="1" Grid.Row="4">D</TextBlock>
+                                    </Grid>
+                                    <StackPanel>
+                                        <Separator Height="2" Margin="15 30 15 15">
+                                            <Separator.Background>
+                                                <SolidColorBrush Color="White" Opacity="0.05" />
+                                            </Separator.Background>
+                                        </Separator>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <!-- X Coordinate -->
+                                        <Label>X coordinate</Label>
+                                        <TextBox Watermark="X position" Margin="0, 5, 0, 15" />
+
+                                        <!-- Y Coordinate -->
+                                        <Label>Y coordinate</Label>
+                                        <TextBox Watermark="Y position" Margin="0, 5, 0, 15" />
+
+                                        <!-- City -->
+                                        <Label>Or use a city</Label>
+                                        <ComboBox PlaceholderText="City" Margin="0, 5, 0, 15">
+                                            <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
+                                            <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
+                                            <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                            </TabItem.Content>
+                        </TabItem>
+
+                        <!-- Color tab -->
+                        <TabItem Header="Colors">
+                            <TabItem.Content>
+
+                            </TabItem.Content>
+                        </TabItem>
+
+                        <!-- Rendering tab -->
+                        <TabItem Header="Rendering">
+                            <TabItem.Content>
+                                <StackPanel>
+                                    <!-- X Coordinate -->
+                                    <CheckBox>Prefab</CheckBox>
+                                    <CheckBox>Roads</CheckBox>
+                                    <CheckBox>Map Area</CheckBox>
+                                    <CheckBox>Map overlays</CheckBox>
+                                    <CheckBox>Ferry connections</CheckBox>
+                                    <CheckBox>City names</CheckBox>
+                                </StackPanel>
+                            </TabItem.Content>
+                        </TabItem>
+                    </TabControl>
                 </StackPanel>
             </Grid>
+            <!-- ./Right zone -->
+            <!-- Center -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Button Command="{Binding BuyMusicCommand}">Plop</Button>
                 <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </StackPanel>
+            <!-- ./Center -->
         </DockPanel>
     </Panel>
 
