@@ -90,8 +90,8 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="70" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
                                         <!-- Game name -->
@@ -122,13 +122,24 @@
                                         </Separator>
                                     </StackPanel>
                                     <StackPanel>
-                                        <!-- X Coordinate -->
-                                        <Label>X coordinate</Label>
-                                        <TextBox Watermark="X position" Margin="0, 5, 0, 15" />
+                                        <Grid>
+                                            <!-- X Coordinate -->
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Grid.Row="0">
+                                                <Label>X coordinate</Label>
+                                                <TextBox Watermark="X position" Margin="0, 5, 15, 15" />
+                                            </StackPanel>
 
-                                        <!-- Y Coordinate -->
-                                        <Label>Y coordinate</Label>
-                                        <TextBox Watermark="Y position" Margin="0, 5, 0, 15" />
+                                            <!-- Y Coordinate -->
+                                            <StackPanel Grid.Column="1" Grid.Row="0">
+                                                <Label>Y coordinate</Label>
+                                                <TextBox Watermark="X position" Margin="0, 5, 15, 15" />
+                                            </StackPanel>
+
+                                        </Grid>
 
                                         <!-- City -->
                                         <Label>Or use a city</Label>
@@ -145,14 +156,86 @@
                         <!-- Color tab -->
                         <TabItem Header="Colors">
                             <TabItem.Content>
+                                <StackPanel Margin="0, 15, 0, 0">
+                                    <!-- Background -->
+                                    <Label>Background</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
 
+                                    <!-- CityName -->
+                                    <Label>CityName</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- Error -->
+                                    <Label>Error</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- FerryLines -->
+                                    <Label>FerryLines</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- PrefabDark -->
+                                    <Label>PrefabDark</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- PrefabGreen -->
+                                    <Label>PrefabGreen</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- PrefabLight -->
+                                    <Label>PrefabLight</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- PrefabRoad -->
+                                    <Label>PrefabRoad</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+
+                                    <!-- Road -->
+                                    <Label>Road</Label>
+                                    <DockPanel>
+                                        <Rectangle DockPanel.Dock="Left" Width="30" Height="30" Fill="Black"
+                                                   Margin="0, 5, 10, 5" />
+                                        <TextBox Watermark="#000000" Margin="0, 5, 15, 5" />
+                                    </DockPanel>
+                                </StackPanel>
                             </TabItem.Content>
                         </TabItem>
 
                         <!-- Rendering tab -->
                         <TabItem Header="Rendering">
                             <TabItem.Content>
-                                <StackPanel>
+                                <StackPanel Margin="0, 15, 0, 0">
                                     <!-- X Coordinate -->
                                     <CheckBox>Prefab</CheckBox>
                                     <CheckBox>Roads</CheckBox>
@@ -169,8 +252,8 @@
             <!-- ./Right zone -->
             <!-- Center -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button Command="{Binding BuyMusicCommand}">Plop</Button>
                 <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <ProgressBar Minimum="0" Maximum="100" IsIndeterminate="True" Margin="15" />
             </StackPanel>
             <!-- ./Center -->
         </DockPanel>
