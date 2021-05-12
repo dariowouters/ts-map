@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="TsMap2.UI.Views.MenuView">
+             x:Class="TsMap2.UI.Views.MainView.MenuView">
     <!-- Menu bar -->
     <Border>
         <Border.Background>
@@ -12,7 +12,7 @@
         <Grid>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                 <!-- Export -->
-                <Button>
+                <Button Click="Button_OnClick" ClickMode="Release">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
                         <PathIcon Margin="5, 0, 0,0" Data="{StaticResource store_microsoft_regular}" />

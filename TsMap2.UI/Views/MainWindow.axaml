@@ -3,7 +3,7 @@
         xmlns:vm="using:TsMap2.UI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:TsMap2.UI.Views"
+        xmlns:mainView="clr-namespace:TsMap2.UI.Views.MainView"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TsMap2.UI.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
@@ -30,15 +30,15 @@
 
         <DockPanel>
             <!-- Menu bar -->
-            <views:MenuView Padding="0" DockPanel.Dock="Top" />
+            <mainView:MenuView Padding="0" DockPanel.Dock="Top" />
             <!-- ./Menu bar -->
 
             <!-- Right zone -->
-            <views:SidePanelView DockPanel.Dock="Right" Width="400" />
+            <mainView:SidePanelView DockPanel.Dock="Right" Width="400" />
             <!-- ./Right zone -->
 
             <!-- Center -->
-            <views:MapView />
+            <mainView:MapView />
             <!-- ./Center -->
         </DockPanel>
     </Panel>
