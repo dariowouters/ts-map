@@ -23,28 +23,61 @@
         </ExperimentalAcrylicBorder>
 
         <StackPanel Margin="15">
-            <!-- Export for... -->
-            <Label>Export for</Label>
-            <ComboBox Margin="0, 5, 0, 15">
-                <ComboBoxItem IsSelected="True">JAGFx/ets2-dashboard-skin</ComboBoxItem>
-                <ComboBoxItem>Default</ComboBoxItem>
-            </ComboBox>
-
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
+
+                <!-- Export model -->
                 <DockPanel Grid.Column="0" Grid.Row="0">
                     <!-- Export for... -->
+                    <Label DockPanel.Dock="Top">Export for</Label>
+                    <ComboBox Margin="0, 5, 0, 15">
+                        <ComboBoxItem IsSelected="True">JAGFx/ets2-dashboard-skin</ComboBoxItem>
+                        <ComboBoxItem>Default</ComboBoxItem>
+                    </ComboBox>
+                </DockPanel>
+                <!-- ./Export model -->
+
+                <!-- Export tiles -->
+                <CheckBox Grid.Column="0" Grid.Row="1" Margin="0 0 0 15">Export tiles</CheckBox>
+                <DockPanel Grid.Column="0" Grid.Row="2" Margin="0 0 0 0">
+                    <!-- Tiles size -->
                     <Label DockPanel.Dock="Top">Tiles size</Label>
                     <TextBox Margin="0, 5, 0, 15" Watermark="512" />
                 </DockPanel>
-                <DockPanel Grid.Column="1" Grid.Row="0" Margin="15 0 0 0">
-                    <!-- Export for... -->
+                <DockPanel Grid.Column="1" Grid.Row="2" Margin="15 0 0 0">
+                    <!-- Map padding -->
                     <Label DockPanel.Dock="Top">Map padding</Label>
                     <TextBox Margin="0, 5, 0, 15" Watermark="384" />
                 </DockPanel>
+                <DockPanel Grid.Column="0" Grid.Row="3">
+                    <!-- Map padding -->
+                    <Label DockPanel.Dock="Top">Min zoom</Label>
+                    <TextBox Margin="0, 5, 0, 15" Watermark="0" />
+                </DockPanel>
+                <DockPanel Grid.Column="1" Grid.Row="3" Margin="15 0 0 0">
+                    <!-- Map padding -->
+                    <Label DockPanel.Dock="Top">Max zoom</Label>
+                    <TextBox Margin="0, 5, 0, 15" Watermark="8" />
+                </DockPanel>
+                <!-- ./Export tiles -->
+
+                <!-- Export files -->
+                <StackPanel Grid.Column="0" Grid.Row="4">
+                    <CheckBox>Countries</CheckBox>
+                    <CheckBox>Cities</CheckBox>
+                    <CheckBox>Overlays</CheckBox>
+                </StackPanel>
+                <!-- ./Export files -->
             </Grid>
         </StackPanel>
     </Panel>
