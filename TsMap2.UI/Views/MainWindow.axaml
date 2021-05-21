@@ -1,9 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:TsMap2.UI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mainView="clr-namespace:TsMap2.UI.Views.MainView"
+        xmlns:viewModels="clr-namespace:TsMap2.UI.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TsMap2.UI.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
@@ -14,7 +14,7 @@
         WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel />
+        <viewModels:MainWindowViewModel />
     </Design.DataContext>
 
     <Panel>
@@ -38,7 +38,10 @@
             <!-- ./Right zone -->
 
             <!-- Center -->
-            <mainView:MapView />
+            <Grid>
+                <mainView:SplashView IsVisible="{Binding !AppLoaded}" />
+                <mainView:MapView IsVisible="{Binding AppLoaded}" />
+            </Grid>
             <!-- ./Center -->
         </DockPanel>
     </Panel>
