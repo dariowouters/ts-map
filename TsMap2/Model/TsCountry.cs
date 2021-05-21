@@ -20,7 +20,8 @@ namespace TsMap2.Model {
         }
 
         [ JsonIgnore ] public string                       LocalizationToken { get; }
-        [ JsonIgnore ] public Dictionary< string, string > LocalizedNames    { get; }
+        public                Dictionary< string, string > LocalizedNames    { get; } = new Dictionary< string, string >();
+
 
         public void AddLocalizedName( string locale, string name ) {
             if ( !this.LocalizedNames.ContainsKey( locale ) ) this.LocalizedNames.Add( locale, name );

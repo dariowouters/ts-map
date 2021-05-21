@@ -8,8 +8,9 @@ namespace TsMap2.Helper {
 
     public static class AppPath {
         // -- Settings
-        public const  string SettingFileName = "Settings.json";
-        public const  string CitiesFileName  = "Cities.json";
+        public const  string SettingFileName   = "Settings.json";
+        public const  string CitiesFileName    = "Cities.json";
+        public const  string CountriesFileName = "Countries.json";
         public static string HomeDirApp => Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), "TsMap2" );
         public static string OutputDir  => Path.Combine( HomeDirApp,                                                         "Output" );
 

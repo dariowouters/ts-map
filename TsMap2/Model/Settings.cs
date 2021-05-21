@@ -1,13 +1,11 @@
-using System.IO;
 using TsMap2.Helper;
 
 namespace TsMap2.Model {
     public class Settings {
-        public string AtsPath      = "C:\\Plop";
-        public string Ets2Path     = "C:\\Plop";
-        public string FallbackGame = TsGame.GAME_ETS;
-        public string Name;
-        public string OutputPath           = Path.Combine( AppPath.HomeDirApp, "Output" );
+        public string AtsPath              = "C:\\Plop";
+        public string Ets2Path             = "C:\\Plop";
+        public string FallbackGame         = TsGame.GAME_ETS;
+        public string OutputPath           = AppPath.OutputDir;
         public string SelectedLocalization = "";
 
         public string GetActiveGamePath() {
