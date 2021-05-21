@@ -29,6 +29,9 @@ namespace TsMap2 {
                 var m = new ParseMapFilesJob();
                 m.RunAndWait();
 
+                var l = new ParseLocalizationsJob();
+                l.RunAndWait();
+
                 var e = new ExportJob();
                 e.Run();
             } catch ( Exception e ) {

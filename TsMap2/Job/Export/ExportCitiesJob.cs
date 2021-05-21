@@ -10,6 +10,8 @@ namespace TsMap2.Job.Export {
         protected override void Do() {
             // if ( !Directory.Exists( this.Store().Settings.OutputPath ) ) return;
 
+            Log.Information( "[Job][ExportCities] Exporting..." );
+
             var cities = new List< TsCity >();
 
             // TODO: Match country code between city and country
@@ -27,10 +29,10 @@ namespace TsMap2.Job.Export {
 
                 if ( this.Store().Def.Countries.ContainsKey( ScsHash.StringToToken( city.CountryName ) ) ) {
                     TsCountry country = this.Store().Def.Countries[ ScsHash.StringToToken( city.CountryName ) ];
-                    city.Country = country;
+                    city.CountryId = country.CountryId;
                     // cityJObj[ "CountryId" ] = country.CountryId;
                 } else
-                    Log.Warning( $"Could not find country for {city.Name}" );
+                    Log.Warning( $"[Job][ExportCities] Could not find country for {city.Name}" );
 
                 // if ( exportFlags.IsActive( ExportFlags.CityLocalizedNames ) )
                 // cityJObj[ "LocalizedNames" ] = JObject.FromObject( city.City.LocalizedNames );
@@ -39,8 +41,10 @@ namespace TsMap2.Job.Export {
                 cities.Add( city );
             }
 
+            Log.Debug( "[Job][ExportCities] To export: {0}", cities.Count );
             var cityFactory = new TsCitiesJsonFactory( cities );
             cityFactory.Save();
+            Log.Information( "[Job][ExportCities] Saved !" );
         }
 
         protected override void OnEnd() { }

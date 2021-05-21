@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace TsMap2.Model {
     public class TsCity {
-        public TsCountry Country;
-        public float     X;
-        public float     Y;
+        public int   CountryId;
+        public float X;
+        public float Y;
 
 
         public TsCity( string name, string country, ulong token, string localizationToken, List< int > xOffsets, List< int > yOffsets ) {

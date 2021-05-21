@@ -73,7 +73,7 @@ namespace TsMap2.Scs {
 
         private string EntryPath { get; }
 
-        private Dictionary< ulong, ScsDirectory > Directories { get; }
+        public Dictionary< ulong, ScsDirectory > Directories { get; }
 
         public Dictionary< ulong, ScsFile > Files { get; }
 
