@@ -41,8 +41,6 @@ namespace TsMap2.Job.Parse.Def {
             Log.Information( "[Job][City] Loaded. Found: {0}", this.Store().Def.Cities.Count );
         }
 
-        protected override void OnEnd() { }
-
         private TsCity Parse( string path ) {
             ScsFile file = this.Store().Rfs.GetFileEntry( path );
 

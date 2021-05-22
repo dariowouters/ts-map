@@ -12,8 +12,7 @@ namespace TsMap2.Model.TsMapItem {
             else if ( this.Sector.Version >= 855 )
                 this.TsGarageItem855( startOffset );
             else
-                Log.Warning(
-                            $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
         }
 
         public void TsGarageItem825( int startOffset ) {

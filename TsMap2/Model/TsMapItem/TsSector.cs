@@ -16,10 +16,8 @@ namespace TsMap2.Model.TsMapItem {
         }
 
         public string FilePath { get; }
-
-        public int Version { get; }
-
-        public byte[] Stream { get; private set; }
+        public int    Version  { get; }
+        public byte[] Stream   { get; private set; }
 
         public void ClearFileData() {
             this.Stream = null;

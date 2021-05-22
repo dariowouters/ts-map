@@ -10,8 +10,7 @@ namespace TsMap2.Model.TsMapItem {
             else if ( this.Sector.Version >= 836 || this.Sector.Version < 847 )
                 this.TsBusStopItem836( startOffset );
             else
-                Log.Warning(
-                            $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
         }
 
         public void TsBusStopItem825( int startOffset ) {

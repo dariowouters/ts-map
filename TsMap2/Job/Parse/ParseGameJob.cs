@@ -35,7 +35,5 @@ namespace TsMap2.Job.Parse {
 
             Log.Information( "[Job][Game] Loaded. Game: {0} | Version: {1}", this.Store().Game.FullName(), this.Store().Game.Version );
         }
-
-        protected override void OnEnd() { }
     }
 }

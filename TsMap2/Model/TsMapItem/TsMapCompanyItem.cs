@@ -14,8 +14,7 @@ namespace TsMap2.Model.TsMapItem {
             else if ( this.Sector.Version >= 858 )
                 this.TsCompanyItem858( startOffset );
             else
-                Log.Warning(
-                            $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
         }
 
         public ulong        OverlayToken { get; private set; }
@@ -34,8 +33,7 @@ namespace TsMap2.Model.TsMapItem {
             if ( this.Overlay == null ) {
                 this.Valid = false;
                 if ( this.OverlayToken != 0 )
-                    Log.Warning(
-                                $"Could not find Company Overlay: '{ScsHash.TokenToString( this.OverlayToken )}'({this.OverlayToken:X}), in {Path.GetFileName( this.Sector.FilePath )} @ {fileOffset}" );
+                    Log.Warning( $"Could not find Company Overlay: '{ScsHash.TokenToString( this.OverlayToken )}'({this.OverlayToken:X}), in {Path.GetFileName( this.Sector.FilePath )} @ {fileOffset}" );
             }
 
             this.Nodes.Add( MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 + 0x08 ) ); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])

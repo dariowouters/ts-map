@@ -75,7 +75,5 @@ namespace TsMap2.Job.Parse.Def {
 
             Log.Information( "[Job][FerryConnections] Loaded. Found: {0}", this.Store().Def.FerryConnections.Count );
         }
-
-        protected override void OnEnd() { }
     }
 }

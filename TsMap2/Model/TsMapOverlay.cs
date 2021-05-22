@@ -58,8 +58,7 @@ namespace TsMap2.Model {
         }
 
         public OverlayIcon() { }
-        public bool Valid { get; }
-
+        public bool Valid  { get; }
         public uint Width  { get; }
         public uint Height { get; }
 
@@ -85,8 +84,7 @@ namespace TsMap2.Model {
             this.Token          = token;
         }
 
-        public ulong Token { get; }
-
+        public ulong  Token       { get; }
         public Bitmap GetBitmap() => this._overlayBitmap;
     }
 }

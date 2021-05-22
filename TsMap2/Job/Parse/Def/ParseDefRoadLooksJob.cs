@@ -56,7 +56,5 @@ namespace TsMap2.Job.Parse.Def {
 
             Log.Information( "[Job][RoadLook] Loaded. Found: {0}", this.Store().Def.RoadLooks.Count );
         }
-
-        protected override void OnEnd() { }
     }
 }

@@ -15,8 +15,7 @@ namespace TsMap2.Model.TsMapItem {
             else if ( this.Sector.Version >= 875 )
                 this.TsTriggerItem875( startOffset );
             else
-                Log.Warning(
-                            $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
         }
 
         public string       OverlayName { get; private set; }

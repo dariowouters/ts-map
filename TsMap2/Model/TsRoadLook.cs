@@ -6,8 +6,7 @@ namespace TsMap2.Model {
     public class TsRoadLook {
         public readonly List< string > LanesLeft;
         public readonly List< string > LanesRight;
-
-        public float Offset;
+        public          float          Offset;
 
         public TsRoadLook( ulong token ) {
             this.LanesLeft  = new List< string >();

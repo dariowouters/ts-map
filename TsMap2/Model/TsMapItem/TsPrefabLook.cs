@@ -8,6 +8,7 @@ namespace TsMap2.Model.TsMapItem {
         protected TsPrefabLook( List< PointF > points ) => this.Points = points;
 
         protected TsPrefabLook() : this( new List< PointF >() ) { }
+
         public int   ZIndex { get; set; }
         public Brush Color  { get; set; }
 
@@ -24,7 +25,6 @@ namespace TsMap2.Model.TsMapItem {
 
     public class TsPrefabRoadLook : TsPrefabLook {
         public TsPrefabRoadLook() => this.ZIndex = 1;
-
         public float Width { private get; set; }
 
         public override void Draw( Graphics g ) {

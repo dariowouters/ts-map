@@ -57,12 +57,9 @@ namespace TsMap2.Model {
             this.TriggerPoints = triggerPoints;
         }
 
-        public ulong  Token    { get; }
-        public string Category { get; }
-
-
-        public bool ValidRoad { get; }
-
+        public ulong                  Token         { get; }
+        public string                 Category      { get; }
+        public bool                   ValidRoad     { get; }
         public List< TsPrefabNode >   PrefabNodes   { get; }
         public List< TsSpawnPoint >   SpawnPoints   { get; }
         public List< TsMapPoint >     MapPoints     { get; }

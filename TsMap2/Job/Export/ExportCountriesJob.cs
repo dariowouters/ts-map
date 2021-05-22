@@ -16,7 +16,5 @@ namespace TsMap2.Job.Export {
             countriesFactory.Save();
             Log.Information( "[Job][ExportCountries] Saved !" );
         }
-
-        protected override void OnEnd() { }
     }
 }

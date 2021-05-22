@@ -35,8 +35,6 @@ namespace TsMap2.Job.Parse.Map {
             Log.Information( "[Job][Localizations] Loaded." );
         }
 
-        protected override void OnEnd() { }
-
         private void ParseLocale( ScsFile localeFile, string locale ) {
             if ( localeFile == null ) return;
 

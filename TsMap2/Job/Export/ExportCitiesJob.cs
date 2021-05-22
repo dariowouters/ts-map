@@ -46,7 +46,5 @@ namespace TsMap2.Job.Export {
             cityFactory.Save();
             Log.Information( "[Job][ExportCities] Saved !" );
         }
-
-        protected override void OnEnd() { }
     }
 }

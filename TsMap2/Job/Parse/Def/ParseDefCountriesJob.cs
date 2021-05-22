@@ -51,8 +51,6 @@ namespace TsMap2.Job.Parse.Def {
             Log.Information( "[Job][Country] Loaded. Found: {0}", this.Store().Def.Countries.Count );
         }
 
-        protected override void OnEnd() { }
-
         private TsCountry Parse( string path ) {
             ScsFile file = this.Store().Rfs.GetFileEntry( path );
 

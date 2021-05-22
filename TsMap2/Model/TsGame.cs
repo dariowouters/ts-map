@@ -8,8 +8,7 @@ namespace TsMap2.Model {
             this.Version = version;
         }
 
-        public string Code { get; }
-
+        public string Code    { get; }
         public string Version { get; }
 
         public string FullName() {

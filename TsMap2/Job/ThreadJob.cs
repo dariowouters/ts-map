@@ -11,7 +11,7 @@ namespace TsMap2.Job {
 
         public string JobName() => this.GetType().Name;
 
-        protected abstract void OnEnd();
+        protected void OnEnd() { }
 
         public void Run() {
             this.t = Task.Factory.StartNew( () => this.Do(), TaskCreationOptions.AttachedToParent );

@@ -71,8 +71,6 @@ namespace TsMap2.Job.Parse.Map {
             Log.Information( "[Job][MapFiles] Loaded. MapAreas: {0}",         this.Store().Map.MapAreas.Count );
         }
 
-        protected override void OnEnd() { }
-
         private void Parse( string path ) {
             ScsFile file  = this.Store().Rfs.GetFileEntry( path );
             var     empty = false;

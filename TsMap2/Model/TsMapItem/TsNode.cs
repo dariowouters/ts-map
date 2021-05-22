@@ -15,8 +15,7 @@ namespace TsMap2.Model.TsMapItem {
             this.Rotation = (float) ( rot % Math.PI * 2 );
         }
 
-        public ulong Uid { get; }
-
+        public ulong Uid      { get; }
         public float X        { get; }
         public float Z        { get; }
         public float Rotation { get; }

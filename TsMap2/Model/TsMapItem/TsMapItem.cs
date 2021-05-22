@@ -26,18 +26,14 @@ namespace TsMap2.Model.TsMapItem {
             this.Z = MemoryHelper.ReadSingle( this.Sector.Stream, fileOffset += 0x08 );
         }
 
-        public ulong Uid { get; }
-
-        public List< ulong > Nodes { get; protected set; }
-
-        public int BlockSize { get; protected set; }
-
-        public bool Valid { get; protected set; }
-
-        public TsItemType Type   { get; }
-        public float      X      { get; }
-        public float      Z      { get; }
-        public bool       Hidden { get; protected set; }
+        public ulong         Uid       { get; }
+        public List< ulong > Nodes     { get; protected set; }
+        public int           BlockSize { get; protected set; }
+        public bool          Valid     { get; protected set; }
+        public TsItemType    Type      { get; }
+        public float         X         { get; }
+        public float         Z         { get; }
+        public bool          Hidden    { get; protected set; }
 
         public TsNode GetStartNode() {
             return this.StartNode ??= Store().Map.GetNodeByUid( this.StartNodeUid );

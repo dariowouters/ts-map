@@ -78,8 +78,6 @@ namespace TsMap2.Job.Parse.Def {
             Log.Information( "[Job][MapOverlay] Loaded. Found: {0}", this.Store().Def.Overlays.Count );
         }
 
-        protected override void OnEnd() { }
-
         private TsMapOverlay Parse( string path, ulong token ) {
             ScsFile file = this.Store().Rfs.GetFileEntry( path );
 
