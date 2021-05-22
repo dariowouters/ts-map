@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using Serilog;
 using TsMap2.Helper;
-using TsMap2.Model;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
 
@@ -49,11 +47,9 @@ namespace TsMap2.Job.Parse.Map {
 
                 sectorFiles = mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList();
                 // sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
-
-                foreach ( string sectorFile in sectorFiles )
-                    this.Parse( sectorFile );
             }
 
+            sectorFiles.ForEach( this.Parse );
             // if ( _sectorFiles.Count <= 0 ) {
 
             // }
@@ -93,7 +89,7 @@ namespace TsMap2.Job.Parse.Map {
             if ( empty ) return;
 
             var      lastOffset = 0x14;
-            TsSector sector;
+            TsSector sector     = null;
 
             for ( var i = 0; i < itemCount; i++ ) {
                 var type = (TsItemType) MemoryHelper.ReadUInt32( stream, lastOffset );
@@ -158,18 +154,7 @@ namespace TsMap2.Job.Parse.Map {
                         mapItem    =  new TsMapTriggerItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
 
-                        if ( mapItem.Valid ) {
-                            var    t = (TsMapTriggerItem) mapItem;
-                            Bitmap b = t.Overlay?.GetBitmap();
-
-                            if ( !mapItem.Hidden && b != null ) {
-                                var ov = new TsMapOverlayItem( t.X, t.Z, t.OverlayName, TsMapOverlayType.Parking, b );
-                                this.Store().Map.Overlays.Parking.Add( ov );
-                            }
-
-                            this.Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
-                        }
-
+                        if ( mapItem.Valid ) this.Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
                         break;
                     }
                     case TsItemType.FuelPump: {
@@ -214,8 +199,24 @@ namespace TsMap2.Job.Parse.Map {
                     }
                 }
 
-                sector.ClearFileData();
+                // sector.ClearFileData();
             }
+
+            if ( sector == null ) return;
+
+            int nodeCount = MemoryHelper.ReadInt32( stream, lastOffset );
+            for ( var i = 0; i < nodeCount; i++ ) {
+                var node = new TsNode( sector, lastOffset += 0x04 );
+                this.Store().Map.UpdateEdgeCoords( node );
+                if ( !this.Store().Map.Nodes.ContainsKey( node.Uid ) ) this.Store().Map.Nodes.Add( node.Uid, node );
+                lastOffset += 0x34;
+            }
+
+            lastOffset += 0x04;
+            if ( lastOffset != stream.Length )
+                Log.Warning( $"File '{Path.GetFileName( path )}' was not read correctly. Read offset was at 0x{lastOffset:X} while file is 0x{stream.Length:X} bytes long." );
+
+            sector.ClearFileData();
         }
     }
 }

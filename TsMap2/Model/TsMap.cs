@@ -11,6 +11,10 @@ namespace TsMap2.Model {
         public readonly List< TsMapPrefabItem >     Prefabs          = new List< TsMapPrefabItem >();
         public readonly List< TsMapRoadItem >       Roads            = new List< TsMapRoadItem >();
         public readonly List< TsMapTriggerItem >    Triggers         = new List< TsMapTriggerItem >();
+        public          float                       MaxX             = float.MinValue;
+        public          float                       MaxZ             = float.MinValue;
+        public          float                       MinX             = float.MaxValue;
+        public          float                       MinZ             = float.MaxValue;
         public          Dictionary< ulong, TsNode > Nodes            = new Dictionary< ulong, TsNode >();
         public          TsMapOverlays               Overlays         = new TsMapOverlays();
 
@@ -18,5 +22,12 @@ namespace TsMap2.Model {
             this.Nodes.ContainsKey( uid )
                 ? this.Nodes[ uid ]
                 : null;
+
+        public void UpdateEdgeCoords( TsNode node ) {
+            if ( this.MinX > node.X ) this.MinX = node.X;
+            if ( this.MaxX < node.X ) this.MaxX = node.X;
+            if ( this.MinZ > node.Z ) this.MinZ = node.Z;
+            if ( this.MaxZ < node.Z ) this.MaxZ = node.Z;
+        }
     }
 }

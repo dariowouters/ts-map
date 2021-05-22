@@ -13,7 +13,7 @@ namespace TsMap2.Job {
 
         protected abstract void Do();
 
-        protected abstract void OnEnd();
+        protected void OnEnd() { }
 
         public void Run() {
             try {

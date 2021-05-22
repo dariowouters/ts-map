@@ -9,7 +9,5 @@ namespace TsMap2.Job.Parse.Def {
             this.AddJob( new ParseDefFerryConnectionsJob() );
             this.AddJob( new ParseDefOverlaysJob() );
         }
-
-        protected override void OnEnd() { }
     }
 }

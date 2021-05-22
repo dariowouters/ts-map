@@ -5,7 +5,5 @@
             this.AddJob( new ExportCountriesJob() );
             this.AddJob( new ExportOverlaysJob() );
         }
-
-        protected override void OnEnd() { }
     }
 }

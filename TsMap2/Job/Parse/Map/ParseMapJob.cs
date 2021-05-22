@@ -4,7 +4,5 @@
             this.AddJob( new ParseMapFilesJob() );
             this.AddJob( new ParseMapLocalizationsJob() );
         }
-
-        protected override void OnEnd() { }
     }
 }

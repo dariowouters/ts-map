@@ -123,6 +123,7 @@ namespace TsMap2.Model {
         public string Name;
         public float  X;
         public float  Y;
+        public byte   ZoomLevelVisibility;
 
         public TsMapOverlayItem( float x, float y, string name, TsMapOverlayType overlayType, Bitmap bitmap ) {
             this.X           = x;
@@ -133,12 +134,23 @@ namespace TsMap2.Model {
             this._bitmap     = bitmap;
         }
 
-        [ JsonIgnore ] public ulong            Token       { get; set; }
+        public TsMapOverlayItem( float x, float y, string name, byte zoomLevelVisibility, TsMapOverlayType overlayType, Bitmap bitmap ) {
+            this.X                   = x;
+            this.Y                   = y;
+            this.OverlayType         = overlayType;
+            this.Name                = name;
+            this.Type                = Enum.GetName( typeof( TsMapOverlayType ), this.OverlayType );
+            this._bitmap             = bitmap;
+            this.ZoomLevelVisibility = zoomLevelVisibility;
+        }
+
+        // [ JsonIgnore ] public ulong            Token       { get; set; }
         [ JsonIgnore ] public TsMapOverlayType OverlayType { get; }
         public                string           Type        { get; }
         public                int              Width       => this._bitmap.Width;
         public                int              Height      => this._bitmap.Height;
-        [ JsonIgnore ] public Bitmap           _bitmap     { get; }
-        [ JsonIgnore ] public bool             Hidden      { get; protected set; }
+
+        [ JsonIgnore ] public Bitmap _bitmap { get; }
+        // [ JsonIgnore ] public bool             Hidden      { get; protected set; }
     }
 }
