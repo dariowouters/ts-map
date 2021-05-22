@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using Serilog;
 using TsMap2.Helper;
+using TsMap2.Model;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
 
@@ -155,7 +157,19 @@ namespace TsMap2.Job.Parse.Map {
                     case TsItemType.Trigger: {
                         mapItem    =  new TsMapTriggerItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
+
+                        if ( mapItem.Valid ) {
+                            var    t = (TsMapTriggerItem) mapItem;
+                            Bitmap b = t.Overlay?.GetBitmap();
+
+                            if ( !mapItem.Hidden && b != null ) {
+                                var ov = new TsMapOverlayItem( t.X, t.Z, t.OverlayName, TsMapOverlayType.Parking, b );
+                                this.Store().Map.Overlays.Parking.Add( ov );
+                            }
+
+                            this.Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
+                        }
+
                         break;
                     }
                     case TsItemType.FuelPump: {

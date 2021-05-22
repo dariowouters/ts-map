@@ -12,6 +12,7 @@ namespace TsMap2.Model {
         public readonly List< TsMapRoadItem >       Roads            = new List< TsMapRoadItem >();
         public readonly List< TsMapTriggerItem >    Triggers         = new List< TsMapTriggerItem >();
         public          Dictionary< ulong, TsNode > Nodes            = new Dictionary< ulong, TsNode >();
+        public          TsMapOverlays               Overlays         = new TsMapOverlays();
 
         public TsNode GetNodeByUid( ulong uid ) =>
             this.Nodes.ContainsKey( uid )

@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using Newtonsoft.Json;
 
 namespace TsMap2.Model {
     public struct Color8888 {
@@ -86,5 +89,56 @@ namespace TsMap2.Model {
 
         public ulong  Token       { get; }
         public Bitmap GetBitmap() => this._overlayBitmap;
+    }
+
+    public class TsMapOverlays {
+        public List< TsMapOverlayItem > Company       = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Ferry         = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Fuel          = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Garage        = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Overlay       = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Parking       = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Recruitment   = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Service       = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > Train         = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > TruckDealer   = new List< TsMapOverlayItem >();
+        public List< TsMapOverlayItem > WeightStation = new List< TsMapOverlayItem >();
+    }
+
+    public enum TsMapOverlayType {
+        Overlay,
+        Company,
+        Parking,
+        Train,
+        Ferry,
+        Fuel,
+        Service,
+        WeightStation,
+        TruckDealer,
+        Garage,
+        Recruitment
+    }
+
+    public class TsMapOverlayItem {
+        public string Name;
+        public float  X;
+        public float  Y;
+
+        public TsMapOverlayItem( float x, float y, string name, TsMapOverlayType overlayType, Bitmap bitmap ) {
+            this.X           = x;
+            this.Y           = y;
+            this.OverlayType = overlayType;
+            this.Name        = name;
+            this.Type        = Enum.GetName( typeof( TsMapOverlayType ), this.OverlayType );
+            this._bitmap     = bitmap;
+        }
+
+        [ JsonIgnore ] public ulong            Token       { get; set; }
+        [ JsonIgnore ] public TsMapOverlayType OverlayType { get; }
+        public                string           Type        { get; }
+        public                int              Width       => this._bitmap.Width;
+        public                int              Height      => this._bitmap.Height;
+        [ JsonIgnore ] public Bitmap           _bitmap     { get; }
+        [ JsonIgnore ] public bool             Hidden      { get; protected set; }
     }
 }
