@@ -10,18 +10,18 @@ namespace TsMap2.Model {
         public                float  X;
         public                float  Y;
 
-        public TsCountry( string countryCode, int countryId, string name, ulong token, float x, float y ) {
-            this.CountryCode = countryCode;
-            this.CountryId   = countryId;
-            this.Name        = name;
-            this.Token       = token;
-            this.X           = x;
-            this.Y           = y;
+        public TsCountry( string countryCode, int countryId, string name, ulong token, float x, float y, string localizationToken ) {
+            this.CountryCode       = countryCode;
+            this.CountryId         = countryId;
+            this.Name              = name;
+            this.Token             = token;
+            this.X                 = x;
+            this.Y                 = y;
+            this.LocalizationToken = localizationToken;
         }
 
         [ JsonIgnore ] public string                       LocalizationToken { get; }
         public                Dictionary< string, string > LocalizedNames    { get; } = new Dictionary< string, string >();
-
 
         public void AddLocalizedName( string locale, string name ) {
             if ( !this.LocalizedNames.ContainsKey( locale ) ) this.LocalizedNames.Add( locale, name );

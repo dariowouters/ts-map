@@ -3,8 +3,8 @@ using Serilog;
 using TsMap2.Helper;
 using TsMap2.Job;
 using TsMap2.Job.Export;
-using TsMap2.Job.Parse;
 using TsMap2.Job.Parse.Def;
+using TsMap2.Job.Parse.Map;
 
 namespace TsMap2 {
     internal class Program {
@@ -26,11 +26,8 @@ namespace TsMap2 {
                 var c = new ParseScsDefJob();
                 c.Run();
 
-                var m = new ParseMapFilesJob();
-                m.RunAndWait();
-
-                var l = new ParseLocalizationsJob();
-                l.RunAndWait();
+                var m = new ParseMapJob();
+                m.Run();
 
                 var e = new ExportJob();
                 e.Run();

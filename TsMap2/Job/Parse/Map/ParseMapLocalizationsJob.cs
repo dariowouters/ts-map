@@ -6,8 +6,8 @@ using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
-    public class ParseLocalizationsJob : ThreadJob {
+namespace TsMap2.Job.Parse.Map {
+    public class ParseMapLocalizationsJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][Localizations] Loading" );
             // Console.WriteLine( this.Store().Settings.GamePath );

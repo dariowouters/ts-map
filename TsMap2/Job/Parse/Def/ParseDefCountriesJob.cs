@@ -62,12 +62,13 @@ namespace TsMap2.Job.Parse.Def {
 
             string[] fileLines = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
 
-            var   id    = 0;
-            var   name  = "";
-            var   code  = "";
-            ulong token = 0;
-            float x     = 0;
-            float y     = 0;
+            var   id                = 0;
+            var   name              = "";
+            var   code              = "";
+            ulong token             = 0;
+            float x                 = 0;
+            float y                 = 0;
+            var   localizationToken = "";
 
             foreach ( string fileLine in fileLines ) {
                 ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( fileLine );
@@ -82,11 +83,10 @@ namespace TsMap2.Job.Parse.Def {
                     case "country_id":
                         id = int.Parse( value );
                         break;
-                    // else if (key == "name_localized")
-                    // {
-                    //     LocalizationToken = value.Split('"')[1];
-                    //     LocalizationToken = LocalizationToken.Replace("@", "");
-                    // }
+                    case "name_localized":
+                        localizationToken = value.Split( '"' )[ 1 ];
+                        localizationToken = localizationToken.Replace( "@", "" );
+                        break;
                     case "name":
                         name = value.Split( '"' )[ 1 ];
                         break;
@@ -104,7 +104,7 @@ namespace TsMap2.Job.Parse.Def {
                 }
             }
 
-            return new TsCountry( code, id, name, token, x, y );
+            return new TsCountry( code, id, name, token, x, y, localizationToken );
         }
     }
 }

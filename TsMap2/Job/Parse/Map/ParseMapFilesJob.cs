@@ -7,7 +7,7 @@ using TsMap2.Helper;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
 
-namespace TsMap2.Job.Parse {
+namespace TsMap2.Job.Parse.Map {
     public class ParseMapFilesJob : ThreadJob {
         protected override void Do() {
             Log.Debug( "[Job][MapFiles] Loading" );
