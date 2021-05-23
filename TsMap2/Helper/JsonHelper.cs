@@ -8,7 +8,8 @@ namespace TsMap2.Helper {
             string fullPath = Path.Combine( path, fileName );
 
             Directory.CreateDirectory( path );
-            File.WriteAllTextAsync( fullPath, JsonConvert.SerializeObject( data, Formatting.Indented ) );
+            File.WriteAllTextAsync( fullPath, JsonConvert.SerializeObject( data, Formatting.Indented ) )
+                .Wait();
         }
 
         public static JObject LoadFile( string fileName, string path ) {
