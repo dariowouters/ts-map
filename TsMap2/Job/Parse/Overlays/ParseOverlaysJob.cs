@@ -3,6 +3,7 @@
         protected override void Do() {
             this.AddJob( new ParseOverlayCompanyJob() );
             this.AddJob( new ParseOverlayTriggerJob() );
+            this.AddJob( new ParseOverlayFerryJob() );
         }
     }
 }

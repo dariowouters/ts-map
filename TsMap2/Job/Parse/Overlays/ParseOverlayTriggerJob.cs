@@ -17,7 +17,7 @@ namespace TsMap2.Job.Parse.Overlays {
                 this.Store().Map.Overlays.Parking.Add( ov );
             }
 
-            Log.Information( "[Job][OverlayTrigger] Loaded: {0}", this.Store().Map.Overlays.Parking.Count );
+            Log.Information( "[Job][OverlayTrigger] Parking: {0}", this.Store().Map.Overlays.Parking.Count );
         }
     }
 }
