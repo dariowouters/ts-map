@@ -29,7 +29,10 @@ namespace TsMap2.Job.Parse.Overlays {
                 foreach ( TsSpawnPoint spawnPoint in prefab.Prefab.SpawnPoints ) {
                     this.ParseTrigger( prefab, prefabStartX, prefabStartZ, rot, spawnPoint, originNode );
                     TsMapOverlayItem ov = this.GenerateMapItem( prefabStartX, prefabStartZ, rot, spawnPoint, originNode );
-                    this.AddMapItem( ov );
+
+                    if ( ov != null )
+                        this.AddMapItem( ov );
+
                     // if ( saveAsPNG && !File.Exists( Path.Combine( overlayPath, $"{overlayName}.png" ) ) )
                     // b.Save( Path.Combine( overlayPath, $"{overlayName}.png" ) );
                 }
