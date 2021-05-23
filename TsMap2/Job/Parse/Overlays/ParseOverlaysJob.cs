@@ -4,6 +4,7 @@
             this.AddJob( new ParseOverlayCompanyJob() );
             this.AddJob( new ParseOverlayTriggerJob() );
             this.AddJob( new ParseOverlayFerryJob() );
+            this.AddJob( new ParseOverlayPrefabJob() );
         }
     }
 }
