@@ -42,24 +42,26 @@ namespace TsMap2.Scs {
         public ScsZipFile( string path, RootFileSystem rfs ) : base( path, rfs ) {
             if ( !File.Exists( this.Path ) ) return;
 
-            this.Br       = new BinaryReader( File.OpenRead( this.Path ) );
+            // this.Br       = new BinaryReader( File.OpenRead( this.Path ) );
             this._entries = new Dictionary< string, ScsZipEntry >();
 
-            ushort entryCount = ScsHelper.ReadUInt16( this.Br, -22 + 10, SeekOrigin.End );
+            BinaryReader br         = this.Br;
+            ushort       entryCount = ScsHelper.ReadUInt16( br, -22 + 10, SeekOrigin.End );
 
             var fileOffset = 0;
 
             for ( var i = 0; i < entryCount; i++ ) {
                 var entry = new ScsZipEntry( this ) {
-                    CompressionMethod = ScsHelper.ReadUInt16( this.Br, fileOffset += 8 ),
-                    CompressedSize    = ScsHelper.ReadInt32( this.Br, fileOffset += 10 ),
-                    Size              = ScsHelper.ReadInt32( this.Br, fileOffset += 4 ),
-                    NameLength        = (short) ScsHelper.ReadUInt16( this.Br, fileOffset += 4 )
+                    CompressionMethod = ScsHelper.ReadUInt16( br, fileOffset += 8 ),
+                    CompressedSize    = ScsHelper.ReadInt32( br, fileOffset += 10 ),
+                    Size              = ScsHelper.ReadInt32( br, fileOffset += 4 ),
+                    NameLength        = (short) ScsHelper.ReadUInt16( br, fileOffset += 4 )
                 };
 
-                ushort extraFieldLength = ScsHelper.ReadUInt16( this.Br, fileOffset += 2 );
-                this.Br.BaseStream.Seek( fileOffset += 2, SeekOrigin.Begin );
-                entry.Name = Encoding.UTF8.GetString( this.Br.ReadBytes( entry.NameLength ) );
+                ushort extraFieldLength = ScsHelper.ReadUInt16( br, fileOffset += 2 );
+                br.BaseStream.Seek( fileOffset += 2, SeekOrigin.Begin );
+                entry.Name = Encoding.UTF8.GetString( br.ReadBytes( entry.NameLength ) );
+                br.Dispose();
 
                 fileOffset   += entry.NameLength + extraFieldLength;
                 entry.Offset =  fileOffset; // Offset to data
@@ -76,7 +78,8 @@ namespace TsMap2.Scs {
             }
         }
 
-        public BinaryReader Br { get; }
+        // public BinaryReader Br { get; }
+        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( this.Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
 
         public override ScsEntry GetEntry( string name ) =>
             this._entries.ContainsKey( name )
@@ -119,16 +122,17 @@ namespace TsMap2.Scs {
         public HashFile( string filePath, RootFileSystem rfs ) : base( filePath, rfs ) {
             if ( !File.Exists( this.Path ) ) return;
 
-            this.Br      = new BinaryReader( File.OpenRead( this.Path ) );
+            // this.Br = new BinaryReader( File.OpenRead( this.Path ) );
             this.Entries = new Dictionary< ulong, ScsHashEntry >();
 
+            BinaryReader br = this.Br;
             this.Header = new ScsHeader {
-                Magic       = ScsHelper.ReadUInt32( this.Br, 0x0 ),
-                Version     = ScsHelper.ReadUInt16( this.Br, 0x04 ),
-                Salt        = ScsHelper.ReadUInt16( this.Br, 0x06 ),
-                HashMethod  = ScsHelper.ReadUInt32( this.Br, 0x08 ),
-                EntryCount  = ScsHelper.ReadInt32( this.Br, 0x0C ),
-                StartOffset = ScsHelper.ReadInt32( this.Br, 0x10 )
+                Magic       = ScsHelper.ReadUInt32( br, 0x0 ),
+                Version     = ScsHelper.ReadUInt16( br, 0x04 ),
+                Salt        = ScsHelper.ReadUInt16( br, 0x06 ),
+                HashMethod  = ScsHelper.ReadUInt32( br, 0x08 ),
+                EntryCount  = ScsHelper.ReadInt32( br, 0x0C ),
+                StartOffset = ScsHelper.ReadInt32( br, 0x10 )
             };
 
             if ( this.Header.Magic != Magic ) // Log.Msg( "Incorrect File Structure" );
@@ -140,8 +144,9 @@ namespace TsMap2.Scs {
             if ( this.Header.Version != SupportedHashVersion ) // Log.Msg( "Unsupported Hash Version" );
                 return;
 
-            this.Br.BaseStream.Seek( this.Header.StartOffset, SeekOrigin.Begin );
-            byte[] entriesRaw = this.Br.ReadBytes( this.Header.EntryCount * EntryBlockSize );
+            br.BaseStream.Seek( this.Header.StartOffset, SeekOrigin.Begin );
+            byte[] entriesRaw = br.ReadBytes( this.Header.EntryCount * EntryBlockSize );
+            br.Dispose();
 
             for ( var i = 0; i < this.Header.EntryCount; i++ ) {
                 int offset = i * EntryBlockSize;
@@ -237,7 +242,8 @@ namespace TsMap2.Scs {
                 this.Rfs.AddHashEntry( rootDir );
         }
 
-        public BinaryReader Br { get; }
+        // public BinaryReader Br { get; }
+        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( this.Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
 
         private ScsHeader Header { get; }
 

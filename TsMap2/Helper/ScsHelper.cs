@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using Serilog;
 using TsMap2.Model;
 
@@ -65,6 +66,25 @@ namespace TsMap2.Helper {
             }
 
             return Encoding.UTF8.GetString( decrypted );
+        }
+
+        // https: //stackoverflow.com/a/3677960
+        public static FileStream WaitForFile( string fullPath, FileMode mode, FileAccess access, FileShare share ) {
+            for ( var numTries = 0; numTries < 10; numTries++ ) {
+                FileStream fs = null;
+                try {
+                    fs = new FileStream( fullPath, mode, access, share );
+                    return fs;
+                } catch ( IOException ) {
+                    Log.Warning( "Reading try {0} for {1}", numTries, fullPath );
+                    if ( fs != null )
+                        fs.Dispose();
+
+                    Thread.Sleep( 50 );
+                }
+            }
+
+            return null;
         }
     }
 

@@ -36,8 +36,10 @@ namespace TsMap2.Scs {
         public override ScsRootFile GetRootFile() => this._szf;
 
         public override byte[] Read() {
-            this._szf.Br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
-            byte[] buff = this._szf.Br.ReadBytes( this.CompressedSize );
+            BinaryReader br = this._szf.Br;
+            br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
+            byte[] buff = br.ReadBytes( this.CompressedSize );
+
             return this.IsCompressed()
                        ? this.Inflate( buff )
                        : buff;
@@ -90,13 +92,14 @@ namespace TsMap2.Scs {
         public override ScsRootFile GetRootFile() => this.Hf;
 
         public override byte[] Read() {
-            lock ( this.Hf.Br.BaseStream ) {
-                this.Hf.Br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
-                byte[] buff = this.Hf.Br.ReadBytes( this.CompressedSize );
-                return this.IsCompressed()
-                           ? this.Inflate( buff )
-                           : buff;
-            }
+            BinaryReader br = this.Hf.Br;
+            br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
+            byte[] buff = br.ReadBytes( this.CompressedSize );
+            br.Dispose();
+
+            return this.IsCompressed()
+                       ? this.Inflate( buff )
+                       : buff;
         }
 
         public override byte[] Inflate( byte[] buff ) => ZlibStream.UncompressBuffer( buff );
