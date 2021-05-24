@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using Serilog;
 using TsMap2.Factory;
@@ -55,62 +54,16 @@ namespace TsMap2.Job.Parse.Def {
         }
 
         private TsCountry Parse( string path ) {
-            ScsFile file = this.Store().Rfs.GetFileEntry( path );
-
-            if ( file == null ) return null;
-            // LocalizedNames = new Dictionary<string, string>();
-            byte[] fileContent = file.Entry.Read();
+            ( string code, int id, string name, ulong token, float x, float y, string localizationToken )
+                = ScsParseHelper.CountryParse( path );
 
             // -- Raw generation
-            if ( !this._isFirstFileRead && file.GetFullName() != ScsPath.Def.CountryBaseName ) {
-                RawHelper.SaveRawFile( RawType.COUNTRY, file.GetFullName(), fileContent );
+            if ( !this._isFirstFileRead && path != ScsPath.Def.CountryBaseName ) {
+                RawHelper.SaveRawFile( RawType.COUNTRY, path, null );
                 this._isFirstFileRead = true;
             }
             // -- ./Raw generation
 
-            string[] fileLines = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
-
-            var   id                = 0;
-            var   name              = "";
-            var   code              = "";
-            ulong token             = 0;
-            float x                 = 0;
-            float y                 = 0;
-            var   localizationToken = "";
-
-            foreach ( string fileLine in fileLines ) {
-                ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( fileLine );
-
-                if ( !validLine ) continue;
-
-
-                switch ( key ) {
-                    case "country_data":
-                        token = ScsHash.StringToToken( ScsSiiHelper.Trim( value.Split( '.' )[ 2 ] ) );
-                        break;
-                    case "country_id":
-                        id = int.Parse( value );
-                        break;
-                    case "name_localized":
-                        localizationToken = value.Split( '"' )[ 1 ];
-                        localizationToken = localizationToken.Replace( "@", "" );
-                        break;
-                    case "name":
-                        name = value.Split( '"' )[ 1 ];
-                        break;
-                    case "country_code":
-                        code = value.Split( '"' )[ 1 ];
-                        break;
-                    case "pos": {
-                        string   vector = value.Split( '(' )[ 1 ].Split( ')' )[ 0 ];
-                        string[] values = vector.Split( ',' );
-
-                        x = float.Parse( values[ 0 ], CultureInfo.InvariantCulture );
-                        y = float.Parse( values[ 2 ], CultureInfo.InvariantCulture );
-                        break;
-                    }
-                }
-            }
 
             return new TsCountry( code, id, name, token, x, y, localizationToken );
         }

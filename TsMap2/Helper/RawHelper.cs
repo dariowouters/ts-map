@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using TsMap2.Factory;
+using TsMap2.Scs;
 
 namespace TsMap2.Helper {
     public static class RawHelper {
@@ -20,8 +21,13 @@ namespace TsMap2.Helper {
         }
 
         public static void SaveRawFile( RawType type, string fileName, byte[] stream ) {
-            var rawFactory = new RawFactory( stream );
-            rawFactory.Save( type, fileName );
+            ScsFile file = StoreHelper.Instance.Rfs.GetFileEntry( fileName );
+
+            if ( file != null ) {
+                byte[] fileContent = file.Entry.Read();
+                var    rawFactory  = new RawFactory( fileContent );
+                rawFactory.Save( type, file.GetFullName() );
+            }
         }
 
         public static string RawTypeToString( RawType type ) => Enum.GetName( typeof( RawType ), type );

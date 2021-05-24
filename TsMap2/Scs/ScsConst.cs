@@ -100,7 +100,7 @@
             public const           string MaterialUiMapPath     = "material/ui/map";
             public const           string MaterialUiCompanyPath = "material/ui/company/small";
             public const           string MaterialUiRoadPath    = "material/ui/map/road";
-            public static readonly string CountryBaseName       = $"{CountryFileName}.{ScsFileExtension}";
+            public static readonly string CountryBaseName       = "custom/country.sii";
         }
 
         public static class Map {
