@@ -1,3 +1,4 @@
+using System.IO;
 using TsMap2.Helper;
 
 namespace TsMap2.Factory {
@@ -5,8 +6,8 @@ namespace TsMap2.Factory {
         private readonly byte[] raw;
         public RawFactory( byte[] raw ) => this.raw = raw;
 
-        public void Save( string fileName ) {
-            RawHelper.SaveFile( fileName, AppPath.RawFolder, this.raw );
+        public void Save( RawType type, string fileName ) {
+            RawHelper.SaveFile( fileName, Path.Combine( AppPath.RawFolder, RawHelper.RawTypeToString( type ) ), this.raw );
         }
 
         public byte[] Load( string fileName ) => RawHelper.LoadFile( fileName, AppPath.RawFolder );
@@ -18,6 +19,8 @@ namespace TsMap2.Factory {
         FERRY_CONNECTION,
         OVERLAY,
         PREFAB,
-        ROAD_LOOK
+        ROAD_LOOK,
+        MAP_LOCALIZATION,
+        MAP_SECTORS
     }
 }

@@ -2,12 +2,15 @@
 using System.Linq;
 using System.Text;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Map {
     public class ParseMapLocalizationsJob : ThreadJob {
+        private bool _isFirstFileRead;
+
         protected override void Do() {
             Log.Debug( "[Job][Localizations] Loading" );
             // Console.WriteLine( this.Store().Settings.GamePath );
@@ -50,6 +53,13 @@ namespace TsMap2.Job.Parse.Map {
             }
 
             var key = string.Empty;
+
+            // -- Raw generation
+            if ( !this._isFirstFileRead ) {
+                RawHelper.SaveRawFile( RawType.MAP_LOCALIZATION, localeFile.GetFullName(), entryContents );
+                this._isFirstFileRead = true;
+            }
+            // -- ./Raw generation
 
             foreach ( string l in fileContents.Split( '\n' ) ) {
                 if ( !l.Contains( ':' ) ) continue;

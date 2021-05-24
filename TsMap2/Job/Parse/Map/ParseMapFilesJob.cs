@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Map {
     public class ParseMapFilesJob : ThreadJob {
+        private bool _isFirstFileRead;
+
         protected override void Do() {
             Log.Debug( "[Job][MapFiles] Loading" );
 
@@ -90,6 +93,13 @@ namespace TsMap2.Job.Parse.Map {
 
             var      lastOffset = 0x14;
             TsSector sector     = null;
+
+            // -- Raw generation
+            if ( !this._isFirstFileRead ) {
+                RawHelper.SaveRawFile( RawType.MAP_SECTORS, file.GetFullName(), stream );
+                this._isFirstFileRead = true;
+            }
+            // -- ./Raw generation
 
             for ( var i = 0; i < itemCount; i++ ) {
                 var type = (TsItemType) MemoryHelper.ReadUInt32( stream, lastOffset );

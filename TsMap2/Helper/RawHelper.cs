@@ -21,17 +21,9 @@ namespace TsMap2.Helper {
 
         public static void SaveRawFile( RawType type, string fileName, byte[] stream ) {
             var rawFactory = new RawFactory( stream );
-            rawFactory.Save( Path.Combine( RawTypeToString( type ), fileName ) );
+            rawFactory.Save( type, fileName );
         }
 
-        public static void InitRawFolder() {
-            foreach ( RawType type in Enum.GetValues( typeof( RawType ) ) ) {
-                string fullPath = Path.Combine( AppPath.RawFolder, RawTypeToString( type ) );
-
-                Directory.CreateDirectory( fullPath );
-            }
-        }
-
-        private static string RawTypeToString( RawType type ) => Enum.GetName( typeof( RawType ), type );
+        public static string RawTypeToString( RawType type ) => Enum.GetName( typeof( RawType ), type );
     }
 }
