@@ -2,12 +2,15 @@
 using System.Globalization;
 using System.Text;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
     public class ParseDefCountriesJob : ThreadJob {
+        private bool _isFirstFileRead;
+
         protected override void Do() {
             Log.Debug( "[Job][Country] Loading" );
 
@@ -57,6 +60,13 @@ namespace TsMap2.Job.Parse.Def {
             if ( file == null ) return null;
             // LocalizedNames = new Dictionary<string, string>();
             byte[] fileContent = file.Entry.Read();
+
+            // -- Raw generation
+            if ( !this._isFirstFileRead && file.GetFullName() != ScsPath.Def.CountryBaseName ) {
+                RawHelper.SaveRawFile( RawType.COUNTRY, file.GetFullName(), fileContent );
+                this._isFirstFileRead = true;
+            }
+            // -- ./Raw generation
 
             string[] fileLines = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
 

@@ -5,12 +5,15 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
     public class ParseDefOverlaysJob : ThreadJob {
+        private bool _isFirstFileRead;
+
         protected override void Do() {
             Log.Debug( "[Job][MapOverlay] Loading" );
 
@@ -48,9 +51,17 @@ namespace TsMap2.Job.Parse.Def {
                 throw new JobException( message, this.JobName(), ScsPath.Def.MaterialUiRoadPath );
             }
 
+            var isFirstFileRead = false;
             foreach ( ScsFile matFile in matFiles ) {
                 byte[]   data  = matFile.Entry.Read();
                 string[] lines = Encoding.UTF8.GetString( data ).Split( '\n' );
+
+                // -- Raw generation
+                if ( !isFirstFileRead ) {
+                    RawHelper.SaveRawFile( RawType.OVERLAY, matFile.GetFullName(), data );
+                    isFirstFileRead = true;
+                }
+                // -- ./Raw generation
 
                 foreach ( string line in lines ) {
                     ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
@@ -114,6 +125,13 @@ namespace TsMap2.Job.Parse.Def {
                 Log.Error( "Invalid DDS file. | {0}", file.GetPath() );
                 return null;
             }
+
+            // -- Raw generation
+            if ( !this._isFirstFileRead ) {
+                RawHelper.SaveRawFile( RawType.OVERLAY, file.GetFullName(), stream );
+                this._isFirstFileRead = true;
+            }
+            // -- ./Raw generation
 
             uint height = MemoryHelper.ReadUInt32( stream, 0x0C );
             uint width  = MemoryHelper.ReadUInt32( stream, 0x10 );

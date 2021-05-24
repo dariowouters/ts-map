@@ -15,8 +15,8 @@ namespace TsMap2.Helper {
         public const  string OverlaysFileName    = "Overlays.json";
         public static string HomeDirApp => Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), "TsMap2" );
         public static string OutputDir  => Path.Combine( HomeDirApp,                                                         "Output" );
-
-        public static string LogPath => Path.Combine( HomeDirApp, "Logs/log_.txt" );
+        public static string LogPath    => Path.Combine( HomeDirApp,                                                         "Logs/log_.txt" );
+        public static string RawFolder  => Path.Combine( HomeDirApp,                                                         "Raw" );
     }
 
 

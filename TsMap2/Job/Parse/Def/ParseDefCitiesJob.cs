@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Text;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
     public class ParseDefCitiesJob : ThreadJob {
+        private bool _isFirstFileRead;
+
         protected override void Do() {
             Log.Debug( "[Job][City] Loading" );
 
@@ -46,6 +49,13 @@ namespace TsMap2.Job.Parse.Def {
 
             if ( file == null ) return null;
             byte[] fileContent = file.Entry.Read();
+
+            // -- Raw generation
+            if ( !this._isFirstFileRead ) {
+                RawHelper.SaveRawFile( RawType.CITY, file.GetFullName(), fileContent );
+                this._isFirstFileRead = true;
+            }
+            // -- ./Raw generation
 
             string[] lines             = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
             var      offsetCount       = 0;

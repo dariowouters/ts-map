@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
@@ -27,11 +28,19 @@ namespace TsMap2.Job.Parse.Def {
                 throw new JobException( message, this.JobName(), ScsPath.Def.RoadLook );
             }
 
+            var _isFirstFileRead = false;
             foreach ( ScsFile roadLookFile in roadLookFiles ) {
                 if ( !roadLookFile.GetFileName().StartsWith( "road" ) ) continue;
                 byte[]     data     = roadLookFile.Entry.Read();
                 string[]   lines    = Encoding.UTF8.GetString( data ).Split( '\n' );
                 TsRoadLook roadLook = null;
+
+                // -- Raw generation
+                if ( !_isFirstFileRead && roadLookFile.GetFullName().StartsWith( "road_look.template" ) ) {
+                    RawHelper.SaveRawFile( RawType.ROAD_LOOK, roadLookFile.GetFullName(), data );
+                    _isFirstFileRead = true;
+                }
+                // -- ./Raw generation
 
                 foreach ( string line in lines ) {
                     ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );

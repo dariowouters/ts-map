@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
@@ -29,11 +30,19 @@ namespace TsMap2.Job.Parse.Def {
                 throw new JobException( message, this.JobName(), null );
             }
 
+            var _isFirstFileRead = false;
             foreach ( ScsFile ferryConnectionFile in ferryConnectionFiles ) {
                 byte[]   data  = ferryConnectionFile.Entry.Read();
                 string[] lines = Encoding.UTF8.GetString( data ).Split( '\n' );
 
                 TsFerryConnection ferryConnection = null;
+
+                // -- Raw generation
+                if ( !_isFirstFileRead ) {
+                    RawHelper.SaveRawFile( RawType.FERRY_CONNECTION, ferryConnectionFile.GetFullName(), data );
+                    _isFirstFileRead = true;
+                }
+                // -- ./Raw generation
 
                 foreach ( string line in lines ) {
                     ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );

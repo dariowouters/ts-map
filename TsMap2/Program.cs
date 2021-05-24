@@ -26,6 +26,7 @@ namespace TsMap2 {
                 s.RunAndWait();
 
                 // -- Parse
+                RawHelper.InitRawFolder();
                 var c = new ParseScsDefJob();
                 c.Run();
 

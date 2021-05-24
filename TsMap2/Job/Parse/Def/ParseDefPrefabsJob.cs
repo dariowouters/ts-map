@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Serilog;
+using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
     public class ParseDefPrefabsJob : ThreadJob {
+        private bool _isFirstFileRead;
+
         protected override void Do() {
             Log.Debug( "[Job][Prefab] Loading" );
 
@@ -31,6 +34,7 @@ namespace TsMap2.Job.Parse.Def {
                 // return;
             }
 
+            var _isFirstFileRead = false;
             foreach ( ScsFile prefabFile in prefabFiles ) {
                 if ( !prefabFile.GetFileName().StartsWith( "prefab" ) ) continue;
 
@@ -40,6 +44,13 @@ namespace TsMap2.Job.Parse.Def {
                 var token    = 0UL;
                 var path     = "";
                 var category = "";
+
+                // -- Raw generation
+                if ( !_isFirstFileRead ) {
+                    RawHelper.SaveRawFile( RawType.PREFAB, prefabFile.GetFullName(), data );
+                    _isFirstFileRead = true;
+                }
+                // -- ./Raw generation
 
                 foreach ( string line in lines ) {
                     ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
@@ -79,6 +90,13 @@ namespace TsMap2.Job.Parse.Def {
 
             byte[] stream  = file.Entry.Read();
             int    version = MemoryHelper.ReadInt32( stream, fileOffset );
+
+            // -- Raw generation
+            if ( !this._isFirstFileRead ) {
+                RawHelper.SaveRawFile( RawType.PREFAB, file.GetFullName(), stream );
+                this._isFirstFileRead = true;
+            }
+            // -- ./Raw generation
 
             if ( version < 0x15 ) {
                 var message = $"[Job][Prefab] {path} file version ({version}) too low, min. is {0x15}";
