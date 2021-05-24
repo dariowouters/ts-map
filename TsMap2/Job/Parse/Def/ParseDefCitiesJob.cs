@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Serilog;
-using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model;
 using TsMap2.Scs;
@@ -45,50 +44,10 @@ namespace TsMap2.Job.Parse.Def {
         }
 
         private TsCity Parse( string path ) {
-            ScsFile file = this.Store().Rfs.GetFileEntry( path );
+            ( string name, string country, ulong token, string localizationToken, List< int > xOffsets, List< int > yOffsets ) =
+                ScsParseHelper.CityParse( path, this._isFirstFileRead );
 
-            if ( file == null ) return null;
-            byte[] fileContent = file.Entry.Read();
-
-            // -- Raw generation
-            if ( !this._isFirstFileRead ) {
-                RawHelper.SaveRawFile( RawType.CITY, file.GetFullName(), fileContent );
-                this._isFirstFileRead = true;
-            }
-            // -- ./Raw generation
-
-            string[] lines             = Encoding.UTF8.GetString( fileContent ).Split( '\n' );
-            var      offsetCount       = 0;
-            var      xOffsets          = new List< int >();
-            var      yOffsets          = new List< int >();
-            ulong    token             = 0;
-            string   name              = null;
-            string   country           = null;
-            string   localizationToken = null;
-
-            foreach ( string line in lines ) {
-                ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
-                if ( !validLine ) continue;
-
-                if ( key == "city_data" )
-                    token = ScsHash.StringToToken( ScsSiiHelper.Trim( value.Split( '.' )[ 1 ] ) );
-                else if ( key == "city_name" )
-                    name = line.Split( '"' )[ 1 ];
-                else if ( key == "city_name_localized" )
-                    localizationToken = value.Split( '"' )[ 1 ].Replace( "@", "" );
-                else if ( key == "country" )
-                    country = value;
-                else if ( key.Contains( "map_x_offsets[]" ) ) {
-                    if ( ++offsetCount > 4 )
-                        if ( int.TryParse( value, out int offset ) )
-                            xOffsets.Add( offset );
-
-                    if ( offsetCount == 8 ) offsetCount = 0;
-                } else if ( key.Contains( "map_y_offsets[]" ) )
-                    if ( ++offsetCount > 4 )
-                        if ( int.TryParse( value, out int offset ) )
-                            yOffsets.Add( offset );
-            }
+            this._isFirstFileRead = true;
 
             return new TsCity( name, country, token, localizationToken, xOffsets, yOffsets );
         }
