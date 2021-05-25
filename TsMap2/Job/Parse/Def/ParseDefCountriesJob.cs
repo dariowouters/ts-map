@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Serilog;
-using TsMap2.Factory;
+using TsMap2.Factory.Entity;
 using TsMap2.Helper;
-using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
@@ -44,28 +43,13 @@ namespace TsMap2.Job.Parse.Def {
                     string path = ScsHelper.GetFilePath( line.Split( '"' )[ 1 ], ScsPath.Def.DefFolderName );
                     // var    country = new TsCountry();
 
-                    this.Store().Def.AddCountry( this.Parse( path ) );
+                    this.Store().Def.AddCountry( TsCountryFactory.Create( path ) );
                     // if ( country.Token != 0 && !this._countriesLookup.ContainsKey( country.Token ) )
                     //     this._countriesLookup.Add( country.Token, country );
                 }
             }
 
             Log.Information( "[Job][Country] Loaded. Found: {0}", this.Store().Def.Countries.Count );
-        }
-
-        private TsCountry Parse( string path ) {
-            ( string code, int id, string name, ulong token, float x, float y, string localizationToken )
-                = ScsParseHelper.CountryParse( path );
-
-            // -- Raw generation
-            if ( !this._isFirstFileRead && path != ScsPath.Def.CountryBaseName ) {
-                RawHelper.SaveRawFile( RawType.COUNTRY, path, null );
-                this._isFirstFileRead = true;
-            }
-            // -- ./Raw generation
-
-
-            return new TsCountry( code, id, name, token, x, y, localizationToken );
         }
     }
 }

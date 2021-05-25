@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Serilog;
-using TsMap2.Factory;
+using TsMap2.Factory.Entity;
 using TsMap2.Helper;
-using TsMap2.Model;
 using TsMap2.Scs;
 
 namespace TsMap2.Job.Parse.Def {
@@ -37,25 +36,11 @@ namespace TsMap2.Job.Parse.Def {
                     if ( !line.Contains( "@include" ) ) continue;
 
                     string path = ScsHelper.GetFilePath( line.Split( '"' )[ 1 ], "def" );
-                    this.Store().Def.AddCity( this.Parse( path ) );
+                    this.Store().Def.AddCity( TsCityFactory.Create( path ) );
                 }
             }
 
             Log.Information( "[Job][City] Loaded. Found: {0}", this.Store().Def.Cities.Count );
-        }
-
-        private TsCity Parse( string path ) {
-            ( string name, string country, ulong token, string localizationToken, List< int > xOffsets, List< int > yOffsets ) =
-                ScsParseHelper.CityParse( path );
-
-            // -- Raw generation
-            if ( !this._isFirstFileRead ) {
-                RawHelper.SaveRawFile( RawType.CITY, path, null );
-                this._isFirstFileRead = true;
-            }
-            // -- ./Raw generation
-
-            return new TsCity( name, country, token, localizationToken, xOffsets, yOffsets );
         }
     }
 }
