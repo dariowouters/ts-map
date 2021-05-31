@@ -4,6 +4,7 @@ namespace TsMap2.Job.Parse.Def {
             AddJob( new ParseGameJob() );
             AddJob( new ParseDefCitiesJob() );
             AddJob( new ParseDefCountriesJob() );
+            AddJob( new ParseDefRoadLooksJob() );
             AddJob( new ParseDefPrefabsJob() );
             AddJob( new ParseDefFerryConnectionsJob() );
             AddJob( new ParseDefOverlaysJob() );
