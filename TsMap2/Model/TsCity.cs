@@ -9,12 +9,12 @@ namespace TsMap2.Model {
 
 
         public TsCity( string name, string country, ulong token, string localizationToken, List< int > xOffsets, List< int > yOffsets ) {
-            this.Name              = name;
-            this.CountryName       = country;
-            this.Token             = token;
-            this.LocalizationToken = localizationToken;
-            this.XOffsets          = xOffsets;
-            this.YOffsets          = yOffsets;
+            Name              = name;
+            CountryName       = country;
+            Token             = token;
+            LocalizationToken = localizationToken;
+            XOffsets          = xOffsets;
+            YOffsets          = yOffsets;
         }
 
         public                string                       Name              { get; set; }
@@ -26,12 +26,12 @@ namespace TsMap2.Model {
         public                Dictionary< string, string > LocalizedNames    { get; } = new Dictionary< string, string >();
 
         public void AddLocalizedName( string locale, string name ) {
-            if ( !this.LocalizedNames.ContainsKey( locale ) ) this.LocalizedNames.Add( locale, name );
+            if ( !LocalizedNames.ContainsKey( locale ) ) LocalizedNames.Add( locale, name );
         }
 
         public string GetLocalizedName( string locale ) =>
-            this.LocalizedNames.ContainsKey( locale )
-                ? this.LocalizedNames[ locale ]
-                : this.Name;
+            LocalizedNames.ContainsKey( locale )
+                ? LocalizedNames[ locale ]
+                : Name;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TsMap2.Scs;
+using TsMap2.Helper;
 
 namespace TsMap2.Model {
     public class TsDef {
@@ -12,78 +12,78 @@ namespace TsMap2.Model {
         public Dictionary< ulong, TsRoadLook >   RoadLooks        = new Dictionary< ulong, TsRoadLook >();
 
         public TsCountry GetCountryByTokenName( string name ) {
-            ulong token = ScsHash.StringToToken( name );
-            return this.Countries.ContainsKey( token )
-                       ? this.Countries[ token ]
+            ulong token = ScsHashHelper.StringToToken( name );
+            return Countries.ContainsKey( token )
+                       ? Countries[ token ]
                        : null;
         }
 
 
-        public void AddRoadLook( TsRoadLook roadLook ) {
-            if ( roadLook.Token != 0 && !this.RoadLooks.ContainsKey( roadLook.Token ) ) // Log.Debug( "R: {0}", roadLook.Token );
-                this.RoadLooks.Add( roadLook.Token, roadLook );
-        }
+        // public void AddRoadLook( TsRoadLook roadLook ) {
+        //     if ( roadLook.Token != 0 && !RoadLooks.ContainsKey( roadLook.Token ) ) // Log.Debug( "R: {0}", roadLook.Token );
+        //         RoadLooks.Add( roadLook.Token, roadLook );
+        // }
 
         public TsRoadLook LookupRoadLook( ulong lookId ) =>
             // Log.Debug( "L: {0}", lookId );
-            this.RoadLooks.ContainsKey( lookId )
-                ? this.RoadLooks[ lookId ]
+            RoadLooks.ContainsKey( lookId )
+                ? RoadLooks[ lookId ]
                 : null;
 
         public TsPrefab LookupPrefab( ulong prefabId ) =>
-            this.Prefabs.ContainsKey( prefabId )
-                ? this.Prefabs[ prefabId ]
+            Prefabs.ContainsKey( prefabId )
+                ? Prefabs[ prefabId ]
                 : null;
 
         public TsCity LookupCity( ulong cityId ) =>
-            this.Cities.ContainsKey( cityId )
-                ? this.Cities[ cityId ]
+            Cities.ContainsKey( cityId )
+                ? Cities[ cityId ]
                 : null;
 
         public TsMapOverlay LookupOverlay( ulong overlayId ) =>
-            this.Overlays.ContainsKey( overlayId )
-                ? this.Overlays[ overlayId ]
+            Overlays.ContainsKey( overlayId )
+                ? Overlays[ overlayId ]
                 : null;
 
         public List< TsFerryConnection > LookupFerryConnection( ulong ferryPortId ) {
-            return this.FerryConnections.Where( item => item.StartPortToken == ferryPortId ).ToList();
+            return FerryConnections.Where( item => item.StartPortToken == ferryPortId ).ToList();
         }
 
-        public void AddCountry( TsCountry tsCountry ) {
-            if ( tsCountry.Token != 0 && !this.Countries.ContainsKey( tsCountry.Token ) )
-                this.Countries.Add( tsCountry.Token, tsCountry );
-        }
+        // public void AddCountry( TsCountry tsCountry ) {
+        //     if ( tsCountry.Token != 0 && !Countries.ContainsKey( tsCountry.Token ) )
+        //         Countries.Add( tsCountry.Token, tsCountry );
+        // }
 
-        public void AddPrefab( TsPrefab prefab ) {
-            if ( prefab.Token != 0 && !this.Prefabs.ContainsKey( prefab.Token ) )
-                this.Prefabs.Add( prefab.Token, prefab );
-        }
+        // public void AddPrefab( TsPrefab prefab ) {
+        //     if ( prefab.Token != 0 && !Prefabs.ContainsKey( prefab.Token ) )
+        //         Prefabs.Add( prefab.Token, prefab );
+        // }
 
-        public void AddFerryConnection( TsFerryConnection ferryConnection ) {
-            TsFerryConnection existingItem = this.FerryConnections.FirstOrDefault( item =>
-                                                                                       item.StartPortToken  == ferryConnection.StartPortToken
-                                                                                       && item.EndPortToken == ferryConnection.EndPortToken
-                                                                                       || item.StartPortToken == ferryConnection.EndPortToken
-                                                                                       && item.EndPortToken
-                                                                                       == ferryConnection
-                                                                                           .StartPortToken ); // Check if ferryConnectionection already exists
-            if ( existingItem == null ) this.FerryConnections.Add( ferryConnection );
-        }
+        // public void AddFerryConnection( TsFerryConnection ferryConnection ) {
+        //     TsFerryConnection existingItem = FerryConnections.FirstOrDefault( item =>
+        //                                                                                item.StartPortToken  == ferryConnection.StartPortToken
+        //                                                                                && item.EndPortToken == ferryConnection.EndPortToken
+        //                                                                                || item.StartPortToken == ferryConnection.EndPortToken
+        //                                                                                && item.EndPortToken
+        //                                                                                == ferryConnection
+        //                                                                                    .StartPortToken ); // Check if ferryConnectionection already exists
+        //     if ( existingItem == null ) FerryConnections.Add( ferryConnection );
+        // }
 
-        public void AddCity( TsCity city ) {
-            if ( city.Token != 0 && !this.Cities.ContainsKey( city.Token ) )
-                this.Cities.Add( city.Token, city );
-        }
+        // public void AddCity( TsCity city ) {
+        //     if ( city.Token != 0 && !Cities.ContainsKey( city.Token ) )
+        //         Cities.Add( city.Token, city );
+        // }
 
-        public void AddOverlay( TsMapOverlay mapOverlay ) {
-            if ( !this.Overlays.ContainsKey( mapOverlay.Token ) )
-                this.Overlays.Add( mapOverlay.Token, mapOverlay );
-        }
+        // public void AddOverlay( TsMapOverlay mapOverlay ) {
+        //     if ( !Overlays.ContainsKey( mapOverlay.Token ) )
+        //         Overlays.Add( mapOverlay.Token, mapOverlay );
+        // }
 
         public void AddFerryPortLocation( ulong ferryPortId, float x, float z ) {
             IEnumerable< TsFerryConnection > ferry =
-                this.FerryConnections.Where( item => item.StartPortToken  == ferryPortId
-                                                     || item.EndPortToken == ferryPortId );
+                FerryConnections.Where( item => item.StartPortToken  == ferryPortId
+                                                || item.EndPortToken == ferryPortId );
             foreach ( TsFerryConnection connection in ferry ) connection.SetPortLocation( ferryPortId, x, z );
         }
     }

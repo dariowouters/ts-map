@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using TsMap2.Factory;
-using TsMap2.Scs;
+using TsMap2.Scs.FileSystem;
 
 namespace TsMap2.Helper {
     public static class RawHelper {

@@ -8,16 +8,16 @@ namespace TsMap2.Job.Parse.Overlays {
         protected override void Do() {
             Log.Information( "[Job][OverlayTrigger] Parsing..." );
 
-            foreach ( TsMapTriggerItem trigger in this.Store().Map.Triggers ) {
+            foreach ( TsMapTriggerItem trigger in Store().Map.Triggers ) {
                 Bitmap b = trigger.Overlay?.GetBitmap();
 
                 if ( !trigger.Valid || trigger.Hidden || b == null ) continue;
 
                 var ov = new TsMapOverlayItem( trigger.X, trigger.Z, trigger.OverlayName, TsMapOverlayType.Parking, b );
-                this.Store().Map.Overlays.Parking.Add( ov );
+                Store().Map.Overlays.Parking.Add( ov );
             }
 
-            Log.Information( "[Job][OverlayTrigger] Parking: {0}", this.Store().Map.Overlays.Parking.Count );
+            Log.Information( "[Job][OverlayTrigger] Parking: {0}", Store().Map.Overlays.Parking.Count );
         }
     }
 }

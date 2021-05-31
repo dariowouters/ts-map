@@ -16,26 +16,26 @@ namespace TsMap2.Factory.Json {
         public abstract JContainer RawData();
 
         public void Save() {
-            this.Save( this.GetSavingPath() );
+            Save( GetSavingPath() );
         }
 
-        public T Load() => this.Load( this.GetLoadingPath() );
+        public T Load() => Load( GetLoadingPath() );
 
         public void Save( string savingPath ) {
-            JsonHelper.SaveFile( this.GetFileName(), savingPath, this.RawData() );
+            JsonHelper.SaveFile( GetFileName(), savingPath, RawData() );
         }
 
         public T Load( string loadingPath ) {
-            JObject raw = JsonHelper.LoadFile( this.GetFileName(), loadingPath );
-            return this.Convert( raw );
+            JObject raw = JsonHelper.LoadFile( GetFileName(), loadingPath );
+            return Convert( raw );
         }
 
         public bool FileExist( string path ) => File.Exists( path );
 
-        public bool FileExist() => this.FileExist( Path.Combine( this.GetLoadingPath(), this.GetFileName() ) );
+        public bool FileExist() => FileExist( Path.Combine( GetLoadingPath(), GetFileName() ) );
 
         public bool DirExist( string path ) => Directory.Exists( path );
 
-        public bool DirExist() => this.DirExist( this.GetLoadingPath() );
+        public bool DirExist() => DirExist( GetLoadingPath() );
     }
 }

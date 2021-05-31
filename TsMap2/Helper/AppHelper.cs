@@ -55,20 +55,20 @@ namespace TsMap2.Helper {
 
     public class Mod {
         public Mod( string path ) {
-            this.ModPath = path;
-            this.Load    = false;
+            ModPath = path;
+            Load    = false;
         }
 
         public string ModPath { get; set; }
         public bool   Load    { get; set; }
 
-        public override string ToString() => Path.GetFileName( this.ModPath );
+        public override string ToString() => Path.GetFileName( ModPath );
     }
 
     public class JobException : Exception {
         public JobException( string message, string jobName, object context ) : base( message ) {
-            this.JobName = jobName;
-            this.Context = context;
+            JobName = jobName;
+            Context = context;
         }
 
         public string JobName { get; }

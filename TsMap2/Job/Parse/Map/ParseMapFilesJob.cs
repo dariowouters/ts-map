@@ -7,6 +7,7 @@ using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
+using TsMap2.Scs.FileSystem;
 
 namespace TsMap2.Job.Parse.Map {
     public class ParseMapFilesJob : ThreadJob {
@@ -16,13 +17,13 @@ namespace TsMap2.Job.Parse.Map {
             Log.Debug( "[Job][MapFiles] Loading" );
 
             // --- Check RFS
-            if ( this.Store().Rfs == null )
-                throw new JobException( "[Job][MapFiles] The root file system was not initialized. Check the game path", this.JobName(), null );
+            if ( Store().Rfs == null )
+                throw new JobException( "[Job][MapFiles] The root file system was not initialized. Check the game path", JobName(), null );
 
-            ScsDirectory baseMapEntry = this.Store().Rfs.GetDirectory( ScsPath.Map.MapDirectory );
+            ScsDirectory baseMapEntry = Store().Rfs.GetDirectory( ScsPath.Map.MapDirectory );
             if ( baseMapEntry == null ) {
                 var message = $"[Job][MapFiles] Could not read {ScsPath.Map.MapDirectory} dir";
-                throw new JobException( message, this.JobName(), ScsPath.Map.MapDirectory );
+                throw new JobException( message, JobName(), ScsPath.Map.MapDirectory );
             }
 
             List< ScsFile >
@@ -33,7 +34,7 @@ namespace TsMap2.Job.Parse.Map {
                       .ToList(); // Get the map names from the mbd files
             if ( mbd.Count == 0 ) {
                 var message = $"[Job][MapFiles] Could not find {ScsPath.Map.MapExtension} file";
-                throw new JobException( message, this.JobName(), ScsPath.Map.MapExtension );
+                throw new JobException( message, JobName(), ScsPath.Map.MapExtension );
             }
 
 
@@ -42,17 +43,17 @@ namespace TsMap2.Job.Parse.Map {
                 string mapName = file.GetFileName();
                 // this.IsEts2 = !( mapName == "usa" );
 
-                ScsDirectory mapFileDir = this.Store().Rfs.GetDirectory( $"map/{mapName}" );
+                ScsDirectory mapFileDir = Store().Rfs.GetDirectory( $"map/{mapName}" );
                 if ( mapFileDir == null ) {
                     var message = $"[Job][MapFiles] Could not read map/{mapName} directory";
-                    throw new JobException( message, this.JobName(), mapName );
+                    throw new JobException( message, JobName(), mapName );
                 }
 
                 sectorFiles = mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList();
                 // sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
             }
 
-            sectorFiles.ForEach( this.Parse );
+            sectorFiles.ForEach( Parse );
             // if ( _sectorFiles.Count <= 0 ) {
 
             // }
@@ -62,18 +63,18 @@ namespace TsMap2.Job.Parse.Map {
             // sectorFiles.ForEach( this.Parse );
             // this.Store().Sectors.ForEach( sec => sec.ClearFileData() );
 
-            Log.Information( "[Job][MapFiles] Loaded. Roads: {0}",            this.Store().Map.Roads.Count );
-            Log.Information( "[Job][MapFiles] Loaded. Prefabs: {0}",          this.Store().Map.Prefabs.Count );
-            Log.Information( "[Job][MapFiles] Loaded. Companies: {0}",        this.Store().Map.Companies.Count );
-            Log.Information( "[Job][MapFiles] Loaded. Cities: {0}",           this.Store().Map.Cities.Count );
-            Log.Information( "[Job][MapFiles] Loaded. MapOverlays: {0}",      this.Store().Map.MapOverlays.Count );
-            Log.Information( "[Job][MapFiles] Loaded. FerryConnections: {0}", this.Store().Map.FerryConnections.Count );
-            Log.Information( "[Job][MapFiles] Loaded. Triggers: {0}",         this.Store().Map.Triggers.Count );
-            Log.Information( "[Job][MapFiles] Loaded. MapAreas: {0}",         this.Store().Map.MapAreas.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Roads: {0}",            Store().Map.Roads.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Prefabs: {0}",          Store().Map.Prefabs.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Companies: {0}",        Store().Map.Companies.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Cities: {0}",           Store().Map.Cities.Count );
+            Log.Information( "[Job][MapFiles] Loaded. MapOverlays: {0}",      Store().Map.MapOverlays.Count );
+            Log.Information( "[Job][MapFiles] Loaded. FerryConnections: {0}", Store().Map.FerryConnections.Count );
+            Log.Information( "[Job][MapFiles] Loaded. Triggers: {0}",         Store().Map.Triggers.Count );
+            Log.Information( "[Job][MapFiles] Loaded. MapAreas: {0}",         Store().Map.MapAreas.Count );
         }
 
         private void Parse( string path ) {
-            ScsFile file  = this.Store().Rfs.GetFileEntry( path );
+            ScsFile file  = Store().Rfs.GetFileEntry( path );
             var     empty = false;
 
             if ( file == null ) // empty = true;
@@ -95,9 +96,9 @@ namespace TsMap2.Job.Parse.Map {
             TsSector sector     = null;
 
             // -- Raw generation
-            if ( !this._isFirstFileRead ) {
+            if ( !_isFirstFileRead ) {
                 RawHelper.SaveRawFile( RawType.MAP_SECTORS, file.GetFullName(), stream );
-                this._isFirstFileRead = true;
+                _isFirstFileRead = true;
             }
             // -- ./Raw generation
 
@@ -112,19 +113,19 @@ namespace TsMap2.Job.Parse.Map {
                     case TsItemType.Road: {
                         mapItem    =  new TsMapRoadItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.Roads.Add( (TsMapRoadItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.Roads.Add( (TsMapRoadItem) mapItem );
                         break;
                     }
                     case TsItemType.Prefab: {
                         mapItem    =  new TsMapPrefabItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.Prefabs.Add( (TsMapPrefabItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.Prefabs.Add( (TsMapPrefabItem) mapItem );
                         break;
                     }
                     case TsItemType.Company: {
                         mapItem    =  new TsMapCompanyItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.Companies.Add( (TsMapCompanyItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.Companies.Add( (TsMapCompanyItem) mapItem );
                         break;
                     }
                     case TsItemType.Service: {
@@ -140,19 +141,19 @@ namespace TsMap2.Job.Parse.Map {
                     case TsItemType.City: {
                         mapItem    =  new TsMapCityItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.Cities.Add( (TsMapCityItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.Cities.Add( (TsMapCityItem) mapItem );
                         break;
                     }
                     case TsItemType.MapOverlay: {
                         mapItem    =  new TsMapMapOverlayItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.MapOverlays.Add( (TsMapMapOverlayItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.MapOverlays.Add( (TsMapMapOverlayItem) mapItem );
                         break;
                     }
                     case TsItemType.Ferry: {
                         mapItem    =  new TsMapFerryItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.FerryConnections.Add( (TsMapFerryItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.FerryConnections.Add( (TsMapFerryItem) mapItem );
                         break;
                     }
                     case TsItemType.Garage: {
@@ -164,7 +165,7 @@ namespace TsMap2.Job.Parse.Map {
                         mapItem    =  new TsMapTriggerItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
 
-                        if ( mapItem.Valid ) this.Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
                         break;
                     }
                     case TsItemType.FuelPump: {
@@ -195,7 +196,7 @@ namespace TsMap2.Job.Parse.Map {
                     case TsItemType.MapArea: {
                         mapItem    =  new TsMapMapAreaItem( sector, lastOffset );
                         lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) this.Store().Map.MapAreas.Add( (TsMapMapAreaItem) mapItem );
+                        if ( mapItem.Valid ) Store().Map.MapAreas.Add( (TsMapMapAreaItem) mapItem );
                         break;
                     }
                     case TsItemType.Cutscene: {
@@ -217,8 +218,8 @@ namespace TsMap2.Job.Parse.Map {
             int nodeCount = MemoryHelper.ReadInt32( stream, lastOffset );
             for ( var i = 0; i < nodeCount; i++ ) {
                 var node = new TsNode( sector, lastOffset += 0x04 );
-                this.Store().Map.UpdateEdgeCoords( node );
-                if ( !this.Store().Map.Nodes.ContainsKey( node.Uid ) ) this.Store().Map.Nodes.Add( node.Uid, node );
+                Store().Map.UpdateEdgeCoords( node );
+                if ( !Store().Map.Nodes.ContainsKey( node.Uid ) ) Store().Map.Nodes.Add( node.Uid, node );
                 lastOffset += 0x34;
             }
 

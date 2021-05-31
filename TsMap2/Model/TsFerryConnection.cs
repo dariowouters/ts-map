@@ -8,12 +8,12 @@ namespace TsMap2.Model {
         public float  Z;
 
         public TsFerryPoint( float x, float z ) {
-            this.X = x;
-            this.Z = z;
+            X = x;
+            Z = z;
         }
 
         public void SetRotation( double rot ) {
-            this.Rotation = rot;
+            Rotation = rot;
         }
     }
 
@@ -25,19 +25,19 @@ namespace TsMap2.Model {
         public PointF               EndPortLocation   { get; private set; }
 
         public void AddConnectionPosition( int index, float x, float z ) {
-            if ( this.Connections.Count > index ) return;
-            this.Connections.Add( new TsFerryPoint( x / 256, z / 256 ) );
+            if ( Connections.Count > index ) return;
+            Connections.Add( new TsFerryPoint( x / 256, z / 256 ) );
         }
 
         public void AddRotation( int index, double rot ) {
-            if ( this.Connections.Count <= index ) return;
-            this.Connections[ index ].SetRotation( rot );
+            if ( Connections.Count <= index ) return;
+            Connections[ index ].SetRotation( rot );
         }
 
         public void SetPortLocation( ulong ferryPortId, float x, float z ) {
-            if ( ferryPortId == this.StartPortToken )
-                this.StartPortLocation                                        = new PointF( x, z );
-            else if ( ferryPortId == this.EndPortToken ) this.EndPortLocation = new PointF( x, z );
+            if ( ferryPortId == StartPortToken )
+                StartPortLocation                                   = new PointF( x, z );
+            else if ( ferryPortId == EndPortToken ) EndPortLocation = new PointF( x, z );
         }
     }
 }

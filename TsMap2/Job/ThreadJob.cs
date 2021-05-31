@@ -9,19 +9,19 @@ namespace TsMap2.Job {
 
         protected abstract void Do();
 
-        public string JobName() => this.GetType().Name;
+        public string JobName() => GetType().Name;
 
         protected void OnEnd() { }
 
         public void Run() {
-            this.t = Task.Factory.StartNew( () => this.Do(), TaskCreationOptions.AttachedToParent );
+            this.t = Task.Factory.StartNew( () => Do(), TaskCreationOptions.AttachedToParent );
             this.t.ContinueWith( t => HandleException( t.Exception ), TaskContinuationOptions.OnlyOnFaulted );
-            this.t.ContinueWith( i => this.OnEnd() );
+            this.t.ContinueWith( i => OnEnd() );
         }
 
         public void RunAndWait() {
-            this.Run();
-            this.t.Wait();
+            Run();
+            t.Wait();
         }
 
         public StoreHelper Store() => StoreHelper.Instance;

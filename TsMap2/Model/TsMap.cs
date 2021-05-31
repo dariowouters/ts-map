@@ -19,15 +19,15 @@ namespace TsMap2.Model {
         public          TsMapOverlays               Overlays         = new TsMapOverlays();
 
         public TsNode GetNodeByUid( ulong uid ) =>
-            this.Nodes.ContainsKey( uid )
-                ? this.Nodes[ uid ]
+            Nodes.ContainsKey( uid )
+                ? Nodes[ uid ]
                 : null;
 
         public void UpdateEdgeCoords( TsNode node ) {
-            if ( this.MinX > node.X ) this.MinX = node.X;
-            if ( this.MaxX < node.X ) this.MaxX = node.X;
-            if ( this.MinZ > node.Z ) this.MinZ = node.Z;
-            if ( this.MaxZ < node.Z ) this.MaxZ = node.Z;
+            if ( MinX > node.X ) MinX = node.X;
+            if ( MaxX < node.X ) MaxX = node.X;
+            if ( MinZ > node.Z ) MinZ = node.Z;
+            if ( MaxZ < node.Z ) MaxZ = node.Z;
         }
     }
 }

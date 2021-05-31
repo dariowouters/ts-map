@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using TsMap2.Helper;
 
-namespace TsMap2.Scs {
+namespace TsMap2.Scs.FileSystem {
     public class ScsFile {
         private readonly string _entryPath;
 
         public ScsFile( ScsEntry entry, string path ) {
-            this.Entry      = entry;
-            this._entryPath = path;
+            Entry      = entry;
+            _entryPath = path;
         }
 
         public ScsEntry Entry { get; }
@@ -20,15 +20,15 @@ namespace TsMap2.Scs {
         ///     Will return full path
         ///     eg. def/city.sii
         /// </summary>
-        public string GetPath() => this._entryPath;
+        public string GetPath() => _entryPath;
 
         /// <summary>
         ///     Will return local path
         ///     eg. If full path is material/ui/test.mat this will return 'material/ui'
         /// </summary>
         public string GetLocalPath() {
-            int lastSlash = this._entryPath.LastIndexOf( '/' );
-            return this._entryPath.Substring( 0, lastSlash );
+            int lastSlash = _entryPath.LastIndexOf( '/' );
+            return _entryPath.Substring( 0, lastSlash );
         }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace TsMap2.Scs {
         ///     eg. If full name is test.sii this will return 'test'
         /// </summary>
         public string GetFileName() {
-            int lastSlash  = this._entryPath.LastIndexOf( '/' );
-            int lastPeriod = this._entryPath.LastIndexOf( '.' );
-            return this._entryPath.Substring( lastSlash + 1, lastPeriod - lastSlash - 1 );
+            int lastSlash  = _entryPath.LastIndexOf( '/' );
+            int lastPeriod = _entryPath.LastIndexOf( '.' );
+            return _entryPath.Substring( lastSlash + 1, lastPeriod - lastSlash - 1 );
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace TsMap2.Scs {
         ///     eg. If full name is test.sii this will return 'test.sii'
         /// </summary>
         public string GetFullName() {
-            int lastSlash = this._entryPath.LastIndexOf( '/' );
-            return this._entryPath.Substring( lastSlash + 1 );
+            int lastSlash = _entryPath.LastIndexOf( '/' );
+            return _entryPath.Substring( lastSlash + 1 );
         }
 
         /// <summary>
@@ -55,8 +55,8 @@ namespace TsMap2.Scs {
         ///     eg. If full name is test.sii this will return 'sii'
         /// </summary>
         public string GetExtension() {
-            int lastPeriod = this._entryPath.LastIndexOf( '.' );
-            return this._entryPath.Substring( lastPeriod + 1 );
+            int lastPeriod = _entryPath.LastIndexOf( '.' );
+            return _entryPath.Substring( lastPeriod + 1 );
         }
     }
 
@@ -64,11 +64,11 @@ namespace TsMap2.Scs {
         private readonly RootFileSystem _rfs;
 
         public ScsDirectory( RootFileSystem rfs, string path ) {
-            this.Directories = new Dictionary< ulong, ScsDirectory >();
-            this.Files       = new Dictionary< ulong, ScsFile >();
+            Directories = new Dictionary< ulong, ScsDirectory >();
+            Files       = new Dictionary< ulong, ScsFile >();
 
-            this._rfs      = rfs;
-            this.EntryPath = path;
+            _rfs      = rfs;
+            EntryPath = path;
         }
 
         private string EntryPath { get; }
@@ -90,7 +90,7 @@ namespace TsMap2.Scs {
 
                     if ( line.StartsWith( "*" ) ) // dirs
                     {
-                        string dirPath = Path.Combine( this.EntryPath, line.Substring( 1 ) );
+                        string dirPath = Path.Combine( EntryPath, line.Substring( 1 ) );
                         dirPath = dirPath.Replace( '\\', '/' );
 
                         var   nextEntry = (ScsHashEntry) entry.GetRootFile().GetEntry( dirPath );
@@ -99,15 +99,15 @@ namespace TsMap2.Scs {
                         if ( nextEntry == null ) // Log.Msg( $"Could not find hash for '{dirPath}'" );
                             continue;
 
-                        if ( !this.Directories.ContainsKey( nextHash ) ) {
-                            var dir = new ScsDirectory( this._rfs, dirPath );
+                        if ( !Directories.ContainsKey( nextHash ) ) {
+                            var dir = new ScsDirectory( _rfs, dirPath );
                             dir.AddHashEntry( nextEntry );
-                            this.Directories.Add( nextHash, dir );
+                            Directories.Add( nextHash, dir );
                         } else
-                            this.Directories[ nextHash ].AddHashEntry( nextEntry );
+                            Directories[ nextHash ].AddHashEntry( nextEntry );
                     } else // file
                     {
-                        string filePath = Path.Combine( this.EntryPath, line );
+                        string filePath = Path.Combine( EntryPath, line );
                         filePath = filePath.Replace( '\\', '/' );
 
                         ulong    nextHash  = CityHash.CityHash64( Encoding.UTF8.GetBytes( filePath ), (ulong) filePath.Length );
@@ -116,10 +116,10 @@ namespace TsMap2.Scs {
                         if ( nextEntry == null ) // Log.Msg( $"Could not find hash for '{filePath}'" );
                             continue;
 
-                        if ( this.Files.ContainsKey( nextHash ) ) // Log.Msg($"File '{filePath}' already exists => overwriting");
-                            this.Files[ nextHash ] = new ScsFile( nextEntry, filePath );
+                        if ( Files.ContainsKey( nextHash ) ) // Log.Msg($"File '{filePath}' already exists => overwriting");
+                            Files[ nextHash ] = new ScsFile( nextEntry, filePath );
                         else
-                            this.Files.Add( nextHash, new ScsFile( nextEntry, filePath ) );
+                            Files.Add( nextHash, new ScsFile( nextEntry, filePath ) );
                     }
                 }
             }
@@ -133,13 +133,13 @@ namespace TsMap2.Scs {
             if ( slashIndex == -1 ) // no slash found => end of path = file location
             {
                 ulong  fileHash = entry.GetHash();
-                string newPath  = Path.Combine( this.EntryPath, path );
+                string newPath  = Path.Combine( EntryPath, path );
                 newPath = newPath.Replace( '\\', '/' );
 
-                if ( this.Files.ContainsKey( fileHash ) ) // Log.Msg($"File '{filePath}' already exists => overwriting");
-                    this.Files[ fileHash ] = new ScsFile( entry, newPath );
+                if ( Files.ContainsKey( fileHash ) ) // Log.Msg($"File '{filePath}' already exists => overwriting");
+                    Files[ fileHash ] = new ScsFile( entry, newPath );
                 else
-                    this.Files.Add( fileHash, new ScsFile( entry, newPath ) );
+                    Files.Add( fileHash, new ScsFile( entry, newPath ) );
 
                 return;
             }
@@ -147,40 +147,40 @@ namespace TsMap2.Scs {
             if ( path.StartsWith( "/" ) ) path = path.Substring( 1 );
 
             string currentDir = path.Substring( 0, slashIndex );
-            string hashName   = ScsHelper.CombinePath( this.EntryPath, currentDir );
+            string hashName   = ScsHelper.CombinePath( EntryPath, currentDir );
             ulong  hash       = CityHash.CityHash64( Encoding.UTF8.GetBytes( hashName ), (ulong) hashName.Length );
 
-            if ( this.Directories.ContainsKey( hash ) )
-                this.Directories[ hash ].AddZipEntry( entry, path.Substring( slashIndex + 1 ) );
+            if ( Directories.ContainsKey( hash ) )
+                Directories[ hash ].AddZipEntry( entry, path.Substring( slashIndex + 1 ) );
             else {
-                string newPath = Path.Combine( this.EntryPath, currentDir );
+                string newPath = Path.Combine( EntryPath, currentDir );
                 newPath = newPath.Replace( '\\', '/' );
 
-                var dir = new ScsDirectory( this._rfs, newPath );
+                var dir = new ScsDirectory( _rfs, newPath );
                 dir.AddZipEntry( entry, path.Substring( slashIndex + 1 ) );
 
-                this.Directories.Add( hash, dir );
+                Directories.Add( hash, dir );
             }
         }
 
         public void AddDirectoryManually( string path, ScsEntry entry ) {
-            this.Directories.Add( entry.GetHash(), new ScsDirectory( this._rfs, path ) );
+            Directories.Add( entry.GetHash(), new ScsDirectory( _rfs, path ) );
         }
 
         public string GetCurrentDirectoryName() {
-            if ( !this.EntryPath.Contains( '/' ) ) return this.EntryPath;
-            string[] pathParts = this.EntryPath.Split( '/' );
+            if ( !EntryPath.Contains( '/' ) ) return EntryPath;
+            string[] pathParts = EntryPath.Split( '/' );
             return pathParts[ pathParts.Length - 1 ];
         }
 
         public List< ScsFile > GetFiles( string filter = "" ) {
-            return this.Files.Values.Where( x => x.GetFullName().Contains( filter ) ).ToList();
+            return Files.Values.Where( x => x.GetFullName().Contains( filter ) ).ToList();
         }
 
         public ScsFile GetFileEntry( ulong hash ) {
-            if ( this.Files.ContainsKey( hash ) ) return this.Files[ hash ];
+            if ( Files.ContainsKey( hash ) ) return Files[ hash ];
 
-            foreach ( KeyValuePair< ulong, ScsDirectory > scsDirectory in this.Directories ) {
+            foreach ( KeyValuePair< ulong, ScsDirectory > scsDirectory in Directories ) {
                 ScsFile res = scsDirectory.Value.GetFileEntry( hash );
                 if ( res != null ) return res;
             }
@@ -189,9 +189,9 @@ namespace TsMap2.Scs {
         }
 
         public ScsDirectory GetDirectory( ulong hash ) {
-            if ( this.Directories.ContainsKey( hash ) ) return this.Directories[ hash ];
+            if ( Directories.ContainsKey( hash ) ) return Directories[ hash ];
 
-            foreach ( KeyValuePair< ulong, ScsDirectory > scsDirectory in this.Directories ) {
+            foreach ( KeyValuePair< ulong, ScsDirectory > scsDirectory in Directories ) {
                 ScsDirectory res = scsDirectory.Value.GetDirectory( hash );
                 if ( res != null ) return res;
             }
@@ -211,11 +211,11 @@ namespace TsMap2.Scs {
         private ScsDirectory _rootDirectory;
 
         public RootFileSystem( string path ) {
-            this._path = path;
+            _path = path;
 
-            this.Files = new Dictionary< string, ScsRootFile >();
+            Files = new Dictionary< string, ScsRootFile >();
 
-            this.AddSourceDirectory( path );
+            AddSourceDirectory( path );
         }
 
         public Dictionary< string, ScsRootFile > Files { get; }
@@ -226,40 +226,40 @@ namespace TsMap2.Scs {
             var buff = new byte[ 4 ];
             f.Read( buff, 0, 4 );
 
-            if ( BitConverter.ToUInt32( buff, 0 ) == ScsMagic ) this.Files.Add( path, new HashFile( path, this ) );
-            else this.Files.Add( path,                                                new ScsZipFile( path, this ) );
+            if ( BitConverter.ToUInt32( buff, 0 ) == ScsMagic ) Files.Add( path, new HashFile( path, this ) );
+            else Files.Add( path,                                                new ScsZipFile( path, this ) );
         }
 
         public void AddSourceDirectory( string path ) {
             string[] scsFiles = Directory.GetFiles( path, "*.scs" );
 
-            foreach ( string scsFile in scsFiles ) this.AddSourceFile( scsFile );
+            foreach ( string scsFile in scsFiles ) AddSourceFile( scsFile );
         }
 
         public void AddHashEntry( ScsHashEntry entry ) {
-            if ( this._rootDirectory == null ) {
-                this._rootDirectory = new ScsDirectory( this, "" );
-                this._rootDirectory.AddHashEntry( entry );
+            if ( _rootDirectory == null ) {
+                _rootDirectory = new ScsDirectory( this, "" );
+                _rootDirectory.AddHashEntry( entry );
             } else
-                this._rootDirectory.AddHashEntry( entry );
+                _rootDirectory.AddHashEntry( entry );
         }
 
         public void AddZipEntry( ScsZipEntry entry, string path ) {
-            if ( this._rootDirectory == null ) {
-                this._rootDirectory = new ScsDirectory( this, "" );
-                this._rootDirectory.AddZipEntry( entry, path );
+            if ( _rootDirectory == null ) {
+                _rootDirectory = new ScsDirectory( this, "" );
+                _rootDirectory.AddZipEntry( entry, path );
             } else
-                this._rootDirectory.AddZipEntry( entry, path );
+                _rootDirectory.AddZipEntry( entry, path );
         }
 
-        public ScsDirectory GetRootDirectory() => this._rootDirectory;
+        public ScsDirectory GetRootDirectory() => _rootDirectory;
 
-        public ScsDirectory GetDirectory( ulong hash ) => this._rootDirectory?.GetDirectory( hash );
+        public ScsDirectory GetDirectory( ulong hash ) => _rootDirectory?.GetDirectory( hash );
 
-        public ScsDirectory GetDirectory( string name ) => this.GetDirectory( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
+        public ScsDirectory GetDirectory( string name ) => GetDirectory( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
 
-        public ScsFile GetFileEntry( ulong hash ) => this._rootDirectory?.GetFileEntry( hash );
+        public ScsFile GetFileEntry( ulong hash ) => _rootDirectory?.GetFileEntry( hash );
 
-        public ScsFile GetFileEntry( string name ) => this.GetFileEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
+        public ScsFile GetFileEntry( string name ) => GetFileEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
     }
 }

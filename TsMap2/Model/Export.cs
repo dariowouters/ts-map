@@ -9,11 +9,11 @@
         public Export() { }
 
         public Export( int tileZoomMin, int tileZoomMax, int tileSize, int tilePadding, TsExportType exportType ) {
-            this.TileZoomMin = tileZoomMin;
-            this.TileZoomMax = tileZoomMax;
-            this.TileSize    = tileSize;
-            this.TilePadding = tilePadding;
-            this.ExportType  = exportType;
+            TileZoomMin = tileZoomMin;
+            TileZoomMax = tileZoomMax;
+            TileSize    = tileSize;
+            TilePadding = tilePadding;
+            ExportType  = exportType;
         }
     }
 

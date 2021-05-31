@@ -9,9 +9,9 @@ namespace TsMap2.Model {
         public          float          Offset;
 
         public TsRoadLook( ulong token ) {
-            this.LanesLeft  = new List< string >();
-            this.LanesRight = new List< string >();
-            this.Token      = token;
+            LanesLeft  = new List< string >();
+            LanesRight = new List< string >();
+            Token      = token;
         }
 
         public ulong Token { get; }
@@ -24,6 +24,6 @@ namespace TsMap2.Model {
             return h1 * x + h2 * z + h3 * tanX + h4 * tanZ;
         }
 
-        public float GetWidth() => this.Offset + Common.LaneWidth * this.LanesLeft.Count + Common.LaneWidth * this.LanesRight.Count;
+        public float GetWidth() => Offset + Common.LaneWidth * LanesLeft.Count + Common.LaneWidth * LanesRight.Count;
     }
 }

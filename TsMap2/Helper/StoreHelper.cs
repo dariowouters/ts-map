@@ -1,11 +1,11 @@
 using TsMap2.Model;
-using TsMap2.Scs;
+using TsMap2.Scs.FileSystem;
 
 namespace TsMap2.Helper {
     public sealed class StoreHelper {
-        public TsDef       Def = new TsDef();
-        public TsGame      Game;
-        public Model.TsMap Map = new Model.TsMap();
+        public TsDef  Def = new TsDef();
+        public TsGame Game;
+        public TsMap  Map = new TsMap();
 
         // --
 
@@ -23,8 +23,8 @@ namespace TsMap2.Helper {
         // ---
 
         public void SetSetting( Settings settings ) {
-            this.Settings = settings;
-            this.Rfs      = new RootFileSystem( settings.GetActiveGamePath() );
+            Settings = settings;
+            Rfs      = new RootFileSystem( settings.GetActiveGamePath() );
         }
     }
 }

@@ -4,7 +4,7 @@ using TsMap2.Model;
 
 namespace TsMap2.Factory.Json {
     public class SettingsJsonFactory : JsonFactory< Settings > {
-        public SettingsJsonFactory( Settings settings ) => this._settings = settings;
+        public SettingsJsonFactory( Settings settings ) => _settings = settings;
 
         private Settings _settings { get; }
 
@@ -16,6 +16,6 @@ namespace TsMap2.Factory.Json {
 
         public override Settings Convert( JObject raw ) => raw.ToObject< Settings >();
 
-        public override JContainer RawData() => JObject.FromObject( this._settings );
+        public override JContainer RawData() => JObject.FromObject( _settings );
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace TsMap2.Job.Parse.Overlays {
     public class ParseOverlaysJob : ParentThreadJob {
         protected override void Do() {
-            this.AddJob( new ParseOverlaysOthersJob() );
-            this.AddJob( new ParseOverlayCompanyJob() );
-            this.AddJob( new ParseOverlayTriggerJob() );
-            this.AddJob( new ParseOverlayFerryJob() );
-            this.AddJob( new ParseOverlayPrefabJob() );
+            AddJob( new ParseOverlaysOthersJob() );
+            AddJob( new ParseOverlayCompanyJob() );
+            AddJob( new ParseOverlayTriggerJob() );
+            AddJob( new ParseOverlayFerryJob() );
+            AddJob( new ParseOverlayPrefabJob() );
         }
     }
 }

@@ -14,16 +14,16 @@ namespace TsMap2.Model.TsMapItem {
         protected          ulong    StartNodeUid;
 
         public TsMapItem( TsSector sector, int offset ) {
-            this.Sector = sector;
+            Sector = sector;
 
             int fileOffset = offset;
 
-            this.Type = (TsItemType) MemoryHelper.ReadUInt32( this.Sector.Stream, fileOffset );
+            Type = (TsItemType) MemoryHelper.ReadUInt32( Sector.Stream, fileOffset );
 
-            this.Uid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x04 );
+            Uid = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x04 );
 
-            this.X = MemoryHelper.ReadSingle( this.Sector.Stream, fileOffset += 0x08 );
-            this.Z = MemoryHelper.ReadSingle( this.Sector.Stream, fileOffset += 0x08 );
+            X = MemoryHelper.ReadSingle( Sector.Stream, fileOffset += 0x08 );
+            Z = MemoryHelper.ReadSingle( Sector.Stream, fileOffset += 0x08 );
         }
 
         public ulong         Uid       { get; }
@@ -36,11 +36,11 @@ namespace TsMap2.Model.TsMapItem {
         public bool          Hidden    { get; protected set; }
 
         public TsNode GetStartNode() {
-            return this.StartNode ??= Store().Map.GetNodeByUid( this.StartNodeUid );
+            return StartNode ??= Store().Map.GetNodeByUid( StartNodeUid );
         }
 
         public TsNode GetEndNode() {
-            return this.EndNode ??= Store().Map.GetNodeByUid( this.EndNodeUid );
+            return EndNode ??= Store().Map.GetNodeByUid( EndNodeUid );
         }
 
         protected static StoreHelper Store() => StoreHelper.Instance;

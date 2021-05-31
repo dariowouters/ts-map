@@ -10,11 +10,11 @@ namespace TsMap2.Model {
         public string SelectedLocalization = "";
 
         public string GetActiveGamePath() {
-            if ( this.FallbackGame == TsGame.GAME_ETS )
-                return this.Ets2Path;
+            if ( FallbackGame == TsGame.GAME_ETS )
+                return Ets2Path;
 
-            if ( this.FallbackGame == TsGame.GAME_ATS )
-                return this.AtsPath;
+            if ( FallbackGame == TsGame.GAME_ATS )
+                return AtsPath;
 
             return null;
         }

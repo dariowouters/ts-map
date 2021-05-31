@@ -9,19 +9,19 @@ namespace TsMap2.Job.Export {
         protected override void Do() {
             Log.Information( "[Job][MapInfo] Exporting..." );
 
-            MapHelper.ZoomOutAndCenterMap( this.Store().Settings.ExportSettings.TileSize,
-                                           this.Store().Settings.ExportSettings.TileSize, out PointF pos,
+            MapHelper.ZoomOutAndCenterMap( Store().Settings.ExportSettings.TileSize,
+                                           Store().Settings.ExportSettings.TileSize, out PointF pos,
                                            out float zoom );
 
-            var mapInfoJagfx = new TsMapInfoJagfx( this.Store().Game,
-                                                   this.Store().Settings.ExportSettings.TilePadding,
-                                                   this.Store().Settings.ExportSettings.TileSize,
+            var mapInfoJagfx = new TsMapInfoJagfx( Store().Game,
+                                                   Store().Settings.ExportSettings.TilePadding,
+                                                   Store().Settings.ExportSettings.TileSize,
                                                    pos.X,
-                                                   pos.X + this.Store().Settings.ExportSettings.TileSize / zoom,
+                                                   pos.X + Store().Settings.ExportSettings.TileSize / zoom,
                                                    pos.Y,
-                                                   pos.Y + this.Store().Settings.ExportSettings.TileSize / zoom,
-                                                   this.Store().Settings.ExportSettings.TileZoomMin,
-                                                   this.Store().Settings.ExportSettings.TileZoomMax );
+                                                   pos.Y + Store().Settings.ExportSettings.TileSize / zoom,
+                                                   Store().Settings.ExportSettings.TileZoomMin,
+                                                   Store().Settings.ExportSettings.TileZoomMax );
 
             var factory = new TsMapInfoJsonFactory( mapInfoJagfx );
             factory.Save();

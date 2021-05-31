@@ -201,14 +201,14 @@ namespace TsMap2.Scs {
 
         private class Uint128 {
             public Uint128( ulong first, ulong second ) {
-                this.First  = first;
-                this.Second = second;
+                First  = first;
+                Second = second;
             }
 
             public ulong First  { get; }
             public ulong Second { get; }
 
-            public override string ToString() => $"({this.First}, {this.Second})";
+            public override string ToString() => $"({First}, {Second})";
         }
     }
 }

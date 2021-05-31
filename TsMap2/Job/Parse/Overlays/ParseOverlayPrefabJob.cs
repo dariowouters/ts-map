@@ -11,9 +11,9 @@ namespace TsMap2.Job.Parse.Overlays {
         protected override void Do() {
             Log.Information( "[Job][OverlayPrefab] Parsing..." );
 
-            foreach ( TsMapPrefabItem prefab in this.Store().Map.Prefabs ) {
+            foreach ( TsMapPrefabItem prefab in Store().Map.Prefabs ) {
                 // Bitmap b          = prefab.Overlay?.GetBitmap();
-                TsNode originNode = this.Store().Map.GetNodeByUid( prefab.Nodes[ 0 ] );
+                TsNode originNode = Store().Map.GetNodeByUid( prefab.Nodes[ 0 ] );
 
                 if ( !prefab.Valid || prefab.Hidden || prefab.Prefab.PrefabNodes == null ) continue;
 
@@ -27,23 +27,23 @@ namespace TsMap2.Job.Parse.Overlays {
                 float prefabStartX = originNode.X - mapPointOrigin.X;
                 float prefabStartZ = originNode.Z - mapPointOrigin.Z;
                 foreach ( TsSpawnPoint spawnPoint in prefab.Prefab.SpawnPoints ) {
-                    this.ParseTrigger( prefab, prefabStartX, prefabStartZ, rot, spawnPoint, originNode );
-                    TsMapOverlayItem ov = this.GenerateMapItem( prefabStartX, prefabStartZ, rot, spawnPoint, originNode );
+                    ParseTrigger( prefab, prefabStartX, prefabStartZ, rot, spawnPoint, originNode );
+                    TsMapOverlayItem ov = GenerateMapItem( prefabStartX, prefabStartZ, rot, spawnPoint, originNode );
 
                     if ( ov != null )
-                        this.AddMapItem( ov );
+                        AddMapItem( ov );
 
                     // if ( saveAsPNG && !File.Exists( Path.Combine( overlayPath, $"{overlayName}.png" ) ) )
                     // b.Save( Path.Combine( overlayPath, $"{overlayName}.png" ) );
                 }
             }
 
-            Log.Information( "[Job][OverlayPrefab] Fuel: {0}",          this.Store().Map.Overlays.Fuel.Count );
-            Log.Information( "[Job][OverlayPrefab] Service: {0}",       this.Store().Map.Overlays.Service.Count );
-            Log.Information( "[Job][OverlayPrefab] WeightStation: {0}", this.Store().Map.Overlays.WeightStation.Count );
-            Log.Information( "[Job][OverlayPrefab] TruckDealer: {0}",   this.Store().Map.Overlays.TruckDealer.Count );
-            Log.Information( "[Job][OverlayPrefab] Garage: {0}",        this.Store().Map.Overlays.Garage.Count );
-            Log.Information( "[Job][OverlayPrefab] Recruitment: {0}",   this.Store().Map.Overlays.Recruitment.Count );
+            Log.Information( "[Job][OverlayPrefab] Fuel: {0}",          Store().Map.Overlays.Fuel.Count );
+            Log.Information( "[Job][OverlayPrefab] Service: {0}",       Store().Map.Overlays.Service.Count );
+            Log.Information( "[Job][OverlayPrefab] WeightStation: {0}", Store().Map.Overlays.WeightStation.Count );
+            Log.Information( "[Job][OverlayPrefab] TruckDealer: {0}",   Store().Map.Overlays.TruckDealer.Count );
+            Log.Information( "[Job][OverlayPrefab] Garage: {0}",        Store().Map.Overlays.Garage.Count );
+            Log.Information( "[Job][OverlayPrefab] Recruitment: {0}",   Store().Map.Overlays.Recruitment.Count );
         }
 
         private TsMapOverlayItem GenerateMapItem( float prefabStartX, float prefabStartZ, float rot, TsSpawnPoint spawnPoint, TsNode originNode ) {
@@ -89,7 +89,7 @@ namespace TsMap2.Job.Parse.Overlays {
                     return null;
             }
 
-            TsMapOverlay overlay = this.Store().Def.LookupOverlay( ScsHash.StringToToken( overlayName ) );
+            TsMapOverlay overlay = Store().Def.LookupOverlay( ScsHashHelper.StringToToken( overlayName ) );
             Bitmap       b       = overlay.GetBitmap();
 
             return b == null
@@ -100,12 +100,12 @@ namespace TsMap2.Job.Parse.Overlays {
         private void ParseTrigger( TsMapPrefabItem prefab, float prefabStartX, float prefabStartZ, float rot, TsSpawnPoint spawnPoint, TsNode originNode ) {
             int lastId = -1;
             foreach ( TsTriggerPoint triggerPoint in prefab.Prefab.TriggerPoints ) {
-                TsMapOverlay overlay = this.Store().Def.LookupOverlay( ScsHash.StringToToken( "parking_ico" ) );
+                TsMapOverlay overlay = Store().Def.LookupOverlay( ScsHashHelper.StringToToken( "parking_ico" ) );
                 Bitmap       b       = overlay.GetBitmap();
 
                 if ( triggerPoint.TriggerId             == lastId
                      || b                               == null
-                     || triggerPoint.TriggerActionToken != ScsHash.StringToToken( "hud_parking" ) ) continue;
+                     || triggerPoint.TriggerActionToken != ScsHashHelper.StringToToken( "hud_parking" ) ) continue;
 
 
                 PointF newPoint = ScsRenderHelper.RotatePoint( prefabStartX + triggerPoint.X,
@@ -114,7 +114,7 @@ namespace TsMap2.Job.Parse.Overlays {
 
                 lastId = (int) triggerPoint.TriggerId;
                 var ov = new TsMapOverlayItem( newPoint.X, newPoint.Y, "parking_ico", TsMapOverlayType.Parking, b );
-                this.Store().Map.Overlays.Parking.Add( ov );
+                Store().Map.Overlays.Parking.Add( ov );
 
                 // if ( saveAsPNG && !File.Exists( Path.Combine( overlayPath, $"{overlayName}.png" ) ) )
                 //     b.Save( Path.Combine( overlayPath, $"{overlayName}.png" ) );
@@ -124,27 +124,27 @@ namespace TsMap2.Job.Parse.Overlays {
         private void AddMapItem( TsMapOverlayItem item ) {
             switch ( item.OverlayType ) {
                 case TsMapOverlayType.Fuel: {
-                    this.Store().Map.Overlays.Fuel.Add( item );
+                    Store().Map.Overlays.Fuel.Add( item );
                     break;
                 }
                 case TsMapOverlayType.Service: {
-                    this.Store().Map.Overlays.Service.Add( item );
+                    Store().Map.Overlays.Service.Add( item );
                     break;
                 }
                 case TsMapOverlayType.WeightStation: {
-                    this.Store().Map.Overlays.WeightStation.Add( item );
+                    Store().Map.Overlays.WeightStation.Add( item );
                     break;
                 }
                 case TsMapOverlayType.TruckDealer: {
-                    this.Store().Map.Overlays.TruckDealer.Add( item );
+                    Store().Map.Overlays.TruckDealer.Add( item );
                     break;
                 }
                 case TsMapOverlayType.Garage: {
-                    this.Store().Map.Overlays.Garage.Add( item );
+                    Store().Map.Overlays.Garage.Add( item );
                     break;
                 }
                 case TsMapOverlayType.Recruitment: {
-                    this.Store().Map.Overlays.Recruitment.Add( item );
+                    Store().Map.Overlays.Recruitment.Add( item );
                     break;
                 }
             }

@@ -9,7 +9,7 @@ namespace TsMap2.Job.Export {
         protected override void Do() {
             Log.Information( "[Job][ExportCountries] Exporting..." );
 
-            List< TsCountry > countries = this.Store().Def.Countries.Values.ToList();
+            List< TsCountry > countries = Store().Def.Countries.Values.ToList();
 
             Log.Debug( "[Job][ExportCountries] To export: {0}", countries.Count );
             var countriesFactory = new TsCountriesJsonFactory( countries );

@@ -9,7 +9,7 @@ namespace TsMap2.Job {
 
         public Task t { get; set; }
 
-        public string JobName() => this.GetType().Name;
+        public string JobName() => GetType().Name;
 
         protected abstract void Do();
 
@@ -17,17 +17,17 @@ namespace TsMap2.Job {
 
         public void Run() {
             try {
-                this.t = Task.Factory.StartNew( () => {
-                    this.Do();
+                t = Task.Factory.StartNew( () => {
+                    Do();
 
-                    foreach ( KeyValuePair< string, ThreadJob > keyValuePair in this._jobPool ) {
+                    foreach ( KeyValuePair< string, ThreadJob > keyValuePair in _jobPool ) {
                         ThreadJob job = keyValuePair.Value;
 
                         job.Run();
                     }
                 } );
 
-                this.t.Wait();
+                t.Wait();
             } catch ( Exception e ) {
                 Console.WriteLine( e );
                 throw;
@@ -35,7 +35,7 @@ namespace TsMap2.Job {
         }
 
         public void AddJob( ThreadJob job ) {
-            this._jobPool.Add( job.JobName(), job );
+            _jobPool.Add( job.JobName(), job );
         }
 
         public StoreHelper Store() => StoreHelper.Instance;

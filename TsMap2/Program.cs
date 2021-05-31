@@ -39,9 +39,8 @@ namespace TsMap2 {
                 var e = new ExportJob();
                 e.Run();
             } catch ( Exception e ) {
-                Log.Error( "Unexpected Exception ({0}) : {1} | Stack: {2}", e.GetBaseException().GetType(), e.GetBaseException().Message,
-                           e.GetBaseException().StackTrace );
-                Log.Error( "Unexpected Exception: {0} | Stack: {1}", e.Message, e.StackTrace );
+                Log.Error( "Unexpected Exception: {0}", e.GetBaseException().ToString() );
+                Log.Error( "Unexpected Exception: {0}", e.ToString() );
             }
         }
     }

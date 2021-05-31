@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using TsMap2.Helper;
 
-namespace TsMap2.Scs {
+namespace TsMap2.Scs.FileSystem {
     internal class ScsHeader {
         public uint   Magic       { get; set; }
         public ushort Version     { get; set; }
@@ -13,12 +13,12 @@ namespace TsMap2.Scs {
         public int    StartOffset { get; set; }
 
         public override string ToString() =>
-            $"Magic {this.Magic}\n"
-            + $"Version {this.Version}\n"
-            + $"Salt {this.Salt}\n"
-            + $"HashMethod {this.HashMethod}\n"
-            + $"EntryCount {this.EntryCount}\n"
-            + $"StartOffset {this.StartOffset}";
+            $"Magic {Magic}\n"
+            + $"Version {Version}\n"
+            + $"Salt {Salt}\n"
+            + $"HashMethod {HashMethod}\n"
+            + $"EntryCount {EntryCount}\n"
+            + $"StartOffset {StartOffset}";
     }
 
 
@@ -27,8 +27,8 @@ namespace TsMap2.Scs {
         protected readonly RootFileSystem Rfs;
 
         protected ScsRootFile( string path, RootFileSystem rfs ) {
-            this.Path = path;
-            this.Rfs  = rfs;
+            Path = path;
+            Rfs  = rfs;
         }
 
         public abstract ScsEntry GetEntry( string name );
@@ -40,12 +40,12 @@ namespace TsMap2.Scs {
         private readonly Dictionary< string, ScsZipEntry > _entries;
 
         public ScsZipFile( string path, RootFileSystem rfs ) : base( path, rfs ) {
-            if ( !File.Exists( this.Path ) ) return;
+            if ( !File.Exists( Path ) ) return;
 
             // this.Br       = new BinaryReader( File.OpenRead( this.Path ) );
-            this._entries = new Dictionary< string, ScsZipEntry >();
+            _entries = new Dictionary< string, ScsZipEntry >();
 
-            BinaryReader br         = this.Br;
+            BinaryReader br         = Br;
             ushort       entryCount = ScsHelper.ReadUInt16( br, -22 + 10, SeekOrigin.End );
 
             var fileOffset = 0;
@@ -71,24 +71,24 @@ namespace TsMap2.Scs {
                 if ( entry.CompressedSize != 0 ) // only files
                 {
                     string filePath = entry.Name.Replace( '\\', '/' );
-                    this.Rfs.AddZipEntry( entry, filePath );
+                    Rfs.AddZipEntry( entry, filePath );
                 }
 
-                this._entries.Add( entry.Name, entry );
+                _entries.Add( entry.Name, entry );
             }
         }
 
         // public BinaryReader Br { get; }
-        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( this.Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
+        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
 
         public override ScsEntry GetEntry( string name ) =>
-            this._entries.ContainsKey( name )
-                ? this._entries[ name ]
+            _entries.ContainsKey( name )
+                ? _entries[ name ]
                 : null;
 
         public override List< ScsEntry > GetEntriesValues() {
             var entries = new List< ScsEntry >();
-            foreach ( ScsZipEntry scsZipEntry in this._entries.Values ) entries.Add( scsZipEntry );
+            foreach ( ScsZipEntry scsZipEntry in _entries.Values ) entries.Add( scsZipEntry );
 
             return entries;
         }
@@ -120,13 +120,13 @@ namespace TsMap2.Scs {
         public Dictionary< ulong, ScsHashEntry > Entries;
 
         public HashFile( string filePath, RootFileSystem rfs ) : base( filePath, rfs ) {
-            if ( !File.Exists( this.Path ) ) return;
+            if ( !File.Exists( Path ) ) return;
 
             // this.Br = new BinaryReader( File.OpenRead( this.Path ) );
-            this.Entries = new Dictionary< ulong, ScsHashEntry >();
+            Entries = new Dictionary< ulong, ScsHashEntry >();
 
-            BinaryReader br = this.Br;
-            this.Header = new ScsHeader {
+            BinaryReader br = Br;
+            Header = new ScsHeader {
                 Magic       = ScsHelper.ReadUInt32( br, 0x0 ),
                 Version     = ScsHelper.ReadUInt16( br, 0x04 ),
                 Salt        = ScsHelper.ReadUInt16( br, 0x06 ),
@@ -135,20 +135,20 @@ namespace TsMap2.Scs {
                 StartOffset = ScsHelper.ReadInt32( br, 0x10 )
             };
 
-            if ( this.Header.Magic != Magic ) // Log.Msg( "Incorrect File Structure" );
+            if ( Header.Magic != Magic ) // Log.Msg( "Incorrect File Structure" );
                 return;
 
-            if ( this.Header.HashMethod != HashMethod ) // Log.Msg( "Incorrect Hash Method" );
+            if ( Header.HashMethod != HashMethod ) // Log.Msg( "Incorrect Hash Method" );
                 return;
 
-            if ( this.Header.Version != SupportedHashVersion ) // Log.Msg( "Unsupported Hash Version" );
+            if ( Header.Version != SupportedHashVersion ) // Log.Msg( "Unsupported Hash Version" );
                 return;
 
-            br.BaseStream.Seek( this.Header.StartOffset, SeekOrigin.Begin );
-            byte[] entriesRaw = br.ReadBytes( this.Header.EntryCount * EntryBlockSize );
+            br.BaseStream.Seek( Header.StartOffset, SeekOrigin.Begin );
+            byte[] entriesRaw = br.ReadBytes( Header.EntryCount * EntryBlockSize );
             br.Dispose();
 
-            for ( var i = 0; i < this.Header.EntryCount; i++ ) {
+            for ( var i = 0; i < Header.EntryCount; i++ ) {
                 int offset = i * EntryBlockSize;
                 var entry = new ScsHashEntry {
                     Hash           = MemoryHelper.ReadUInt64( entriesRaw, offset ),
@@ -160,105 +160,105 @@ namespace TsMap2.Scs {
                     Hf             = this
                 };
 
-                this.Entries.Add( entry.Hash, entry );
+                Entries.Add( entry.Hash, entry );
             }
 
-            ScsHashEntry rootDir = this.GetEntry( RootDirHash );
+            ScsHashEntry rootDir = GetEntry( RootDirHash );
 
             if ( rootDir == null || rootDir.Size == 0 ) // Try to add important sub directories directly
             {
-                var defEntry = (ScsHashEntry) this.GetEntry( "def" );
+                var defEntry = (ScsHashEntry) GetEntry( "def" );
                 if ( defEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "def" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "def", defEntry );
-                    dir = this.Rfs.GetDirectory( "def" );
+                    ScsDirectory dir = Rfs.GetDirectory( "def" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "def", defEntry );
+                    dir = Rfs.GetDirectory( "def" );
                     dir?.AddHashEntry( defEntry );
                 }
 
-                var defWorldEntry = (ScsHashEntry) this.GetEntry( "def/world" );
+                var defWorldEntry = (ScsHashEntry) GetEntry( "def/world" );
                 if ( defWorldEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "def/world" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "def/world", defWorldEntry );
-                    dir = this.Rfs.GetDirectory( "def/world" );
+                    ScsDirectory dir = Rfs.GetDirectory( "def/world" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "def/world", defWorldEntry );
+                    dir = Rfs.GetDirectory( "def/world" );
                     dir?.AddHashEntry( defWorldEntry );
                 }
 
-                var mapEntry = (ScsHashEntry) this.GetEntry( "map" );
+                var mapEntry = (ScsHashEntry) GetEntry( "map" );
                 if ( mapEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "map" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "map", mapEntry );
-                    dir = this.Rfs.GetDirectory( "map" );
+                    ScsDirectory dir = Rfs.GetDirectory( "map" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "map", mapEntry );
+                    dir = Rfs.GetDirectory( "map" );
                     dir?.AddHashEntry( mapEntry );
                 }
 
-                var materialEntry = (ScsHashEntry) this.GetEntry( "material" );
+                var materialEntry = (ScsHashEntry) GetEntry( "material" );
                 if ( materialEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "material" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "material", materialEntry );
-                    dir = this.Rfs.GetDirectory( "material" );
+                    ScsDirectory dir = Rfs.GetDirectory( "material" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "material", materialEntry );
+                    dir = Rfs.GetDirectory( "material" );
                     dir?.AddHashEntry( materialEntry );
                 }
 
-                var prefabEntry = (ScsHashEntry) this.GetEntry( "prefab" );
+                var prefabEntry = (ScsHashEntry) GetEntry( "prefab" );
                 if ( prefabEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "prefab" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "prefab", prefabEntry );
-                    dir = this.Rfs.GetDirectory( "prefab" );
+                    ScsDirectory dir = Rfs.GetDirectory( "prefab" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "prefab", prefabEntry );
+                    dir = Rfs.GetDirectory( "prefab" );
                     dir?.AddHashEntry( prefabEntry );
                 }
 
-                var prefab2Entry = (ScsHashEntry) this.GetEntry( "prefab2" );
+                var prefab2Entry = (ScsHashEntry) GetEntry( "prefab2" );
                 if ( prefab2Entry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "prefab2" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "prefab2", prefab2Entry );
-                    dir = this.Rfs.GetDirectory( "prefab2" );
+                    ScsDirectory dir = Rfs.GetDirectory( "prefab2" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "prefab2", prefab2Entry );
+                    dir = Rfs.GetDirectory( "prefab2" );
                     dir?.AddHashEntry( prefab2Entry );
                 }
 
-                var modelEntry = (ScsHashEntry) this.GetEntry( "model" );
+                var modelEntry = (ScsHashEntry) GetEntry( "model" );
                 if ( modelEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "model" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "model", modelEntry );
-                    dir = this.Rfs.GetDirectory( "model" );
+                    ScsDirectory dir = Rfs.GetDirectory( "model" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "model", modelEntry );
+                    dir = Rfs.GetDirectory( "model" );
                     dir?.AddHashEntry( modelEntry );
                 }
 
-                var model2Entry = (ScsHashEntry) this.GetEntry( "model2" );
+                var model2Entry = (ScsHashEntry) GetEntry( "model2" );
                 if ( model2Entry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "model2" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "model2", model2Entry );
-                    dir = this.Rfs.GetDirectory( "model2" );
+                    ScsDirectory dir = Rfs.GetDirectory( "model2" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "model2", model2Entry );
+                    dir = Rfs.GetDirectory( "model2" );
                     dir?.AddHashEntry( model2Entry );
                 }
 
-                var localeEntry = (ScsHashEntry) this.GetEntry( "locale" );
+                var localeEntry = (ScsHashEntry) GetEntry( "locale" );
                 if ( localeEntry != null ) {
-                    ScsDirectory dir = this.Rfs.GetDirectory( "locale" );
-                    if ( dir == null ) this.Rfs.GetRootDirectory()?.AddDirectoryManually( "locale", localeEntry );
-                    dir = this.Rfs.GetDirectory( "locale" );
+                    ScsDirectory dir = Rfs.GetDirectory( "locale" );
+                    if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "locale", localeEntry );
+                    dir = Rfs.GetDirectory( "locale" );
                     dir?.AddHashEntry( localeEntry );
                 }
             } else
-                this.Rfs.AddHashEntry( rootDir );
+                Rfs.AddHashEntry( rootDir );
         }
 
         // public BinaryReader Br { get; }
-        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( this.Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
+        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
 
         private ScsHeader Header { get; }
 
-        public override string ToString() => this.Path.Substring( this.Path.LastIndexOf( '\\' ) + 1 );
+        public override string ToString() => Path.Substring( Path.LastIndexOf( '\\' ) + 1 );
 
         private ScsHashEntry GetEntry( ulong hash ) =>
-            this.Entries.ContainsKey( hash )
-                ? this.Entries[ hash ]
+            Entries.ContainsKey( hash )
+                ? Entries[ hash ]
                 : null;
 
-        public sealed override ScsEntry GetEntry( string name ) => this.GetEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
+        public sealed override ScsEntry GetEntry( string name ) => GetEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
 
         public override List< ScsEntry > GetEntriesValues() {
             var entries = new List< ScsEntry >();
-            foreach ( ScsHashEntry scsHashEntry in this.Entries.Values ) entries.Add( scsHashEntry );
+            foreach ( ScsHashEntry scsHashEntry in Entries.Values ) entries.Add( scsHashEntry );
 
             return entries;
         }

@@ -8,16 +8,16 @@ namespace TsMap2.Job.Parse.Overlays {
         protected override void Do() {
             Log.Information( "[Job][OverlayOther] Parsing..." );
 
-            foreach ( TsMapMapOverlayItem overlay in this.Store().Map.MapOverlays ) {
+            foreach ( TsMapMapOverlayItem overlay in Store().Map.MapOverlays ) {
                 Bitmap b = overlay.Overlay?.GetBitmap();
 
                 if ( !overlay.Valid || overlay.Hidden || b == null ) continue;
 
                 var ov = new TsMapOverlayItem( overlay.X, overlay.Z, overlay.OverlayName, overlay.ZoomLevelVisibility, TsMapOverlayType.Overlay, b );
-                this.Store().Map.Overlays.Overlay.Add( ov );
+                Store().Map.Overlays.Overlay.Add( ov );
             }
 
-            Log.Information( "[Job][OverlayOther] Others: {0}", this.Store().Map.Overlays.Overlay.Count );
+            Log.Information( "[Job][OverlayOther] Others: {0}", Store().Map.Overlays.Overlay.Count );
         }
     }
 }

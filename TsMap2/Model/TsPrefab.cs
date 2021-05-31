@@ -48,13 +48,13 @@ namespace TsMap2.Model {
                          List< TsSpawnPoint >   spawnPoints,
                          List< TsMapPoint >     mapPoints,
                          List< TsTriggerPoint > triggerPoints ) {
-            this.Token         = token;
-            this.Category      = category;
-            this.ValidRoad     = validRoad;
-            this.PrefabNodes   = prefabNodes;
-            this.SpawnPoints   = spawnPoints;
-            this.MapPoints     = mapPoints;
-            this.TriggerPoints = triggerPoints;
+            Token         = token;
+            Category      = category;
+            ValidRoad     = validRoad;
+            PrefabNodes   = prefabNodes;
+            SpawnPoints   = spawnPoints;
+            MapPoints     = mapPoints;
+            TriggerPoints = triggerPoints;
         }
 
         public ulong                  Token         { get; }

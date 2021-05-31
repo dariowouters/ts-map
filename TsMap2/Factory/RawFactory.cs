@@ -7,7 +7,7 @@ namespace TsMap2.Factory {
         public RawFactory( byte[] raw ) => this.raw = raw;
 
         public void Save( RawType type, string fileName ) {
-            RawHelper.SaveFile( fileName, Path.Combine( AppPath.RawFolder, RawHelper.RawTypeToString( type ) ), this.raw );
+            RawHelper.SaveFile( fileName, Path.Combine( AppPath.RawFolder, RawHelper.RawTypeToString( type ) ), raw );
         }
 
         public byte[] Load( string fileName ) => RawHelper.LoadFile( fileName, AppPath.RawFolder );

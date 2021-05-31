@@ -12,18 +12,18 @@ namespace TsMap2.Job.Parse.Overlays {
         protected override void Do() {
             Log.Information( "[Job][OverlayCompany] Parsing..." );
 
-            foreach ( TsMapCompanyItem company in this.Store().Map.Companies ) {
+            foreach ( TsMapCompanyItem company in Store().Map.Companies ) {
                 Bitmap b = company.Overlay?.GetBitmap();
 
                 if ( !company.Valid || company.Hidden || b == null ) continue;
 
-                string overlayName = ScsHash.TokenToString( company.OverlayToken );
+                string overlayName = ScsHashHelper.TokenToString( company.OverlayToken );
                 var    point       = new PointF( company.X, company.Z );
 
                 if ( company.Nodes.Count > 0 ) {
-                    TsMapPrefabItem prefab = this.Store().Map.Prefabs.FirstOrDefault( x => x.Uid == company.Nodes[ 0 ] );
+                    TsMapPrefabItem prefab = Store().Map.Prefabs.FirstOrDefault( x => x.Uid == company.Nodes[ 0 ] );
                     if ( prefab != null ) {
-                        TsNode originNode = this.Store().Map.GetNodeByUid( prefab.Nodes[ 0 ] );
+                        TsNode originNode = Store().Map.GetNodeByUid( prefab.Nodes[ 0 ] );
                         if ( prefab.Prefab.PrefabNodes == null )
                             return;
 
@@ -49,10 +49,10 @@ namespace TsMap2.Job.Parse.Overlays {
 
 
                 var ov = new TsMapOverlayItem( point.X, point.Y, overlayName, TsMapOverlayType.Company, b );
-                this.Store().Map.Overlays.Company.Add( ov );
+                Store().Map.Overlays.Company.Add( ov );
             }
 
-            Log.Information( "[Job][OverlayCompany] Loaded: {0}", this.Store().Map.Overlays.Company.Count );
+            Log.Information( "[Job][OverlayCompany] Loaded: {0}", Store().Map.Overlays.Company.Count );
         }
     }
 }

@@ -12,50 +12,50 @@ namespace TsMap2.Model.TsMapItem {
         private List< PointF > _points;
 
         public TsMapRoadItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
-            this.Valid = true;
+            Valid = true;
             if ( sector.Version < 829 )
-                this.TsRoadItem825( startOffset );
+                TsRoadItem825( startOffset );
             else if ( sector.Version >= 829 && sector.Version < 846 )
-                this.TsRoadItem829( startOffset );
+                TsRoadItem829( startOffset );
             else if ( sector.Version >= 846 && sector.Version < 854 )
-                this.TsRoadItem846( startOffset );
+                TsRoadItem846( startOffset );
             else if ( sector.Version >= 854 )
-                this.TsRoadItem854( startOffset );
+                TsRoadItem854( startOffset );
             else
-                Log.Warning( $"Unknown base file version ({this.Sector.Version}) for item {this.Type} in file '{Path.GetFileName( this.Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
         }
 
         public TsRoadLook RoadLook { get; private set; }
 
         public void AddPoints( List< PointF > points ) {
-            this._points = points;
+            _points = points;
         }
 
-        public bool HasPoints() => this._points != null && this._points.Count != 0;
+        public bool HasPoints() => _points != null && _points.Count != 0;
 
-        public PointF[] GetPoints() => this._points?.ToArray();
+        public PointF[] GetPoints() => _points?.ToArray();
 
         public void TsRoadItem825( int startOffset ) {
             int fileOffset = startOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
-            this.Hidden = MemoryHelper.ReadInt8( this.Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
-                          || ( MemoryHelper.ReadUint8( this.Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
-            this.RoadLook = Store().Def.LookupRoadLook( MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x09 ) ); // 0x09(flags)
+            Hidden = MemoryHelper.ReadInt8( Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
+                     || ( MemoryHelper.ReadUint8( Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
+            RoadLook = Store().Def.LookupRoadLook( MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x09 ) ); // 0x09(flags)
 
-            if ( this.RoadLook == null ) {
-                this.Valid = false;
-                Log.Warning( $"Could not find RoadLook with id: {MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset ):X}, "
-                             + $"in {Path.GetFileName( this.Sector.FilePath )} @ {fileOffset}" );
+            if ( RoadLook == null ) {
+                Valid = false;
+                Log.Warning( $"Could not find RoadLook with id: {MemoryHelper.ReadUInt64( Sector.Stream, fileOffset ):X}, "
+                             + $"in {Path.GetFileName( Sector.FilePath )} @ {fileOffset}" );
             }
 
-            this.StartNodeUid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 + 0x48 ); // 0x08(RoadLook) + 0x48(sets cursor before node_uid[])
-            this.EndNodeUid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 ); // 0x08(startNodeUid)
-            int stampCount = MemoryHelper.ReadInt32( this.Sector.Stream, fileOffset += 0x08 + 0x130 ); // 0x08(endNodeUid) + 0x130(sets cursor before stampCount)
-            int vegetationSphereCount = MemoryHelper.ReadInt32( this.Sector.Stream, fileOffset += 0x04 + stampCount * StampBlockSize ); // 0x04(stampCount) + stamps
-            fileOffset     += 0x04       + VegetationSphereBlockSize825 * vegetationSphereCount; // 0x04(vegSphereCount) + vegSpheres
-            this.BlockSize =  fileOffset - startOffset;
+            StartNodeUid = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 + 0x48 ); // 0x08(RoadLook) + 0x48(sets cursor before node_uid[])
+            EndNodeUid   = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 ); // 0x08(startNodeUid)
+            int stampCount            = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x08 + 0x130 ); // 0x08(endNodeUid) + 0x130(sets cursor before stampCount)
+            int vegetationSphereCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + stampCount * StampBlockSize ); // 0x04(stampCount) + stamps
+            fileOffset += 0x04       + VegetationSphereBlockSize825 * vegetationSphereCount; // 0x04(vegSphereCount) + vegSpheres
+            BlockSize  =  fileOffset - startOffset;
         }
 
         public void TsRoadItem829( int startOffset ) {
@@ -63,22 +63,22 @@ namespace TsMap2.Model.TsMapItem {
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
-            this.Hidden = MemoryHelper.ReadInt8( this.Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
-                          || ( MemoryHelper.ReadUint8( this.Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
-            this.RoadLook = Store().Def.LookupRoadLook( MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x09 ) ); // 0x09(flags)
+            Hidden = MemoryHelper.ReadInt8( Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
+                     || ( MemoryHelper.ReadUint8( Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
+            RoadLook = Store().Def.LookupRoadLook( MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x09 ) ); // 0x09(flags)
 
-            if ( this.RoadLook == null ) {
-                this.Valid = false;
-                Log.Warning( $"Could not find RoadLook with id: {MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset ):X}, "
-                             + $"in {Path.GetFileName( this.Sector.FilePath )} @ {fileOffset}" );
+            if ( RoadLook == null ) {
+                Valid = false;
+                Log.Warning( $"Could not find RoadLook with id: {MemoryHelper.ReadUInt64( Sector.Stream, fileOffset ):X}, "
+                             + $"in {Path.GetFileName( Sector.FilePath )} @ {fileOffset}" );
             }
 
-            this.StartNodeUid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 + 0x48 ); // 0x08(RoadLook) + 0x48(sets cursor before node_uid[])
-            this.EndNodeUid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 ); // 0x08(startNodeUid)
-            int stampCount = MemoryHelper.ReadInt32( this.Sector.Stream, fileOffset += 0x08 + 0x130 ); // 0x08(endNodeUid) + 0x130(sets cursor before stampCount)
-            int vegetationSphereCount = MemoryHelper.ReadInt32( this.Sector.Stream, fileOffset += 0x04 + stampCount * StampBlockSize ); // 0x04(stampCount) + stamps
-            fileOffset     += 0x04       + VegetationSphereBlockSize * vegetationSphereCount; // 0x04(vegSphereCount) + vegSpheres
-            this.BlockSize =  fileOffset - startOffset;
+            StartNodeUid = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 + 0x48 ); // 0x08(RoadLook) + 0x48(sets cursor before node_uid[])
+            EndNodeUid   = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 ); // 0x08(startNodeUid)
+            int stampCount            = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x08 + 0x130 ); // 0x08(endNodeUid) + 0x130(sets cursor before stampCount)
+            int vegetationSphereCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + stampCount * StampBlockSize ); // 0x04(stampCount) + stamps
+            fileOffset += 0x04       + VegetationSphereBlockSize * vegetationSphereCount; // 0x04(vegSphereCount) + vegSpheres
+            BlockSize  =  fileOffset - startOffset;
         }
 
         public void TsRoadItem846( int startOffset ) {
@@ -86,21 +86,21 @@ namespace TsMap2.Model.TsMapItem {
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
-            this.Hidden = MemoryHelper.ReadInt8( this.Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
-                          || ( MemoryHelper.ReadUint8( this.Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
-            this.RoadLook = Store().Def.LookupRoadLook( MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x09 ) ); // 0x09(flags)
-            if ( this.RoadLook == null ) {
-                this.Valid = false;
-                Log.Warning( $"Could not find RoadLook with id: {MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset ):X}, "
-                             + $"in {Path.GetFileName( this.Sector.FilePath )} @ {fileOffset}" );
+            Hidden = MemoryHelper.ReadInt8( Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
+                     || ( MemoryHelper.ReadUint8( Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
+            RoadLook = Store().Def.LookupRoadLook( MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x09 ) ); // 0x09(flags)
+            if ( RoadLook == null ) {
+                Valid = false;
+                Log.Warning( $"Could not find RoadLook with id: {MemoryHelper.ReadUInt64( Sector.Stream, fileOffset ):X}, "
+                             + $"in {Path.GetFileName( Sector.FilePath )} @ {fileOffset}" );
             }
 
-            this.StartNodeUid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 + 0x50 ); // 0x08(RoadLook) + 0x50(sets cursor before node_uid[])
-            this.EndNodeUid = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 ); // 0x08(startNodeUid)
-            int stampCount = MemoryHelper.ReadInt32( this.Sector.Stream, fileOffset += 0x08 + 0x134 ); // 0x08(endNodeUid) + 0x134(sets cursor before stampCount)
-            int vegetationSphereCount = MemoryHelper.ReadInt32( this.Sector.Stream, fileOffset += 0x04 + stampCount * StampBlockSize ); // 0x04(stampCount) + stamps
-            fileOffset     += 0x04       + VegetationSphereBlockSize * vegetationSphereCount; // 0x04(vegSphereCount) + vegSpheres
-            this.BlockSize =  fileOffset - startOffset;
+            StartNodeUid = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 + 0x50 ); // 0x08(RoadLook) + 0x50(sets cursor before node_uid[])
+            EndNodeUid   = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 ); // 0x08(startNodeUid)
+            int stampCount            = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x08 + 0x134 ); // 0x08(endNodeUid) + 0x134(sets cursor before stampCount)
+            int vegetationSphereCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + stampCount * StampBlockSize ); // 0x04(stampCount) + stamps
+            fileOffset += 0x04       + VegetationSphereBlockSize * vegetationSphereCount; // 0x04(vegSphereCount) + vegSpheres
+            BlockSize  =  fileOffset - startOffset;
         }
 
         public void TsRoadItem854( int startOffset ) {
@@ -108,22 +108,22 @@ namespace TsMap2.Model.TsMapItem {
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
-            this.Hidden = MemoryHelper.ReadInt8( this.Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
-                          || ( MemoryHelper.ReadUint8( this.Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
-            ulong roadLookId = MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x09 );
-            this.RoadLook = Store().Def.LookupRoadLook( roadLookId );
+            Hidden = MemoryHelper.ReadInt8( Sector.Stream, fileOffset + 0x06 )                > dlcGuardCount
+                     || ( MemoryHelper.ReadUint8( Sector.Stream, fileOffset + 0x03 ) & 0x02 ) != 0;
+            ulong roadLookId = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x09 );
+            RoadLook = Store().Def.LookupRoadLook( roadLookId );
 
-            if ( this.RoadLook == null ) {
-                this.Valid = false;
-                Log.Warning( $"Could not find RoadLook: '{ScsHash.TokenToString( roadLookId )}'({MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset ):X}), "
-                             + $"in {Path.GetFileName( this.Sector.FilePath )} @ {fileOffset}" );
+            if ( RoadLook == null ) {
+                Valid = false;
+                Log.Warning( $"Could not find RoadLook: '{ScsHashHelper.TokenToString( roadLookId )}'({MemoryHelper.ReadUInt64( Sector.Stream, fileOffset ):X}), "
+                             + $"in {Path.GetFileName( Sector.FilePath )} @ {fileOffset}" );
             }
 
-            this.StartNodeUid =  MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 + 0xA4 ); // 0x08(RoadLook) + 0xA4(sets cursor before node_uid[])
-            this.EndNodeUid   =  MemoryHelper.ReadUInt64( this.Sector.Stream, fileOffset += 0x08 );        // 0x08(startNodeUid)
-            fileOffset        += 0x08 + 0x04;                                                              // 0x08(EndNodeUid) + 0x04(m_unk)
+            StartNodeUid =  MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 + 0xA4 ); // 0x08(RoadLook) + 0xA4(sets cursor before node_uid[])
+            EndNodeUid   =  MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x08 );        // 0x08(startNodeUid)
+            fileOffset   += 0x08 + 0x04;                                                         // 0x08(EndNodeUid) + 0x04(m_unk)
 
-            this.BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - startOffset;
         }
     }
 }

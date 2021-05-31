@@ -7,16 +7,16 @@ namespace TsMap2.Factory.Json {
     public class TsMapInfoJsonFactory : JsonFactory< JObject > {
         private readonly TsMapInfo _mapInfo;
 
-        public TsMapInfoJsonFactory( TsMapInfo mapInfo ) => this._mapInfo = mapInfo;
+        public TsMapInfoJsonFactory( TsMapInfo mapInfo ) => _mapInfo = mapInfo;
 
         public override string GetFileName() => AppPath.TileMapInfoFileName;
 
-        public override string GetSavingPath() => this.Store.Settings.OutputPath;
+        public override string GetSavingPath() => Store.Settings.OutputPath;
 
         public override string GetLoadingPath() => throw new NotImplementedException();
 
         public override JObject Convert( JObject raw ) => throw new NotImplementedException();
 
-        public override JContainer RawData() => this._mapInfo.TileMapInfo();
+        public override JContainer RawData() => _mapInfo.TileMapInfo();
     }
 }

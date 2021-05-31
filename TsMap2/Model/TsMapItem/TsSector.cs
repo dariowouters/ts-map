@@ -9,10 +9,10 @@ namespace TsMap2.Model.TsMapItem {
         public          float      Z;
 
         public TsSector( TsItemType itemType, string filePath, int version, byte[] stream ) {
-            this.ItemType = itemType;
-            this.FilePath = filePath;
-            this.Version  = version;
-            this.Stream   = stream;
+            ItemType = itemType;
+            FilePath = filePath;
+            Version  = version;
+            Stream   = stream;
         }
 
         public string FilePath { get; }
@@ -20,7 +20,7 @@ namespace TsMap2.Model.TsMapItem {
         public byte[] Stream   { get; private set; }
 
         public void ClearFileData() {
-            this.Stream = null;
+            Stream = null;
         }
     }
 }

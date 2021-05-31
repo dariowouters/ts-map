@@ -12,17 +12,17 @@ namespace TsMap2.Job {
         protected override void Do() {
             Log.Debug( "[Job][Setting] Loading" );
 
-            if ( !this.SettingFactory.FileExist() ) {
-                var context = new JObject { [ "path" ] = this.SettingFactory.GetLoadingPath() };
-                throw new JobException( "Unable to find the setting file", this.JobName(), context );
+            if ( !SettingFactory.FileExist() ) {
+                var context = new JObject { [ "path" ] = SettingFactory.GetLoadingPath() };
+                throw new JobException( "Unable to find the setting file", JobName(), context );
             }
 
-            Settings settings = this.SettingFactory.Load();
+            Settings settings = SettingFactory.Load();
 
             if ( settings.GetActiveGamePath() == null || !Directory.Exists( settings.GetActiveGamePath() ) )
-                throw new JobException( "Game path was not found or is incorrect", this.JobName(), settings );
+                throw new JobException( "Game path was not found or is incorrect", JobName(), settings );
 
-            this.Store().SetSetting( settings );
+            Store().SetSetting( settings );
 
             Log.Information( "[Job][Setting] Loaded" );
         }

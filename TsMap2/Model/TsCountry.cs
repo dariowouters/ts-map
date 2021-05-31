@@ -11,25 +11,25 @@ namespace TsMap2.Model {
         public                float  Y;
 
         public TsCountry( string countryCode, int countryId, string name, ulong token, float x, float y, string localizationToken ) {
-            this.CountryCode       = countryCode;
-            this.CountryId         = countryId;
-            this.Name              = name;
-            this.Token             = token;
-            this.X                 = x;
-            this.Y                 = y;
-            this.LocalizationToken = localizationToken;
+            CountryCode       = countryCode;
+            CountryId         = countryId;
+            Name              = name;
+            Token             = token;
+            X                 = x;
+            Y                 = y;
+            LocalizationToken = localizationToken;
         }
 
         [ JsonIgnore ] public string                       LocalizationToken { get; }
         public                Dictionary< string, string > LocalizedNames    { get; } = new Dictionary< string, string >();
 
         public void AddLocalizedName( string locale, string name ) {
-            if ( !this.LocalizedNames.ContainsKey( locale ) ) this.LocalizedNames.Add( locale, name );
+            if ( !LocalizedNames.ContainsKey( locale ) ) LocalizedNames.Add( locale, name );
         }
 
         public string GetLocalizedName( string locale ) =>
-            this.LocalizedNames.ContainsKey( locale )
-                ? this.LocalizedNames[ locale ]
-                : this.Name;
+            LocalizedNames.ContainsKey( locale )
+                ? LocalizedNames[ locale ]
+                : Name;
     }
 }

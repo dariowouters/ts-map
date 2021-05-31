@@ -2,7 +2,7 @@
 using System.Text;
 using Ionic.Zlib;
 
-namespace TsMap2.Scs {
+namespace TsMap2.Scs.FileSystem {
     public abstract class ScsEntry {
         public abstract ScsRootFile GetRootFile();
 
@@ -20,7 +20,7 @@ namespace TsMap2.Scs {
     public class ScsZipEntry : ScsEntry {
         private readonly ScsZipFile _szf;
 
-        public ScsZipEntry( ScsZipFile szf ) => this._szf = szf;
+        public ScsZipEntry( ScsZipFile szf ) => _szf = szf;
 
         /// <summary>
         ///     Offset to start of data
@@ -33,25 +33,25 @@ namespace TsMap2.Scs {
         public short  NameLength        { get; set; }
         public string Name              { get; set; }
 
-        public override ScsRootFile GetRootFile() => this._szf;
+        public override ScsRootFile GetRootFile() => _szf;
 
         public override byte[] Read() {
-            BinaryReader br = this._szf.Br;
-            br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
-            byte[] buff = br.ReadBytes( this.CompressedSize );
+            BinaryReader br = _szf.Br;
+            br.BaseStream.Seek( Offset, SeekOrigin.Begin );
+            byte[] buff = br.ReadBytes( CompressedSize );
 
-            return this.IsCompressed()
-                       ? this.Inflate( buff )
+            return IsCompressed()
+                       ? Inflate( buff )
                        : buff;
         }
 
         public override byte[] Inflate( byte[] buff ) => DeflateStream.UncompressBuffer( buff );
 
-        public override bool IsCompressed() => this.CompressedSize != this.Size;
+        public override bool IsCompressed() => CompressedSize != Size;
 
-        public override ulong GetHash() => CityHash.CityHash64( Encoding.UTF8.GetBytes( this.Name ), (ulong) this.Name.Length );
+        public override ulong GetHash() => CityHash.CityHash64( Encoding.UTF8.GetBytes( Name ), (ulong) Name.Length );
 
-        public override bool IsDirectory() => this.CompressedSize == 0;
+        public override bool IsDirectory() => CompressedSize == 0;
     }
 
     public class ScsHashEntry : ScsEntry {
@@ -89,27 +89,27 @@ namespace TsMap2.Scs {
         /// </summary>
         public int CompressedSize { get; set; }
 
-        public override ScsRootFile GetRootFile() => this.Hf;
+        public override ScsRootFile GetRootFile() => Hf;
 
         public override byte[] Read() {
-            BinaryReader br = this.Hf.Br;
-            br.BaseStream.Seek( this.Offset, SeekOrigin.Begin );
-            byte[] buff = br.ReadBytes( this.CompressedSize );
+            BinaryReader br = Hf.Br;
+            br.BaseStream.Seek( Offset, SeekOrigin.Begin );
+            byte[] buff = br.ReadBytes( CompressedSize );
             br.Dispose();
 
-            return this.IsCompressed()
-                       ? this.Inflate( buff )
+            return IsCompressed()
+                       ? Inflate( buff )
                        : buff;
         }
 
         public override byte[] Inflate( byte[] buff ) => ZlibStream.UncompressBuffer( buff );
 
-        public override bool IsCompressed() => this.Size != this.CompressedSize;
+        public override bool IsCompressed() => Size != CompressedSize;
 
-        public override ulong GetHash() => this.Hash;
+        public override ulong GetHash() => Hash;
 
         public override bool IsDirectory() {
-            switch ( this.Flags ) {
+            switch ( Flags ) {
                 case 1:
                 case 3:
                 case 5:

@@ -11,21 +11,21 @@ namespace TsMap2.Model {
         public byte B { get; }
 
         public Color8888( byte a, byte r, byte g, byte b ) {
-            this.A = a;
-            this.R = r;
-            this.G = g;
-            this.B = b;
+            A = a;
+            R = r;
+            G = g;
+            B = b;
         }
 
         public Color8888( Color565 color565, byte a ) {
-            this.A = a;
-            this.R = (byte) ( color565.R << 3 );
-            this.G = (byte) ( color565.G << 2 );
-            this.B = (byte) ( color565.B << 3 );
+            A = a;
+            R = (byte) ( color565.R << 3 );
+            G = (byte) ( color565.G << 2 );
+            B = (byte) ( color565.B << 3 );
         }
 
         public void SetAlpha( byte a ) {
-            this.A = a;
+            A = a;
         }
     }
 
@@ -35,9 +35,9 @@ namespace TsMap2.Model {
         public byte B { get; }
 
         private Color565( byte r, byte g, byte b ) {
-            this.R = r;
-            this.G = g;
-            this.B = b;
+            R = r;
+            G = g;
+            B = b;
         }
 
         public Color565( ushort color ) : this( (byte) ( ( color >> 11 ) & 0x1F ), (byte) ( ( color >> 5 ) & 0x3F ), (byte) ( color & 0x1F ) ) { }
@@ -54,10 +54,10 @@ namespace TsMap2.Model {
         private readonly Color8888[] _pixelData;
 
         public OverlayIcon( Color8888[] pixelData, uint width, uint height ) {
-            this._pixelData = pixelData;
-            this.Width      = width;
-            this.Height     = height;
-            this.Valid      = true;
+            _pixelData = pixelData;
+            Width      = width;
+            Height     = height;
+            Valid      = true;
         }
 
         public OverlayIcon() { }
@@ -66,9 +66,9 @@ namespace TsMap2.Model {
         public uint Height { get; }
 
         public byte[] GetData() {
-            var bytes = new byte[ this.Width * this.Height * 4 ];
-            for ( var i = 0; i < this._pixelData.Length; i++ ) {
-                Color8888 pixel = this._pixelData[ i ];
+            var bytes = new byte[ Width * Height * 4 ];
+            for ( var i = 0; i < _pixelData.Length; i++ ) {
+                Color8888 pixel = _pixelData[ i ];
                 bytes[ i * 4 + 3 ] = pixel.A;
                 bytes[ i * 4 ]     = pixel.B;
                 bytes[ i * 4 + 1 ] = pixel.G;
@@ -83,12 +83,12 @@ namespace TsMap2.Model {
         private readonly Bitmap _overlayBitmap;
 
         public TsMapOverlay( Bitmap overlayBitmap, ulong token ) {
-            this._overlayBitmap = overlayBitmap;
-            this.Token          = token;
+            _overlayBitmap = overlayBitmap;
+            Token          = token;
         }
 
         public ulong  Token       { get; }
-        public Bitmap GetBitmap() => this._overlayBitmap;
+        public Bitmap GetBitmap() => _overlayBitmap;
     }
 
     public class TsMapOverlays {
@@ -126,29 +126,29 @@ namespace TsMap2.Model {
         public byte   ZoomLevelVisibility;
 
         public TsMapOverlayItem( float x, float y, string name, TsMapOverlayType overlayType, Bitmap bitmap ) {
-            this.X           = x;
-            this.Y           = y;
-            this.OverlayType = overlayType;
-            this.Name        = name;
-            this.Type        = Enum.GetName( typeof( TsMapOverlayType ), this.OverlayType );
-            this._bitmap     = bitmap;
+            X           = x;
+            Y           = y;
+            OverlayType = overlayType;
+            Name        = name;
+            Type        = Enum.GetName( typeof( TsMapOverlayType ), OverlayType );
+            _bitmap     = bitmap;
         }
 
         public TsMapOverlayItem( float x, float y, string name, byte zoomLevelVisibility, TsMapOverlayType overlayType, Bitmap bitmap ) {
-            this.X                   = x;
-            this.Y                   = y;
-            this.OverlayType         = overlayType;
-            this.Name                = name;
-            this.Type                = Enum.GetName( typeof( TsMapOverlayType ), this.OverlayType );
-            this._bitmap             = bitmap;
-            this.ZoomLevelVisibility = zoomLevelVisibility;
+            X                   = x;
+            Y                   = y;
+            OverlayType         = overlayType;
+            Name                = name;
+            Type                = Enum.GetName( typeof( TsMapOverlayType ), OverlayType );
+            _bitmap             = bitmap;
+            ZoomLevelVisibility = zoomLevelVisibility;
         }
 
         // [ JsonIgnore ] public ulong            Token       { get; set; }
         [ JsonIgnore ] public TsMapOverlayType OverlayType { get; }
         public                string           Type        { get; }
-        public                int              Width       => this._bitmap.Width;
-        public                int              Height      => this._bitmap.Height;
+        public                int              Width       => _bitmap.Width;
+        public                int              Height      => _bitmap.Height;
 
         [ JsonIgnore ] public Bitmap _bitmap { get; }
         // [ JsonIgnore ] public bool             Hidden      { get; protected set; }

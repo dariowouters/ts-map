@@ -9,21 +9,21 @@ namespace TsMap2.Model.TsMapInfo {
         public override JObject TileMapInfo() =>
             new JObject {
                 [ "map" ] = new JObject {
-                    [ "maxX" ]     = this._tileSize * 256,
-                    [ "maxY" ]     = this._tileSize * 256,
-                    [ "x1" ]       = this._x1,
-                    [ "x2" ]       = this._x2,
-                    [ "y1" ]       = this._y1,
-                    [ "y2" ]       = this._y2,
-                    [ "tileSize" ] = this._tileSize,
-                    [ "minZoom" ]  = this._minZoom,
-                    [ "maxZoom" ]  = this._maxZoom
+                    [ "maxX" ]     = _tileSize * 256,
+                    [ "maxY" ]     = _tileSize * 256,
+                    [ "x1" ]       = _x1,
+                    [ "x2" ]       = _x2,
+                    [ "y1" ]       = _y1,
+                    [ "y2" ]       = _y2,
+                    [ "tileSize" ] = _tileSize,
+                    [ "minZoom" ]  = _minZoom,
+                    [ "maxZoom" ]  = _maxZoom
                 },
                 [ "game" ] = new JObject {
-                    [ "id" ]          = this._game.Code,
-                    [ "game" ]        = this._game.Code,
-                    [ "name" ]        = this._game.FullName(),
-                    [ "version" ]     = this._game.Version,
+                    [ "id" ]          = _game.Code,
+                    [ "game" ]        = _game.Code,
+                    [ "name" ]        = _game.FullName(),
+                    [ "version" ]     = _game.Version,
                     [ "generatedAt" ] = DateTime.Now
                 }
             };
