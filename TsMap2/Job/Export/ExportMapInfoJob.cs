@@ -1,7 +1,7 @@
-﻿using Serilog;
-using SixLabors.ImageSharp;
+﻿using System.Drawing;
+using Serilog;
 using TsMap2.Factory.Json;
-using TsMap2.Helper;
+using TsMap2.Helper.Map;
 using TsMap2.Model.TsMapInfo;
 
 namespace TsMap2.Job.Export {

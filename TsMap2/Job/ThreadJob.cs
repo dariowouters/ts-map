@@ -9,9 +9,9 @@ namespace TsMap2.Job {
 
         protected abstract void Do();
 
-        public string JobName() => GetType().Name;
+        public virtual string JobName() => GetType().Name;
 
-        protected void OnEnd() { }
+        protected virtual void OnEnd() { }
 
         public void Run() {
             this.t = Task.Factory.StartNew( () => Do(), TaskCreationOptions.AttachedToParent );
@@ -24,7 +24,7 @@ namespace TsMap2.Job {
             t.Wait();
         }
 
-        public StoreHelper Store() => StoreHelper.Instance;
+        protected StoreHelper Store() => StoreHelper.Instance;
 
         private static void HandleException( Exception e ) {
             if ( e.GetBaseException().GetType() != typeof( JobException ) ) return;

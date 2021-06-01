@@ -3,6 +3,7 @@ using Serilog;
 using TsMap2.Helper;
 using TsMap2.Job;
 using TsMap2.Job.Export;
+using TsMap2.Job.Export.Tiles;
 using TsMap2.Job.Parse.Def;
 using TsMap2.Job.Parse.Map;
 using TsMap2.Job.Parse.Overlays;
@@ -38,6 +39,9 @@ namespace TsMap2 {
                 // -- Export
                 var e = new ExportJob();
                 e.Run();
+
+                var t = new ExportTilesJob();
+                t.Run();
             } catch ( Exception e ) {
                 Log.Error( "Unexpected Exception: {0}", e.GetBaseException().ToString() );
                 Log.Error( "Unexpected Exception: {0}", e.ToString() );

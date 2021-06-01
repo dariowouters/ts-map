@@ -57,6 +57,7 @@ namespace TsMap2.Model {
             TriggerPoints = triggerPoints;
         }
 
+        public string                 FilePath      { get; }
         public ulong                  Token         { get; }
         public string                 Category      { get; }
         public bool                   ValidRoad     { get; }

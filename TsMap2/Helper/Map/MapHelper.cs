@@ -1,7 +1,7 @@
-﻿using SixLabors.ImageSharp;
+﻿using System.Drawing;
 
-namespace TsMap2.Helper {
-    public class MapHelper {
+namespace TsMap2.Helper.Map {
+    public static class MapHelper {
         private static StoreHelper Store => StoreHelper.Instance;
 
         public static void ZoomOutAndCenterMap( float targetWidth, float targetHeight, out PointF pos, out float zoom ) {
