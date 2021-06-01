@@ -42,6 +42,10 @@ namespace TsMap2 {
 
                 var t = new ExportTilesJob();
                 t.Run();
+
+                // -- Debug
+                // var d = new ExportDataOverviewJob();
+                // d.RunAndWait();
             } catch ( Exception e ) {
                 Log.Error( "Unexpected Exception: {0}", e.GetBaseException().ToString() );
                 Log.Error( "Unexpected Exception: {0}", e.ToString() );
