@@ -90,19 +90,19 @@ namespace TsMap2.Job.Parse.Map {
                     case ScsItemType.Road: {
                         mapItem           =  new TsMapRoadItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.Roads.Add( (TsMapRoadItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.Prefab: {
                         mapItem           =  new TsMapPrefabItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.Prefabs.Add( (TsMapPrefabItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.Company: {
                         mapItem           =  new TsMapCompanyItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.Companies.Add( (TsMapCompanyItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.Service: {
@@ -118,19 +118,19 @@ namespace TsMap2.Job.Parse.Map {
                     case ScsItemType.City: {
                         mapItem           =  new TsMapCityItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.Cities.Add( (TsMapCityItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.MapOverlay: {
                         mapItem           =  new TsMapMapOverlayItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.MapOverlays.Add( (TsMapMapOverlayItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.Ferry: {
                         mapItem           =  new TsMapFerryItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.FerryConnections.Add( (TsMapFerryItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.Garage: {
@@ -141,8 +141,7 @@ namespace TsMap2.Job.Parse.Map {
                     case ScsItemType.Trigger: {
                         mapItem           =  new TsMapTriggerItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-
-                        if ( mapItem.Valid ) Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.FuelPump: {
@@ -173,7 +172,7 @@ namespace TsMap2.Job.Parse.Map {
                     case ScsItemType.MapArea: {
                         mapItem           =  new TsMapAreaItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.MapAreas.Add( (TsMapAreaItem) mapItem );
+                        Store().Map.AddItem( mapItem );
                         break;
                     }
                     case ScsItemType.Cutscene: {

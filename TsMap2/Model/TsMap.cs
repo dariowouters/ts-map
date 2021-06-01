@@ -28,6 +28,37 @@ namespace TsMap2.Model {
                 Nodes.Add( node.Uid, node );
         }
 
+        public void AddItem( TsMapItem.TsMapItem mapItem ) {
+            if ( !mapItem.Valid ) return;
+
+            switch ( mapItem ) {
+                case TsMapRoadItem item:
+                    Roads.Add( item );
+                    break;
+                case TsMapPrefabItem item:
+                    Prefabs.Add( item );
+                    break;
+                case TsMapCompanyItem item:
+                    Companies.Add( item );
+                    break;
+                case TsMapCityItem item:
+                    Cities.Add( item );
+                    break;
+                case TsMapMapOverlayItem item:
+                    MapOverlays.Add( item );
+                    break;
+                case TsMapFerryItem item:
+                    FerryConnections.Add( item );
+                    break;
+                case TsMapTriggerItem item:
+                    Triggers.Add( item );
+                    break;
+                case TsMapAreaItem item:
+                    MapAreas.Add( item );
+                    break;
+            }
+        }
+
         public void UpdateEdgeCoords( TsNode node ) {
             if ( MinX > node.X ) MinX = node.X;
             if ( MaxX < node.X ) MaxX = node.X;
