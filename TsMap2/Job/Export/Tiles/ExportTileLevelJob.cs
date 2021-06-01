@@ -2,16 +2,16 @@
 using System.Drawing;
 using Serilog;
 using TsMap2.Factory.Picture;
-using TsMap2.Helper;
 using TsMap2.Helper.Map;
 using TsMap2.Model;
 
 namespace TsMap2.Job.Export.Tiles {
     public class ExportTileLevelJob : ThreadJob {
-        private readonly int         _zoomLevel;
-        private readonly MapRenderer _mapRenderer = new MapRenderer();
-        private          float       _movement;
-        private          PointF      _oldPos = new PointF( 0, 0 );
+        private readonly int _zoomLevel;
+
+        // private readonly MapRenderer _mapRenderer = new MapRenderer();
+        private float  _movement;
+        private PointF _oldPos = new PointF( 0, 0 );
 
         public ExportTileLevelJob( int zoomLevel ) => _zoomLevel = zoomLevel;
 
@@ -45,7 +45,7 @@ namespace TsMap2.Job.Export.Tiles {
         private void SaveTileImage( int z, int x, int y, float zoom, PointF pos ) {
             using var bitmap = new Bitmap( _settings.ExportSettings.TileSize,
                                            _settings.ExportSettings.TileSize );
-            using Graphics g = Graphics.FromImage( bitmap );
+            // using Graphics g = Graphics.FromImage( bitmap );
 
             pos.X = x == 0
                         ? pos.X
@@ -61,9 +61,8 @@ namespace TsMap2.Job.Export.Tiles {
                 Log.Information( "{0}, scale: {1}", difference, difference / _settings.ExportSettings.TileSize );
             }
 
-            _mapRenderer.Render( g, new Rectangle( 0, 0, bitmap.Width, bitmap.Height ), zoom, pos,
-                                 _settings.MapColor.ToBrushPalette(),
-                                 _settings.RenderFlags & ~RenderFlags.TextOverlay );
+            var mapRenderer = new MapRenderer( bitmap );
+            mapRenderer.Render( zoom, pos );
 
 
             var tileFactory = new TileFactory( bitmap );
