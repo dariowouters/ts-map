@@ -3,26 +3,27 @@ using System.IO;
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Scs;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapTriggerItem : TsMapItem {
-        public TsMapTriggerItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapTriggerItem( ScsSector sector ) : base( sector ) {
             Valid = true;
             if ( Sector.Version < 829 )
-                TsTriggerItem825( startOffset );
+                TsTriggerItem825();
             else if ( Sector.Version >= 829 && Sector.Version < 875 )
-                TsTriggerItem829( startOffset );
+                TsTriggerItem829();
             else if ( Sector.Version >= 875 )
-                TsTriggerItem875( startOffset );
+                TsTriggerItem875();
             else
-                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {Sector.LastOffset}." );
         }
 
         public string       OverlayName { get; private set; }
         public TsMapOverlay Overlay     { get; private set; }
 
-        public void TsTriggerItem825( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsTriggerItem825() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -55,11 +56,11 @@ namespace TsMap2.Model.TsMapItem {
             }
 
             fileOffset += 0x18; // 0x18(range & reset_delay & reset_distance & min_speed & max_speed & flags2)
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
-        public void TsTriggerItem829( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsTriggerItem829() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -96,11 +97,11 @@ namespace TsMap2.Model.TsMapItem {
             }
 
             fileOffset += 0x18; // 0x18(range & reset_delay & reset_distance & min_speed & max_speed & flags2)
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
-        public void TsTriggerItem875( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsTriggerItem875() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -141,7 +142,7 @@ namespace TsMap2.Model.TsMapItem {
             }
 
             if ( nodeCount == 1 ) fileOffset += 0x04; // 0x04(m_radius)
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
     }
 }

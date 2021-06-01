@@ -1,21 +1,22 @@
 ﻿using System.IO;
 using Serilog;
 using TsMap2.Helper;
+using TsMap2.Model.TsMapItem;
 
-namespace TsMap2.Model.TsMapItem {
-    public class TsMapTrajectoryItem : TsMapItem {
-        public TsMapTrajectoryItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+namespace TsMap2.Scs.FileSystem.Map {
+    public class ScsMapTrajectoryItem : TsMapItem {
+        public ScsMapTrajectoryItem( ScsSector sector ) : base( sector ) {
             Valid = false;
             if ( Sector.Version < 846 )
-                TsTrajectoryItem834( startOffset );
+                TsTrajectoryItem834();
             else if ( Sector.Version >= 846 )
-                TsTrajectoryItem846( startOffset );
+                TsTrajectoryItem846();
             else
-                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {Sector.LastOffset}." );
         }
 
-        public void TsTrajectoryItem834( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsTrajectoryItem834() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
 
             int nodeCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x05 ); // 0x05(flags)
             int accessRuleCount =
@@ -23,18 +24,18 @@ namespace TsMap2.Model.TsMapItem {
             int routeRuleCount  = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * accessRuleCount ); // 0x04(accessRuleCount) + accessRules
             int checkpointCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x14 * routeRuleCount ); // 0x04(routeRuleCount) + routeRules
             fileOffset += 0x04       + 0x10 * checkpointCount + 0x04; // 0x04(checkpointCount) + checkpoints + 0x04(padding2)
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
-        public void TsTrajectoryItem846( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsTrajectoryItem846() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
 
             int nodeCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x05 ); // 0x05(flags)
             int routeRuleCount =
                 MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * nodeCount + 0x0C ); // 0x04(nodeCount) + nodeUids + 0x0C(flags2 & access_rule)
             int checkpointCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x1C * routeRuleCount ); // 0x04(routeRuleCount) + routeRules
             fileOffset += 0x04       + 0x10 * checkpointCount + 0x04; // 0x04(checkpointCount) + checkpoints + 0x04(padding2)
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
     }
 }

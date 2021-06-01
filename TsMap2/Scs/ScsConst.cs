@@ -4,7 +4,7 @@
         public const int AtsDlcGuardCount  = 15;
     }
 
-    public enum TsItemType {
+    public enum ScsItemType {
         Terrain        = 1,
         Building       = 2,
         Road           = 3,

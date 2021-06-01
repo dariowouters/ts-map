@@ -1,18 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Serilog;
-using TsMap2.Factory;
 using TsMap2.Helper;
 using TsMap2.Model.TsMapItem;
 using TsMap2.Scs;
 using TsMap2.Scs.FileSystem;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Job.Parse.Map {
     public class ParseMapFilesJob : ThreadJob {
-        private bool _isFirstFileRead;
-
         protected override void Do() {
             Log.Debug( "[Job][MapFiles] Loading" );
 
@@ -50,18 +47,10 @@ namespace TsMap2.Job.Parse.Map {
                 }
 
                 sectorFiles = mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList();
-                // sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
+                sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
             }
 
             sectorFiles.ForEach( Parse );
-            // if ( _sectorFiles.Count <= 0 ) {
-
-            // }
-
-            // long preMapParseTime = DateTime.Now.Ticks;
-            // this.Store().Sectors = _sectorFiles.Select( file => new TsSector( sector, file ) ).ToList();
-            // sectorFiles.ForEach( this.Parse );
-            // this.Store().Sectors.ForEach( sec => sec.ClearFileData() );
 
             Log.Information( "[Job][MapFiles] Loaded. Roads: {0}",            Store().Map.Roads.Count );
             Log.Information( "[Job][MapFiles] Loaded. Prefabs: {0}",          Store().Map.Prefabs.Count );
@@ -80,152 +69,136 @@ namespace TsMap2.Job.Parse.Map {
             if ( file == null ) // empty = true;
                 return;
 
-            byte[] stream  = file.Entry.Read();
-            var    version = BitConverter.ToInt32( stream, 0x0 );
+            byte[] stream = file.Entry.Read();
+            var    sector = new ScsSector( path, stream );
 
-            if ( version < 825 ) {
-                Log.Warning( $"{path} version ({version}) is too low, min. is 825" );
+            if ( sector.Version < 825 ) {
+                Log.Warning( $"{path} version ({sector.Version}) is too low, min. is 825" );
                 return;
             }
 
-            var itemCount               = BitConverter.ToUInt32( stream, 0x10 );
-            if ( itemCount == 0 ) empty = true;
+            if ( sector.ItemCount == 0 ) empty = true;
             if ( empty ) return;
 
-            var      lastOffset = 0x14;
-            TsSector sector     = null;
+            for ( var i = 0; i < sector.ItemCount; i++ ) {
+                ScsItemType type = sector.ItemType;
 
-            // -- Raw generation
-            if ( !_isFirstFileRead ) {
-                RawHelper.SaveRawFile( RawType.MAP_SECTORS, file.GetFullName(), stream );
-                _isFirstFileRead = true;
-            }
-            // -- ./Raw generation
-
-            for ( var i = 0; i < itemCount; i++ ) {
-                var type = (TsItemType) MemoryHelper.ReadUInt32( stream, lastOffset );
-
-                sector = new TsSector( type, path, version, stream );
-                if ( version <= 825 ) type++; // after version 825 all types were pushed up 1
+                if ( sector.Version <= 825 ) type++; // after version 825 all types were pushed up 1
 
                 TsMapItem mapItem;
                 switch ( type ) {
-                    case TsItemType.Road: {
-                        mapItem    =  new TsMapRoadItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Road: {
+                        mapItem           =  new TsMapRoadItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         if ( mapItem.Valid ) Store().Map.Roads.Add( (TsMapRoadItem) mapItem );
                         break;
                     }
-                    case TsItemType.Prefab: {
-                        mapItem    =  new TsMapPrefabItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Prefab: {
+                        mapItem           =  new TsMapPrefabItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         if ( mapItem.Valid ) Store().Map.Prefabs.Add( (TsMapPrefabItem) mapItem );
                         break;
                     }
-                    case TsItemType.Company: {
-                        mapItem    =  new TsMapCompanyItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Company: {
+                        mapItem           =  new TsMapCompanyItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         if ( mapItem.Valid ) Store().Map.Companies.Add( (TsMapCompanyItem) mapItem );
                         break;
                     }
-                    case TsItemType.Service: {
-                        mapItem    =  new TsMapServiceItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Service: {
+                        mapItem           =  new ScsMapServiceItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.CutPlane: {
-                        mapItem    =  new TsMapCutPlaneItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.CutPlane: {
+                        mapItem           =  new ScsMapCutPlaneItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.City: {
-                        mapItem    =  new TsMapCityItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.City: {
+                        mapItem           =  new TsMapCityItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         if ( mapItem.Valid ) Store().Map.Cities.Add( (TsMapCityItem) mapItem );
                         break;
                     }
-                    case TsItemType.MapOverlay: {
-                        mapItem    =  new TsMapMapOverlayItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.MapOverlay: {
+                        mapItem           =  new TsMapMapOverlayItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         if ( mapItem.Valid ) Store().Map.MapOverlays.Add( (TsMapMapOverlayItem) mapItem );
                         break;
                     }
-                    case TsItemType.Ferry: {
-                        mapItem    =  new TsMapFerryItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Ferry: {
+                        mapItem           =  new TsMapFerryItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         if ( mapItem.Valid ) Store().Map.FerryConnections.Add( (TsMapFerryItem) mapItem );
                         break;
                     }
-                    case TsItemType.Garage: {
-                        mapItem    =  new TsMapGarageItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Garage: {
+                        mapItem           =  new ScsMapGarageItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.Trigger: {
-                        mapItem    =  new TsMapTriggerItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Trigger: {
+                        mapItem           =  new TsMapTriggerItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
 
                         if ( mapItem.Valid ) Store().Map.Triggers.Add( (TsMapTriggerItem) mapItem );
                         break;
                     }
-                    case TsItemType.FuelPump: {
-                        mapItem    =  new TsMapFuelPumpItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.FuelPump: {
+                        mapItem           =  new ScsMapFuelPumpItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.RoadSideItem: {
-                        mapItem    =  new TsMapRoadSideItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.RoadSideItem: {
+                        mapItem           =  new ScsMapRoadSideItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.BusStop: {
-                        mapItem    =  new TsMapBusStopItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.BusStop: {
+                        mapItem           =  new ScsMapBusStopItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.TrafficRule: {
-                        mapItem    =  new TsMapTrafficRuleItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.TrafficRule: {
+                        mapItem           =  new ScsMapTrafficRuleItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.TrajectoryItem: {
-                        mapItem    =  new TsMapTrajectoryItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.TrajectoryItem: {
+                        mapItem           =  new ScsMapTrajectoryItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
-                    case TsItemType.MapArea: {
-                        mapItem    =  new TsMapMapAreaItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
-                        if ( mapItem.Valid ) Store().Map.MapAreas.Add( (TsMapMapAreaItem) mapItem );
+                    case ScsItemType.MapArea: {
+                        mapItem           =  new TsMapAreaItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
+                        if ( mapItem.Valid ) Store().Map.MapAreas.Add( (TsMapAreaItem) mapItem );
                         break;
                     }
-                    case TsItemType.Cutscene: {
-                        mapItem    =  new TsMapCutsceneItem( sector, lastOffset );
-                        lastOffset += mapItem.BlockSize;
+                    case ScsItemType.Cutscene: {
+                        mapItem           =  new ScsMapCutsceneItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
                     default: {
-                        Log.Warning( "Unknown Type: {0} in {1} @ {2}", type, Path.GetFileName( path ), lastOffset );
+                        Log.Warning( "Unknown Type: {0} in {1} @ {2}", type, Path.GetFileName( path ), sector.LastOffset );
                         break;
                     }
                 }
-
-                // sector.ClearFileData();
             }
 
-            if ( sector == null ) return;
-
-            int nodeCount = MemoryHelper.ReadInt32( stream, lastOffset );
+            int nodeCount = MemoryHelper.ReadInt32( stream, sector.LastOffset );
             for ( var i = 0; i < nodeCount; i++ ) {
-                var node = new TsNode( sector, lastOffset += 0x04 );
+                var node = new TsNode( sector );
                 Store().Map.UpdateEdgeCoords( node );
-                if ( !Store().Map.Nodes.ContainsKey( node.Uid ) ) Store().Map.Nodes.Add( node.Uid, node );
-                lastOffset += 0x34;
+                Store().Map.AddNode( node );
+                sector.LastOffset += 0x34;
             }
 
-            lastOffset += 0x04;
-            if ( lastOffset != stream.Length )
-                Log.Warning( $"File '{Path.GetFileName( path )}' was not read correctly. Read offset was at 0x{lastOffset:X} while file is 0x{stream.Length:X} bytes long." );
+            sector.LastOffset += 0x04;
+            if ( sector.LastOffset != stream.Length )
+                Log.Warning( $"File '{Path.GetFileName( path )}' was not read correctly. Read offset was at 0x{sector.LastOffset:X} while file is 0x{stream.Length:X} bytes long." );
 
             sector.ClearFileData();
         }

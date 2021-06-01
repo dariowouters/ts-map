@@ -1,26 +1,27 @@
 ﻿using System.IO;
 using Serilog;
 using TsMap2.Helper;
+using TsMap2.Model.TsMapItem;
 
-namespace TsMap2.Model.TsMapItem {
-    public class TsMapRoadSideItem : TsMapItem {
-        public TsMapRoadSideItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+namespace TsMap2.Scs.FileSystem.Map {
+    public class ScsMapRoadSideItem : TsMapItem {
+        public ScsMapRoadSideItem( ScsSector sector ) : base( sector ) {
             Valid = false;
             if ( Sector.Version < 846 )
-                TsRoadSideItem825( startOffset );
+                TsRoadSideItem825();
             else if ( Sector.Version >= 846 && Sector.Version < 855 )
-                TsRoadSideItem846( startOffset );
+                TsRoadSideItem846();
             else if ( Sector.Version >= 855 && Sector.Version < 875 )
-                TsRoadSideItem855( startOffset );
+                TsRoadSideItem855();
             else if ( Sector.Version >= 875 )
-                TsRoadSideItem875( startOffset );
+                TsRoadSideItem875();
             else
-                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {Sector.LastOffset}." );
         }
 
-        public void TsRoadSideItem825( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
-            fileOffset += 0x15 + 3 * 0x18;       // 0x15(flags & sign_id & node_uid) + 3 * 0x18(sign_template_t)
+        private void TsRoadSideItem825() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
+            fileOffset += 0x15 + 3 * 0x18;             // 0x15(flags & sign_id & node_uid) + 3 * 0x18(sign_template_t)
 
             int tmplTextLength                    = MemoryHelper.ReadInt32( Sector.Stream, fileOffset );
             if ( tmplTextLength != 0 ) fileOffset += 0x04 + tmplTextLength; // 0x04(textPadding)
@@ -50,12 +51,12 @@ namespace TsMap2.Model.TsMapItem {
                 }
             }
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
 
-        public void TsRoadSideItem846( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
-            fileOffset += 0x15 + 3 * 0x18;       // 0x15(flags & sign_id & node_uid) + 3 * 0x18(sign_template_t)
+        private void TsRoadSideItem846() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
+            fileOffset += 0x15 + 3 * 0x18;             // 0x15(flags & sign_id & node_uid) + 3 * 0x18(sign_template_t)
 
             int tmplTextLength                    = MemoryHelper.ReadInt32( Sector.Stream, fileOffset );
             if ( tmplTextLength != 0 ) fileOffset += 0x04 + tmplTextLength; // 0x04(textPadding)
@@ -85,12 +86,12 @@ namespace TsMap2.Model.TsMapItem {
                 }
             }
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
 
-        public void TsRoadSideItem855( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
-            fileOffset += 0x15 + 3 * 0x18;       // 0x15(flags & sign_id & node_uid) + 3 * 0x18(sign_template_t)
+        private void TsRoadSideItem855() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
+            fileOffset += 0x15 + 3 * 0x18;             // 0x15(flags & sign_id & node_uid) + 3 * 0x18(sign_template_t)
 
             int tmplTextLength                    = MemoryHelper.ReadInt32( Sector.Stream, fileOffset );
             if ( tmplTextLength != 0 ) fileOffset += 0x04 + tmplTextLength; // 0x04(textPadding)
@@ -119,11 +120,11 @@ namespace TsMap2.Model.TsMapItem {
                 }
             }
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
 
-        public void TsRoadSideItem875( int startOffset ) {
-            int   fileOffset    = startOffset + 0x34;                                         // Set position at start of flags
+        private void TsRoadSideItem875() {
+            int   fileOffset    = Sector.LastOffset + 0x34;                                   // Set position at start of flags
             sbyte templateCount = MemoryHelper.ReadInt8( Sector.Stream, fileOffset += 0x25 ); // 0x20(flags & sign_id & uid & look & variant)
             fileOffset += 0x01 + templateCount * 0x18;                                        // 0x01(templateCount) + templateCount * 0x18(sign_template_t)
 
@@ -154,7 +155,7 @@ namespace TsMap2.Model.TsMapItem {
                 }
             }
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
     }
 }

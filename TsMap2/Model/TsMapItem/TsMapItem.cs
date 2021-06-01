@@ -1,38 +1,28 @@
 ﻿using System.Collections.Generic;
 using TsMap2.Helper;
 using TsMap2.Scs;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapItem {
         protected const int VegetationSphereBlockSize    = 0x14;
         protected const int VegetationSphereBlockSize825 = 0x10;
 
-        protected readonly TsSector Sector;
-        protected          TsNode   EndNode;
-        protected          ulong    EndNodeUid;
-        protected          TsNode   StartNode;
-        protected          ulong    StartNodeUid;
+        protected readonly ScsSector Sector;
+        protected          TsNode    EndNode;
+        protected          ulong     EndNodeUid;
+        protected          TsNode    StartNode;
+        protected          ulong     StartNodeUid;
 
-        public TsMapItem( TsSector sector, int offset ) {
-            Sector = sector;
+        public TsMapItem( ScsSector sector ) => Sector = sector;
 
-            int fileOffset = offset;
-
-            Type = (TsItemType) MemoryHelper.ReadUInt32( Sector.Stream, fileOffset );
-
-            Uid = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x04 );
-
-            X = MemoryHelper.ReadSingle( Sector.Stream, fileOffset += 0x08 );
-            Z = MemoryHelper.ReadSingle( Sector.Stream, fileOffset += 0x08 );
-        }
-
-        public ulong         Uid       { get; }
+        public ulong         Uid       => Sector.Uid;
         public List< ulong > Nodes     { get; protected set; }
         public int           BlockSize { get; protected set; }
         public bool          Valid     { get; protected set; }
-        public TsItemType    Type      { get; }
-        public float         X         { get; }
-        public float         Z         { get; }
+        public ScsItemType   Type      => Sector.ItemType;
+        public float         X         => Sector.X;
+        public float         Z         => Sector.Z;
         public bool          Hidden    { get; protected set; }
 
         public TsNode GetStartNode() {

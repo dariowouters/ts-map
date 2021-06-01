@@ -1,13 +1,14 @@
 ﻿using System.IO;
 using Serilog;
 using TsMap2.Helper;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapCityItem : TsMapItem // TODO: Add zoom levels/range to show city names and icons correctly
     {
-        public TsMapCityItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapCityItem( ScsSector sector ) : base( sector ) {
             Valid = true;
-            TsCityItem825( startOffset );
+            TsCityItem825();
         }
 
         public TsCity City    { get; private set; }
@@ -15,8 +16,8 @@ namespace TsMap2.Model.TsMapItem {
         public float  Width   { get; private set; }
         public float  Height  { get; private set; }
 
-        public void TsCityItem825( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsCityItem825() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
 
             Hidden = ( MemoryHelper.ReadUint8( Sector.Stream, fileOffset ) & 0x01 ) != 0;
             ulong cityId = MemoryHelper.ReadUInt64( Sector.Stream, fileOffset + 0x05 );
@@ -31,7 +32,7 @@ namespace TsMap2.Model.TsMapItem {
             Height     =  MemoryHelper.ReadSingle( Sector.Stream, fileOffset += 0x04 );        // 0x08(Width)
             NodeUid    =  MemoryHelper.ReadUInt64( Sector.Stream, fileOffset += 0x04 );        // 0x08(height)
             fileOffset += 0x08;                                                                // nodeUid
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
         public override string ToString() {

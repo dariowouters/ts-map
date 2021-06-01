@@ -3,25 +3,26 @@ using System.IO;
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Scs;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapCompanyItem : TsMapItem {
-        public TsMapCompanyItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapCompanyItem( ScsSector sector ) : base( sector ) {
             Valid = true;
             Nodes = new List< ulong >();
             if ( Sector.Version < 858 )
-                TsCompanyItem825( startOffset );
+                TsCompanyItem825();
             else if ( Sector.Version >= 858 )
-                TsCompanyItem858( startOffset );
+                TsCompanyItem858();
             else
-                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {Sector.LastOffset}." );
         }
 
         public ulong        OverlayToken { get; private set; }
         public TsMapOverlay Overlay      { get; private set; }
 
-        public void TsCompanyItem825( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsCompanyItem825() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -44,11 +45,11 @@ namespace TsMap2.Model.TsMapItem {
             count      =  MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * count ); // count4
             count      =  MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * count ); // count5
             fileOffset += 0x04       + 0x08 * count;
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
-        public void TsCompanyItem858( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsCompanyItem858() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -73,7 +74,7 @@ namespace TsMap2.Model.TsMapItem {
             count      =  MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * count ); // count5
             count      =  MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * count ); // count6
             fileOffset += 0x04       + 0x08 * count;
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
     }
 }

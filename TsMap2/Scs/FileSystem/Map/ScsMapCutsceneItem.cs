@@ -1,21 +1,22 @@
 ﻿using System.IO;
 using Serilog;
 using TsMap2.Helper;
+using TsMap2.Model.TsMapItem;
 
-namespace TsMap2.Model.TsMapItem {
-    public class TsMapCutsceneItem : TsMapItem {
-        public TsMapCutsceneItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+namespace TsMap2.Scs.FileSystem.Map {
+    public class ScsMapCutsceneItem : TsMapItem {
+        public ScsMapCutsceneItem( ScsSector sector ) : base( sector ) {
             Valid = false;
 
             if ( Sector.Version >= 884 )
-                TsCutsceneItem844( startOffset );
+                TsCutsceneItem844();
             else
                 Log.Warning(
-                            $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
+                            $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {Sector.LastOffset}." );
         }
 
-        public void TsCutsceneItem844( int startOffset ) {
-            int fileOffset  = startOffset + 0x34;                                                                    // Set position at start of flags
+        private void TsCutsceneItem844() {
+            int fileOffset  = Sector.LastOffset + 0x34;                                                              // Set position at start of flags
             int tagsCount   = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x05 );                           // 0x05(flags)
             int actionCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * tagsCount + 0x08 ); // 0x04(tagsCount) + tags + 0x08(node_uid)
             fileOffset += 0x04;                                                                                      // 0x04(actionCount)
@@ -32,7 +33,7 @@ namespace TsMap2.Model.TsMapItem {
                 fileOffset += 0x04 + targetTagCount * 0x08 + 0x08; // 0x04(targetTagCount) + targetTags + 0x08(target_range + action_flags)
             }
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
     }
 }

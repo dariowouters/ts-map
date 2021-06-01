@@ -1,9 +1,13 @@
 ﻿using System;
 using TsMap2.Helper;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsNode {
-        public TsNode( TsSector sector, int fileOffset ) {
+        public TsNode( ScsSector sector ) {
+            sector.LastOffset += 0x04;
+            int fileOffset = sector.LastOffset;
+
             Uid = MemoryHelper.ReadUInt64( sector.Stream, fileOffset );
             X   = MemoryHelper.ReadInt32( sector.Stream, fileOffset += 0x08 ) / 256f;
             Z   = MemoryHelper.ReadInt32( sector.Stream, fileOffset += 0x08 ) / 256f;

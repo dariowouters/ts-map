@@ -2,20 +2,21 @@
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Scs;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapMapOverlayItem : TsMapItem {
-        public TsMapMapOverlayItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapMapOverlayItem( ScsSector sector ) : base( sector ) {
             Valid = true;
-            TsMapOverlayItem825( startOffset );
+            TsMapOverlayItem825();
         }
 
         public string       OverlayName         { get; private set; }
         public TsMapOverlay Overlay             { get; private set; }
         public byte         ZoomLevelVisibility { get; private set; }
 
-        public void TsMapOverlayItem825( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsMapOverlayItem825() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             ZoomLevelVisibility = MemoryHelper.ReadUint8( Sector.Stream, fileOffset );
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
@@ -34,7 +35,7 @@ namespace TsMap2.Model.TsMapItem {
             }
 
             fileOffset += 0x08       + 0x08; // 0x08(overlayId) + 0x08(nodeUid)
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
     }
 }

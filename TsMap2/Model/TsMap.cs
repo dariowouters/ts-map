@@ -6,7 +6,7 @@ namespace TsMap2.Model {
         public readonly List< TsMapCityItem >       Cities           = new List< TsMapCityItem >();
         public readonly List< TsMapCompanyItem >    Companies        = new List< TsMapCompanyItem >();
         public readonly List< TsMapFerryItem >      FerryConnections = new List< TsMapFerryItem >();
-        public readonly List< TsMapMapAreaItem >    MapAreas         = new List< TsMapMapAreaItem >();
+        public readonly List< TsMapAreaItem >       MapAreas         = new List< TsMapAreaItem >();
         public readonly List< TsMapMapOverlayItem > MapOverlays      = new List< TsMapMapOverlayItem >();
         public readonly List< TsMapPrefabItem >     Prefabs          = new List< TsMapPrefabItem >();
         public readonly List< TsMapRoadItem >       Roads            = new List< TsMapRoadItem >();
@@ -22,6 +22,11 @@ namespace TsMap2.Model {
             Nodes.ContainsKey( uid )
                 ? Nodes[ uid ]
                 : null;
+
+        public void AddNode( TsNode node ) {
+            if ( !Nodes.ContainsKey( node.Uid ) )
+                Nodes.Add( node.Uid, node );
+        }
 
         public void UpdateEdgeCoords( TsNode node ) {
             if ( MinX > node.X ) MinX = node.X;

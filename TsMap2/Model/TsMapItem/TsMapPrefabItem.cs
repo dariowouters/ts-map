@@ -3,6 +3,7 @@ using System.IO;
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Scs;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapPrefabItem : TsMapItem {
@@ -12,24 +13,24 @@ namespace TsMap2.Model.TsMapItem {
 
         private readonly List< TsPrefabLook > _looks;
 
-        public TsMapPrefabItem( TsSector sector, int startOffset ) : base( sector, startOffset ) {
+        public TsMapPrefabItem( ScsSector sector ) : base( sector ) {
             Valid  = true;
             _looks = new List< TsPrefabLook >();
             Nodes  = new List< ulong >();
             if ( Sector.Version < 829 )
-                TsPrefabItem825( startOffset );
+                TsPrefabItem825();
             else if ( Sector.Version >= 829 && Sector.Version < 831 )
-                TsPrefabItem829( startOffset );
+                TsPrefabItem829();
             else if ( Sector.Version >= 831 && Sector.Version < 846 )
-                TsPrefabItem831( startOffset );
+                TsPrefabItem831();
             else if ( Sector.Version >= 846 && Sector.Version < 854 )
-                TsPrefabItem846( startOffset );
+                TsPrefabItem846();
             else if ( Sector.Version == 854 )
-                TsPrefabItem854( startOffset );
+                TsPrefabItem854();
             else if ( Sector.Version >= 855 )
-                TsPrefabItem855( startOffset );
+                TsPrefabItem855();
             else
-                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {startOffset}." );
+                Log.Warning( $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName( Sector.FilePath )}' @ {Sector.LastOffset}." );
         }
 
         public int      Origin { get; private set; }
@@ -43,8 +44,8 @@ namespace TsMap2.Model.TsMapItem {
 
         public bool HasLooks() => _looks != null && _looks.Count != 0;
 
-        public void TsPrefabItem825( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsPrefabItem825() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -80,11 +81,11 @@ namespace TsMap2.Model.TsMapItem {
             fileOffset += 0x04 + VegetationSphereBlockSize825 * vegetationSphereCount;  // 0x04(vegSphereCount) + vegSpheres
 
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
 
-        public void TsPrefabItem829( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsPrefabItem829() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -121,11 +122,11 @@ namespace TsMap2.Model.TsMapItem {
             fileOffset += 0x04 + VegetationSphereBlockSize * vegetationSphereCount;     // 0x04(vegSphereCount) + vegSpheres
 
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
 
-        public void TsPrefabItem831( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsPrefabItem831() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -160,11 +161,11 @@ namespace TsMap2.Model.TsMapItem {
                                                                               + PrefabVegetaionBlockSize * prefabVegetationCount
                                                                               + 0x04 );                      // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
             fileOffset += 0x04       + VegetationSphereBlockSize * vegetationSphereCount + 0x18 * nodeCount; // 0x04(vegSphereCount) + vegSpheres + padding
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
-        public void TsPrefabItem846( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsPrefabItem846() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -199,11 +200,11 @@ namespace TsMap2.Model.TsMapItem {
                                                                               + PrefabVegetaionBlockSize * prefabVegetationCount
                                                                               + 0x04 );                      // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
             fileOffset += 0x04       + VegetationSphereBlockSize * vegetationSphereCount + 0x18 * nodeCount; // 0x04(vegSphereCount) + vegSpheres + padding
-            BlockSize  =  fileOffset - startOffset;
+            BlockSize  =  fileOffset - Sector.LastOffset;
         }
 
-        public void TsPrefabItem854( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsPrefabItem854() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -231,11 +232,11 @@ namespace TsMap2.Model.TsMapItem {
                                              fileOffset += 0x04 + 0x08 * connectedItemCount + 0x08 ); // 0x04(connItemCount) + connItemUids + 0x08(m_some_uid)
             fileOffset += 0x02 + nodeCount * 0x0C;                                                    // 0x02(origin & padding) + nodeLooks
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
 
-        public void TsPrefabItem855( int startOffset ) {
-            int fileOffset = startOffset + 0x34; // Set position at start of flags
+        private void TsPrefabItem855() {
+            int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             int dlcGuardCount = Store().Game.IsEts2()
                                     ? ScsConst.Ets2DlcGuardCount
                                     : ScsConst.AtsDlcGuardCount;
@@ -263,7 +264,7 @@ namespace TsMap2.Model.TsMapItem {
                                              fileOffset += 0x04 + 0x08 * connectedItemCount + 0x08 ); // 0x04(connItemCount) + connItemUids + 0x08(m_some_uid)
             fileOffset += 0x02 + nodeCount * 0x0C + 0x08;                                             // 0x02(origin & padding) + nodeLooks + 0x08(padding2)
 
-            BlockSize = fileOffset - startOffset;
+            BlockSize = fileOffset - Sector.LastOffset;
         }
     }
 }
