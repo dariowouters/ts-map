@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using Serilog;
 using TsMap2.Helper;
 using TsMap2.Scs;
@@ -7,6 +10,8 @@ using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapCompanyItem : TsMapItem {
+        public PointF Position;
+
         public TsMapCompanyItem( ScsSector sector ) : base( sector ) {
             Valid = true;
             Nodes = new List< ulong >();
@@ -75,6 +80,32 @@ namespace TsMap2.Model.TsMapItem {
             count      =  MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * count ); // count6
             fileOffset += 0x04       + 0x08 * count;
             BlockSize  =  fileOffset - Sector.LastOffset;
+        }
+
+        public void UpdatePrefabItem() {
+            var point = new PointF( X, Z );
+            if ( Nodes.Count > 0 ) {
+                TsMapPrefabItem prefab = Store().Map.Prefabs.FirstOrDefault( x => x.Uid == Nodes[ 0 ] );
+                if ( prefab != null ) {
+                    TsNode originNode = Store().Map.GetNodeByUid( prefab.Nodes[ 0 ] );
+
+                    if ( prefab.Prefab.PrefabNodes == null ) return;
+
+                    TsPrefabNode mapPointOrigin = prefab.Prefab.PrefabNodes[ prefab.Origin ];
+
+                    var rot = (float) ( originNode.Rotation - Math.PI - Math.Atan2( mapPointOrigin.RotZ, mapPointOrigin.RotX ) + Math.PI / 2 );
+
+                    float        prefabstartX = originNode.X - mapPointOrigin.X;
+                    float        prefabStartZ = originNode.Z - mapPointOrigin.Z;
+                    TsSpawnPoint companyPos   = prefab.Prefab.SpawnPoints.FirstOrDefault( x => x.Type == TsSpawnPointType.CompanyPos );
+                    if ( companyPos != null )
+                        point = ScsRenderHelper.RotatePoint( prefabstartX + companyPos.X,
+                                                             prefabStartZ + companyPos.Z, rot,
+                                                             originNode.X, originNode.Z );
+                }
+            }
+
+            Position = point;
         }
     }
 }
