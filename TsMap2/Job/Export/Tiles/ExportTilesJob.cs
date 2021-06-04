@@ -4,7 +4,9 @@
             Store().Map.Prefabs.ForEach( p => p.UpdateLook() );
             Store().Map.Companies.ForEach( p => p.UpdatePrefabItem() );
 
-            for ( var i = 5; i > 0; i-- ) AddJob( new ExportTileLevelJob( i ) );
+            for ( var i = 0; i <= 5; i++ ) AddJob( new ExportTileLevelJob( i ) );
+            // for ( var i = 1; i <= 5; i++ ) new ExportTileLevelJob( i ).RunAndWait();
+            // new ExportTileLevelJob( 5 ).RunAndWait();
         }
     }
 }

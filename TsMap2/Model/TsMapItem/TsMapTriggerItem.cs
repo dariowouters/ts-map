@@ -7,7 +7,7 @@ using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapTriggerItem : TsMapItem {
-        public TsMapTriggerItem( ScsSector sector ) : base( sector ) {
+        public TsMapTriggerItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             if ( Sector.Version < 829 )
                 TsTriggerItem825();

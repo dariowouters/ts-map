@@ -5,7 +5,7 @@ using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapAreaItem : TsMapItem {
-        public TsMapAreaItem( ScsSector sector ) : base( sector ) {
+        public TsMapAreaItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             TsMapAreaItem825();
         }

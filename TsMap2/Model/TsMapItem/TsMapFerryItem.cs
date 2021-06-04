@@ -3,7 +3,7 @@ using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapFerryItem : TsMapItem {
-        public TsMapFerryItem( ScsSector sector ) : base( sector ) {
+        public TsMapFerryItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             TsFerryItem825();
         }

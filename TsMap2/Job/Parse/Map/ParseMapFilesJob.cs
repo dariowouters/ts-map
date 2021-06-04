@@ -46,8 +46,8 @@ namespace TsMap2.Job.Parse.Map {
                     throw new JobException( message, JobName(), mapName );
                 }
 
-                sectorFiles = mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList();
-                // sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
+                // sectorFiles = mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList();
+                sectorFiles.AddRange( mapFileDir.GetFiles( ScsPath.Map.MapFileExtension ).Select( x => x.GetPath() ).ToList() );
             }
 
             sectorFiles.ForEach( Parse );

@@ -12,7 +12,7 @@ namespace TsMap2.Model.TsMapItem {
     public class TsMapCompanyItem : TsMapItem {
         public PointF Position;
 
-        public TsMapCompanyItem( ScsSector sector ) : base( sector ) {
+        public TsMapCompanyItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             Nodes = new List< ulong >();
             if ( Sector.Version < 858 )

@@ -6,7 +6,7 @@ using TsMap2.Scs.FileSystem.Map;
 namespace TsMap2.Model.TsMapItem {
     public class TsMapCityItem : TsMapItem // TODO: Add zoom levels/range to show city names and icons correctly
     {
-        public TsMapCityItem( ScsSector sector ) : base( sector ) {
+        public TsMapCityItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             TsCityItem825();
         }

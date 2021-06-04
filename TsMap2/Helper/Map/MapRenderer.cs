@@ -15,7 +15,7 @@ namespace TsMap2.Helper.Map {
         private readonly Bitmap     _b;
         private readonly SolidBrush _cityShadowColor = new SolidBrush( Color.FromArgb( 210, 0, 0, 0 ) );
 
-        private readonly Font        _defaultFont = new Font( "Arial", 14.0f, FontStyle.Bold );
+        private readonly Font        _defaultFont = new Font( "Arial", 10.0f, FontStyle.Bold );
         private readonly MapPalette  _palette;
         private readonly RenderFlags _renderFlags;
 
@@ -32,7 +32,7 @@ namespace TsMap2.Helper.Map {
         private StoreHelper _store => StoreHelper.Instance;
 
         public void Render( float scale, PointF startPoint ) {
-            // long startTime = DateTime.Now.Ticks;
+            long startTime = DateTime.Now.Ticks;
 
             Graphics g = Graphics.FromImage( _b );
 
@@ -43,7 +43,7 @@ namespace TsMap2.Helper.Map {
             g.TranslateTransform( -startPoint.X, -startPoint.Y );
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode   = PixelOffsetMode.None;
-            g.SmoothingMode     = SmoothingMode.HighSpeed;
+            g.SmoothingMode     = SmoothingMode.AntiAlias;
 
             // if (_mapper == null)
             // {
@@ -71,9 +71,9 @@ namespace TsMap2.Helper.Map {
             // g.Dispose();
             // long elapsedTime = DateTime.Now.Ticks - startTime;
             // if ( renderFlags.IsActive( RenderFlags.TextOverlay ) )
-            //     g.DrawString(
-            //                  $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {startPoint.X}, y: {startPoint.Y}, scale: {scale}",
-            //                  _defaultFont, Brushes.WhiteSmoke, 5, 5 );
+            // g.DrawString(
+            // $"DrawTime: {elapsedTime / TimeSpan.TicksPerMillisecond} ms, x: {startPoint.X}, y: {startPoint.Y}, scale: {scale}",
+            // _defaultFont, Brushes.WhiteSmoke, 5, 5 );
 
             // g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), 5, 20, 150, 150);
             // Log.Debug( ">> Roads: {0}ms",       roadTime        / TimeSpan.TicksPerMillisecond );
@@ -90,6 +90,8 @@ namespace TsMap2.Helper.Map {
             // g.DrawString($"MapOverlay2: {mapOverlay2Time / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 100);
             // g.DrawString($"MapArea: {mapAreaTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 115);
             // g.DrawString($"City: {cityTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 130);
+
+            g.Dispose();
         }
 
         private long FerryConnectionsRender( Graphics g ) {
@@ -168,7 +170,8 @@ namespace TsMap2.Helper.Map {
                                                                                    && item.X <= endPoint.X   + itemDrawMargin
                                                                                    && item.Z >= startPoint.Y - itemDrawMargin
                                                                                    && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                                   && !item.Hidden );
+                                                                                   && !item.Hidden )
+                                                          .ToList();
 
 
             foreach ( TsMapAreaItem mapArea in mapAreas.OrderBy( x => x.DrawOver ) ) {
@@ -199,7 +202,8 @@ namespace TsMap2.Helper.Map {
                                                                                    && item.X <= endPoint.X   + itemDrawMargin
                                                                                    && item.Z >= startPoint.Y - itemDrawMargin
                                                                                    && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                                   && !item.Hidden );
+                                                                                   && !item.Hidden )
+                                                           .ToList();
 
             if ( !_renderFlags.IsActive( RenderFlags.Prefabs ) ) return DateTime.Now.Ticks - prefabStartTime;
 
@@ -334,7 +338,9 @@ namespace TsMap2.Helper.Map {
                 // prefabItem.GetLooks().ForEach( x => drawingQueue.Add( x ) );
             }
 
-            foreach ( TsPrefabLook prefabLook in drawingQueue.OrderBy( p => p.ZIndex ) ) prefabLook.Draw( g );
+            // foreach ( TsPrefabLook prefabLook in drawingQueue.OrderBy( p => p.ZIndex ) ) prefabLook.Draw( g );
+            foreach ( TsPrefabLook prefabLook in drawingQueue.OrderBy( p => p.ZIndex ) )
+                g.FillPolygon( prefabLook.Color, prefabLook.Points.ToArray() );
 
             return DateTime.Now.Ticks - prefabStartTime;
         }
@@ -348,7 +354,8 @@ namespace TsMap2.Helper.Map {
                                                                                             && item.X <= endPoint.X   + itemDrawMargin
                                                                                             && item.Z >= startPoint.Y - itemDrawMargin
                                                                                             && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                                            && !item.Hidden );
+                                                                                            && !item.Hidden )
+                                                                .ToList();
 
             foreach ( TsMapMapOverlayItem overlayItem in overlays ) // TODO: Scaling
             {
@@ -368,7 +375,8 @@ namespace TsMap2.Helper.Map {
                                                                                    && item.X <= endPoint.X   + itemDrawMargin
                                                                                    && item.Z >= startPoint.Y - itemDrawMargin
                                                                                    && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                                   && !item.Hidden );
+                                                                                   && !item.Hidden )
+                                                           .ToList();
 
             if ( _renderFlags.IsActive( RenderFlags.MapOverlays ) ) {
                 IEnumerable< TsMapCompanyItem > companies = _store.Map.Companies.Where( item =>
@@ -376,7 +384,8 @@ namespace TsMap2.Helper.Map {
                                                                                             && item.X <= endPoint.X   + itemDrawMargin
                                                                                             && item.Z >= startPoint.Y - itemDrawMargin
                                                                                             && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                                            && !item.Hidden );
+                                                                                            && !item.Hidden )
+                                                                  .ToList();
 
                 foreach ( TsMapCompanyItem companyItem in companies ) // TODO: Scaling
                 {
@@ -559,7 +568,8 @@ namespace TsMap2.Helper.Map {
                                                                              && item.X <= endPoint.X   + itemDrawMargin
                                                                              && item.Z >= startPoint.Y - itemDrawMargin
                                                                              && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                             && !item.Hidden );
+                                                                             && !item.Hidden )
+                                                       .ToList();
 
             foreach ( TsMapRoadItem road in roads ) {
                 TsNode startNode = road.GetStartNode();

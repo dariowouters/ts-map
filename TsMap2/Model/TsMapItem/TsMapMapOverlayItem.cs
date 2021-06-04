@@ -6,7 +6,7 @@ using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model.TsMapItem {
     public class TsMapMapOverlayItem : TsMapItem {
-        public TsMapMapOverlayItem( ScsSector sector ) : base( sector ) {
+        public TsMapMapOverlayItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             TsMapOverlayItem825();
         }

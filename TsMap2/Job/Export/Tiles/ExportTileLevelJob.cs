@@ -22,20 +22,26 @@ namespace TsMap2.Job.Export.Tiles {
         protected override void Do() {
             Log.Information( "[Job][TileLevel] Exporting tile for zoom {0}", _zoomLevel );
 
-            MapHelper.ZoomOutAndCenterMap( (int) Math.Pow( 2, _zoomLevel ) * _settings.ExportSettings.TileSize,
-                                           (int) Math.Pow( 2, _zoomLevel ) * _settings.ExportSettings.TileSize,
-                                           out PointF pos,
-                                           out float zoom );
-            // ZoomOutAndCenterMap( (int) Math.Pow( 2, z ) * SettingsManager.Current.Settings.TileGenerator.TileSize,
-            //                      (int) Math.Pow( 2, z ) * SettingsManager.Current.Settings.TileGenerator.TileSize, 
-            //                      out PointF pos,
-            //                      out float zoom ); // get zoom and start coords for current tile level
+            if ( _zoomLevel == 0 ) {
+                MapHelper.ZoomOutAndCenterMap( _settings.ExportSettings.TileSize,
+                                               _settings.ExportSettings.TileSize,
+                                               out PointF pos,
+                                               out float zoom );
 
-            for ( var x = 0; x < Math.Pow( 2, _zoomLevel ); x++ )
-            for ( var y = 0; y < Math.Pow( 2, _zoomLevel ); y++ ) {
-                SaveTileImage( _zoomLevel, x, y, zoom, pos );
+                SaveTileImage( 0, 0, 0, zoom, pos );
+            } else {
+                MapHelper.ZoomOutAndCenterMap( (int) Math.Pow( 2, _zoomLevel ) * _settings.ExportSettings.TileSize,
+                                               (int) Math.Pow( 2, _zoomLevel ) * _settings.ExportSettings.TileSize,
+                                               out PointF pos,
+                                               out float zoom );
 
-                _oldPos = pos;
+                // SaveTileImage( _zoomLevel, 15, 13, zoom, pos );
+                for ( var x = 0; x < Math.Pow( 2, _zoomLevel ); x++ )
+                for ( var y = 0; y < Math.Pow( 2, _zoomLevel ); y++ ) {
+                    SaveTileImage( _zoomLevel, x, y, zoom, pos );
+
+                    _oldPos = pos;
+                }
             }
 
             Log.Information( "[Job][TileLevel] End of exporting {0} level", _zoomLevel );

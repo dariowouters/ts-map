@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TsMap2.Model.TsMapItem {
     public abstract class TsPrefabLook {
-        protected readonly List< PointF > Points;
+        public readonly List< PointF > Points;
 
         protected TsPrefabLook( List< PointF > points ) => Points = points;
 

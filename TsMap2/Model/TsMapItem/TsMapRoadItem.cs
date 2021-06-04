@@ -12,7 +12,7 @@ namespace TsMap2.Model.TsMapItem {
 
         private List< PointF > _points;
 
-        public TsMapRoadItem( ScsSector sector ) : base( sector ) {
+        public TsMapRoadItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = true;
             if ( sector.Version < 829 )
                 TsRoadItem825();

@@ -5,7 +5,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapRoadSideItem : TsMapItem {
-        public ScsMapRoadSideItem( ScsSector sector ) : base( sector ) {
+        public ScsMapRoadSideItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
             if ( Sector.Version < 846 )
                 TsRoadSideItem825();

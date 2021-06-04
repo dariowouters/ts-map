@@ -5,7 +5,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapTrafficRuleItem : TsMapItem {
-        public ScsMapTrafficRuleItem( ScsSector sector ) : base( sector ) {
+        public ScsMapTrafficRuleItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
             if ( Sector.Version < 834 )
                 TsTrafficRuleItem825();

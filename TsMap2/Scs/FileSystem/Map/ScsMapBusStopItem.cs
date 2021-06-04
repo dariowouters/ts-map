@@ -4,7 +4,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapBusStopItem : TsMapItem {
-        public ScsMapBusStopItem( ScsSector sector ) : base( sector ) {
+        public ScsMapBusStopItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
             if ( Sector.Version < 836 || Sector.Version >= 847 )
                 TsBusStopItem825();

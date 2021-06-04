@@ -16,7 +16,7 @@ namespace TsMap2.Model.TsMapItem {
 
         private readonly List< TsPrefabLook > _looks;
 
-        public TsMapPrefabItem( ScsSector sector ) : base( sector ) {
+        public TsMapPrefabItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid  = true;
             _looks = new List< TsPrefabLook >();
             Nodes  = new List< ulong >();
@@ -358,11 +358,12 @@ namespace TsMap2.Model.TsMapItem {
 
                     if ( mapPointLaneCount       == -2 && neighbourLaneCount != -2 ) mapPointLaneCount  = neighbourLaneCount;
                     else if ( neighbourLaneCount == -2 && mapPointLaneCount  != -2 ) neighbourLaneCount = mapPointLaneCount;
-                    else if ( mapPointLaneCount  == -2 && neighbourLaneCount == -2 ) {
-                        Log.Debug( "[MapRenderer][Prefab] Could not find lane count for ({0}, {1}), defaulting to 1 for {2}", i, neighbourPointIndex,
-                                   Prefab.FilePath );
+                    else if (
+                            mapPointLaneCount == -2
+                            && neighbourLaneCount
+                            == -2 ) // Log.Debug( "[MapRenderer][Prefab] Could not find lane count for ({0}, {1}), defaulting to 1 for {2}", i, neighbourPointIndex,
+                        // Prefab.FilePath );
                         mapPointLaneCount = neighbourLaneCount = 1;
-                    }
 
                     var cornerCoords = new List< PointF >();
 

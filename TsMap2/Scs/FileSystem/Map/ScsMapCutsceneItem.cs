@@ -5,7 +5,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapCutsceneItem : TsMapItem {
-        public ScsMapCutsceneItem( ScsSector sector ) : base( sector ) {
+        public ScsMapCutsceneItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
 
             if ( Sector.Version >= 884 )

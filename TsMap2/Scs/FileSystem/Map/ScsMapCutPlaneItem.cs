@@ -3,7 +3,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapCutPlaneItem : TsMapItem {
-        public ScsMapCutPlaneItem( ScsSector sector ) : base( sector ) {
+        public ScsMapCutPlaneItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
             TsCutPlaneItem825();
         }

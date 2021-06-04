@@ -5,7 +5,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapTrajectoryItem : TsMapItem {
-        public ScsMapTrajectoryItem( ScsSector sector ) : base( sector ) {
+        public ScsMapTrajectoryItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
             if ( Sector.Version < 846 )
                 TsTrajectoryItem834();

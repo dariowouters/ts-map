@@ -5,7 +5,7 @@ using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
     public class ScsMapGarageItem : TsMapItem {
-        public ScsMapGarageItem( ScsSector sector ) : base( sector ) {
+        public ScsMapGarageItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
             // int fileOffset = Sector.LastOffset + 0x34; // Set position at start of flags
             if ( Sector.Version < 855 )
