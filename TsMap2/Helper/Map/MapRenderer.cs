@@ -361,8 +361,7 @@ namespace TsMap2.Helper.Map {
             {
                 Bitmap b = overlayItem.Overlay.GetBitmap();
                 if ( b != null )
-                    lock ( b )
-                        g.DrawImage( b, overlayItem.X - b.Width, overlayItem.Z - b.Height, b.Width * 2, b.Height * 2 );
+                    g.DrawImage( b, overlayItem.X - b.Width, overlayItem.Z - b.Height, b.Width * 2, b.Height * 2 );
             }
 
             return DateTime.Now.Ticks - mapOverlayStartTime;
@@ -413,8 +412,8 @@ namespace TsMap2.Helper.Map {
 
                     Bitmap b = companyItem.Overlay?.GetBitmap();
                     if ( b != null )
-                        lock ( b )
-                            g.DrawImage( b, companyItem.Position.X, companyItem.Position.Y, b.Width, b.Height );
+                        // lock ( b )
+                        g.DrawImage( b, companyItem.Position.X, companyItem.Position.Y, b.Width, b.Height );
                 }
 
                 foreach ( TsMapPrefabItem prefab in prefabs ) // Draw all prefab overlays
@@ -467,8 +466,8 @@ namespace TsMap2.Helper.Map {
                         }
 
                         if ( b != null )
-                            lock ( b )
-                                g.DrawImage( b, newPoint.X - b.Width / 2f, newPoint.Y - b.Height / 2f, b.Width, b.Height );
+                            // lock ( b )
+                            g.DrawImage( b, newPoint.X - b.Width / 2f, newPoint.Y - b.Height / 2f, b.Width, b.Height );
                     }
 
                     int lastId = -1;
@@ -486,8 +485,8 @@ namespace TsMap2.Helper.Map {
                             Bitmap       b       = overlay?.GetBitmap();
 
                             if ( b != null )
-                                lock ( b )
-                                    g.DrawImage( b, newPoint.X - b.Width / 2f, newPoint.Y - b.Height / 2f, b.Width, b.Height );
+                                // lock ( b )
+                                g.DrawImage( b, newPoint.X - b.Width / 2f, newPoint.Y - b.Height / 2f, b.Width, b.Height );
                         }
                     }
                 }
@@ -504,8 +503,8 @@ namespace TsMap2.Helper.Map {
                 {
                     Bitmap b = triggerItem.Overlay?.GetBitmap();
                     if ( b != null )
-                        lock ( b )
-                            g.DrawImage( b, triggerItem.X, triggerItem.Z, b.Width, b.Height );
+                        // lock ( b )
+                        g.DrawImage( b, triggerItem.X, triggerItem.Z, b.Width, b.Height );
                 }
 
                 List< TsMapFerryItem > ferryItems = _store.Map.FerryConnections.Where( item =>
@@ -519,8 +518,8 @@ namespace TsMap2.Helper.Map {
                 {
                     Bitmap b = ferryItem.Overlay?.GetBitmap();
                     if ( b != null )
-                        lock ( b )
-                            g.DrawImage( b, ferryItem.X, ferryItem.Z, b.Width, b.Height );
+                        // lock ( b )
+                        g.DrawImage( b, ferryItem.X, ferryItem.Z, b.Width, b.Height );
                 }
             }
 

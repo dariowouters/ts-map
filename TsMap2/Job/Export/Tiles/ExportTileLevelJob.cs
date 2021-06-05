@@ -7,11 +7,9 @@ using TsMap2.Model;
 
 namespace TsMap2.Job.Export.Tiles {
     public class ExportTileLevelJob : ThreadJob {
-        private readonly int _zoomLevel;
-
-        // private readonly MapRenderer _mapRenderer = new MapRenderer();
-        private float  _movement;
-        private PointF _oldPos = new PointF( 0, 0 );
+        private readonly int    _zoomLevel;
+        private          float  _movement;
+        private          PointF _oldPos = new PointF( 0, 0 );
 
         public ExportTileLevelJob( int zoomLevel ) => _zoomLevel = zoomLevel;
 
@@ -51,8 +49,6 @@ namespace TsMap2.Job.Export.Tiles {
         private void SaveTileImage( int z, int x, int y, float zoom, PointF pos ) {
             using var bitmap = new Bitmap( _settings.ExportSettings.TileSize,
                                            _settings.ExportSettings.TileSize );
-            // using Graphics g = Graphics.FromImage( bitmap );
-
             pos.X = x == 0
                         ? pos.X
                         : pos.X + bitmap.Width / zoom * x; // get tile start coords
@@ -64,17 +60,11 @@ namespace TsMap2.Job.Export.Tiles {
                 float difference = Math.Abs( _oldPos.Y - pos.Y );
                 _movement = difference / _settings.ExportSettings.TileSize;
 
-                Log.Information( "{0}, scale: {1}", difference, difference / _settings.ExportSettings.TileSize );
+                // Log.Debug( "{0}, scale: {1}", difference, difference / _settings.ExportSettings.TileSize );
             }
 
-            var mapRenderer = new MapRenderer( bitmap );
-            mapRenderer.Render( zoom, pos );
-
-
-            var tileFactory = new TileFactory( bitmap );
-            tileFactory.Save( z, x, y );
-            // Directory.CreateDirectory( $"{exportPath}/Tiles/{z}/{x}" );
-            // bitmap.Save( $"{exportPath}/Tiles/{z}/{x}/{y}.png", ImageFormat.Png );
+            new MapRenderer( bitmap ).Render( zoom, pos );
+            new TileFactory( bitmap ).Save( z, x, y );
         }
     }
 }

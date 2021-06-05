@@ -13,11 +13,7 @@ namespace TsMap2.Factory.Picture {
             string fullDir  = Path.Combine( AppPath.OutputDir, dir );
             string fullPath = Path.Combine( fullDir,           fileName );
 
-            // Log.Debug( "Dir: {0} | Filename: {1} | Full dir: {2} | Full path: {3} ",dir, fileName, fullDir, fullPath );
-
-            // Directory.CreateDirectory( $"{exportPath}/Tiles/{z}/{x}" );
             Directory.CreateDirectory( fullDir );
-            // _bitmap.Save( $"{exportPath}/Tiles/{z}/{x}/{y}.png", ImageFormat.Png );
             _bitmap.Save( fullPath, format );
         }
     }
