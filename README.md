@@ -6,7 +6,7 @@
 [![GitHub Release Download](https://img.shields.io/github/downloads/JAGFx/ts-map/total?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
 [![Github Licence](https://img.shields.io/github/license/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/blob/master/README.md)
 [![GitHub Release Date](https://img.shields.io/github/release-date/JAGFx/ts-map?style=flat-square)](https://github.com/JAGFx/ts-map/releases/latest)
-[![Discord](https://img.shields.io/discord/764915323693826059.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/C4EEaHmPRs)
+[![Discord](https://img.shields.io/discord/764915323693826059.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/8abqrEeFxF)
 
 ## About
 
