@@ -27,13 +27,13 @@ I'm decide to rework full original project. Now you can use it from a console an
 
 ### Console
 
-- Step 1: Download and extract the archive on your desktop
+- Step 1: [Download](https://github.com/JAGFx/ts-map/releases/tag/v1.0.0-cli-beta) and extract the archive on your desktop
 - Step 2: Open a Windows console
-- Step 3: Generate a setting file: `$ TsMap2.exe export -s`
+- Step 3: Generate a setting file: `TsMap2.exe export -s`
 - Step 4: Follow instructions
-- Step 5: Export map tiles: `$ TsMap2.exe export`
+- Step 5: Export map tiles: `TsMap2.exe export`
 
-If you need help on the console usage, type `$ TsMap2.exe -h`
+If you need help on the console usage, type `TsMap2.exe -h`
 
 #### Settings file
 
