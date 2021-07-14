@@ -1,23 +1,28 @@
-﻿using System;
-using TsMap2.Model;
+﻿using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using TsMap2.Helper;
 
 namespace TsMap2.Scs.FileSystem.Entry {
     public class ScsGameEntry : AbstractScsEntry< string > {
-        public string Get() {
-            VerifyRfs();
+        public override string? Generate( byte[] stream ) {
+            string[]     lines          = Encoding.UTF8.GetString( stream ).Split( '\n' );
+            string       gameCode       = null;
+            const string regExpGameCode = @"(ats|ets2)\.pma";
 
-            ScsFile ets2File = Store.Rfs.GetFileEntry( ScsPath.Def.Ets2LogoScene );
-            ScsFile atsFile  = Store.Rfs.GetFileEntry( ScsPath.Def.AtsLogoScene );
-            var     gameCode = "";
+            foreach ( string line in lines ) {
+                ( bool validLine, string key, string value ) = ScsSiiHelper.ParseLine( line );
+                if ( !validLine ) continue;
 
-            if ( ets2File != null ) // Log.Msg( "ETS2 detected" );
-                gameCode = TsGame.GAME_ETS;
-            else if ( atsFile != null ) // Log.Msg( "ATS detected" );
-                gameCode = TsGame.GAME_ATS;
+                if ( key == "scene_model_animation" ) {
+                    MatchCollection matches = Regex.Matches( value, regExpGameCode );
+                    gameCode = matches.First()?.Groups[ 1 ].Value;
+
+                    break;
+                }
+            }
 
             return gameCode;
         }
-
-        public override string Generate( byte[] stream ) => throw new NotImplementedException();
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace TsMap2.Scs {
     public static class ScsConst {
         public const int Ets2DlcGuardCount = 12; // TODO: Figure out how to get these dynamically
-        public const int AtsDlcGuardCount  = 15;
+        public const int AtsDlcGuardCount  = 19;
     }
 
     public enum ScsItemType {
@@ -78,7 +78,6 @@
 
             // -- TsGame
             public const string Ets2LogoScene = "def/ets2_logo_scene.sii";
-            public const string AtsLogoScene  = "def/ats_logo_scene.sii";
 
             // -- TsCountry
             public const string CountryFileName = "country";

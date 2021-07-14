@@ -50,8 +50,6 @@ namespace TsMap2.Helper {
 
     public static class FlagMethods {
         public static bool IsActive( this RenderFlags self, RenderFlags value ) => ( self & value ) == value;
-
-        public static bool IsActive( this ExportFlags self, ExportFlags value ) => ( self & value ) == value;
     }
 
     public class Mod {

@@ -1,6 +1,6 @@
 namespace TsMap2.Model {
     public class TsGame {
-        public const string GAME_ETS = "ets";
+        public const string GAME_ETS = "ets2";
         public const string GAME_ATS = "ats";
 
         public TsGame( string code, string version ) {
