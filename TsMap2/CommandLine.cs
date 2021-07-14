@@ -9,7 +9,6 @@ using TsMap2.Job.Export.Tiles;
 using TsMap2.Job.Parse.Def;
 using TsMap2.Job.Parse.Map;
 using TsMap2.Job.Parse.Overlays;
-using TsMap2.Model;
 
 namespace TsMap2 {
     public class CommandLine {
@@ -45,21 +44,20 @@ namespace TsMap2 {
 
         private void CommandExport() {
             _app.Command( "export", command => {
-                // sampleapp.exe restore [root] --source <SOURCE>
                 // TsMap2.exe export -s -o --verbose
 
                 command.Description = "Export files";
                 command.HelpOption( "-?|-h|--help" ); // AppSample.exe restore --help
 
-                // var argSettingPath = command.Argument( "[settingPath]", "Path for setting file" );
-                CommandOption optSaveSetting  = command.Option( "-s|--save-setting", $"Generate a setting file at '{AppPath.HomeDirApp}'", CommandOptionType.NoValue );
+                CommandOption optCreateSetting =
+                    command.Option( "-s|--create-setting", $"Generate a new setting file at '{AppPath.HomeDirApp}'", CommandOptionType.NoValue );
                 CommandOption optOverviewData = command.Option( "-o|--overview-data", "Export the overview data", CommandOptionType.NoValue );
-                CommandOption optVerbose      = command.Option( "--verbose", "Increase the verbosity", CommandOptionType.NoValue );
+                CommandOption optVerbose      = command.Option( "--verbose",          "Increase the verbosity",   CommandOptionType.NoValue );
 
                 command.OnExecute( () => {
                     bool exportOverviewData = optOverviewData.HasValue();
                     bool debug              = optVerbose.HasValue();
-                    bool saveSettingFile    = optSaveSetting.HasValue();
+                    bool createSettingFile  = optCreateSetting.HasValue();
 
                     LoggerHelper.Init( debug );
 
@@ -67,8 +65,8 @@ namespace TsMap2 {
 
                     try {
                         // -- Settings
-                        if ( saveSettingFile ) {
-                            var settingFactory = new SettingsJsonFactory( new Settings() );
+                        if ( createSettingFile ) {
+                            var settingFactory = new SettingsJsonFactory( SettingGeneratorHelper.GenerateANewSettingFromConsole() );
                             settingFactory.Save();
                             Log.Information( "Your setting file was saved at {0}", settingFactory.GetSavingPath() );
                             return 0;
@@ -99,6 +97,8 @@ namespace TsMap2 {
                             var d = new ExportDataOverviewJob();
                             d.RunAndWait();
                         }
+
+                        Log.Information( "Check your export at {0}", StoreHelper.Instance.Settings.OutputPath );
                     } catch ( Exception e ) {
                         Log.Error( "Unexpected Exception: {0}", e.GetBaseException().ToString() );
                         Log.Error( "Unexpected Exception: {0}", e.ToString() );

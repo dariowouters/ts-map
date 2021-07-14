@@ -12,7 +12,7 @@ namespace TsMap2.Scs.FileSystem.Entry {
                 throw new ScsEntryException( $"[{MethodBase.GetCurrentMethod()}] The root file system was not initialized. Check the game path" );
         }
 
-        public T Get( string path ) {
+        public T? Get( string path ) {
             VerifyRfs();
 
             ScsFile file = Store.Rfs.GetFileEntry( path );
@@ -23,7 +23,6 @@ namespace TsMap2.Scs.FileSystem.Entry {
             return Generate( fileContent );
         }
 
-        // public abstract Dictionary< ulong, T > List();
-        public abstract T Generate( byte[] stream );
+        public abstract T? Generate( byte[] stream );
     }
 }
