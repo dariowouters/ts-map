@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for 1.40 and Iberia DLC**
+### **Support for 1.41 and Wyoming DLC**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -41,24 +41,9 @@ ATS:
 
 ## Supported maps / DLC
 - ATS
-    - Base
-    - Nevada
-    - Arizona
-    - New Mexico
-    - Oregon
-    - Washington
-    - Utah
-    - Idaho
-    - Colorado
+    - All map DLCs up to and including Wyoming.
 - ETS2
-    - Base
-    - Going East!
-    - Scandinavia
-    - Vive la France !
-    - Italia
-    - Beyond the Baltic Sea
-    - Road to the Black Sea
-    - Iberia
+    - All map DLCs up to and including Iberia.
 
 #### Dependencies (NuGet)
 - [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
