@@ -61,7 +61,7 @@ namespace TsMap2.Helper {
             byte key       = src[ 5 ];
 
             for ( var i = 6; i < src.Length; i++ ) {
-                decrypted[ i - 6 ] = (byte) ( ( ( ( key << 2 ) ^ key ^ 0xff ) << 3 ) ^ key ^ src[ i ] );
+                decrypted[ i - 6 ] = (byte)( ( ( ( key << 2 ) ^ key ^ 0xff ) << 3 ) ^ key ^ src[ i ] );
                 key++;
             }
 
@@ -69,7 +69,7 @@ namespace TsMap2.Helper {
         }
 
         // https: //stackoverflow.com/a/3677960
-        public static FileStream WaitForFile( string fullPath, FileMode mode, FileAccess access, FileShare share ) {
+        public static FileStream? WaitForFile( string fullPath, FileMode mode, FileAccess access, FileShare share ) {
             for ( var numTries = 0; numTries < 10; numTries++ ) {
                 FileStream fs = null;
                 try {
@@ -94,13 +94,13 @@ namespace TsMap2.Helper {
             double c    = Math.Cos( angle );
             double newX = x - rotX;
             double newZ = z - rotZ;
-            return new PointF( (float) ( newX * c - newZ * s + rotX ), (float) ( newX * s + newZ * c + rotZ ) );
+            return new PointF( (float)( newX * c - newZ * s + rotX ), (float)( newX * s + newZ * c + rotZ ) );
         }
 
         public static PointF GetCornerCoords( float x, float z, float width, double angle ) =>
             new PointF(
-                       (float) ( x + width * Math.Cos( angle ) ),
-                       (float) ( z + width * Math.Sin( angle ) )
+                       (float)( x + width * Math.Cos( angle ) ),
+                       (float)( z + width * Math.Sin( angle ) )
                       );
 
         public static double Hypotenuse( float x, float y ) => Math.Sqrt( Math.Pow( x, 2 ) + Math.Pow( y, 2 ) );
@@ -108,10 +108,10 @@ namespace TsMap2.Helper {
         // https://stackoverflow.com/a/45881662
         public static Tuple< PointF, PointF > GetBezierControlNodes( float startX, float startZ, double startRot, float endX, float endZ, double endRot ) {
             double len = Hypotenuse( endX - startX, endZ - startZ );
-            var    ax1 = (float) ( Math.Cos( startRot ) * len * ( 1 / 3f ) );
-            var    az1 = (float) ( Math.Sin( startRot ) * len * ( 1 / 3f ) );
-            var    ax2 = (float) ( Math.Cos( endRot )   * len * ( 1 / 3f ) );
-            var    az2 = (float) ( Math.Sin( endRot )   * len * ( 1 / 3f ) );
+            var    ax1 = (float)( Math.Cos( startRot ) * len * ( 1 / 3f ) );
+            var    az1 = (float)( Math.Sin( startRot ) * len * ( 1 / 3f ) );
+            var    ax2 = (float)( Math.Cos( endRot )   * len * ( 1 / 3f ) );
+            var    az2 = (float)( Math.Sin( endRot )   * len * ( 1 / 3f ) );
             return new Tuple< PointF, PointF >( new PointF( ax1, az1 ), new PointF( ax2, az2 ) );
         }
 
@@ -174,8 +174,8 @@ namespace TsMap2.Helper {
 
             for ( var i = 0; i < width * height; i++ ) {
                 uint rgba = MemoryHelper.ReadUInt32( stream, fileOffset += 0x04 );
-                pixelData[ i ] = new Color8888( (byte) ( ( rgba >> 0x18 ) & 0xFF ), (byte) ( ( rgba >> 0x10 ) & 0xFF ), (byte) ( ( rgba >> 0x08 ) & 0xFF ),
-                                                (byte) ( rgba             & 0xFF ) );
+                pixelData[ i ] = new Color8888( (byte)( ( rgba >> 0x18 ) & 0xFF ), (byte)( ( rgba >> 0x10 ) & 0xFF ), (byte)( ( rgba >> 0x08 ) & 0xFF ),
+                                                (byte)( rgba             & 0xFF ) );
             }
 
             return pixelData;
@@ -192,8 +192,8 @@ namespace TsMap2.Helper {
                 var color0 = new Color565( BitConverter.ToUInt16( stream, fileOffset += 0x08 ) );
                 var color1 = new Color565( BitConverter.ToUInt16( stream, fileOffset += 0x02 ) );
 
-                Color565 color2 = (double) 2 / 3 * color0 + (double) 1 / 3 * color1;
-                Color565 color3 = (double) 1 / 3 * color0 + (double) 2 / 3 * color1;
+                Color565 color2 = (double)2 / 3 * color0 + (double)1 / 3 * color1;
+                Color565 color3 = (double)1 / 3 * color0 + (double)2 / 3 * color1;
 
                 var colors = new[] {
                     new Color8888( color0, 0xFF ), // bit code 00
@@ -212,7 +212,7 @@ namespace TsMap2.Helper {
                         int  alpha      = ( alphaRow >> ( j * 4 ) ) & 15;
                         long pos        = y * width + i * width + x + j;
                         pixelData[ pos ] = colors[ colorIndex ];
-                        pixelData[ pos ].SetAlpha( (byte) ( alpha / 15f * 255 ) );
+                        pixelData[ pos ].SetAlpha( (byte)( alpha / 15f * 255 ) );
                     }
                 }
 
@@ -235,20 +235,20 @@ namespace TsMap2.Helper {
 
                 if ( alphas[ 0 ] > alphas[ 1 ] ) {
                     // 6 interpolated alpha values.
-                    alphas[ 2 ] = (byte) ( (double) 6 / 7 * alphas[ 0 ] + (double) 1 / 7 * alphas[ 1 ] ); // bit code 010
-                    alphas[ 3 ] = (byte) ( (double) 5 / 7 * alphas[ 0 ] + (double) 2 / 7 * alphas[ 1 ] ); // bit code 011
-                    alphas[ 4 ] = (byte) ( (double) 4 / 7 * alphas[ 0 ] + (double) 3 / 7 * alphas[ 1 ] ); // bit code 100
-                    alphas[ 5 ] = (byte) ( (double) 3 / 7 * alphas[ 0 ] + (double) 4 / 7 * alphas[ 1 ] ); // bit code 101
-                    alphas[ 6 ] = (byte) ( (double) 2 / 7 * alphas[ 0 ] + (double) 5 / 7 * alphas[ 1 ] ); // bit code 110
-                    alphas[ 7 ] = (byte) ( (double) 1 / 7 * alphas[ 0 ] + (double) 6 / 7 * alphas[ 1 ] ); // bit code 111
+                    alphas[ 2 ] = (byte)( (double)6 / 7 * alphas[ 0 ] + (double)1 / 7 * alphas[ 1 ] ); // bit code 010
+                    alphas[ 3 ] = (byte)( (double)5 / 7 * alphas[ 0 ] + (double)2 / 7 * alphas[ 1 ] ); // bit code 011
+                    alphas[ 4 ] = (byte)( (double)4 / 7 * alphas[ 0 ] + (double)3 / 7 * alphas[ 1 ] ); // bit code 100
+                    alphas[ 5 ] = (byte)( (double)3 / 7 * alphas[ 0 ] + (double)4 / 7 * alphas[ 1 ] ); // bit code 101
+                    alphas[ 6 ] = (byte)( (double)2 / 7 * alphas[ 0 ] + (double)5 / 7 * alphas[ 1 ] ); // bit code 110
+                    alphas[ 7 ] = (byte)( (double)1 / 7 * alphas[ 0 ] + (double)6 / 7 * alphas[ 1 ] ); // bit code 111
                 } else {
                     // 4 interpolated alpha values.
-                    alphas[ 2 ] = (byte) ( (double) 4 / 5 * alphas[ 0 ] + (double) 1 / 5 * alphas[ 1 ] ); // bit code 010
-                    alphas[ 3 ] = (byte) ( (double) 3 / 5 * alphas[ 0 ] + (double) 2 / 5 * alphas[ 1 ] ); // bit code 011
-                    alphas[ 4 ] = (byte) ( (double) 2 / 5 * alphas[ 0 ] + (double) 3 / 5 * alphas[ 1 ] ); // bit code 100
-                    alphas[ 5 ] = (byte) ( (double) 1 / 5 * alphas[ 0 ] + (double) 4 / 5 * alphas[ 1 ] ); // bit code 101
-                    alphas[ 6 ] = 0;                                                                      // bit code 110
-                    alphas[ 7 ] = 255;                                                                    // bit code 111
+                    alphas[ 2 ] = (byte)( (double)4 / 5 * alphas[ 0 ] + (double)1 / 5 * alphas[ 1 ] ); // bit code 010
+                    alphas[ 3 ] = (byte)( (double)3 / 5 * alphas[ 0 ] + (double)2 / 5 * alphas[ 1 ] ); // bit code 011
+                    alphas[ 4 ] = (byte)( (double)2 / 5 * alphas[ 0 ] + (double)3 / 5 * alphas[ 1 ] ); // bit code 100
+                    alphas[ 5 ] = (byte)( (double)1 / 5 * alphas[ 0 ] + (double)4 / 5 * alphas[ 1 ] ); // bit code 101
+                    alphas[ 6 ] = 0;                                                                   // bit code 110
+                    alphas[ 7 ] = 255;                                                                 // bit code 111
                 }
 
                 ulong alphaTexelUlongData = MemoryHelper.ReadUInt64( stream, fileOffset += 0x01 );
@@ -268,8 +268,8 @@ namespace TsMap2.Helper {
                 var color0 = new Color565( MemoryHelper.ReadUInt16( stream, fileOffset += 0x06 ) );
                 var color1 = new Color565( MemoryHelper.ReadUInt16( stream, fileOffset += 0x02 ) );
 
-                Color565 color2 = (double) 2 / 3 * color0 + (double) 1 / 3 * color1;
-                Color565 color3 = (double) 1 / 3 * color0 + (double) 2 / 3 * color1;
+                Color565 color2 = (double)2 / 3 * color0 + (double)1 / 3 * color1;
+                Color565 color3 = (double)1 / 3 * color0 + (double)2 / 3 * color1;
 
                 var colors = new[] {
                     new Color8888( color0, 0xFF ), // bit code 00
@@ -283,7 +283,7 @@ namespace TsMap2.Helper {
                     uint colorTexelRowData = ( colorTexelData >> ( j * 0x08 ) ) & 0xFF;
                     for ( var i = 0; i < 4; i++ ) {
                         uint index = ( colorTexelRowData >> ( i * 0x02 ) ) & 0x03;
-                        var  pos   = (uint) ( y * width + j * width + x + i );
+                        var  pos   = (uint)( y * width + j * width + x + i );
                         pixelData[ pos ] = colors[ index ];
                         pixelData[ pos ].SetAlpha( alphaTexels[ j * 4 + i ] );
                     }
@@ -311,7 +311,7 @@ namespace TsMap2.Helper {
 
         private static ulong PowUl( int num ) {
             ulong res                           = 1;
-            for ( var i = 0; num > i; i++ ) res *= (ulong) Letters.Length;
+            for ( var i = 0; num > i; i++ ) res *= (ulong)Letters.Length;
 
             return res;
         }
@@ -332,7 +332,7 @@ namespace TsMap2.Helper {
         public static ulong StringToToken( string text ) {
             ulong res                           = 0;
             int   len                           = text.Length;
-            for ( var i = 0; i < len; i++ ) res += PowUl( i ) * (ulong) GetIdChar( text.ToLower()[ i ] );
+            for ( var i = 0; i < len; i++ ) res += PowUl( i ) * (ulong)GetIdChar( text.ToLower()[ i ] );
 
             return res;
         }

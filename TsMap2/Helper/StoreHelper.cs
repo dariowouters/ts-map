@@ -3,9 +3,9 @@ using TsMap2.Scs.FileSystem;
 
 namespace TsMap2.Helper {
     public sealed class StoreHelper {
-        public TsDef  Def = new TsDef();
-        public TsGame Game;
-        public TsMap  Map = new TsMap();
+        public readonly TsDef  Def = new();
+        public          TsGame Game;
+        public readonly TsMap  Map = new();
 
         // --
 

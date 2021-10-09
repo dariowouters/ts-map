@@ -23,6 +23,12 @@ namespace TsMap2.Job {
                 throw new JobException( "Game path was not found or is incorrect", JobName(), settings );
 
             Store().SetSetting( settings );
+            settings.Mods.Reverse();
+
+            foreach ( string mod in settings.Mods ) {
+                Store().Rfs.AddSourceFile( mod );
+                Log.Information( "[Job][Settings][Mod] {0} loaded", Path.GetFileName( mod ) );
+            }
 
             Log.Information( "[Job][Setting] Loaded" );
         }

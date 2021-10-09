@@ -93,8 +93,8 @@ namespace TsMap2.Scs.FileSystem {
                         string dirPath = Path.Combine( EntryPath, line.Substring( 1 ) );
                         dirPath = dirPath.Replace( '\\', '/' );
 
-                        var   nextEntry = (ScsHashEntry) entry.GetRootFile().GetEntry( dirPath );
-                        ulong nextHash  = CityHash.CityHash64( Encoding.UTF8.GetBytes( dirPath ), (ulong) dirPath.Length );
+                        var   nextEntry = (ScsHashEntry)entry.GetRootFile().GetEntry( dirPath );
+                        ulong nextHash  = CityHash.CityHash64( Encoding.UTF8.GetBytes( dirPath ), (ulong)dirPath.Length );
 
                         if ( nextEntry == null ) // Log.Msg( $"Could not find hash for '{dirPath}'" );
                             continue;
@@ -110,7 +110,7 @@ namespace TsMap2.Scs.FileSystem {
                         string filePath = Path.Combine( EntryPath, line );
                         filePath = filePath.Replace( '\\', '/' );
 
-                        ulong    nextHash  = CityHash.CityHash64( Encoding.UTF8.GetBytes( filePath ), (ulong) filePath.Length );
+                        ulong    nextHash  = CityHash.CityHash64( Encoding.UTF8.GetBytes( filePath ), (ulong)filePath.Length );
                         ScsEntry nextEntry = entry.GetRootFile().GetEntry( filePath );
 
                         if ( nextEntry == null ) // Log.Msg( $"Could not find hash for '{filePath}'" );
@@ -148,7 +148,7 @@ namespace TsMap2.Scs.FileSystem {
 
             string currentDir = path.Substring( 0, slashIndex );
             string hashName   = ScsHelper.CombinePath( EntryPath, currentDir );
-            ulong  hash       = CityHash.CityHash64( Encoding.UTF8.GetBytes( hashName ), (ulong) hashName.Length );
+            ulong  hash       = CityHash.CityHash64( Encoding.UTF8.GetBytes( hashName ), (ulong)hashName.Length );
 
             if ( Directories.ContainsKey( hash ) )
                 Directories[ hash ].AddZipEntry( entry, path.Substring( slashIndex + 1 ) );
@@ -226,8 +226,10 @@ namespace TsMap2.Scs.FileSystem {
             var buff = new byte[ 4 ];
             f.Read( buff, 0, 4 );
 
-            if ( BitConverter.ToUInt32( buff, 0 ) == ScsMagic ) Files.Add( path, new HashFile( path, this ) );
-            else Files.Add( path,                                                new ScsZipFile( path, this ) );
+            if ( BitConverter.ToUInt32( buff, 0 ) == ScsMagic )
+                AddFile( path, new HashFile( path, this ) );
+            else
+                AddFile( path, new ScsZipFile( path, this ) );
         }
 
         public void AddSourceDirectory( string path ) {
@@ -252,14 +254,19 @@ namespace TsMap2.Scs.FileSystem {
                 _rootDirectory.AddZipEntry( entry, path );
         }
 
+        private void AddFile( string path, ScsRootFile scsFile ) {
+            if ( !Files.ContainsKey( path ) )
+                Files.Add( path, scsFile );
+        }
+
         public ScsDirectory GetRootDirectory() => _rootDirectory;
 
         public ScsDirectory GetDirectory( ulong hash ) => _rootDirectory?.GetDirectory( hash );
 
-        public ScsDirectory GetDirectory( string name ) => GetDirectory( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
+        public ScsDirectory GetDirectory( string name ) => GetDirectory( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong)name.Length ) );
 
         public ScsFile GetFileEntry( ulong hash ) => _rootDirectory?.GetFileEntry( hash );
 
-        public ScsFile GetFileEntry( string name ) => GetFileEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
+        public ScsFile GetFileEntry( string name ) => GetFileEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong)name.Length ) );
     }
 }

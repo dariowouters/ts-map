@@ -45,23 +45,25 @@ namespace TsMap2.Scs.FileSystem {
             // this.Br       = new BinaryReader( File.OpenRead( this.Path ) );
             _entries = new Dictionary< string, ScsZipEntry >();
 
-            BinaryReader br         = Br;
-            ushort       entryCount = ScsHelper.ReadUInt16( br, -22 + 10, SeekOrigin.End );
+            Br = new BinaryReader( ScsHelper.WaitForFile( Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
+            ushort entryCount = ScsHelper.ReadUInt16( Br, -22 + 10, SeekOrigin.End );
 
             var fileOffset = 0;
 
             for ( var i = 0; i < entryCount; i++ ) {
                 var entry = new ScsZipEntry( this ) {
-                    CompressionMethod = ScsHelper.ReadUInt16( br, fileOffset += 8 ),
-                    CompressedSize    = ScsHelper.ReadInt32( br, fileOffset += 10 ),
-                    Size              = ScsHelper.ReadInt32( br, fileOffset += 4 ),
-                    NameLength        = (short) ScsHelper.ReadUInt16( br, fileOffset += 4 )
+                    CompressionMethod = ScsHelper.ReadUInt16( Br, fileOffset += 8 ),
+                    CompressedSize    = ScsHelper.ReadInt32( Br, fileOffset += 10 ),
+                    Size              = ScsHelper.ReadInt32( Br, fileOffset += 4 ),
+                    NameLength        = (short)ScsHelper.ReadUInt16( Br, fileOffset += 4 )
                 };
 
-                ushort extraFieldLength = ScsHelper.ReadUInt16( br, fileOffset += 2 );
-                br.BaseStream.Seek( fileOffset += 2, SeekOrigin.Begin );
-                entry.Name = Encoding.UTF8.GetString( br.ReadBytes( entry.NameLength ) );
-                br.Dispose();
+                ushort extraFieldLength = ScsHelper.ReadUInt16( Br, fileOffset += 2 );
+                Br.BaseStream.Seek( fileOffset += 2, SeekOrigin.Begin );
+                entry.Name = Encoding.UTF8.GetString( Br.ReadBytes( entry.NameLength ) );
+
+                // FIXME: This cause crash... Commented
+                // Br.Dispose();
 
                 fileOffset   += entry.NameLength + extraFieldLength;
                 entry.Offset =  fileOffset; // Offset to data
@@ -78,8 +80,8 @@ namespace TsMap2.Scs.FileSystem {
             }
         }
 
-        // public BinaryReader Br { get; }
-        public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
+        public BinaryReader Br { get; }
+        // public BinaryReader Br => new BinaryReader( ScsHelper.WaitForFile( Path, FileMode.Open, FileAccess.Read, FileShare.Read ) );
 
         public override ScsEntry GetEntry( string name ) =>
             _entries.ContainsKey( name )
@@ -167,7 +169,7 @@ namespace TsMap2.Scs.FileSystem {
 
             if ( rootDir == null || rootDir.Size == 0 ) // Try to add important sub directories directly
             {
-                var defEntry = (ScsHashEntry) GetEntry( "def" );
+                var defEntry = (ScsHashEntry)GetEntry( "def" );
                 if ( defEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "def" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "def", defEntry );
@@ -175,7 +177,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( defEntry );
                 }
 
-                var defWorldEntry = (ScsHashEntry) GetEntry( "def/world" );
+                var defWorldEntry = (ScsHashEntry)GetEntry( "def/world" );
                 if ( defWorldEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "def/world" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "def/world", defWorldEntry );
@@ -183,7 +185,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( defWorldEntry );
                 }
 
-                var mapEntry = (ScsHashEntry) GetEntry( "map" );
+                var mapEntry = (ScsHashEntry)GetEntry( "map" );
                 if ( mapEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "map" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "map", mapEntry );
@@ -191,7 +193,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( mapEntry );
                 }
 
-                var materialEntry = (ScsHashEntry) GetEntry( "material" );
+                var materialEntry = (ScsHashEntry)GetEntry( "material" );
                 if ( materialEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "material" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "material", materialEntry );
@@ -199,7 +201,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( materialEntry );
                 }
 
-                var prefabEntry = (ScsHashEntry) GetEntry( "prefab" );
+                var prefabEntry = (ScsHashEntry)GetEntry( "prefab" );
                 if ( prefabEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "prefab" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "prefab", prefabEntry );
@@ -207,7 +209,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( prefabEntry );
                 }
 
-                var prefab2Entry = (ScsHashEntry) GetEntry( "prefab2" );
+                var prefab2Entry = (ScsHashEntry)GetEntry( "prefab2" );
                 if ( prefab2Entry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "prefab2" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "prefab2", prefab2Entry );
@@ -215,7 +217,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( prefab2Entry );
                 }
 
-                var modelEntry = (ScsHashEntry) GetEntry( "model" );
+                var modelEntry = (ScsHashEntry)GetEntry( "model" );
                 if ( modelEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "model" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "model", modelEntry );
@@ -223,7 +225,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( modelEntry );
                 }
 
-                var model2Entry = (ScsHashEntry) GetEntry( "model2" );
+                var model2Entry = (ScsHashEntry)GetEntry( "model2" );
                 if ( model2Entry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "model2" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "model2", model2Entry );
@@ -231,7 +233,7 @@ namespace TsMap2.Scs.FileSystem {
                     dir?.AddHashEntry( model2Entry );
                 }
 
-                var localeEntry = (ScsHashEntry) GetEntry( "locale" );
+                var localeEntry = (ScsHashEntry)GetEntry( "locale" );
                 if ( localeEntry != null ) {
                     ScsDirectory dir = Rfs.GetDirectory( "locale" );
                     if ( dir == null ) Rfs.GetRootDirectory()?.AddDirectoryManually( "locale", localeEntry );
@@ -254,7 +256,7 @@ namespace TsMap2.Scs.FileSystem {
                 ? Entries[ hash ]
                 : null;
 
-        public sealed override ScsEntry GetEntry( string name ) => GetEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong) name.Length ) );
+        public sealed override ScsEntry GetEntry( string name ) => GetEntry( CityHash.CityHash64( Encoding.UTF8.GetBytes( name ), (ulong)name.Length ) );
 
         public override List< ScsEntry > GetEntriesValues() {
             var entries = new List< ScsEntry >();
