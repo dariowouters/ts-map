@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Newtonsoft.Json.Linq;
 using TsMap2.Helper;
 using TsMap2.Model;
@@ -11,7 +12,7 @@ namespace TsMap2.Factory.Json {
 
         public override string GetFileName() => AppPath.CitiesFileName;
 
-        public override string GetSavingPath() => Store.Settings.OutputPath;
+        public override string GetSavingPath() => Path.Combine( Store.Settings.OutputPath, Store.Game.Code, "latest/" );
 
         public override string GetLoadingPath() => throw new NotImplementedException();
 

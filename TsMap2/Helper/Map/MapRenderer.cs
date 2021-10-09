@@ -422,7 +422,7 @@ namespace TsMap2.Helper.Map {
                     if ( prefab.Prefab.PrefabNodes == null ) continue;
                     TsPrefabNode mapPointOrigin = prefab.Prefab.PrefabNodes[ prefab.Origin ];
 
-                    var rot = (float) ( originNode.Rotation - Math.PI - Math.Atan2( mapPointOrigin.RotZ, mapPointOrigin.RotX ) + Math.PI / 2 );
+                    var rot = (float)( originNode.Rotation - Math.PI - Math.Atan2( mapPointOrigin.RotZ, mapPointOrigin.RotX ) + Math.PI / 2 );
 
                     float prefabstartX = originNode.X - mapPointOrigin.X;
                     float prefabStartZ = originNode.Z - mapPointOrigin.Z;
@@ -477,7 +477,7 @@ namespace TsMap2.Helper.Map {
                                                                        originNode.X, originNode.Z );
 
                         if ( triggerPoint.TriggerId == lastId ) continue;
-                        lastId = (int) triggerPoint.TriggerId;
+                        lastId = (int)triggerPoint.TriggerId;
 
                         if ( triggerPoint.TriggerActionToken == ScsHashHelper.StringToToken( "hud_parking" ) ) // parking trigger
                         {
@@ -532,25 +532,27 @@ namespace TsMap2.Helper.Map {
 
             if ( !_renderFlags.IsActive( RenderFlags.CityNames ) ) return DateTime.Now.Ticks - cityStartTime;
 
-            IEnumerable< TsMapCityItem > cities = _store.Map.Cities.Where( item => !item.Hidden );
+            // IEnumerable< KeyValuePair< ulong, TsMapCityItem > > cities = _store.Map.Cities.Where( item => !item.Value.Hidden );
 
             var cityFont = new Font( "Arial", 100 + _zoomCaps[ zoomIndex ] / 100, FontStyle.Bold );
 
-            foreach ( TsMapCityItem city in cities ) {
-                string name = city.City.GetLocalizedName( _store.Settings.SelectedLocalization );
+            foreach ( KeyValuePair< ulong, TsCity > kv in _store.Def.Cities ) {
+                TsCity city = kv.Value;
+                string name = city.GetLocalizedName( _store.Settings.SelectedLocalization );
 
-                TsNode node = _store.Map.GetNodeByUid( city.NodeUid );
-                PointF coords = node == null
-                                    ? new PointF( city.X, city.Z )
-                                    : new PointF( node.X, node.Z );
-                if ( city.City.XOffsets.Count > zoomIndex && city.City.YOffsets.Count > zoomIndex ) {
-                    coords.X += city.City.XOffsets[ zoomIndex ] / ( scale * _zoomCaps[ zoomIndex ] );
-                    coords.Y += city.City.YOffsets[ zoomIndex ] / ( scale * _zoomCaps[ zoomIndex ] );
+                // TsNode node = _store.Map.GetNodeByUid( item.NodeUid );
+                // PointF coords = node == null
+                // ? new PointF( item.X, item.Z )
+                // : new PointF( node.X, node.Z );
+                ( float x, float y ) = ( city.X, city.Y );
+                if ( city.XOffsets.Count > zoomIndex && city.YOffsets.Count > zoomIndex ) {
+                    x += city.XOffsets[ zoomIndex ] / ( scale * _zoomCaps[ zoomIndex ] );
+                    y += city.YOffsets[ zoomIndex ] / ( scale * _zoomCaps[ zoomIndex ] );
                 }
 
                 // SizeF textSize = g.MeasureString( name, cityFont );
-                g.DrawString( name, cityFont, _cityShadowColor,  coords.X + 2, coords.Y + 2 );
-                g.DrawString( name, cityFont, _palette.CityName, coords.X,     coords.Y );
+                g.DrawString( name, cityFont, _cityShadowColor,  x + 2, y + 2 );
+                g.DrawString( name, cityFont, _palette.CityName, x,     y );
             }
 
             cityFont.Dispose();
@@ -590,9 +592,9 @@ namespace TsMap2.Helper.Map {
                     double tanEz = Math.Sin( -( Math.PI * 0.5f - endNode.Rotation ) )   * radius;
 
                     for ( var i = 0; i < 8; i++ ) {
-                        float s = i / (float) ( 8 - 1 );
-                        var   x = (float) TsRoadLook.Hermite( s, sx, ex, tanSx, tanEx );
-                        var   z = (float) TsRoadLook.Hermite( s, sz, ez, tanSz, tanEz );
+                        float s = i / (float)( 8 - 1 );
+                        var   x = (float)TsRoadLook.Hermite( s, sx, ex, tanSx, tanEx );
+                        var   z = (float)TsRoadLook.Hermite( s, sz, ez, tanSz, tanEz );
                         newPoints.Add( new PointF( x, z ) );
                     }
 

@@ -13,7 +13,7 @@ namespace TsMap2.Scs.FileSystem.Map {
             FilePath = filePath;
             Stream   = stream;
 
-            int fileOffset = LastOffset;
+            // int fileOffset = LastOffset;
 
             // Uid = MemoryHelper.ReadUInt64( Stream, fileOffset += 0x04 );
             //
@@ -22,7 +22,7 @@ namespace TsMap2.Scs.FileSystem.Map {
         }
 
         public string      FilePath  { get; }
-        public ScsItemType ItemType  => (ScsItemType) MemoryHelper.ReadUInt32( Stream, LastOffset );
+        public ScsItemType ItemType  => (ScsItemType)MemoryHelper.ReadUInt32( Stream, LastOffset );
         public uint        ItemCount => BitConverter.ToUInt32( Stream, 0x10 );
         public int         Version   => BitConverter.ToInt32( Stream, 0x0 );
         public byte[]      Stream    { get; private set; }

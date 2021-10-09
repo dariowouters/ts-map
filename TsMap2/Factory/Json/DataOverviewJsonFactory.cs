@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using TsMap2.Helper;
@@ -7,7 +8,7 @@ namespace TsMap2.Factory.Json {
     public class DataOverviewJsonFactory : JsonFactory< JObject > {
         public override string GetFileName() => AppPath.DataOverview;
 
-        public override string GetSavingPath() => Store.Settings.OutputPath;
+        public override string GetSavingPath() => Path.Combine( Store.Settings.OutputPath, Store.Game.Code, "latest/" );
 
         public override string GetLoadingPath() => throw new NotImplementedException();
 

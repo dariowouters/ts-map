@@ -11,7 +11,7 @@ namespace TsMap2.Model {
         public Dictionary< ulong, TsPrefab >     Prefabs          = new Dictionary< ulong, TsPrefab >();
         public Dictionary< ulong, TsRoadLook >   RoadLooks        = new Dictionary< ulong, TsRoadLook >();
 
-        public TsCountry GetCountryByTokenName( string name ) {
+        public TsCountry? GetCountryByTokenName( string name ) {
             ulong token = ScsHashHelper.StringToToken( name );
             return Countries.ContainsKey( token )
                        ? Countries[ token ]
@@ -24,23 +24,23 @@ namespace TsMap2.Model {
         //         RoadLooks.Add( roadLook.Token, roadLook );
         // }
 
-        public TsRoadLook LookupRoadLook( ulong lookId ) =>
+        public TsRoadLook? LookupRoadLook( ulong lookId ) =>
             // Log.Debug( "L: {0}", lookId );
             RoadLooks.ContainsKey( lookId )
                 ? RoadLooks[ lookId ]
                 : null;
 
-        public TsPrefab LookupPrefab( ulong prefabId ) =>
+        public TsPrefab? LookupPrefab( ulong prefabId ) =>
             Prefabs.ContainsKey( prefabId )
                 ? Prefabs[ prefabId ]
                 : null;
 
-        public TsCity LookupCity( ulong cityId ) =>
+        public TsCity? LookupCity( ulong cityId ) =>
             Cities.ContainsKey( cityId )
                 ? Cities[ cityId ]
                 : null;
 
-        public TsMapOverlay LookupOverlay( ulong overlayId ) =>
+        public TsMapOverlay? LookupOverlay( ulong overlayId ) =>
             Overlays.ContainsKey( overlayId )
                 ? Overlays[ overlayId ]
                 : null;

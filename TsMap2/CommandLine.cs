@@ -4,6 +4,7 @@ using Serilog;
 using TsMap2.Factory.Json;
 using TsMap2.Helper;
 using TsMap2.Job;
+using TsMap2.Job.Builder;
 using TsMap2.Job.Export;
 using TsMap2.Job.Export.Tiles;
 using TsMap2.Job.Parse.Def;
@@ -84,6 +85,10 @@ namespace TsMap2 {
 
                         var o = new ParseOverlaysJob();
                         o.Run();
+
+                        // -- Builder
+                        var b = new BuilderJob();
+                        b.RunAndWait();
 
                         // -- Export
                         var e = new ExportJob();

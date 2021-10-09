@@ -18,13 +18,11 @@ namespace TsMap2.Job.Export {
             foreach ( KeyValuePair< ulong, TsCity > kv in Store().Def.Cities ) {
                 TsCity city = kv.Value;
 
-                // if ( city.Hidden ) continue;
+                if ( Store().Map.Cities.TryGetValue( city.Token, out TsMapCityItem? item ) ) {
+                    city.X = item.City.X;
+                    city.Y = item.City.Y;
 
-                TsMapCityItem item = Store().Map.Cities.Find( c => c.City.Token == city.Token );
-
-                if ( item != null ) {
-                    city.X = item.X;
-                    city.Y = item.Z;
+                    if ( item.Hidden ) continue;
                 }
 
                 if ( Store().Def.Countries.ContainsKey( ScsHashHelper.StringToToken( city.CountryName ) ) ) {
