@@ -14,6 +14,7 @@ namespace TsMap2.Helper {
         public const  string CountriesFileName   = "Countries.json";
         public const  string OverlaysFileName    = "Overlays.json";
         public const  string DataOverview        = "DataOverview.json";
+        public const  string GeoJsonCities       = "Cities.geojson";
         public static string HomeDirApp => Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), "TsMap2" );
         public static string OutputDir  => Path.Combine( HomeDirApp,                                                         "Output" );
         public static string LogPath    => Path.Combine( HomeDirApp,                                                         "Logs/log_.txt" );

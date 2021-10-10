@@ -5,7 +5,7 @@ using TsMap2.Model.TsMapItem;
 namespace TsMap2.Job.Builder {
     public class BuilderJob : ThreadJob {
         protected override void Do() {
-            Log.Debug( "[Job][Builder] Loading" );
+            Log.Information( "[Job][Builder] Loading" );
 
             foreach ( KeyValuePair< ulong, TsMapCityItem > pair in Store().Map.Cities ) {
                 TsMapCityItem item = pair.Value;
@@ -19,6 +19,8 @@ namespace TsMap2.Job.Builder {
 
                 Log.Debug( "[Job][Builder] City '{0}' at {1},{2}", item.City.Name, item.City.X, item.City.Y );
             }
+
+            Log.Information( "[Job][Builder] Done" );
         }
     }
 }

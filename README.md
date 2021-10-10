@@ -37,7 +37,40 @@ If you need help on the console usage, type `TsMap2.exe -h`
 
 #### Settings file
 
-This file is required to export map tiles. Please be sure to create it before the map tiles generation. 
+This file is required to export map tiles. Please be sure to create it before the map tiles generation.
+
+If you want to include mods, add in settings files absolutes path to all `*.scs` mod file
+
+Default settings file: 
+````json
+{
+  "AtsPath": "C:\\Games\\Steam\\steamapps\\common\\American Truck Simulator",
+  "Ets2Path": "C:\\Games\\Steam\\steamapps\\common\\Euro Truck Simulator 2",
+  "ExportSettings": {
+    "ExportType": 1,
+    "TilePadding": 384,
+    "TileSize": 512,
+    "TileZoomMax": 8,
+    "TileZoomMin": 0
+  },
+  "FallbackGame": "ets2",
+  "MapColor": {
+    "Background": "#303030",
+    "CityName": "#DEDEDE",
+    "Error": "#303030",
+    "FerryLines": "#FFFFFF",
+    "PrefabDark": "#E1A338",
+    "PrefabGreen": "#AACB96",
+    "PrefabLight": "#ECCB99",
+    "PrefabRoad": "#FFDC50",
+    "Road": "#FFDC50"
+  },
+  "OutputPath": "C:\\Users\\myName\\TsMap2\\Output",
+  "RenderFlags": 2147483647,
+  "SelectedLocalization": "",
+  "Mods": []
+}
+````
 
 
 ## What's can do ?
@@ -48,6 +81,7 @@ This project can:
 - Extract POI( Ferry connexion, companies, route name, etc... )
 - Extract cities list and position
 - Generate map tiles    
+- Generate geojson file for cities
 
 ### Map available
 

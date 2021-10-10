@@ -5,6 +5,7 @@
             AddJob( new ExportCitiesJob() );
             AddJob( new ExportCountriesJob() );
             AddJob( new ExportOverlaysJob() );
+            AddJob( new ExportGeoJsonJob() );
         }
     }
 }
