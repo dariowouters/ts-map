@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mainView="clr-namespace:TsMap2.UI.Views.MainView"
+        xmlns:viewModels="clr-namespace:TsMap2.UI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="TsMap2.UI.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="TsMap2.UI"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="False"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+
+        <DockPanel>
+            <!-- Menu bar -->
+            <mainView:MenuView Padding="0" DockPanel.Dock="Top" />
+            <!-- ./Menu bar -->
+
+            <!-- Right zone -->
+            <mainView:SidePanelView DockPanel.Dock="Right" Width="400" />
+            <!-- ./Right zone -->
+
+            <!-- Center -->
+            <Grid>
+                <mainView:SplashView IsVisible="{Binding !AppLoaded}" />
+                <mainView:MapView IsVisible="{Binding AppLoaded}" />
+            </Grid>
+            <!-- ./Center -->
+        </DockPanel>
+    </Panel>
+
+</Window>

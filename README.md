@@ -18,8 +18,59 @@ You can use it on the opensource map like OpenLayer.
 
 It's made for SCS Software game, especially Euro Truck Simulator 2 and American Truck Simulator
 
-![Preview](docs/screenshots/viwer.PNG)
-![Preview](docs/screenshots/exporter.PNG)
+I'm decide to rework full original project. Now you can use it from a console and soon from a new graphical interface.
+
+![Console](docs/screenshots/console.png)
+
+
+## How to use ?
+
+### Console
+
+- Step 1: [Download](https://github.com/JAGFx/ts-map/releases/tag/v1.0.0-cli-beta) and extract the archive on your desktop
+- Step 2: Open a Windows console
+- Step 3: Generate a setting file: `TsMap2.exe export -s`
+- Step 4: Follow instructions
+- Step 5: Export map tiles: `TsMap2.exe export`
+
+If you need help on the console usage, type `TsMap2.exe -h`
+
+#### Settings file
+
+This file is required to export map tiles. Please be sure to create it before the map tiles generation.
+
+If you want to include mods, add in settings files absolutes path to all `*.scs` mod file
+
+Default settings file: 
+````json
+{
+  "AtsPath": "C:\\Games\\Steam\\steamapps\\common\\American Truck Simulator",
+  "Ets2Path": "C:\\Games\\Steam\\steamapps\\common\\Euro Truck Simulator 2",
+  "ExportSettings": {
+    "ExportType": 1,
+    "TilePadding": 384,
+    "TileSize": 512,
+    "TileZoomMax": 8,
+    "TileZoomMin": 0
+  },
+  "FallbackGame": "ets2",
+  "MapColor": {
+    "Background": "#303030",
+    "CityName": "#DEDEDE",
+    "Error": "#303030",
+    "FerryLines": "#FFFFFF",
+    "PrefabDark": "#E1A338",
+    "PrefabGreen": "#AACB96",
+    "PrefabLight": "#ECCB99",
+    "PrefabRoad": "#FFDC50",
+    "Road": "#FFDC50"
+  },
+  "OutputPath": "C:\\Users\\myName\\TsMap2\\Output",
+  "RenderFlags": 2147483647,
+  "SelectedLocalization": "",
+  "Mods": []
+}
+````
 
 
 ## What's can do ?
@@ -29,7 +80,8 @@ This project can:
 - Read the SCS files
 - Extract POI( Ferry connexion, companies, route name, etc... )
 - Extract cities list and position
-- Generate map tiles
+- Generate map tiles    
+- Generate geojson file for cities
 
 ### Map available
 

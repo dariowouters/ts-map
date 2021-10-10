@@ -262,4 +262,5 @@ __pycache__/
 *.pyc
 
 tiles/
+!TsMap2/Job/Export/Tiles/
 *.tar.gz

@@ -1,0 +1,14 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:TsMap2.UI"
+             x:Class="TsMap2.UI.App">
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme Mode="Dark" />
+        <StyleInclude Source="avares://TsMap2.UI/Icons.axaml" />
+        <StyleInclude Source="avares://TsMap2.UI/Button.axaml" />
+    </Application.Styles>
+</Application>

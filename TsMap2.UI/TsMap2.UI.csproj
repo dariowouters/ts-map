@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <Folder Include="Models\"/>
+        <AvaloniaResource Include="Assets\**"/>
+        <Folder Include="obj\Models"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.5"/>
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.5"/>
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.3"/>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.3"/>
+        <PackageReference Include="ReactiveUI.Fody" Version="13.3.2"/>
+        <PackageReference Include="ReactiveUI.Validation" Version="2.1.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Views\MainView\MapView.axaml.cs">
+            <DependentUpon>MapView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\MainView\MenuView.axaml.cs">
+            <DependentUpon>MenuView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\MainView\SidePanelView.axaml.cs">
+            <DependentUpon>SidePanelView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\TsMap2\TsMap2.csproj"/>
+    </ItemGroup>
+</Project>

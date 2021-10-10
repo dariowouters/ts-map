@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="300" Height="600"
+        x:Class="TsMap2.UI.Views.ExportWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="TsMap2.UI - Export"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="False"
+        WindowStartupLocation="CenterScreen">
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+
+        <StackPanel Margin="15">
+
+            <!-- Export model -->
+            <DockPanel>
+                <!-- Export for... -->
+                <Label DockPanel.Dock="Top">Export for</Label>
+                <ComboBox Margin="0, 5, 0, 15">
+                    <ComboBoxItem IsSelected="True">JAGFx/ets2-dashboard-skin</ComboBoxItem>
+                    <ComboBoxItem>Default</ComboBoxItem>
+                </ComboBox>
+            </DockPanel>
+            <!-- ./Export model -->
+
+            <!-- Export tiles -->
+            <DockPanel Margin="0 15 0 15">
+                <TextBlock DockPanel.Dock="Left" Margin="0 0 15 0" Foreground="gray">Tiles</TextBlock>
+                <Border Height="1" Background="gray" />
+            </DockPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Column="0" Grid.Row="1" Margin="0 0 0 15">Export tiles</CheckBox>
+                <DockPanel Grid.Column="0" Grid.Row="2" Margin="0 0 0 0">
+                    <!-- Tiles size -->
+                    <Label DockPanel.Dock="Top">Tiles size</Label>
+                    <TextBox Margin="0, 5, 0, 15" Watermark="512" />
+                </DockPanel>
+                <DockPanel Grid.Column="1" Grid.Row="2" Margin="15 0 0 0">
+                    <!-- Map padding -->
+                    <Label DockPanel.Dock="Top">Map padding</Label>
+                    <TextBox Margin="0, 5, 0, 15" Watermark="384" />
+                </DockPanel>
+                <DockPanel Grid.Column="0" Grid.Row="3">
+                    <!-- Map padding -->
+                    <Label DockPanel.Dock="Top">Min zoom</Label>
+                    <TextBox Margin="0, 5, 0, 15" Watermark="0" />
+                </DockPanel>
+                <DockPanel Grid.Column="1" Grid.Row="3" Margin="15 0 0 0">
+                    <!-- Map padding -->
+                    <Label DockPanel.Dock="Top">Max zoom</Label>
+                    <TextBox Margin="0, 5, 0, 15" Watermark="8" />
+                </DockPanel>
+            </Grid>
+            <!-- ./Export tiles -->
+
+            <!-- Export files -->
+            <DockPanel Margin="0 15 0 15">
+                <TextBlock DockPanel.Dock="Left" Margin="0 0 15 0" Foreground="gray">Files</TextBlock>
+                <Border Height="1" Background="gray" />
+            </DockPanel>
+            <StackPanel>
+                <CheckBox>Countries</CheckBox>
+                <CheckBox>Cities</CheckBox>
+                <CheckBox>Overlays</CheckBox>
+            </StackPanel>
+            <!-- ./Export files -->
+
+            <Button Margin="0 15">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                    <PathIcon Margin="5, 0, 0,0" Data="{StaticResource store_microsoft_regular}" />
+                    <TextBlock Margin="10,5">Export</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Panel>
+</Window>

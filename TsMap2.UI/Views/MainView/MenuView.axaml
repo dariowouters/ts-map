@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TsMap2.UI.Views.MainView.MenuView">
+    <!-- Menu bar -->
+    <Border>
+        <Border.Background>
+            <SolidColorBrush Color="Black" Opacity="0.1" />
+        </Border.Background>
+        <Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <!-- Export -->
+                <Button Click="Button_OnClick" ClickMode="Release">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <PathIcon Margin="5, 0, 0,0" Data="{StaticResource store_microsoft_regular}" />
+                        <TextBlock Margin="10,5">Export</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <!-- Setting -->
+                <Button>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <PathIcon Margin="5, 0, 0,0" Data="{StaticResource store_microsoft_regular}" />
+                        <TextBlock Margin="10,5">Setting</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right">
+                <!-- <Button> -->
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Margin="5, 0, 10, 0">
+                    <TextBlock Margin="10">Ready</TextBlock>
+                    <Ellipse
+                        Width="10"
+                        Height="10"
+                        Fill="Green" />
+                </StackPanel>
+                <!-- </Button> -->
+            </StackPanel>
+        </Grid>
+    </Border>
+    <!-- ./Menu bar -->
+</UserControl>

@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:TsMap2.UI.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TsMap2.UI.Views.MainView.SplashView">
+
+    <Design.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Design.DataContext>
+
+    <!-- Center -->
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Image Source="../../Assets/avalonia-logo.ico" Width="50" Margin="10" />
+        <ProgressBar Minimum="0" Maximum="100" IsIndeterminate="True" Margin="10" />
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">Avalonia</TextBlock>
+    </StackPanel>
+    <!-- ./Center -->
+</UserControl>
