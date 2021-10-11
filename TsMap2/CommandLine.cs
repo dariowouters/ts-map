@@ -18,8 +18,8 @@ namespace TsMap2 {
         public CommandLine( string[] args ) {
             _app = new CommandLineApplication {
                 Name        = "TsMap2.exe",
-                FullName    = "Sample App",
-                Description = "Description de l'application"
+                FullName    = "TS Map - Map renderer",
+                Description = " This app are used to exctact datas from the game file and export as Json files or Png files"
             };
 
             Options();
@@ -40,7 +40,7 @@ namespace TsMap2 {
 
         private void Options() {
             _app.HelpOption( "-?|-h|--help" );
-            _app.VersionOption( "--version", "1.0.0" );
+            _app.VersionOption( "--version", GetType().Assembly.GetName().Version.ToString() );
         }
 
         private void CommandExport() {

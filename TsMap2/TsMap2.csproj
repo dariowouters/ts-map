@@ -11,6 +11,8 @@
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <PublishTrimmed>true</PublishTrimmed>
         <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishSingleFile>true</PublishSingleFile>
+        <AssemblyVersion>0.11.0.0</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>
