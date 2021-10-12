@@ -1,12 +1,10 @@
 ﻿param ($project)
 
-Write-Host "Project: " $project
-Write-Host "Generating Build Number"
+Write-Host "Generating Build Number for project $project"
 
 #Get the version from the csproj file
 $xml = [Xml] (Get-Content $project\$project.csproj)
 $initialVersion = [Version] $xml.Project.PropertyGroup.AssemblyVersion
-Write-Host "Initial Version: " $initialVersion
 
 #Get the build number (number of days since January 1, 2000)
 $baseDate = [datetime]"01/01/2000"
@@ -21,8 +19,6 @@ $revisionNumber = [math]::Round((New-TimeSpan -Start $StartDate -End $EndDate).T
 
 #Final version number
 $finalBuildVersion = "$($initialVersion.Major).$($initialVersion.Minor).$($buildNumber).$($revisionNumber)"
-Write-Host "Major.Minor,Build,Revision"
 Write-Host "Final build number: " $finalBuildVersion
-Write-Host "Final release number: " $finalBuildVersion
 
 dotnet publish $project -o $project\bin\Publish -c Release --nologo -p:Version=$($finalBuildVersion) -p:AssemblyVersion=$($finalBuildVersion)
