@@ -569,14 +569,14 @@ namespace TsMap2.Helper.Map {
                                                                              && item.X <= endPoint.X   + itemDrawMargin
                                                                              && item.Z >= startPoint.Y - itemDrawMargin
                                                                              && item.Z <= endPoint.Y   + itemDrawMargin
-                                                                             && !item.Hidden )
+                                                                        /*&& !item.Hidden*/ )
                                                        .ToList();
 
             foreach ( TsMapRoadItem road in roads ) {
-                TsNode startNode = road.GetStartNode();
-                TsNode endNode   = road.GetEndNode();
+                // TsNode startNode = road.GetStartNode();
+                // TsNode endNode   = road.GetEndNode();
 
-                if ( !road.HasPoints() ) {
+                /*if ( !road.HasPoints() ) {
                     var newPoints = new List< PointF >();
 
                     float sx = startNode.X;
@@ -599,12 +599,13 @@ namespace TsMap2.Helper.Map {
                     }
 
                     road.AddPoints( newPoints );
-                }
+                }*/
+
+                // if ( road.GetPoints().Length <= 0 ) continue;
 
                 float roadWidth = road.RoadLook.GetWidth();
-
-                var roadPen = new Pen( _palette.Road, roadWidth );
-                g.DrawCurve( roadPen, road.GetPoints()?.ToArray() );
+                var   roadPen   = new Pen( _palette.Road, roadWidth );
+                g.DrawCurve( roadPen, road.GetPoints().ToArray() );
                 roadPen.Dispose();
             }
 

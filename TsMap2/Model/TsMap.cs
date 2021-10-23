@@ -9,7 +9,7 @@ namespace TsMap2.Model {
         public readonly List< TsMapAreaItem >              MapAreas         = new();
         public readonly List< TsMapMapOverlayItem >        MapOverlays      = new();
         public readonly List< TsMapPrefabItem >            Prefabs          = new();
-        public readonly List< TsMapRoadItem >              Roads            = new();
+        public          List< TsMapRoadItem >              Roads            = new();
         public readonly List< TsMapTriggerItem >           Triggers         = new();
         public          float                              MaxX             = float.MinValue;
         public          float                              MaxZ             = float.MinValue;
@@ -33,7 +33,8 @@ namespace TsMap2.Model {
 
             switch ( mapItem ) {
                 case TsMapRoadItem item:
-                    Roads.Add( item );
+                    if ( !item.Hidden )
+                        Roads.Add( item );
                     break;
                 case TsMapPrefabItem item:
                     Prefabs.Add( item );

@@ -88,7 +88,7 @@ namespace TsMap2 {
 
                         // -- Builder
                         var b = new BuilderJob();
-                        b.RunAndWait();
+                        b.Run();
 
                         // -- Export
                         var e = new ExportJob();

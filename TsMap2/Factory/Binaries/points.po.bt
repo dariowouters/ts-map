@@ -1,0 +1,24 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+struct FILE {
+    struct HEADER {
+        int version;
+        int count;
+        int empty;
+    } header;
+
+    struct POINTS {
+        float startX, startY, endX, endY;
+    } points[ header.count ];
+} file;

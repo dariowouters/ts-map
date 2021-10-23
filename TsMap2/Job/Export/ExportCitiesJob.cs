@@ -42,9 +42,6 @@ namespace TsMap2.Job.Export {
             var cityFactory = new TsCitiesJsonFactory( cities );
             cityFactory.Save();
 
-            // var citiesBinaryFactory = new TsCitiesBinaryFactory( cities );
-            // citiesBinaryFactory.Save();
-
             Log.Information( "[Job][ExportCities] Saved !" );
         }
     }
