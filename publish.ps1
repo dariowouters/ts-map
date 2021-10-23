@@ -21,4 +21,11 @@ $revisionNumber = [math]::Round((New-TimeSpan -Start $StartDate -End $EndDate).T
 $finalBuildVersion = "$($initialVersion.Major).$($initialVersion.Minor).$($buildNumber).$($revisionNumber)"
 Write-Host "Final build number: " $finalBuildVersion
 
-dotnet publish $project -o $project\bin\Publish -c Release --nologo -p:Version=$($finalBuildVersion) -p:AssemblyVersion=$($finalBuildVersion)
+$workingDirectory = Get-Location
+$publishDirectory = "$workingDirectory\$project\bin\Publish\"
+Write-Host "Publish folder: $publishDirectory"
+
+Remove-Item "$publishDirectory*"
+dotnet publish $project -o $publishDirectory -c Release --nologo -p:Version=$($finalBuildVersion) -p:AssemblyVersion=$($finalBuildVersion)
+Start-Sleep -s 1
+Rename-Item "$publishDirectory$project.exe" "$publishDirectory$project-$finalBuildVersion.exe" 
