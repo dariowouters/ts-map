@@ -100,6 +100,7 @@ namespace TsMap
         Curve = 44,
         Camera = 45,
         Cutscene = 46,
+        VisibilityArea = 48,
     };
 
 

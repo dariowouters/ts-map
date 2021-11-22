@@ -500,6 +500,21 @@ namespace TsMap
                     if (b != null)
                         g.DrawImage(b, ferryItem.X, ferryItem.Z, b.Width, b.Height);
                 }
+
+                var viewpointOverlay = _mapper.LookupOverlay(ScsHash.StringToToken("viewpoint"));
+                var viewpointBitmap = viewpointOverlay?.GetBitmap();
+                if (viewpointBitmap != null)
+                {
+                    var viewpoints = _mapper.Viewpoints.Where(item =>
+                            item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
+                            item.Z <= endPoint.Y + itemDrawMargin)
+                        .ToList();
+
+                    foreach (var viewpoint in viewpoints)
+                    {
+                        g.DrawImage(viewpointBitmap, viewpoint.X, viewpoint.Z, viewpointBitmap.Width, viewpointBitmap.Height);
+                    }
+                }
             }
             var mapOverlay2Time = DateTime.Now.Ticks - mapOverlay2StartTime;
 

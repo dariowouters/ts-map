@@ -84,6 +84,7 @@
     <Compile Include="TsItem\TsTrafficRuleItem.cs" />
     <Compile Include="TsItem\TsTrajectoryItem.cs" />
     <Compile Include="TsItem\TsTriggerItem.cs" />
+    <Compile Include="TsItem\TsVisibilityAreaItem.cs" />
     <Compile Include="TsTypes.cs" />
     <Compile Include="TsMapOverlay.cs" />
     <Compile Include="TsMapper.cs" />

@@ -18,6 +18,11 @@ namespace TsMap.TsItem
         public void TsCutsceneItem844(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
+            var isViewpoint = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 3) == 0;
+            if (isViewpoint)
+            {
+                Valid = true;
+            }
             var tagsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var actionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagsCount) + 0x08); // 0x04(tagsCount) + tags + 0x08(node_uid)
             fileOffset += 0x04; // 0x04(actionCount)
