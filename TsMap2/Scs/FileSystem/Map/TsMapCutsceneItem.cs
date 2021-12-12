@@ -4,8 +4,8 @@ using TsMap2.Helper;
 using TsMap2.Model.TsMapItem;
 
 namespace TsMap2.Scs.FileSystem.Map {
-    public class ScsMapCutsceneItem : TsMapItem {
-        public ScsMapCutsceneItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
+    public class TsMapCutsceneItem : TsMapItem {
+        public TsMapCutsceneItem( ScsSector sector ) : base( sector, sector.LastOffset ) {
             Valid = false;
 
             if ( Sector.Version >= 884 )
@@ -16,7 +16,10 @@ namespace TsMap2.Scs.FileSystem.Map {
         }
 
         private void TsCutsceneItem844() {
-            int fileOffset  = Sector.LastOffset + 0x34;                                                              // Set position at start of flags
+            int  fileOffset          = Sector.LastOffset + 0x34;
+            bool isViewpoint         = MemoryHelper.ReadUint8( Sector.Stream, fileOffset + 3 ) == 0;
+            if ( isViewpoint ) Valid = true;
+            // Set position at start of flags
             int tagsCount   = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x05 );                           // 0x05(flags)
             int actionCount = MemoryHelper.ReadInt32( Sector.Stream, fileOffset += 0x04 + 0x08 * tagsCount + 0x08 ); // 0x04(tagsCount) + tags + 0x08(node_uid)
             fileOffset += 0x04;                                                                                      // 0x04(actionCount)

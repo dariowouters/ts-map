@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -176,7 +177,13 @@ namespace TsMap2.Job.Parse.Map {
                         break;
                     }
                     case ScsItemType.Cutscene: {
-                        mapItem           =  new ScsMapCutsceneItem( sector );
+                        mapItem           =  new TsMapCutsceneItem( sector );
+                        sector.LastOffset += mapItem.BlockSize;
+                        Store().Map.AddItem( mapItem );
+                        break;
+                    }
+                    case ScsItemType.VisibilityArea: {
+                        mapItem           =  new TsVisibilityAreaItem( sector );
                         sector.LastOffset += mapItem.BlockSize;
                         break;
                     }
@@ -196,6 +203,12 @@ namespace TsMap2.Job.Parse.Map {
             }
 
             sector.LastOffset += 0x04;
+
+            if ( sector.Version >= 891 ) {
+                var visAreaChildCount = BitConverter.ToInt32( stream, sector.LastOffset );
+                sector.LastOffset += 0x04 + 0x08 * visAreaChildCount; // 0x04(visAreaChildCount) + (visAreaChildUids)
+            }
+
             if ( sector.LastOffset != stream.Length )
                 Log.Warning( $"File '{Path.GetFileName( path )}' was not read correctly. Read offset was at 0x{sector.LastOffset:X} while file is 0x{stream.Length:X} bytes long." );
 

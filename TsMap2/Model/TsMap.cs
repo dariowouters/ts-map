@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TsMap2.Model.TsMapItem;
+using TsMap2.Scs.FileSystem.Map;
 
 namespace TsMap2.Model {
     public class TsMap {
@@ -11,6 +12,7 @@ namespace TsMap2.Model {
         public readonly List< TsMapPrefabItem >            Prefabs          = new();
         public          List< TsMapRoadItem >              Roads            = new();
         public readonly List< TsMapTriggerItem >           Triggers         = new();
+        public readonly List< TsMapCutsceneItem >          Viewpoints       = new();
         public          float                              MaxX             = float.MinValue;
         public          float                              MaxZ             = float.MinValue;
         public          float                              MinX             = float.MaxValue;
@@ -58,6 +60,9 @@ namespace TsMap2.Model {
                     break;
                 case TsMapAreaItem item:
                     MapAreas.Add( item );
+                    break;
+                case TsMapCutsceneItem item:
+                    Viewpoints.Add( item );
                     break;
             }
         }
