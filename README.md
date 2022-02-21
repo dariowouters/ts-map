@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for 1.43 (Beta)**
+### **Support for 1.43**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -20,7 +20,7 @@ Making all/specific map mods supported won't be a priority for me.
 ### Tested* map mods:
 
 ETS2:
-- Promods V2.50
+- Promods Europe + Middle-East Add-On V2.60
 - Rusmap V1.8.1
 - The Great Steppe V1.2
 - Paris Rebuild V2.3
@@ -30,6 +30,7 @@ ETS2:
 - PJ Indo Map v2.5 (Can't load an overlay)
 
 ATS:
+- ProMods Canada V1.1.1
 - Coast to Coast V2.6 (Can't load some dds files)
 - US Expansion V2.4 (C2C Compatible)
 - CanaDream Open Beta (ATS 1.32)
