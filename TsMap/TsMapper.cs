@@ -39,6 +39,7 @@ namespace TsMap
         public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
+        public readonly List<TsCutsceneItem> Viewpoints = new List<TsCutsceneItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -309,7 +310,7 @@ namespace TsMap
                         }
                     }
 
-                    if (!line.Contains("}") || conn == null) continue;;
+                    if (!line.Contains("}") || conn == null) continue;
 
                     var existingItem = _ferryConnectionLookup.FirstOrDefault(item =>
                         (item.StartPortToken == conn.StartPortToken && item.EndPortToken == conn.EndPortToken) ||
@@ -550,6 +551,16 @@ namespace TsMap
             Sectors.ForEach(sec => sec.ClearFileData());
             Log.Msg($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base)" +
                     $" map files and {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms total.");
+
+            var invalidFerryConnections = _ferryConnectionLookup.Where(x => x.StartPortLocation == PointF.Empty || x.EndPortLocation == PointF.Empty).ToList();
+            foreach (var invalidFerryConnection in invalidFerryConnections)
+            {
+                _ferryConnectionLookup.Remove(invalidFerryConnection);
+                Log.Msg($"Ignored ferry connection " +
+                    $"'{ScsHash.TokenToString(invalidFerryConnection.StartPortToken)}-{ScsHash.TokenToString(invalidFerryConnection.EndPortToken)}' " +
+                    $"due to not having Start/End location set.");
+            }
+
         }
 
         public void ExportInfo(ExportFlags exportFlags, string exportPath)

@@ -157,6 +157,13 @@ namespace TsMap
                     {
                         var item = new TsCutsceneItem(this, lastOffset);
                         lastOffset += item.BlockSize;
+                        if (item.Valid) Mapper.Viewpoints.Add(item);
+                        break;
+                    }
+                    case TsItemType.VisibilityArea:
+                    {
+                        var item = new TsVisibilityAreaItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
                         break;
                     }
                     default:
@@ -178,6 +185,11 @@ namespace TsMap
             }
 
             lastOffset += 0x04;
+            if (Version >= 891)
+            {
+                var visAreaChildCount = BitConverter.ToInt32(Stream, lastOffset);
+                lastOffset += 0x04 + (0x08 * visAreaChildCount); // 0x04(visAreaChildCount) + (visAreaChildUids)
+            }
             if (lastOffset != Stream.Length)
             {
                 Log.Msg($"File '{Path.GetFileName(FilePath)}' was not read correctly. Read offset was at 0x{lastOffset:X} while file is 0x{Stream.Length:X} bytes long.");
