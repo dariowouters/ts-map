@@ -47,7 +47,6 @@ ATS:
     - All map DLCs up to and including Iberia.
 
 #### Dependencies (NuGet)
-- [DotNetZip](https://www.nuget.org/packages/DotNetZip/)
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
 
 #### Based on

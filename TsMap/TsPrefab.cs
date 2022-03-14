@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using TsMap.FileSystem;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap
 {
@@ -61,13 +63,13 @@ namespace TsMap
         public List<TsMapPoint> MapPoints { get; private set; }
         public List<TsTriggerPoint> TriggerPoints { get; private set; }
 
-        public TsPrefab(TsMapper mapper, string filePath, ulong token, string category)
+        public TsPrefab(string filePath, ulong token, string category)
         {
             FilePath = filePath;
             Token = token;
             Category = category;
 
-            var file = mapper.Rfs.GetFileEntry(FilePath);
+            var file = UberFileSystem.Instance.GetFile(FilePath);
 
             if (file == null) return;
 
@@ -89,7 +91,7 @@ namespace TsMap
 
             if (version < 0x15)
             {
-                Log.Msg($"{FilePath} file version ({version}) too low, min. is {0x15}");
+                Logger.Instance.Error($"{FilePath} file version ({version}) too low, min. is {0x15}");
                 return;
             }
 

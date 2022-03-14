@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using TsMap.Common;
+using TsMap.Helpers;
 
 namespace TsMap.TsItem
 {
@@ -20,7 +21,7 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
             DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
             NodeUids = new List<ulong>();

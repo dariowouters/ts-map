@@ -193,13 +193,14 @@ namespace TsMap.Canvas
 
         private void localizationSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _localizationSettingsForm = new LocalizationSettingsForm(_mapper.LocalizationList, _mapper.SelectedLocalization);
+            _localizationSettingsForm = new LocalizationSettingsForm(_mapper.Localization.GetLocales(), _mapper.Localization.SelectedLocalization);
             _localizationSettingsForm.Show();
             _localizationSettingsForm.BringToFront();
 
-            _localizationSettingsForm.UpdateLocalization += (locIndex) =>
+            _localizationSettingsForm.UpdateLocalization += (localeName) =>
             {
-                _mapper.UpdateLocalization(locIndex);
+
+                _mapper.Localization.ChangeLocalization(localeName);
                 CityStripComboBox.Items.Clear();
                 CityStripComboBox.Items.AddRange(_mapper.Cities.Where(x => !x.Hidden).ToArray());
                 _localizationSettingsForm.Close();

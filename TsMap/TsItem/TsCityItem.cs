@@ -1,5 +1,7 @@
 ﻿using System.IO;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap.TsItem
 {
@@ -25,8 +27,8 @@ namespace TsMap.TsItem
             if (City == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find City: '{ScsHash.TokenToString(cityId)}'({cityId:X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                Logger.Instance.Error($"Could not find City: '{ScsToken.TokenToString(cityId)}'({cityId:X}) item uid: 0x{Uid:X}, " +
+                    $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
 
             Width = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x05 + 0x08); // 0x05(flags) + 0x08(cityId)
@@ -42,8 +44,8 @@ namespace TsMap.TsItem
             var country = Sector.Mapper.GetCountryByTokenName(City.Country);
             var countryName = (country == null)
                 ? City.Country
-                : country.GetLocalizedName(Sector.Mapper.SelectedLocalization);
-            return $"{countryName} - {City.GetLocalizedName(Sector.Mapper.SelectedLocalization)}";
+                : Sector.Mapper.Localization.GetLocaleValue(country.LocalizationToken) ?? country.Name;
+            return $"{countryName} - {Sector.Mapper.Localization.GetLocaleValue(City.LocalizationToken) ?? City.Name}";
         }
     }
 }

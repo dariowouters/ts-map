@@ -2,7 +2,9 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using TsMap.HashFiles;
+using TsMap.FileSystem;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap
 {
@@ -76,11 +78,13 @@ namespace TsMap
 
         private Color8888[] _pixelData;
 
-        private ScsFile _file;
+        private readonly UberFile _file;
+        private readonly string _filePath;
 
-        public OverlayIcon(ScsFile file)
+        public OverlayIcon(UberFile file, string filePath)
         {
             _file = file;
+            _filePath = filePath;
             _stream = file.Entry.Read();
             Parse();
         }
@@ -107,7 +111,7 @@ namespace TsMap
                 MemoryHelper.ReadUInt32(_stream, 0x04) != 0x7C)
             {
                 Valid = false;
-                Console.WriteLine("Invalid DDS file.");
+                Logger.Instance.Error($"Invalid DDS file, '{_filePath}' from '{_file.Entry.GetArchiveFile().GetPath()}'");
                 return;
             }
             Height = MemoryHelper.ReadUInt32(_stream, 0x0C);
@@ -126,7 +130,7 @@ namespace TsMap
             if ((_stream.Length - 128) / 4 < Width * Height)
             {
                 Valid = false;
-                Log.Msg($"Invalid DDS file (size), '{_file.GetPath()}'");
+                Logger.Instance.Error($"Invalid DDS file (size), '{_filePath}' from '{_file.Entry.GetArchiveFile().GetPath()}'");
                 return;
             }
 
@@ -272,16 +276,16 @@ namespace TsMap
     {
         private readonly Bitmap _overlayBitmap;
 
-        private string _filePath;
+        private readonly string _filePath;
 
-        public TsMapOverlay(TsMapper mapper, string filePath)
+        public TsMapOverlay(string filePath)
         {
             _filePath = filePath;
-            var file = mapper.Rfs.GetFileEntry(_filePath);
+            var file = UberFileSystem.Instance.GetFile(_filePath);
 
             if (file != null)
             {
-                var icon = new OverlayIcon(file);
+                var icon = new OverlayIcon(file, _filePath);
                 if (!icon.Valid) return;
 
                 _overlayBitmap = new Bitmap((int)icon.Width, (int)icon.Height, PixelFormat.Format32bppArgb);
@@ -296,7 +300,7 @@ namespace TsMap
             }
             else
             {
-                Log.Msg($"Map Overlay file not found, {filePath}");
+                Logger.Instance.Error($"Map Overlay file not found, {filePath}");
             }
         }
 

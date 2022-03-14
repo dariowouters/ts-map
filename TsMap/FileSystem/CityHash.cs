@@ -36,9 +36,10 @@
 // possible hash functions, by using SIMD instructions, or by
 // compromising on hash quality.
 
-using System;
+using System.Text;
+using TsMap.Helpers;
 
-namespace TsMap.HashFiles
+namespace TsMap.FileSystem
 {
     public static class CityHash
     {
@@ -204,6 +205,11 @@ namespace TsMap.HashFiles
                                           Fetch64(s, len + 24),
                                           a,
                                           b);
+        }
+
+        public static ulong CityHash64(string s)
+        {
+            return CityHash64(Encoding.UTF8.GetBytes(s), (ulong)s.Length);
         }
 
         public static ulong CityHash64(byte[] s, ulong len)

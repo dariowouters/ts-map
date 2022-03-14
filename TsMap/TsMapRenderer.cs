@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using TsMap.HashFiles;
+using TsMap.Helpers;
+using TsMap.Common;
+using TsMap.Helpers.Logger;
 
 namespace TsMap
 {
@@ -245,29 +247,29 @@ namespace TsMap
                                 else if (neighbourLaneCount == -2 && mapPointLaneCount != -2) neighbourLaneCount = mapPointLaneCount;
                                 else if (mapPointLaneCount == -2 && neighbourLaneCount == -2)
                                 {
-                                    Console.WriteLine($"Could not find lane count for ({i}, {neighbourPointIndex}), defaulting to 1 for {prefabItem.Prefab.FilePath}");
+                                    Logger.Instance.Debug($"Could not find lane count for ({i}, {neighbourPointIndex}), defaulting to 1 for {prefabItem.Prefab.FilePath}");
                                     mapPointLaneCount = neighbourLaneCount = 1;
                                 }
 
                                 var cornerCoords = new List<PointF>();
 
                                 var coords = RenderHelper.GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
-                                    (Common.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw + Math.PI / 2);
+                                    (Consts.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw + Math.PI / 2);
 
                                 cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 coords = RenderHelper.GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
-                                    (Common.LaneWidth * neighbourLaneCount + neighbourPoint.LaneOffset) / 2f,
+                                    (Consts.LaneWidth * neighbourLaneCount + neighbourPoint.LaneOffset) / 2f,
                                     roadYaw + Math.PI / 2);
                                 cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 coords = RenderHelper.GetCornerCoords(prefabstartX + neighbourPoint.X, prefabStartZ + neighbourPoint.Z,
-                                    (Common.LaneWidth * neighbourLaneCount + mapPoint.LaneOffset) / 2f,
+                                    (Consts.LaneWidth * neighbourLaneCount + mapPoint.LaneOffset) / 2f,
                                     roadYaw - Math.PI / 2);
                                 cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 coords = RenderHelper.GetCornerCoords(prefabstartX + mapPoint.X, prefabStartZ + mapPoint.Z,
-                                    (Common.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
+                                    (Consts.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
                                 cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
                                 TsPrefabLook prefabLook = new TsPrefabPolyLook(cornerCoords)
@@ -417,37 +419,37 @@ namespace TsMap
                         {
                             case TsSpawnPointType.GasPos:
                             {
-                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("gas_ico"));
+                                var overlay = _mapper.LookupOverlay("gas_ico", OverlayTypes.Map);
                                 b = overlay?.GetBitmap();
                                 break;
                             }
                             case TsSpawnPointType.ServicePos:
                             {
-                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("service_ico"));
+                                var overlay = _mapper.LookupOverlay("service_ico", OverlayTypes.Map);
                                 b = overlay?.GetBitmap();
                                 break;
                             }
                             case TsSpawnPointType.WeightStationPos:
                             {
-                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("weigh_station_ico"));
+                                var overlay = _mapper.LookupOverlay("weigh_station_ico", OverlayTypes.Map);
                                 b = overlay?.GetBitmap();
                                 break;
                             }
                             case TsSpawnPointType.TruckDealerPos:
                             {
-                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("dealer_ico"));
+                                var overlay = _mapper.LookupOverlay("dealer_ico", OverlayTypes.Map);
                                 b = overlay?.GetBitmap();
                                 break;
                             }
                             case TsSpawnPointType.BuyPos:
                             {
-                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("garage_large_ico"));
+                                var overlay = _mapper.LookupOverlay("garage_large_ico", OverlayTypes.Map);
                                 b = overlay?.GetBitmap();
                                 break;
                             }
                             case TsSpawnPointType.RecruitmentPos:
                             {
-                                var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("recruitment_ico"));
+                                var overlay = _mapper.LookupOverlay("recruitment_ico", OverlayTypes.Map);
                                 b = overlay?.GetBitmap();
                                 break;
                             }
@@ -466,9 +468,9 @@ namespace TsMap
                         if (triggerPoint.TriggerId == lastId) continue;
                         lastId = (int) triggerPoint.TriggerId;
 
-                        if (triggerPoint.TriggerActionToken == ScsHash.StringToToken("hud_parking")) // parking trigger
+                        if (triggerPoint.TriggerActionToken == ScsToken.StringToToken("hud_parking")) // parking trigger
                         {
-                            var overlay = _mapper.LookupOverlay(ScsHash.StringToToken("parking_ico"));
+                            var overlay = _mapper.LookupOverlay("parking_ico", OverlayTypes.Map);
                             Bitmap b = overlay?.GetBitmap();
 
                             if (b != null)
@@ -501,7 +503,7 @@ namespace TsMap
                         g.DrawImage(b, ferryItem.X, ferryItem.Z, b.Width, b.Height);
                 }
 
-                var viewpointOverlay = _mapper.LookupOverlay(ScsHash.StringToToken("viewpoint"));
+                var viewpointOverlay = _mapper.LookupOverlay("viewpoint", OverlayTypes.Map);
                 var viewpointBitmap = viewpointOverlay?.GetBitmap();
                 if (viewpointBitmap != null)
                 {
@@ -527,8 +529,7 @@ namespace TsMap
 
                 foreach (var city in cities)
                 {
-                    var name = city.City.GetLocalizedName(_mapper.SelectedLocalization);
-
+                    var name = _mapper.Localization.GetLocaleValue(city.City.LocalizationToken) ?? city.City.Name;
                     var node = _mapper.GetNodeByUid(city.NodeUid);
                     var coords = (node == null) ? new PointF(city.X, city.Z) : new PointF(node.X, node.Z);
                     if (city.City.XOffsets.Count > zoomIndex && city.City.YOffsets.Count > zoomIndex)

@@ -1,5 +1,5 @@
-﻿using System.IO;
-using TsMap.HashFiles;
+﻿using TsMap.Common;
+using TsMap.Helpers;
 
 namespace TsMap.TsItem
 {
@@ -20,8 +20,8 @@ namespace TsMap.TsItem
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             Train = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
-            OverlayToken = (Train) ? ScsHash.StringToToken("train_ico") : ScsHash.StringToToken("port_overlay");
-            Overlay = Sector.Mapper.LookupOverlay(OverlayToken);
+            OverlayToken = (Train) ? ScsToken.StringToToken("train_ico") : ScsToken.StringToToken("port_overlay");
+            Overlay = Sector.Mapper.LookupOverlay(ScsToken.TokenToString(OverlayToken), OverlayTypes.Road);
 
             FerryPortId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
             Sector.Mapper.AddFerryPortLocation(FerryPortId, X, Z);
