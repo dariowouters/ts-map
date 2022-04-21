@@ -15,6 +15,8 @@ namespace TsMap.TsItem
         public TsPrefab Prefab { get; private set; }
         private List<TsPrefabLook> _looks;
 
+        public bool IsSecret { get; private set; }
+
         public void AddLook(TsPrefabLook look)
         {
             _looks.Add(look);
@@ -222,6 +224,7 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 5);
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);

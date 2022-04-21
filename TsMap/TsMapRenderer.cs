@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using TsMap.Helpers;
+using System.Linq;
 using TsMap.Common;
 using TsMap.Helpers.Logger;
 
@@ -154,6 +153,10 @@ namespace TsMap
 
                 foreach (var prefabItem in prefabs)
                 {
+                    if (prefabItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    {
+                        continue;
+                    }
                     var originNode = _mapper.GetNodeByUid(prefabItem.Nodes[0]);
                     if (prefabItem.Prefab.PrefabNodes == null) continue;
 
@@ -303,6 +306,11 @@ namespace TsMap
 
                 foreach (var road in roads)
                 {
+                    if (road.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    {
+                        continue;
+                    }
+
                     var startNode = road.GetStartNode();
                     var endNode = road.GetEndNode();
 
@@ -333,8 +341,15 @@ namespace TsMap
                     }
 
                     var roadWidth = road.RoadLook.GetWidth();
-
-                    var roadPen = new Pen(palette.Road, roadWidth);
+                    Pen roadPen;
+                    if (road.IsSecret)
+                    {
+                        roadPen = new Pen(palette.Road, roadWidth) { DashPattern = new[] { 1f, 1f } };
+                    }
+                    else
+                    {
+                        roadPen = new Pen(palette.Road, roadWidth);
+                    }
                     g.DrawCurve(roadPen, road.GetPoints()?.ToArray());
                     roadPen.Dispose();
                 }

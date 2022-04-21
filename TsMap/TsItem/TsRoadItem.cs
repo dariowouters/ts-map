@@ -14,6 +14,8 @@ namespace TsMap.TsItem
 
         private List<PointF> _points;
 
+        public bool IsSecret { get; private set; }
+
         public void AddPoints(List<PointF> points)
         {
             _points = points;
@@ -112,6 +114,7 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 2), 0);
             var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 

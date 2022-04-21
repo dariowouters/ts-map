@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -157,7 +157,7 @@ namespace TsMap
                         }
                         else if (key == "category")
                         {
-                            category = value.Split('"')[1];
+                            category = value.Contains('"') ? value.Split('"')[1] : value.Trim();
                         }
                     }
 
