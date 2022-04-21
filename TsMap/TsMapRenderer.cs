@@ -122,6 +122,11 @@ namespace TsMap
 
                 foreach (var mapArea in mapAreas.OrderBy(x => x.DrawOver))
                 {
+                    if (mapArea.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    {
+                        continue;
+                    }
+
                     var points = new List<PointF>();
 
                     foreach (var mapAreaNode in mapArea.NodeUids)
@@ -344,7 +349,14 @@ namespace TsMap
                     Pen roadPen;
                     if (road.IsSecret)
                     {
-                        roadPen = new Pen(palette.Road, roadWidth) { DashPattern = new[] { 1f, 1f } };
+                        if (zoomIndex < 3)
+                        {
+                            roadPen = new Pen(palette.Road, roadWidth) {DashPattern = new[] {1f, 1f}};
+                        }
+                        else // zoomed out with DashPattern causes OutOfMemory Exception
+                        {
+                            roadPen = new Pen(palette.Road, roadWidth);
+                        }
                     }
                     else
                     {
@@ -366,6 +378,10 @@ namespace TsMap
 
                 foreach (var overlayItem in overlays) // TODO: Scaling
                 {
+                    if (overlayItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    {
+                        continue;
+                    }
                     Bitmap b = overlayItem.Overlay.GetBitmap();
                     if (b != null)
                         g.DrawImage(b, overlayItem.X - b.Width, overlayItem.Z - b.Height, b.Width * 2, b.Height * 2);
@@ -389,6 +405,10 @@ namespace TsMap
                         var prefab = _mapper.Prefabs.FirstOrDefault(x => x.Uid == companyItem.Nodes[0]);
                         if (prefab != null)
                         {
+                            if (prefab.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                            {
+                                continue;
+                            }
                             var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
                             if (prefab.Prefab.PrefabNodes == null) continue;
                             var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
@@ -414,6 +434,11 @@ namespace TsMap
 
                 foreach (var prefab in prefabs) // Draw all prefab overlays
                 {
+                    if (prefab.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    {
+                        continue;
+                    }
+
                     var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
                     if (prefab.Prefab.PrefabNodes == null) continue;
                     var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
@@ -501,6 +526,10 @@ namespace TsMap
 
                 foreach (var triggerItem in triggers) // TODO: Scaling
                 {
+                    if (triggerItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    {
+                        continue;
+                    }
                     Bitmap b = triggerItem.Overlay?.GetBitmap();
                     if (b != null)
                         g.DrawImage(b, triggerItem.X, triggerItem.Z, b.Width, b.Height);
@@ -529,6 +558,10 @@ namespace TsMap
 
                     foreach (var viewpoint in viewpoints)
                     {
+                        if (viewpoint.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                        {
+                            continue;
+                        }
                         g.DrawImage(viewpointBitmap, viewpoint.X, viewpoint.Z, viewpointBitmap.Width, viewpointBitmap.Height);
                     }
                 }

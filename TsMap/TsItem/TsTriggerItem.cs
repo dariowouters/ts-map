@@ -10,6 +10,8 @@ namespace TsMap.TsItem
         public string OverlayName { get; private set; }
         public TsMapOverlay Overlay { get; private set; }
 
+        public bool IsSecret { get; private set; }
+
         public TsTriggerItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
@@ -113,6 +115,7 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 2);
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount)); // 0x04(nodeCount) + tags
 

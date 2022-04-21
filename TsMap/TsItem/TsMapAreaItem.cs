@@ -10,6 +10,8 @@ namespace TsMap.TsItem
         public uint ColorIndex { get; private set; }
         public bool DrawOver { get; private set; }
 
+        public bool IsSecret { get; private set; }
+
         public TsMapAreaItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
@@ -23,6 +25,7 @@ namespace TsMap.TsItem
             DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 4);
 
             NodeUids = new List<ulong>();
 

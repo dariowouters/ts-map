@@ -11,6 +11,8 @@ namespace TsMap.TsItem
         public TsMapOverlay Overlay { get; private set; }
         public byte ZoomLevelVisibility { get; private set; }
 
+        public bool IsSecret { get; private set; }
+
         public TsMapOverlayItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
@@ -23,6 +25,7 @@ namespace TsMap.TsItem
             ZoomLevelVisibility = MemoryHelper.ReadUint8(Sector.Stream, fileOffset);
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || ZoomLevelVisibility == 255;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 3);
 
             var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
             var overlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
