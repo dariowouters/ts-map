@@ -1,13 +1,16 @@
-﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.FileSystem;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 using TsMap.TsItem;
 
 namespace TsMap
@@ -17,18 +20,17 @@ namespace TsMap
         private readonly string _gameDir;
         private List<Mod> _mods;
 
-        public RootFileSystem Rfs;
         public bool IsEts2 = true;
 
         private List<string> _sectorFiles;
-        public string SelectedLocalization = "";
-        public List<string> LocalizationList = new List<string>();
+
+        public LocalizationManager Localization { get; private set; }
 
         private readonly Dictionary<ulong, TsPrefab> _prefabLookup = new Dictionary<ulong, TsPrefab>();
         private readonly Dictionary<ulong, TsCity> _citiesLookup = new Dictionary<ulong, TsCity>();
         private readonly Dictionary<ulong, TsCountry> _countriesLookup = new Dictionary<ulong, TsCountry>();
         private readonly Dictionary<ulong, TsRoadLook> _roadLookup = new Dictionary<ulong, TsRoadLook>();
-        private readonly Dictionary<ulong, TsMapOverlay> _overlayLookup = new Dictionary<ulong, TsMapOverlay>();
+        private readonly Dictionary<ulong, TsMapOverlay> _overlayCache = new Dictionary<ulong, TsMapOverlay>();
         private readonly List<TsFerryConnection> _ferryConnectionLookup = new List<TsFerryConnection>();
 
         public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
@@ -39,6 +41,7 @@ namespace TsMap
         public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
+        public readonly List<TsCutsceneItem> Viewpoints = new List<TsCutsceneItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -54,27 +57,22 @@ namespace TsMap
             _gameDir = gameDir;
             _mods = mods;
             Sectors = new List<TsSector>();
-            LocalizationList.Add("None");
+            Localization = new LocalizationManager();
         }
 
         private void ParseCityFiles()
         {
-            var defDirectory = Rfs.GetDirectory("def");
+            var defDirectory = UberFileSystem.Instance.GetDirectory("def");
             if (defDirectory == null)
             {
-                Log.Msg("Could not read 'def' dir");
+                Logger.Instance.Error("Could not read 'def' dir");
                 return;
             }
 
-            var cityFiles = defDirectory.GetFiles("city");
-            if (cityFiles == null)
+            foreach (var cityFileName in defDirectory.GetFiles("city"))
             {
-                Log.Msg("Could not read city files");
-                return;
-            }
+                var cityFile = UberFileSystem.Instance.GetFile($"def/{cityFileName}");
 
-            foreach (var cityFile in cityFiles)
-            {
                 var data = cityFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 foreach (var line in lines)
@@ -82,8 +80,8 @@ namespace TsMap
                     if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("@include"))
                     {
-                        var path = Helper.GetFilePath(line.Split('"')[1], "def");
-                        var city = new TsCity(this, path);
+                        var path = PathHelper.GetFilePath(line.Split('"')[1], "def");
+                        var city = new TsCity(path);
                         if (city.Token != 0 && !_citiesLookup.ContainsKey(city.Token))
                         {
                             _citiesLookup.Add(city.Token, city);
@@ -95,22 +93,17 @@ namespace TsMap
 
         private void ParseCountryFiles()
         {
-            var defDirectory = Rfs.GetDirectory("def");
+            var defDirectory = UberFileSystem.Instance.GetDirectory("def");
             if (defDirectory == null)
             {
-                Log.Msg("[Country] Could not read 'def' dir");
+                Logger.Instance.Error("Could not read 'def' dir");
                 return;
             }
 
-            var countryFiles = defDirectory.GetFiles("country");
-            if (countryFiles == null)
+            foreach (var countryFilePath in defDirectory.GetFiles("country"))
             {
-                Log.Msg("Could not read country files");
-                return;
-            }
+                var countryFile = UberFileSystem.Instance.GetFile($"def/{countryFilePath}");
 
-            foreach (var countryFile in countryFiles)
-            {
                 var data = countryFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 foreach (var line in lines)
@@ -118,8 +111,8 @@ namespace TsMap
                     if (line.TrimStart().StartsWith("#")) continue;
                     if (line.Contains("@include"))
                     {
-                        var path = Helper.GetFilePath(line.Split('"')[1], "def");
-                        var country = new TsCountry(this, path);
+                        var path = PathHelper.GetFilePath(line.Split('"')[1], "def");
+                        var country = new TsCountry(path);
                         if (country.Token != 0 && !_countriesLookup.ContainsKey(country.Token))
                         {
                             _countriesLookup.Add(country.Token, country);
@@ -131,23 +124,18 @@ namespace TsMap
 
         private void ParsePrefabFiles()
         {
-            var worldDirectory = Rfs.GetDirectory("def/world");
+            var worldDirectory = UberFileSystem.Instance.GetDirectory("def/world");
             if (worldDirectory == null)
             {
-                Log.Msg("Could not read 'def/world' dir");
+                Logger.Instance.Error("Could not read 'def/world' dir");
                 return;
             }
 
-            var prefabFiles = worldDirectory.GetFiles("prefab");
-            if (prefabFiles == null)
+            foreach (var prefabFileName in worldDirectory.GetFiles("prefab"))
             {
-                Log.Msg("Could not read prefab files");
-                return;
-            }
+                if (!prefabFileName.StartsWith("prefab")) continue;
+                var prefabFile = UberFileSystem.Instance.GetFile($"def/world/{prefabFileName}");
 
-            foreach (var prefabFile in prefabFiles)
-            {
-                if (!prefabFile.GetFileName().StartsWith("prefab")) continue;
                 var data = prefabFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
 
@@ -161,21 +149,21 @@ namespace TsMap
                     {
                         if (key == "prefab_model")
                         {
-                            token = ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[1]));
+                            token = ScsToken.StringToToken(SiiHelper.Trim(value.Split('.')[1]));
                         }
                         else if (key == "prefab_desc")
                         {
-                            path = Helper.GetFilePath(value.Split('"')[1]);
+                            path = PathHelper.EnsureLocalPath(value.Split('"')[1]);
                         }
                         else if (key == "category")
                         {
-                            category = value.Split('"')[1];
+                            category = value.Contains('"') ? value.Split('"')[1] : value.Trim();
                         }
                     }
 
                     if (line.Contains("}") && token != 0 && path != "")
                     {
-                        var prefab = new TsPrefab(this, path, token, category);
+                        var prefab = new TsPrefab(path, token, category);
                         if (prefab.Token != 0 && !_prefabLookup.ContainsKey(prefab.Token))
                         {
                             _prefabLookup.Add(prefab.Token, prefab);
@@ -191,23 +179,18 @@ namespace TsMap
 
         private void ParseRoadLookFiles()
         {
-            var worldDirectory = Rfs.GetDirectory("def/world");
+            var worldDirectory = UberFileSystem.Instance.GetDirectory("def/world");
             if (worldDirectory == null)
             {
-                Log.Msg("Could not read 'def/world' dir");
+                Logger.Instance.Error("Could not read 'def/world' dir");
                 return;
             }
 
-            var roadLookFiles = worldDirectory.GetFiles("road_look");
-            if (roadLookFiles == null)
+            foreach (var roadLookFileName in worldDirectory.GetFiles("road_look"))
             {
-                Log.Msg("Could not read road look files");
-                return;
-            }
+                if (!roadLookFileName.StartsWith("road")) continue;
+                var roadLookFile = UberFileSystem.Instance.GetFile($"def/world/{roadLookFileName}");
 
-            foreach (var roadLookFile in roadLookFiles)
-            {
-                if (!roadLookFile.GetFileName().StartsWith("road")) continue;
                 var data = roadLookFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
                 TsRoadLook roadLook = null;
@@ -219,7 +202,7 @@ namespace TsMap
                     {
                         if (key == "road_look")
                         {
-                            roadLook = new TsRoadLook(ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[1].Trim('{'))));
+                            roadLook = new TsRoadLook(ScsToken.StringToToken(SiiHelper.Trim(value.Split('.')[1].Trim('{'))));
                         }
                         if (roadLook == null) continue;
                         if (key == "lanes_left[]")
@@ -250,22 +233,17 @@ namespace TsMap
 
         private void ParseFerryConnections()
         {
-            var connectionDirectory = Rfs.GetDirectory("def/ferry/connection");
+            var connectionDirectory = UberFileSystem.Instance.GetDirectory("def/ferry/connection");
             if (connectionDirectory == null)
             {
-                Log.Msg("Could not read 'def/ferry/connection' dir");
+                Logger.Instance.Error("Could not read 'def/ferry/connection' dir");
                 return;
             }
 
-            var ferryConnectionFiles = connectionDirectory.GetFiles("sii");
-            if (ferryConnectionFiles == null)
+            foreach (var ferryConnectionFilePath in connectionDirectory.GetFilesByExtension("def/ferry/connection", ".sui", ".sii"))
             {
-                Log.Msg("Could not read ferry connection files files");
-                return;
-            }
+                var ferryConnectionFile = UberFileSystem.Instance.GetFile(ferryConnectionFilePath);
 
-            foreach (var ferryConnectionFile in ferryConnectionFiles)
-            {
                 var data = ferryConnectionFile.Entry.Read();
                 var lines = Encoding.UTF8.GetString(data).Split('\n');
 
@@ -303,13 +281,13 @@ namespace TsMap
                             var portIds = value.Split('.');
                             conn = new TsFerryConnection
                             {
-                                StartPortToken = ScsHash.StringToToken(portIds[1]),
-                                EndPortToken = ScsHash.StringToToken(portIds[2].TrimEnd('{').Trim())
+                                StartPortToken = ScsToken.StringToToken(portIds[1]),
+                                EndPortToken = ScsToken.StringToToken(portIds[2].TrimEnd('{').Trim())
                             };
                         }
                     }
 
-                    if (!line.Contains("}") || conn == null) continue;;
+                    if (!line.Contains("}") || conn == null) continue;
 
                     var existingItem = _ferryConnectionLookup.FirstOrDefault(item =>
                         (item.StartPortToken == conn.StartPortToken && item.EndPortToken == conn.EndPortToken) ||
@@ -320,76 +298,39 @@ namespace TsMap
             }
         }
 
-        private void ParseOverlays() // TODO: Fix Road overlays and company (road_quarry & quarry) from interfering (or however you spell that)
+        private TsMapOverlay GetOverlayFromMatFile(string matFilePath)
         {
-            var uiMapDirectory = Rfs.GetDirectory("material/ui/map");
-            if (uiMapDirectory == null)
-            {
-                Log.Msg("Could not read 'material/ui/map' dir");
-                return;
-            }
+            var matFile = UberFileSystem.Instance.GetFile(matFilePath);
+            if (matFile == null) return null;
 
-            var matFiles = uiMapDirectory.GetFiles(".mat");
-            if (matFiles == null)
-            {
-                Log.Msg("Could not read .mat files");
-                return;
-            }
+            var data = matFile.Entry.Read();
+            var lines = Encoding.UTF8.GetString(data).Split('\n');
 
-            var uiCompanyDirectory = Rfs.GetDirectory("material/ui/company/small");
-            if (uiCompanyDirectory != null)
+            foreach (var line in lines)
             {
-                var data = uiCompanyDirectory.GetFiles(".mat");
-                if (data != null) matFiles.AddRange(data);
-            }
-            else
-            {
-                Log.Msg("Could not read 'material/ui/company/small' dir");
-            }
-
-            var uiMapRoadDirectory = Rfs.GetDirectory("material/ui/map/road");
-            if (uiMapRoadDirectory != null)
-            {
-                var data = uiMapRoadDirectory.GetFiles(".mat");
-                if (data != null) matFiles.AddRange(data);
-            }
-            else
-            {
-                Log.Msg("Could not read 'material/ui/map/road' dir");
-            }
-
-            foreach (var matFile in matFiles)
-            {
-                var data = matFile.Entry.Read();
-                var lines = Encoding.UTF8.GetString(data).Split('\n');
-
-                foreach (var line in lines)
+                var (validLine, key, value) = SiiHelper.ParseLine(line);
+                if (!validLine) continue;
+                if (key == "texture")
                 {
-                    var (validLine, key, value) = SiiHelper.ParseLine(line);
-                    if (!validLine) continue;
-                    if (key == "texture")
+                    var tobjPath = PathHelper.CombinePath(PathHelper.GetDirectoryPath(matFilePath), value.Split('"')[1]);
+
+                    var tobjData = UberFileSystem.Instance.GetFile(tobjPath)?.Entry?.Read();
+
+                    if (tobjData == null)
                     {
-                        var tobjPath = Helper.CombinePath(matFile.GetLocalPath(), value.Split('"')[1]);
-
-                        var tobjData = Rfs.GetFileEntry(tobjPath)?.Entry?.Read();
-
-                        if (tobjData == null) break;
-
-                        var path = Helper.GetFilePath(Encoding.UTF8.GetString(tobjData, 0x30, tobjData.Length - 0x30));
-
-                        var name = matFile.GetFileName();
-                        if (name.StartsWith("map")) continue;
-                        if (name.StartsWith("road_")) name = name.Substring(5);
-
-                        var token = ScsHash.StringToToken(name);
-                        if (!_overlayLookup.ContainsKey(token))
-                        {
-                            _overlayLookup.Add(token, new TsMapOverlay(this, path));
-                        }
-
+                        Logger.Instance.Warning($"Could not read tobj file for '{tobjPath}'");
+                        break;
                     }
+
+                    var path = PathHelper.EnsureLocalPath(Encoding.UTF8.GetString(tobjData, 0x30, tobjData.Length - 0x30));
+
+                    var name = PathHelper.GetFileNameFromPath(matFilePath);
+                    if (name.StartsWith("map")) break; // skip the large unused background files
+
+                    return new TsMapOverlay(path);
                 }
             }
+            return null;
         }
 
         /// <summary>
@@ -399,118 +340,59 @@ namespace TsMap
         {
             var startTime = DateTime.Now.Ticks;
             ParseCityFiles();
+            Logger.Instance.Info($"Loaded {_citiesLookup.Count} cities in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
             ParseCountryFiles();
-            Log.Msg($"Loaded city files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+            Logger.Instance.Info($"Loaded {_countriesLookup.Count} countries in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             startTime = DateTime.Now.Ticks;
             ParsePrefabFiles();
-            Log.Msg($"Loaded prefab files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+            Logger.Instance.Info($"Loaded {_prefabLookup.Count} prefabs in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             startTime = DateTime.Now.Ticks;
             ParseRoadLookFiles();
-            Log.Msg($"Loaded road files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+            Logger.Instance.Info($"Loaded {_roadLookup.Count} roads in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             startTime = DateTime.Now.Ticks;
             ParseFerryConnections();
-            Log.Msg($"Loaded ferry files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
-
-            startTime = DateTime.Now.Ticks;
-            ParseOverlays();
-            Log.Msg($"Loaded overlay files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+            Logger.Instance.Info($"Loaded {_ferryConnectionLookup.Count} ferry connections in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
         }
 
         /// <summary>
         /// Parse all .base files
         /// </summary>
-        private void ParseMapFiles()
+        private void LoadSectorFiles()
         {
-            var baseMapEntry = Rfs.GetDirectory("map");
+            var baseMapEntry = UberFileSystem.Instance.GetDirectory("map");
             if (baseMapEntry == null)
             {
-                Log.Msg("Could not read 'map' dir");
+                Logger.Instance.Error("Could not read 'map' dir");
                 return;
             }
 
-            var mbd = baseMapEntry.Files.Values.Where(x => x.GetExtension().Equals("mbd")).ToList(); // Get the map names from the mbd files
-            if (mbd.Count == 0)
+            var mbdFilePaths = baseMapEntry.GetFilesByExtension("map", ".mbd"); // Get the map names from the mbd files
+            if (mbdFilePaths.Count == 0)
             {
-                Log.Msg("Could not find mbd file");
+                Logger.Instance.Error("Could not find mbd file");
                 return;
             }
 
             _sectorFiles = new List<string>();
 
-            foreach (var file in mbd)
+            foreach (var filePath in mbdFilePaths)
             {
-                var mapName = file.GetFileName();
+                var mapName = PathHelper.GetFileNameWithoutExtensionFromPath(filePath);
                 IsEts2 = !(mapName == "usa");
 
-                var mapFileDir = Rfs.GetDirectory($"map/{mapName}");
+                var mapFileDir = UberFileSystem.Instance.GetDirectory($"map/{mapName}");
                 if (mapFileDir == null)
                 {
-                    Log.Msg($"Could not read 'map/{mapName}' directory");
+                    Logger.Instance.Error($"Could not read 'map/{mapName}' directory");
                     return;
                 }
 
-                _sectorFiles.AddRange(mapFileDir.GetFiles(".base").Select(x => x.GetPath()).ToList());
-            }
-        }
-
-        private void ParseLocaleFile(ScsFile localeFile, string locale)
-        {
-            if (localeFile == null) return;
-            var entryContents = localeFile.Entry.Read();
-            var magic = MemoryHelper.ReadUInt32(entryContents, 0);
-            var fileContents = (magic == 21720627) ? Helper.Decrypt3Nk(entryContents) : Encoding.UTF8.GetString(entryContents);
-            if (fileContents == null)
-            {
-                Log.Msg($"Could not read locale file '{localeFile.GetPath()}'");
-                return;
-            }
-
-            var key = string.Empty;
-
-            foreach (var l in fileContents.Split('\n'))
-            {
-                if (!l.Contains(':')) continue;
-
-                if (l.Contains("key[]"))
-                {
-                    key = l.Split('"')[1];
-                }
-                else if (l.Contains("val[]"))
-                {
-                    var val = l.Split('"')[1];
-                    if (key != string.Empty && val != string.Empty)
-                    {
-                        var cities = _citiesLookup.Values.Where(x => x.LocalizationToken == key);
-                        foreach (var city in cities)
-                        {
-                            _citiesLookup[city.Token].AddLocalizedName(locale, val);
-                        }
-
-                        var country = _countriesLookup.Values.FirstOrDefault(x => x.LocalizationToken == key);
-                        if (country != null) _countriesLookup[country.Token].AddLocalizedName(locale, val);
-                    }
-                }
-            }
-        }
-
-        private void ReadLocalizationOptions()
-        {
-            var localeDir = Rfs.GetDirectory("locale");
-            if (localeDir == null)
-            {
-                Log.Msg("Could not find locale directory.");
-                return;
-            }
-            foreach (var localeDirDirectory in localeDir.Directories)
-            {
-                LocalizationList.Add(localeDirDirectory.Value.GetCurrentDirectoryName());
-                foreach (var localeFile in localeDirDirectory.Value.Files)
-                {
-                    ParseLocaleFile(localeFile.Value, localeDirDirectory.Value.GetCurrentDirectoryName());
-                }
+                _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base"));
             }
         }
 
@@ -523,33 +405,46 @@ namespace TsMap
 
             if (!Directory.Exists(_gameDir))
             {
-                Log.Msg("Could not find Game directory.");
+                Logger.Instance.Error("Could not find Game directory.");
                 return;
             }
 
-            Rfs = new RootFileSystem(_gameDir);
+            UberFileSystem.Instance.AddSourceDirectory(_gameDir);
 
             _mods.Reverse(); // Highest priority mods (top) need to be loaded last
 
             foreach (var mod in _mods)
             {
-                if (mod.Load) Rfs.AddSourceFile(mod.ModPath);
+                if (mod.Load) UberFileSystem.Instance.AddSourceFile(mod.ModPath);
             }
 
-            Log.Msg($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+            Logger.Instance.Info($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             ParseDefFiles();
-            ParseMapFiles();
+            LoadSectorFiles();
 
-            ReadLocalizationOptions();
+            var preLocaleTime = DateTime.Now.Ticks;
+            Localization.LoadLocaleValues();
+            Logger.Instance.Info($"It took {(DateTime.Now.Ticks - preLocaleTime) / TimeSpan.TicksPerMillisecond} ms to read all locale files");
 
             if (_sectorFiles == null) return;
             var preMapParseTime = DateTime.Now.Ticks;
             Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
-            Log.Msg($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base)" +
-                    $" map files and {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms total.");
+            Logger.Instance.Info($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base) files");
+
+            var invalidFerryConnections = _ferryConnectionLookup.Where(x => x.StartPortLocation == PointF.Empty || x.EndPortLocation == PointF.Empty).ToList();
+            foreach (var invalidFerryConnection in invalidFerryConnections)
+            {
+                _ferryConnectionLookup.Remove(invalidFerryConnection);
+                Logger.Instance.Debug($"Ignored ferry connection " +
+                    $"'{ScsToken.TokenToString(invalidFerryConnection.StartPortToken)}-{ScsToken.TokenToString(invalidFerryConnection.EndPortToken)}' " +
+                    $"due to not having Start/End location set.");
+            }
+
+            Logger.Instance.Info($"Loaded {_overlayCache.Count} overlays");
+            Logger.Instance.Info($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to fully load.");
         }
 
         public void ExportInfo(ExportFlags exportFlags, string exportPath)
@@ -572,18 +467,28 @@ namespace TsMap
                 var cityJObj = JObject.FromObject(city.City);
                 cityJObj["X"] = city.X;
                 cityJObj["Y"] = city.Z;
-                if (_countriesLookup.ContainsKey(ScsHash.StringToToken(city.City.Country)))
+                if (_countriesLookup.ContainsKey(ScsToken.StringToToken(city.City.Country)))
                 {
-                    var country = _countriesLookup[ScsHash.StringToToken(city.City.Country)];
+                    var country = _countriesLookup[ScsToken.StringToToken(city.City.Country)];
                     cityJObj["CountryId"] = country.CountryId;
                 }
                 else
                 {
-                    Log.Msg($"Could not find country for {city.City.Name}");
+                    Logger.Instance.Warning($"Could not find country for {city.City.Name}");
                 }
 
                 if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
-                    cityJObj["LocalizedNames"] = JObject.FromObject(city.City.LocalizedNames);
+                {
+                    cityJObj["LocalizedNames"] = new JObject();
+                    foreach(var locale in Localization.GetLocales())
+                    {
+                        var locCityName = Localization.GetLocaleValue(city.City.LocalizationToken, locale);
+                        if (locCityName != null)
+                        {
+                            cityJObj["LocalizedNames"][locale] = locCityName;
+                        }
+                    }
+                }
 
                 citiesJArr.Add(cityJObj);
             }
@@ -599,8 +504,18 @@ namespace TsMap
             foreach (var country in _countriesLookup.Values)
             {
                 var countryJObj = JObject.FromObject(country);
-                if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
-                    countryJObj["LocalizedNames"] = JObject.FromObject(country.LocalizedNames);
+                if (exportFlags.IsActive(ExportFlags.CountryLocalizedNames))
+                {
+                    countryJObj["LocalizedNames"] = new JObject();
+                    foreach (var locale in Localization.GetLocales())
+                    {
+                        var locCountryName = Localization.GetLocaleValue(country.LocalizationToken, locale);
+                        if (locCountryName != null)
+                        {
+                            countryJObj["LocalizedNames"][locale] = locCountryName;
+                        }
+                    }
+                }
                 countriesJArr.Add(countryJObj);
             }
             File.WriteAllText(Path.Combine(path, "Countries.json"), countriesJArr.ToString(Formatting.Indented));
@@ -657,7 +572,7 @@ namespace TsMap
             foreach (var company in Companies)
             {
                 if (company.Hidden) continue;
-                var overlayName = ScsHash.TokenToString(company.OverlayToken);
+                var overlayName = ScsToken.TokenToString(company.OverlayToken);
                 var point = new PointF(company.X, company.Z);
                 if (company.Nodes.Count > 0)
                 {
@@ -719,7 +634,7 @@ namespace TsMap
             foreach (var ferry in FerryConnections)
             {
                 if (ferry.Hidden) continue;
-                var overlayName = ScsHash.TokenToString(ferry.OverlayToken);
+                var overlayName = ScsToken.TokenToString(ferry.OverlayToken);
                 var b = ferry.Overlay?.GetBitmap();
                 if (b == null) continue;
                 var overlayJObj = new JObject
@@ -804,7 +719,7 @@ namespace TsMap
                     }
 
                     overlayJObj["Name"] = overlayName;
-                    var overlay = LookupOverlay(ScsHash.StringToToken(overlayName));
+                    var overlay = LookupOverlay(overlayName, OverlayTypes.Map);
                     var b = overlay.GetBitmap();
                     if (b == null) continue;
                     overlayJObj["Width"] = b.Width;
@@ -831,10 +746,10 @@ namespace TsMap
                         ["Type"] = "Parking",
                     };
 
-                    if (triggerPoint.TriggerActionToken != ScsHash.StringToToken("hud_parking")) continue;
+                    if (triggerPoint.TriggerActionToken != ScsToken.StringToToken("hud_parking")) continue;
 
                     const string overlayName = "parking_ico";
-                    var overlay = LookupOverlay(ScsHash.StringToToken(overlayName));
+                    var overlay = LookupOverlay(overlayName, OverlayTypes.Map);
                     var b = overlay.GetBitmap();
                     if (b == null) continue;
                     overlayJObj["Width"] = b.Width;
@@ -855,14 +770,6 @@ namespace TsMap
             if (maxZ < node.Z) maxZ = node.Z;
         }
 
-        public void UpdateLocalization(int index)
-        {
-            if (index < LocalizationList.Count)
-            {
-                SelectedLocalization = LocalizationList[index];
-            }
-        }
-
         public TsNode GetNodeByUid(ulong uid)
         {
             return Nodes.ContainsKey(uid) ? Nodes[uid] : null;
@@ -870,7 +777,7 @@ namespace TsMap
 
         public TsCountry GetCountryByTokenName(string name)
         {
-            var token = ScsHash.StringToToken(name);
+            var token = ScsToken.StringToToken(name);
             return _countriesLookup.ContainsKey(token) ? _countriesLookup[token] : null;
         }
 
@@ -889,9 +796,56 @@ namespace TsMap
             return _citiesLookup.ContainsKey(cityId) ? _citiesLookup[cityId] : null;
         }
 
-        public TsMapOverlay LookupOverlay(ulong overlayId)
+        /// <summary>
+        /// Get's the overlay for the given overlayName and overlayType from the cache or from the filesystem, returning null if it does not exist in either.
+        /// </summary>
+        /// <param name="overlayName">Name of the icon, road icons should not have 'road_' as a prefix</param>
+        /// <param name="overlayType">Determines the path where it checks for the overlay.
+        /// <para>If <see cref="OverlayTypes.Custom"/> is used, a full path to a .mat file should be provided in <paramref name="overlayName"/></para></param>
+        /// <returns>
+        /// <para><see cref="TsMapOverlay"></see> if found</para>
+        /// <para>Null if not</para>
+        /// </returns>
+        public TsMapOverlay LookupOverlay(string overlayName, OverlayTypes overlayType)
         {
-            return _overlayLookup.ContainsKey(overlayId) ? _overlayLookup[overlayId] : null;
+            if (overlayName == "") return null;
+            ulong hash;
+            string path;
+            switch (overlayType)
+            {
+                case OverlayTypes.Road:
+                    path = $"material/ui/map/road/road_{overlayName}.mat";
+                    break;
+                case OverlayTypes.Company:
+                    path = $"material/ui/company/small/{overlayName}.mat";
+                    break;
+                case OverlayTypes.Map:
+                    path = $"material/ui/map/{overlayName}.mat";
+                    break;
+                default:
+                    path = PathHelper.EnsureLocalPath(overlayName);
+                    break;
+            }
+
+            hash = CityHash.CityHash64(path);
+
+            if (_overlayCache.ContainsKey(hash))
+            {
+                return _overlayCache[hash];
+            }
+            else
+            {
+                var overlay = GetOverlayFromMatFile(path);
+                if (overlay != null)
+                {
+                    if (!_overlayCache.ContainsKey(hash))
+                    {
+                        _overlayCache.Add(hash, overlay);
+                        return overlay;
+                    }
+                }
+            }
+            return null;
         }
 
         public List<TsFerryConnection> LookupFerryConnection(ulong ferryPortId)

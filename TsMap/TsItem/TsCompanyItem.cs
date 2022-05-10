@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap.TsItem
 {
@@ -18,25 +20,26 @@ namespace TsMap.TsItem
             else if (Sector.Version >= 858)
                 TsCompanyItem858(startOffset);
             else
-                Log.Msg(
-                    $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
+                Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
+                    $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
         }
 
         public void TsCompanyItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
             OverlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
 
-            Overlay = Sector.Mapper.LookupOverlay(OverlayToken);
+            Overlay = Sector.Mapper.LookupOverlay(ScsToken.TokenToString(OverlayToken), OverlayTypes.Company);
             if (Overlay == null)
             {
                 Valid = false;
                 if (OverlayToken != 0)
-                    Log.Msg(
-                        $"Could not find Company Overlay: '{ScsHash.TokenToString(OverlayToken)}'({OverlayToken:X}), in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                    Logger.Instance.Error(
+                        $"Could not find Company Overlay: '{ScsToken.TokenToString(OverlayToken)}'({OverlayToken:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08)); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])
 
@@ -51,18 +54,19 @@ namespace TsMap.TsItem
         public void TsCompanyItem858(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
 
             OverlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
 
-            Overlay = Sector.Mapper.LookupOverlay(OverlayToken);
+            Overlay = Sector.Mapper.LookupOverlay(ScsToken.TokenToString(OverlayToken), OverlayTypes.Company);
             if (Overlay == null)
             {
                 Valid = false;
                 if (OverlayToken != 0)
-                    Log.Msg(
-                        $"Could not find Company Overlay: '{ScsHash.TokenToString(OverlayToken)}'({OverlayToken:X}), in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                    Logger.Instance.Error(
+                        $"Could not find Company Overlay: '{ScsToken.TokenToString(OverlayToken)}'({OverlayToken:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
 
             Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08)); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap.TsItem
 {
@@ -11,6 +13,8 @@ namespace TsMap.TsItem
         public TsRoadLook RoadLook { get; private set; }
 
         private List<PointF> _points;
+
+        public bool IsSecret { get; private set; }
 
         public void AddPoints(List<PointF> points)
         {
@@ -39,22 +43,23 @@ namespace TsMap.TsItem
             else if (sector.Version >= 854)
                 TsRoadItem854(startOffset);
             else
-                Log.Msg(
-                    $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
+                Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
+                    $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
         }
 
         public void TsRoadItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
-            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09)); // 0x09(flags)
+            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
+            RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 
             if (RoadLook == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find RoadLook with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                Logger.Instance.Error($"Could not find RoadLook: '{ScsToken.TokenToString(roadLookId)}'({roadLookId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x48); // 0x08(RoadLook) + 0x48(sets cursor before node_uid[])
             EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08); // 0x08(startNodeUid)
@@ -66,15 +71,16 @@ namespace TsMap.TsItem
         public void TsRoadItem829(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
-            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09)); // 0x09(flags)
+            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
+            RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 
             if (RoadLook == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find RoadLook with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                Logger.Instance.Error($"Could not find RoadLook: '{ScsToken.TokenToString(roadLookId)}'({roadLookId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x48); // 0x08(RoadLook) + 0x48(sets cursor before node_uid[])
             EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08); // 0x08(startNodeUid)
@@ -86,14 +92,15 @@ namespace TsMap.TsItem
         public void TsRoadItem846(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
-            RoadLook = Sector.Mapper.LookupRoadLook(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09)); // 0x09(flags)
+            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09);
+            RoadLook = Sector.Mapper.LookupRoadLook(roadLookId); // 0x09(flags)
             if (RoadLook == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find RoadLook with id: {MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                Logger.Instance.Error($"Could not find RoadLook: '{ScsToken.TokenToString(roadLookId)}'({roadLookId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x50); // 0x08(RoadLook) + 0x50(sets cursor before node_uid[])
             EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08); // 0x08(startNodeUid)
@@ -105,16 +112,17 @@ namespace TsMap.TsItem
         public void TsRoadItem854(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
-            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09);
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 2), 0);
+            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 
             if (RoadLook == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find RoadLook: '{ScsHash.TokenToString(roadLookId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset}");
+                Logger.Instance.Error($"Could not find RoadLook: '{ScsToken.TokenToString(roadLookId)}'({roadLookId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
 
             StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0xA4); // 0x08(RoadLook) + 0xA4(sets cursor before node_uid[])

@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using System.Globalization;
 using System.Text;
-using Newtonsoft.Json;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.FileSystem;
 
 namespace TsMap
 {
     public class TsCountry
     {
-        private TsMapper _mapper;
-
         [JsonIgnore]
         public ulong Token { get; }
 
@@ -20,16 +18,13 @@ namespace TsMap
         public string CountryCode { get; }
         public float X { get; }
         public float Y { get; }
-        [JsonIgnore]
-        public Dictionary<string, string> LocalizedNames { get; }
 
-        public TsCountry(TsMapper mapper, string path)
+        public TsCountry(string path)
         {
-            _mapper = mapper;
-            var file = _mapper.Rfs.GetFileEntry(path);
+            var file = UberFileSystem.Instance.GetFile(path);
 
             if (file == null) return;
-            LocalizedNames = new Dictionary<string, string>();
+
             var fileContent = file.Entry.Read();
 
             var lines = Encoding.UTF8.GetString(fileContent).Split('\n');
@@ -41,7 +36,7 @@ namespace TsMap
 
                 if (key == "country_data")
                 {
-                    Token = ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[2]));
+                    Token = ScsToken.StringToToken(SiiHelper.Trim(value.Split('.')[2]));
                 }
                 else if (key == "country_id")
                 {
@@ -68,16 +63,6 @@ namespace TsMap
                     Y = float.Parse(values[2], CultureInfo.InvariantCulture);
                 }
             }
-        }
-
-        public void AddLocalizedName(string locale, string name)
-        {
-            if (!LocalizedNames.ContainsKey(locale)) LocalizedNames.Add(locale, name);
-        }
-
-        public string GetLocalizedName(string locale)
-        {
-            return (LocalizedNames.ContainsKey(locale)) ? LocalizedNames[locale] : Name;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap.TsItem
 {
@@ -12,6 +14,8 @@ namespace TsMap.TsItem
         public int Origin { get; private set; }
         public TsPrefab Prefab { get; private set; }
         private List<TsPrefabLook> _looks;
+
+        public bool IsSecret { get; private set; }
 
         public void AddLook(TsPrefabLook look)
         {
@@ -46,14 +50,14 @@ namespace TsMap.TsItem
             else if (Sector.Version >= 855)
                 TsPrefabItem855(startOffset);
             else
-                Log.Msg(
-                    $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
+                Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
+                    $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
         }
 
         public void TsPrefabItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
@@ -61,8 +65,8 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
+                Logger.Instance.Error($"Could not find Prefab: '{ScsToken.TokenToString(prefabId)}'({prefabId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x18); // 0x18(id & look & variant)
             fileOffset += 0x04; // set cursor after nodeCount
@@ -87,7 +91,7 @@ namespace TsMap.TsItem
         public void TsPrefabItem829(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
@@ -95,8 +99,8 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
+                Logger.Instance.Error($"Could not find Prefab: '{ScsToken.TokenToString(prefabId)}'({prefabId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
 
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x18); // 0x18(id & look & variant)
@@ -123,7 +127,7 @@ namespace TsMap.TsItem
         public void TsPrefabItem831(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
@@ -131,8 +135,8 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
+                Logger.Instance.Error($"Could not find Prefab: '{ScsToken.TokenToString(prefabId)}'({prefabId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
 
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x18); // 0x18(id & look & variant)
@@ -156,7 +160,7 @@ namespace TsMap.TsItem
         public void TsPrefabItem846(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
@@ -164,8 +168,8 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
+                Logger.Instance.Error($"Could not find Prefab: '{ScsToken.TokenToString(prefabId)}'({prefabId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
 
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x18); // 0x18(id & look & variant)
@@ -190,7 +194,7 @@ namespace TsMap.TsItem
         public void TsPrefabItem854(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
@@ -198,8 +202,8 @@ namespace TsMap.TsItem
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
+                Logger.Instance.Error($"Could not find Prefab: '{ScsToken.TokenToString(prefabId)}'({prefabId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // 0x08(prefabId) + 0x08(m_variant)
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (additionalPartsCount * 0x08)); // 0x04(addPartsCount) + additionalParts
@@ -218,16 +222,17 @@ namespace TsMap.TsItem
         public void TsPrefabItem855(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 5);
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
             if (Prefab == null)
             {
                 Valid = false;
-                Log.Msg($"Could not find Prefab: '{ScsHash.TokenToString(prefabId)}'({MemoryHelper.ReadUInt64(Sector.Stream, fileOffset):X}), " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} (item uid: 0x{Uid:X})");
+                Logger.Instance.Error($"Could not find Prefab: '{ScsToken.TokenToString(prefabId)}'({prefabId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
             }
             var additionalPartsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // 0x08(prefabId) + 0x08(m_variant)
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (additionalPartsCount * 0x08)); // 0x04(addPartsCount) + additionalParts

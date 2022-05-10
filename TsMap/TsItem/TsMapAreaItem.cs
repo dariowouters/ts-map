@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using TsMap.Common;
+using TsMap.Helpers;
 
 namespace TsMap.TsItem
 {
@@ -8,6 +9,8 @@ namespace TsMap.TsItem
         public List<ulong> NodeUids { get; private set; }
         public uint ColorIndex { get; private set; }
         public bool DrawOver { get; private set; }
+
+        public bool IsSecret { get; private set; }
 
         public TsMapAreaItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -20,8 +23,9 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
             DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Common.Ets2DlcGuardCount : Common.AtsDlcGuardCount;
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
             Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 4);
 
             NodeUids = new List<ulong>();
 

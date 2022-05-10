@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap", "TsMap\TsMap.csproj", "{E458D6D9-6A9C-4214-92A2-46E5678EDDDA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap.Canvas", "TsMap.Canvas\TsMap.Canvas.csproj", "{B32C5D14-37B7-4E9F-A046-FB91C3338F02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsMap", "TsMap\TsMap.csproj", "{E458D6D9-6A9C-4214-92A2-46E5678EDDDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

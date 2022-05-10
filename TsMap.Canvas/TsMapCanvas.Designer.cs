@@ -43,12 +43,7 @@
             this.paletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.MapPanel = new TsMap.Canvas.MapPanel();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.MainMenuStrip.SuspendLayout();
-            this.MapPanel.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainMenuStrip
@@ -74,14 +69,14 @@
             // GenerateTileMapToolStripMenuItem
             // 
             this.GenerateTileMapToolStripMenuItem.Name = "GenerateTileMapToolStripMenuItem";
-            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.GenerateTileMapToolStripMenuItem.Text = "Generate Tile Map";
             this.GenerateTileMapToolStripMenuItem.Click += new System.EventHandler(this.GenerateTileMapToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -159,37 +154,12 @@
             // 
             // MapPanel
             // 
-            this.MapPanel.Controls.Add(this.statusStrip1);
             this.MapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MapPanel.Location = new System.Drawing.Point(0, 24);
             this.MapPanel.Name = "MapPanel";
             this.MapPanel.Size = new System.Drawing.Size(802, 568);
             this.MapPanel.TabIndex = 1;
             this.MapPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.MapPanel_Paint);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel,
-            this.toolStripProgressBar});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 546);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(802, 22);
-            this.statusStrip1.TabIndex = 0;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel
-            // 
-            this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(42, 17);
-            this.toolStripStatusLabel.Text = "Ready.";
-            // 
-            // toolStripProgressBar
-            // 
-            this.toolStripProgressBar.Name = "toolStripProgressBar";
-            this.toolStripProgressBar.Size = new System.Drawing.Size(100, 16);
-            this.toolStripProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.toolStripProgressBar.Visible = false;
             // 
             // TsMapCanvas
             // 
@@ -202,10 +172,6 @@
             this.Text = "TsMapCanvas";
             this.MainMenuStrip.ResumeLayout(false);
             this.MainMenuStrip.PerformLayout();
-            this.MapPanel.ResumeLayout(false);
-            this.MapPanel.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -228,8 +194,5 @@
         private System.Windows.Forms.ToolStripMenuItem ResetMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripComboBox CityStripComboBox;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
     }
 }

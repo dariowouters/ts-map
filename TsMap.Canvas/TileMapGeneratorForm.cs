@@ -6,9 +6,12 @@ namespace TsMap.Canvas
 {
     public partial class TileMapGeneratorForm : Form
     {
-        public delegate void GenerateTileMapEvent();
+
+        public delegate void GenerateTileMapEvent(string exportPath, int startZoomLevel, int endZoomLevel,
+            bool createTiles, ExportFlags exportFlags, RenderFlags renderFlags);
 
         public GenerateTileMapEvent GenerateTileMap;
+
         public TileMapGeneratorForm()
         {
             InitializeComponent();
@@ -48,6 +51,7 @@ namespace TsMap.Canvas
             RenderFlags renderFlags = 0;
             if (PrefabsCheckBox.Checked) renderFlags |= RenderFlags.Prefabs;
             if (RoadsCheckBox.Checked) renderFlags |= RenderFlags.Roads;
+            if (SecretRoadsCheckBox.Checked) renderFlags |= RenderFlags.SecretRoads;
             if (MapAreasCheckBox.Checked) renderFlags |= RenderFlags.MapAreas;
             if (MapOverlaysCheckBox.Checked) renderFlags |= RenderFlags.MapOverlays;
             if (FerryConnectionsCheckBox.Checked) renderFlags |= RenderFlags.FerryConnections;
@@ -131,7 +135,8 @@ namespace TsMap.Canvas
 
                 SettingsManager.Current.SaveSettings();
 
-                GenerateTileMap();
+                GenerateTileMap(folderBrowserDialog1.SelectedPath, startZoomLevel, endZoomLevel, GenTilesCheck.Checked,
+                    GetExportFlags(), GetRenderFlags());
             }
         }
         

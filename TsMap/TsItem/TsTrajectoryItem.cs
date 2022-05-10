@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap.TsItem
 {
@@ -12,8 +14,8 @@ namespace TsMap.TsItem
             else if (Sector.Version >= 846)
                 TsTrajectoryItem846(startOffset);
             else
-                Log.Msg(
-                    $"Unknown base file version ({Sector.Version}) for item {Type} in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset}.");
+                Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
+                    $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
         }
 
         public void TsTrajectoryItem834(int startOffset)
