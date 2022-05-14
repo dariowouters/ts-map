@@ -71,6 +71,7 @@ namespace TsMap.Canvas
             if (triStateTreeView1.GetCheckedByNodeName("GenCountryLocalizedNames")) exportFlags |= ExportFlags.CountryLocalizedNames;
             if (triStateTreeView1.GetCheckedByNodeName("GenOverlayList")) exportFlags |= ExportFlags.OverlayList;
             if (triStateTreeView1.GetCheckedByNodeName("GenOverlayPNGs")) exportFlags |= ExportFlags.OverlayPNGs;
+            if (triStateTreeView1.GetCheckedByNodeName("GenBusStops")) exportFlags |= ExportFlags.BusStops;
 
             return exportFlags;
         }
@@ -85,6 +86,7 @@ namespace TsMap.Canvas
             triStateTreeView1.GetNodeByName("GenCountryLocalizedNames").Checked = SettingsManager.Current.Settings.TileGenerator.ExportFlags.IsActive(ExportFlags.CountryLocalizedNames);
             triStateTreeView1.GetNodeByName("GenOverlayList").Checked = SettingsManager.Current.Settings.TileGenerator.ExportFlags.IsActive(ExportFlags.OverlayList);
             triStateTreeView1.GetNodeByName("GenOverlayPNGs").Checked = SettingsManager.Current.Settings.TileGenerator.ExportFlags.IsActive(ExportFlags.OverlayPNGs);
+            triStateTreeView1.GetNodeByName("GenBusStops").Checked = SettingsManager.Current.Settings.TileGenerator.ExportFlags.IsActive(ExportFlags.BusStops);
         }
 
         private void GenerateBtn_Click(object sender, EventArgs e)

@@ -30,6 +30,7 @@ namespace TsMap
         CountryLocalizedNames = 1 << 5, // 32
         OverlayList = 1 << 6, // 64
         OverlayPNGs = 1 << 7, // 128
+        BusStops = 1 << 8,
         All = int.MaxValue
     }
 

@@ -39,6 +39,7 @@
             System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Export As PNG");
             System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Generate Overlay List", new System.Windows.Forms.TreeNode[] {
             treeNode6});
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Generate Bus Stops");
             this.GenerateBtn = new System.Windows.Forms.Button();
             this.StartLabel = new System.Windows.Forms.Label();
             this.EndLabel = new System.Windows.Forms.Label();
@@ -293,11 +294,15 @@
             treeNode7.Name = "GenOverlayList";
             treeNode7.StateImageIndex = 0;
             treeNode7.Text = "Generate Overlay List";
+            treeNode8.Name = "GenBusStops";
+            treeNode8.StateImageIndex = 0;
+            treeNode8.Text = "Generate Bus Stops";
             this.triStateTreeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode3,
             treeNode5,
-            treeNode7});
+            treeNode7,
+            treeNode8});
             this.triStateTreeView1.Size = new System.Drawing.Size(166, 138);
             this.triStateTreeView1.TabIndex = 13;
             // 

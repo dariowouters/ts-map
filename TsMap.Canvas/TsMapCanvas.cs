@@ -45,7 +45,7 @@ namespace TsMap.Canvas
             //JsonHelper.SaveSettings(_appSettings);
 
             _mapper = new TsMapper(SettingsManager.Current.Settings.LastGamePath, SettingsManager.Current.Settings.Mods);
-            _palette = new SimpleMapPalette();
+            _palette = SettingsManager.Current.Settings.Palette.ToBrushPalette();// new SimpleMapPalette();
 
             _mapper.Parse();
 

@@ -12,6 +12,7 @@ using TsMap.FileSystem;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
 using TsMap.TsItem;
+using System.Web.Script.Serialization;
 
 namespace TsMap
 {
@@ -42,6 +43,7 @@ namespace TsMap
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
         public readonly List<TsCutsceneItem> Viewpoints = new List<TsCutsceneItem>();
+        public readonly List<TsBusStopItem> BusStops = new List<TsBusStopItem>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -452,6 +454,7 @@ namespace TsMap
             if (exportFlags.IsActive(ExportFlags.CityList)) ExportCities(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.CountryList)) ExportCountries(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.OverlayList)) ExportOverlays(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.BusStops)) ExportBusStops(exportFlags, exportPath);
         }
 
         /// <summary>
@@ -467,6 +470,8 @@ namespace TsMap
                 var cityJObj = JObject.FromObject(city.City);
                 cityJObj["X"] = city.X;
                 cityJObj["Y"] = city.Z;
+                cityJObj["InGameId"] = ScsToken.TokenToString(city.City.Token);
+
                 if (_countriesLookup.ContainsKey(ScsToken.StringToToken(city.City.Country)))
                 {
                     var country = _countriesLookup[ScsToken.StringToToken(city.City.Country)];
@@ -564,6 +569,7 @@ namespace TsMap
                     ["Type"] = "Overlay",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
+                    ["City"] = FindCityInGameId(overlay)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -607,6 +613,7 @@ namespace TsMap
                     ["Type"] = "Company",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
+                    ["City"] = FindCityInGameId(company)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -626,6 +633,7 @@ namespace TsMap
                     ["Type"] = "Parking",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
+                    ["City"] = FindCityInGameId(trigger)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -645,6 +653,7 @@ namespace TsMap
                     ["Type"] = (ferry.Train) ? "Train" : "Ferry",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
+                    ["City"] = FindCityInGameId(ferry)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -724,6 +733,7 @@ namespace TsMap
                     if (b == null) continue;
                     overlayJObj["Width"] = b.Width;
                     overlayJObj["Height"] = b.Height;
+                    overlayJObj["City"] = FindCityInGameId(prefab);
                     overlaysJArr.Add(overlayJObj);
                     if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                         b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
@@ -754,6 +764,7 @@ namespace TsMap
                     if (b == null) continue;
                     overlayJObj["Width"] = b.Width;
                     overlayJObj["Height"] = b.Height;
+                    overlayJObj["City"] = FindCityInGameId(prefab);
                     overlaysJArr.Add(overlayJObj);
                     if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                         b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
@@ -860,6 +871,48 @@ namespace TsMap
             {
                 connection.SetPortLocation(ferryPortId, x, z);
             }
+        }
+
+        public TsCity FindCity(TsItem.TsItem item)
+        {
+            foreach (var city in Cities)
+            {
+                if (item.X >= city.X &&
+                    item.X <= (city.X + city.Width) &&
+                    item.Z >= city.Z &&
+                    item.Z <= (city.Z + city.Height)) return city.City;
+            }
+            return null;
+        }
+
+        public string FindCityInGameId(TsItem.TsItem item)
+        {
+            var city = FindCity(item);
+            if (city == null) return null;
+            if (city != null)
+                return ScsToken.TokenToString(city.Token);
+
+            return null;
+        }
+
+        public void ExportBusStops(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            var busStops = new JArray();
+
+            foreach (var bs in BusStops)
+            {
+                var x = new JObject();
+                x["X"] = bs.X;
+                x["Y"] = bs.Z;
+                x["Type"] = "BusStop";
+                x["City"] = FindCityInGameId(bs);
+
+                busStops.Add(x);
+            }
+
+            File.WriteAllText(Path.Combine(path, "BusStops.json"), busStops.ToString(Formatting.Indented));
         }
     }
 }
