@@ -314,6 +314,14 @@ namespace TsMap.Canvas
 
                 GenerateTileMap(startZoomLevel, endZoomLevel, exportPath, createTiles, (exportFlags & ExportFlags.TileMapInfo) == ExportFlags.TileMapInfo, renderFlags);
             };
+
+            _tileMapGeneratorForm.ExportMapData += (exportPath, exportFlags) =>
+            {
+                _mapper.ExportInfo(exportFlags, exportPath);
+
+                MessageBox.Show("Map Data exported", "Map Info Export",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
         }
 
         private void FullMapToolStripMenuItem_Click(object sender, EventArgs e)

@@ -69,14 +69,14 @@
             // GenerateTileMapToolStripMenuItem
             // 
             this.GenerateTileMapToolStripMenuItem.Name = "GenerateTileMapToolStripMenuItem";
-            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.GenerateTileMapToolStripMenuItem.Text = "Generate Tile Map";
             this.GenerateTileMapToolStripMenuItem.Click += new System.EventHandler(this.GenerateTileMapToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 

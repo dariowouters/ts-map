@@ -61,6 +61,7 @@
             this.lblMapPadding = new System.Windows.Forms.Label();
             this.txtMapPadding = new System.Windows.Forms.TextBox();
             this.triStateTreeView1 = new TsMap.Canvas.TriStateTreeView();
+            this.ExportDataBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.StartZoomLevelBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EndZoomLevelBox)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -70,7 +71,7 @@
             // 
             this.GenerateBtn.Location = new System.Drawing.Point(10, 229);
             this.GenerateBtn.Name = "GenerateBtn";
-            this.GenerateBtn.Size = new System.Drawing.Size(298, 23);
+            this.GenerateBtn.Size = new System.Drawing.Size(166, 23);
             this.GenerateBtn.TabIndex = 2;
             this.GenerateBtn.Text = "Generate";
             this.GenerateBtn.UseVisualStyleBackColor = true;
@@ -306,11 +307,22 @@
             this.triStateTreeView1.Size = new System.Drawing.Size(166, 138);
             this.triStateTreeView1.TabIndex = 13;
             // 
+            // ExportDataBtn
+            // 
+            this.ExportDataBtn.Location = new System.Drawing.Point(182, 229);
+            this.ExportDataBtn.Name = "ExportDataBtn";
+            this.ExportDataBtn.Size = new System.Drawing.Size(126, 23);
+            this.ExportDataBtn.TabIndex = 18;
+            this.ExportDataBtn.Text = "Export Data";
+            this.ExportDataBtn.UseVisualStyleBackColor = true;
+            this.ExportDataBtn.Click += new System.EventHandler(this.ExportDataBtn_Click);
+            // 
             // TileMapGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(319, 264);
+            this.Controls.Add(this.ExportDataBtn);
             this.Controls.Add(this.txtMapPadding);
             this.Controls.Add(this.lblMapPadding);
             this.Controls.Add(this.label1);
@@ -360,5 +372,6 @@
         private System.Windows.Forms.Label lblMapPadding;
         private System.Windows.Forms.TextBox txtMapPadding;
         private System.Windows.Forms.CheckBox SecretRoadsCheckBox;
+        private System.Windows.Forms.Button ExportDataBtn;
     }
 }

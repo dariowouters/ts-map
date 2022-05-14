@@ -10,7 +10,11 @@ namespace TsMap.Canvas
         public delegate void GenerateTileMapEvent(string exportPath, int startZoomLevel, int endZoomLevel,
             bool createTiles, ExportFlags exportFlags, RenderFlags renderFlags);
 
+        public delegate void ExportMapDataEvent(string exportPath, ExportFlags exportFlags);
+
         public GenerateTileMapEvent GenerateTileMap;
+
+        public ExportMapDataEvent ExportMapData;
 
         public TileMapGeneratorForm()
         {
@@ -147,6 +151,25 @@ namespace TsMap.Canvas
             StartZoomLevelBox.Enabled = GenTilesCheck.Checked;
             EndZoomLevelBox.Enabled = GenTilesCheck.Checked;
             triStateTreeView1.GetNodeByName("GenTileMapInfo").Checked = GenTilesCheck.Checked;
+        }
+
+        private void ExportDataBtn_Click(object sender, EventArgs e)
+        {
+            SettingsManager.Current.Settings.TileGenerator.ExportFlags = GetExportFlags();
+            SettingsManager.Current.SaveSettings();
+
+            var res = folderBrowserDialog1.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                if (!Directory.Exists(folderBrowserDialog1.SelectedPath)) return;
+
+                SettingsManager.Current.Settings.TileGenerator.LastTileMapPath = folderBrowserDialog1.SelectedPath;
+
+                SettingsManager.Current.SaveSettings();
+
+                ExportMapData(folderBrowserDialog1.SelectedPath,
+                    GetExportFlags());
+            }
         }
     }
 }
