@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TsMap.Common;
 
 namespace TsMap
 {
@@ -30,7 +31,7 @@ namespace TsMap
 
         public float GetWidth()
         {
-            return Offset + Common.LaneWidth * LanesLeft.Count + Common.LaneWidth * LanesRight.Count;
+            return Offset + Consts.LaneWidth * LanesLeft.Count + Consts.LaneWidth * LanesRight.Count;
         }
 
     }

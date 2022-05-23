@@ -3,40 +3,33 @@ using System.IO;
 
 namespace TsMap
 {
-
-    public static class Common
-    {
-        public const int Ets2DlcGuardCount = 12; // TODO: Figure out how to get these dynamically
-        public const int AtsDlcGuardCount = 19;
-        public const float LaneWidth = 4.5f;
-    }
-
     [Flags]
-    public enum RenderFlags
+    public enum RenderFlags : uint
     {
         None = 0,
-        TextOverlay = 1,
-        Prefabs = 2,
-        Roads = 4,
-        MapAreas = 8,
-        MapOverlays = 16,
-        FerryConnections = 32,
-        CityNames = 64,
+        TextOverlay = 1 << 0, // 1
+        Prefabs = 1 << 1, // 2
+        Roads = 1 << 2, // 4
+        MapAreas = 1 << 3, // 8
+        MapOverlays = 1 << 4, // 16
+        FerryConnections = 1 << 5, // 32
+        CityNames = 1 << 6, // 64
+        SecretRoads = 1 << 7, // 128
         All = int.MaxValue
     }
 
     [Flags]
-    public enum ExportFlags
+    public enum ExportFlags : uint
     {
         None = 0,
-        TileMapInfo = 1,
-        CityList = 2,
-        CityDimensions = 4,
-        CityLocalizedNames = 8,
-        CountryList = 16,
-        CountryLocalizedNames = 32,
-        OverlayList = 64,
-        OverlayPNGs = 128,
+        TileMapInfo = 1 << 0, // 1
+        CityList = 1 << 1, // 2
+        CityDimensions = 1 << 2, // 4
+        CityLocalizedNames = 1 << 3, // 8
+        CountryList = 1 << 4, // 16
+        CountryLocalizedNames = 1 << 5, // 32
+        OverlayList = 1 << 6, // 64
+        OverlayPNGs = 1 << 7, // 128
         All = int.MaxValue
     }
 

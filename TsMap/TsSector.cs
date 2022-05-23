@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using TsMap.FileSystem;
 using TsMap.TsItem;
+using TsMap.Helpers;
+using TsMap.Helpers.Logger;
 
 namespace TsMap
 {
@@ -15,18 +18,20 @@ namespace TsMap
 
         public byte[] Stream { get; private set; }
 
+        private readonly UberFile _file;
+
         public TsSector(TsMapper mapper, string filePath)
         {
             Mapper = mapper;
             FilePath = filePath;
-            var file = Mapper.Rfs.GetFileEntry(FilePath);
-            if (file == null)
+            _file = UberFileSystem.Instance.GetFile(FilePath);
+            if (_file == null)
             {
                 _empty = true;
                 return;
             }
 
-            Stream = file.Entry.Read();
+            Stream = _file.Entry.Read();
         }
 
         public void Parse()
@@ -35,7 +40,7 @@ namespace TsMap
 
             if (Version < 825)
             {
-                Log.Msg($"{FilePath} version ({Version}) is too low, min. is 825");
+                Logger.Instance.Error($"{FilePath} version ({Version}) is too low, min. is 825");
                 return;
             }
 
@@ -168,7 +173,7 @@ namespace TsMap
                     }
                     default:
                     {
-                        Log.Msg($"Unknown Type: {type} in {Path.GetFileName(FilePath)} @ {lastOffset}");
+                        Logger.Instance.Warning($"Unknown Type: {type} in {Path.GetFileName(FilePath)} @ {lastOffset}");
                         break;
                     }
                 }
@@ -192,8 +197,14 @@ namespace TsMap
             }
             if (lastOffset != Stream.Length)
             {
-                Log.Msg($"File '{Path.GetFileName(FilePath)}' was not read correctly. Read offset was at 0x{lastOffset:X} while file is 0x{Stream.Length:X} bytes long.");
+                Logger.Instance.Warning($"File '{Path.GetFileName(FilePath)}' from '{GetUberFile().Entry.GetArchiveFile().GetPath()}' was not read correctly. " +
+                    $"Read offset was at 0x{lastOffset:X} while file is 0x{Stream.Length:X} bytes long.");
             }
+        }
+
+        internal UberFile GetUberFile()
+        {
+            return _file;
         }
 
         public void ClearFileData()

@@ -3,7 +3,7 @@
 
 using System.Text;
 
-namespace TsMap.HashFiles
+namespace TsMap.Common
 {
     internal struct UlDiv
     {
@@ -11,7 +11,7 @@ namespace TsMap.HashFiles
         public ulong Rem;
 
     }
-    public static class ScsHash
+    public static class ScsToken
     {
         private static readonly char[] Letters =
         { '\0', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
@@ -25,7 +25,7 @@ namespace TsMap.HashFiles
             ulong res = 1;
             for (var i = 0; num > i; i++)
             {
-                res *= (ulong) Letters.Length;
+                res *= (ulong)Letters.Length;
             }
 
             return res;
@@ -42,7 +42,7 @@ namespace TsMap.HashFiles
         }
         private static UlDiv Div(ulong num, ulong divider)
         {
-            var res = new UlDiv {Rem = num % divider, Quot = num / divider};
+            var res = new UlDiv { Rem = num % divider, Quot = num / divider };
             return res;
         }
         public static ulong StringToToken(string text)
@@ -51,7 +51,7 @@ namespace TsMap.HashFiles
             var len = text.Length;
             for (var i = 0; i < len; i++)
             {
-                res += PowUl(i) * (ulong) GetIdChar(text.ToLower()[i]);
+                res += PowUl(i) * (ulong)GetIdChar(text.ToLower()[i]);
             }
 
             return res;

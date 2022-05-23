@@ -34,12 +34,13 @@
             this.RoadsCheckBox = new System.Windows.Forms.CheckBox();
             this.MapOverlaysCheckBox = new System.Windows.Forms.CheckBox();
             this.PrefabsCheckBox = new System.Windows.Forms.CheckBox();
+            this.SecretRoadsCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // CityNamesCheckBox
             // 
             this.CityNamesCheckBox.AutoSize = true;
-            this.CityNamesCheckBox.Location = new System.Drawing.Point(12, 127);
+            this.CityNamesCheckBox.Location = new System.Drawing.Point(12, 150);
             this.CityNamesCheckBox.Name = "CityNamesCheckBox";
             this.CityNamesCheckBox.Size = new System.Drawing.Size(76, 17);
             this.CityNamesCheckBox.TabIndex = 5;
@@ -50,7 +51,7 @@
             // MapAreasCheckBox
             // 
             this.MapAreasCheckBox.AutoSize = true;
-            this.MapAreasCheckBox.Location = new System.Drawing.Point(12, 58);
+            this.MapAreasCheckBox.Location = new System.Drawing.Point(12, 81);
             this.MapAreasCheckBox.Name = "MapAreasCheckBox";
             this.MapAreasCheckBox.Size = new System.Drawing.Size(74, 17);
             this.MapAreasCheckBox.TabIndex = 2;
@@ -61,7 +62,7 @@
             // FerryConnectionsCheckBox
             // 
             this.FerryConnectionsCheckBox.AutoSize = true;
-            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(12, 104);
+            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(12, 127);
             this.FerryConnectionsCheckBox.Name = "FerryConnectionsCheckBox";
             this.FerryConnectionsCheckBox.Size = new System.Drawing.Size(108, 17);
             this.FerryConnectionsCheckBox.TabIndex = 4;
@@ -83,7 +84,7 @@
             // MapOverlaysCheckBox
             // 
             this.MapOverlaysCheckBox.AutoSize = true;
-            this.MapOverlaysCheckBox.Location = new System.Drawing.Point(12, 81);
+            this.MapOverlaysCheckBox.Location = new System.Drawing.Point(12, 104);
             this.MapOverlaysCheckBox.Name = "MapOverlaysCheckBox";
             this.MapOverlaysCheckBox.Size = new System.Drawing.Size(88, 17);
             this.MapOverlaysCheckBox.TabIndex = 3;
@@ -102,14 +103,26 @@
             this.PrefabsCheckBox.UseVisualStyleBackColor = true;
             this.PrefabsCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
             // 
+            // SecretRoadsCheckBox
+            // 
+            this.SecretRoadsCheckBox.AutoSize = true;
+            this.SecretRoadsCheckBox.Location = new System.Drawing.Point(12, 58);
+            this.SecretRoadsCheckBox.Name = "SecretRoadsCheckBox";
+            this.SecretRoadsCheckBox.Size = new System.Drawing.Size(91, 17);
+            this.SecretRoadsCheckBox.TabIndex = 1;
+            this.SecretRoadsCheckBox.Text = "Secret Roads";
+            this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
+            this.SecretRoadsCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
+            // 
             // ItemVisibilityForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(125, 149);
+            this.ClientSize = new System.Drawing.Size(125, 175);
             this.Controls.Add(this.CityNamesCheckBox);
             this.Controls.Add(this.MapAreasCheckBox);
             this.Controls.Add(this.FerryConnectionsCheckBox);
+            this.Controls.Add(this.SecretRoadsCheckBox);
             this.Controls.Add(this.RoadsCheckBox);
             this.Controls.Add(this.MapOverlaysCheckBox);
             this.Controls.Add(this.PrefabsCheckBox);
@@ -131,5 +144,6 @@
         private System.Windows.Forms.CheckBox RoadsCheckBox;
         private System.Windows.Forms.CheckBox MapOverlaysCheckBox;
         private System.Windows.Forms.CheckBox PrefabsCheckBox;
+        private System.Windows.Forms.CheckBox SecretRoadsCheckBox;
     }
 }

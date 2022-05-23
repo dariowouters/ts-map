@@ -6,7 +6,7 @@ namespace TsMap.Canvas
     public partial class LocalizationSettingsForm : Form
     {
 
-        public delegate void UpdateLocalizationEvent(int locIndex);
+        public delegate void UpdateLocalizationEvent(string localeName);
 
         public UpdateLocalizationEvent UpdateLocalization;
 
@@ -20,7 +20,7 @@ namespace TsMap.Canvas
 
         private void SubmitBtn_Click(object sender, System.EventArgs e)
         {
-            UpdateLocalization(localizationComboBox1.SelectedIndex);
+            UpdateLocalization(localizationComboBox1.GetItemText(localizationComboBox1.SelectedItem));
         }
     }
 }

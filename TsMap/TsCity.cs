@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
-using TsMap.HashFiles;
+using TsMap.Common;
+using TsMap.FileSystem;
 
 namespace TsMap
 {
     public class TsCity
     {
-        private TsMapper _mapper;
-
         public string Name { get; set; }
         [JsonIgnore]
         public string LocalizationToken { get; set; }
@@ -19,16 +18,13 @@ namespace TsMap
         public List<int> XOffsets { get; }
         [JsonIgnore]
         public List<int> YOffsets { get; }
-        [JsonIgnore]
-        public Dictionary<string, string> LocalizedNames { get; }
 
-        public TsCity(TsMapper mapper, string path)
+        public TsCity(string path)
         {
-            _mapper = mapper;
-            var file = _mapper.Rfs.GetFileEntry(path);
+            var file = UberFileSystem.Instance.GetFile(path);
 
             if (file == null) return;
-            LocalizedNames = new Dictionary<string, string>();
+
             var fileContent = file.Entry.Read();
 
             var lines = Encoding.UTF8.GetString(fileContent).Split('\n');
@@ -43,7 +39,7 @@ namespace TsMap
 
                 if (key == "city_data")
                 {
-                    Token = ScsHash.StringToToken(SiiHelper.Trim(value.Split('.')[1]));
+                    Token = ScsToken.StringToToken(SiiHelper.Trim(value.Split('.')[1]));
                 }
                 else if (key == "city_name")
                 {
@@ -74,16 +70,6 @@ namespace TsMap
                     }
                 }
             }
-        }
-
-        public void AddLocalizedName(string locale, string name)
-        {
-            if (!LocalizedNames.ContainsKey(locale)) LocalizedNames.Add(locale, name);
-        }
-
-        public string GetLocalizedName(string locale)
-        {
-            return (LocalizedNames.ContainsKey(locale)) ? LocalizedNames[locale] : Name;
         }
     }
 }
