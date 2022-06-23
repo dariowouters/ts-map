@@ -26,6 +26,8 @@ namespace TsMap.TsItem
         public float Z { get; }
         public bool Hidden { get; protected set; }
 
+        protected uint Flags { get; }
+
         public TsItem(TsSector sector, int offset)
         {
             Sector = sector;
@@ -38,6 +40,8 @@ namespace TsMap.TsItem
 
             X = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x08);
             Z = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x08);
+
+            Flags = MemoryHelper.ReadUInt32(Sector.Stream, fileOffset += 0x20);
         }
 
         public TsNode GetStartNode()
