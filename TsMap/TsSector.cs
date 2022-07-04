@@ -71,6 +71,12 @@ namespace TsMap
                         if (item.Valid) Mapper.Prefabs.Add(item);
                         break;
                     }
+                    case TsItemType.Model: // used to all be in .aux files, not sure why some are now in .base files
+                    {
+                        var item = new TsModelItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
                     case TsItemType.Company:
                     {
                         var item = new TsCompanyItem(this, lastOffset);

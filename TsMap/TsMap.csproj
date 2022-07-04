@@ -75,6 +75,7 @@
     <Compile Include="TsCity.cs" />
     <Compile Include="TsCountry.cs" />
     <Compile Include="TsFerryConnection.cs" />
+    <Compile Include="TsItem\TsModelItem.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
     <Compile Include="TsItem\TsCompanyItem.cs" />

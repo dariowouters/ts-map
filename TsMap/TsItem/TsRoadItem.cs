@@ -40,8 +40,10 @@ namespace TsMap.TsItem
                 TsRoadItem829(startOffset);
             else if (sector.Version >= 846 && sector.Version < 854)
                 TsRoadItem846(startOffset);
-            else if (sector.Version >= 854)
+            else if (sector.Version >= 854 && sector.Version < 895)
                 TsRoadItem854(startOffset);
+            else if (sector.Version >= 895)
+                TsRoadItem895(startOffset);
             else
                 Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
                     $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
@@ -126,6 +128,29 @@ namespace TsMap.TsItem
             }
 
             StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0xA4); // 0x08(RoadLook) + 0xA4(sets cursor before node_uid[])
+            EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08); // 0x08(startNodeUid)
+            fileOffset += 0x08 + 0x04; // 0x08(EndNodeUid) + 0x04(m_unk)
+
+            BlockSize = fileOffset - startOffset;
+        }
+
+        public void TsRoadItem895(int startOffset)
+        {
+            var fileOffset = startOffset + 0x34; // Set position at start of flags
+            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 2), 0);
+            var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
+            RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
+
+            if (RoadLook == null)
+            {
+                Valid = false;
+                Logger.Instance.Error($"Could not find RoadLook: '{ScsToken.TokenToString(roadLookId)}'({roadLookId:X}), item uid: 0x{Uid:X}, " +
+                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
+            }
+
+            StartNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0xB4); // 0x08(RoadLook) + 0xB4(sets cursor before node_uid[])
             EndNodeUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08); // 0x08(startNodeUid)
             fileOffset += 0x08 + 0x04; // 0x08(EndNodeUid) + 0x04(m_unk)
 
