@@ -24,7 +24,8 @@ namespace TsMap.TsItem
 
             DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
             var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount ||
+                     MemoryHelper.IsBitSet(Flags, 3); // navigation map area
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 4);
 
             NodeUids = new List<ulong>();
