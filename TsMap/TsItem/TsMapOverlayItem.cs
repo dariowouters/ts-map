@@ -23,8 +23,8 @@ namespace TsMap.TsItem
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             ZoomLevelVisibility = MemoryHelper.ReadUint8(Sector.Stream, fileOffset);
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || ZoomLevelVisibility == 255;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = ZoomLevelVisibility == 255;
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 3);
 
             var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
@@ -33,7 +33,8 @@ namespace TsMap.TsItem
             {
                 overlayToken = ScsToken.StringToToken("parking_ico"); // parking
                 Overlay = Sector.Mapper.LookupOverlay("parking_ico", OverlayTypes.Map);
-            } else
+            }
+            else
             {
                 Overlay = Sector.Mapper.LookupOverlay(ScsToken.TokenToString(overlayToken), OverlayTypes.Road);
             }

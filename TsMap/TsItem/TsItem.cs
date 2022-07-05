@@ -28,6 +28,8 @@ namespace TsMap.TsItem
 
         protected uint Flags { get; }
 
+        public byte DlcGuard = 0;
+
         public TsItem(TsSector sector, int offset)
         {
             Sector = sector;

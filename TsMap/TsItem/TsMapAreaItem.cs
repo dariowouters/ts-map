@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TsMap.Common;
 using TsMap.Helpers;
 
 namespace TsMap.TsItem
@@ -23,9 +22,9 @@ namespace TsMap.TsItem
             var fileOffset = startOffset + 0x34; // Set position at start of flags
 
             DrawOver = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) != 0;
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount ||
-                     MemoryHelper.IsBitSet(Flags, 3); // navigation map area
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+
+            Hidden = MemoryHelper.IsBitSet(Flags, 3); // navigation map area
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 4);
 
             NodeUids = new List<ulong>();

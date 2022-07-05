@@ -52,8 +52,8 @@ namespace TsMap.TsItem
         public void TsRoadItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
             var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 
@@ -73,8 +73,8 @@ namespace TsMap.TsItem
         public void TsRoadItem829(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
             var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
 
@@ -94,8 +94,8 @@ namespace TsMap.TsItem
         public void TsRoadItem846(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
             var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09);
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId); // 0x09(flags)
             if (RoadLook == null)
@@ -114,8 +114,8 @@ namespace TsMap.TsItem
         public void TsRoadItem854(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 2), 0);
             var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);
@@ -137,8 +137,8 @@ namespace TsMap.TsItem
         public void TsRoadItem895(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x06) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x06);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) & 0x02) != 0;
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 2), 0);
             var roadLookId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x09); // 0x09(flags)
             RoadLook = Sector.Mapper.LookupRoadLook(roadLookId);

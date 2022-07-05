@@ -61,14 +61,14 @@ namespace TsMap
                     {
                         var item = new TsRoadItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Roads.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Roads.Add(item);
                         break;
                     }
                     case TsItemType.Prefab:
                     {
                         var item = new TsPrefabItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Prefabs.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Prefabs.Add(item);
                         break;
                     }
                     case TsItemType.Model: // used to all be in .aux files, not sure why some are now in .base files
@@ -81,7 +81,7 @@ namespace TsMap
                     {
                         var item = new TsCompanyItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Companies.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Companies.Add(item);
                         break;
                     }
                     case TsItemType.Service:
@@ -100,19 +100,19 @@ namespace TsMap
                     {
                         var item = new TsCityItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Cities.Add(item); break;
+                        if (item.Valid && !item.Hidden) Mapper.Cities.Add(item); break;
                     }
                     case TsItemType.MapOverlay:
                     {
                         var item = new TsMapOverlayItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.MapOverlays.Add(item); break;
+                        if (item.Valid && !item.Hidden) Mapper.MapOverlays.Add(item); break;
                     }
                     case TsItemType.Ferry:
                     {
                         var item = new TsFerryItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.FerryConnections.Add(item); break;
+                        if (item.Valid && !item.Hidden) Mapper.FerryConnections.Add(item); break;
                     }
                     case TsItemType.Garage:
                     {
@@ -124,7 +124,7 @@ namespace TsMap
                     {
                         var item = new TsTriggerItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Triggers.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Triggers.Add(item);
                         break;
                     }
                     case TsItemType.FuelPump:
@@ -161,14 +161,14 @@ namespace TsMap
                     {
                         var item = new TsMapAreaItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.MapAreas.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.MapAreas.Add(item);
                         break;
                     }
                     case TsItemType.Cutscene:
                     {
                         var item = new TsCutsceneItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Viewpoints.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Viewpoints.Add(item);
                         break;
                     }
                     case TsItemType.VisibilityArea:

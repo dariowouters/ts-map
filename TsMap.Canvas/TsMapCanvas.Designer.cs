@@ -41,6 +41,7 @@
             this.itemVisibilityToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.localizationSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.paletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dLCGuardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.MapPanel = new TsMap.Canvas.MapPanel();
             this.MainMenuStrip.SuspendLayout();
@@ -69,14 +70,14 @@
             // GenerateTileMapToolStripMenuItem
             // 
             this.GenerateTileMapToolStripMenuItem.Name = "GenerateTileMapToolStripMenuItem";
-            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.GenerateTileMapToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.GenerateTileMapToolStripMenuItem.Text = "Generate Tile Map";
             this.GenerateTileMapToolStripMenuItem.Click += new System.EventHandler(this.GenerateTileMapToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -86,7 +87,8 @@
             this.mapToolStripMenuItem,
             this.itemVisibilityToolStripMenuItem1,
             this.localizationSettingsToolStripMenuItem,
-            this.paletteToolStripMenuItem});
+            this.paletteToolStripMenuItem,
+            this.dLCGuardToolStripMenuItem});
             this.itemVisibilityToolStripMenuItem.Name = "itemVisibilityToolStripMenuItem";
             this.itemVisibilityToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.itemVisibilityToolStripMenuItem.Text = "View";
@@ -152,6 +154,13 @@
             this.paletteToolStripMenuItem.Text = "Palette";
             this.paletteToolStripMenuItem.Click += new System.EventHandler(this.paletteToolStripMenuItem_Click);
             // 
+            // dLCGuardToolStripMenuItem
+            // 
+            this.dLCGuardToolStripMenuItem.Name = "dLCGuardToolStripMenuItem";
+            this.dLCGuardToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.dLCGuardToolStripMenuItem.Text = "DLC guards";
+            this.dLCGuardToolStripMenuItem.Click += new System.EventHandler(this.dLCGuardToolStripMenuItem_Click);
+            // 
             // MapPanel
             // 
             this.MapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -194,5 +203,6 @@
         private System.Windows.Forms.ToolStripMenuItem ResetMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripComboBox CityStripComboBox;
+        private System.Windows.Forms.ToolStripMenuItem dLCGuardToolStripMenuItem;
     }
 }
