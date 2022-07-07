@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for 1.44**
+### **Support for 1.45 Open Beta**
 
 ## Export Maps
 Can now export maps as a tiled web map.

@@ -22,8 +22,9 @@ namespace TsMap.TsItem
         public void TsCutsceneItem844(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 4);
-            var isViewpoint = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) == 0;
+            var isViewpoint = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) == 0;
             if (isViewpoint)
             {
                 Valid = true;

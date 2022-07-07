@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Consts.cs" />
+    <Compile Include="Common\DlcGuard.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="FileSystem\CityHash.cs" />
     <Compile Include="FileSystem\Entry.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="TsCity.cs" />
     <Compile Include="TsCountry.cs" />
     <Compile Include="TsFerryConnection.cs" />
+    <Compile Include="TsItem\TsModelItem.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
     <Compile Include="TsItem\TsCargoDef.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
@@ -112,5 +114,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
