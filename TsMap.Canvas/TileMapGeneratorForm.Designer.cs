@@ -40,6 +40,7 @@
             System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Generate Overlay List", new System.Windows.Forms.TreeNode[] {
             treeNode6});
             System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Generate Bus Stops");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Generate Cargo Defs");
             this.GenerateBtn = new System.Windows.Forms.Button();
             this.StartLabel = new System.Windows.Forms.Label();
             this.EndLabel = new System.Windows.Forms.Label();
@@ -298,12 +299,16 @@
             treeNode8.Name = "GenBusStops";
             treeNode8.StateImageIndex = 0;
             treeNode8.Text = "Generate Bus Stops";
+            treeNode9.Name = "GenCargoDefs";
+            treeNode9.StateImageIndex = 0;
+            treeNode9.Text = "Generate Cargo Defs";
             this.triStateTreeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode3,
             treeNode5,
             treeNode7,
-            treeNode8});
+            treeNode8,
+            treeNode9});
             this.triStateTreeView1.Size = new System.Drawing.Size(166, 138);
             this.triStateTreeView1.TabIndex = 13;
             // 
@@ -322,12 +327,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(319, 264);
+            this.Controls.Add(this.triStateTreeView1);
             this.Controls.Add(this.ExportDataBtn);
             this.Controls.Add(this.txtMapPadding);
             this.Controls.Add(this.lblMapPadding);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtTileSize);
-            this.Controls.Add(this.triStateTreeView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.GenTilesCheck);
             this.Controls.Add(this.EndZoomLevelBox);
