@@ -78,6 +78,7 @@
     <Compile Include="TsCountry.cs" />
     <Compile Include="TsFerryConnection.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
+    <Compile Include="TsItem\TsCargoDef.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
     <Compile Include="TsItem\TsCompanyItem.cs" />
     <Compile Include="TsItem\TsCutPlaneItem.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="TsPrefabLook.cs" />
     <Compile Include="TsRoadLook.cs" />
     <Compile Include="TsSector.cs" />
+    <Compile Include="Utils\MapSiiUnitToClass.cs" />
+    <Compile Include="Utils\SiiUnitFieldAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -13,6 +13,7 @@ using TsMap.Helpers;
 using TsMap.Helpers.Logger;
 using TsMap.TsItem;
 using System.Web.Script.Serialization;
+using TsMap.Utils;
 
 namespace TsMap
 {
@@ -44,6 +45,7 @@ namespace TsMap
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
         public readonly List<TsCutsceneItem> Viewpoints = new List<TsCutsceneItem>();
         public readonly List<TsBusStopItem> BusStops = new List<TsBusStopItem>();
+        public readonly List<TsCargoDef> CargoDefs = new List<TsCargoDef>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -445,6 +447,8 @@ namespace TsMap
                     $"due to not having Start/End location set.");
             }
 
+            this.ParseCargoFiles();
+
             Logger.Instance.Info($"Loaded {_overlayCache.Count} overlays");
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to fully load.");
         }
@@ -455,6 +459,7 @@ namespace TsMap
             if (exportFlags.IsActive(ExportFlags.CountryList)) ExportCountries(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.OverlayList)) ExportOverlays(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.BusStops)) ExportBusStops(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.CargoDefs)) ExportCargoDefs(exportFlags, exportPath);
         }
 
         /// <summary>
@@ -485,7 +490,7 @@ namespace TsMap
                 if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
                 {
                     cityJObj["LocalizedNames"] = new JObject();
-                    foreach(var locale in Localization.GetLocales())
+                    foreach (var locale in Localization.GetLocales())
                     {
                         var locCityName = Localization.GetLocaleValue(city.City.LocalizationToken, locale);
                         if (locCityName != null)
@@ -667,7 +672,7 @@ namespace TsMap
                 if (prefab.Prefab.PrefabNodes == null) continue;
                 var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
 
-                var rot = (float) (originNode.Rotation - Math.PI -
+                var rot = (float)(originNode.Rotation - Math.PI -
                                    Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
 
                 var prefabStartX = originNode.X - mapPointOrigin.X;
@@ -913,6 +918,73 @@ namespace TsMap
             }
 
             File.WriteAllText(Path.Combine(path, "BusStops.json"), busStops.ToString(Formatting.Indented));
+        }
+
+        private void ParseCargoFiles()
+        {
+            var startTime = DateTime.Now.Ticks;
+
+            var cargoDefDirectory = UberFileSystem.Instance.GetDirectory("def/cargo");
+            if (cargoDefDirectory == null)
+            {
+                Logger.Instance.Error("Could not read 'def/cargo' dir");
+                return;
+            }
+
+            var cargoDefFiles = cargoDefDirectory.GetFiles(".sui");
+
+            if (cargoDefFiles == null)
+            {
+                Logger.Instance.Error("Could not read  files");
+                return;
+            }
+
+            cargoDefFiles.AddRange(cargoDefDirectory.GetFiles("cargo").ToArray());
+
+            foreach (var cargoDefFilePath in cargoDefFiles)
+            {
+                var cargoDef = UberFileSystem.Instance.GetFile($"def/cargo/{cargoDefFilePath}");
+
+                var data = cargoDef.Entry.Read();
+                TsCargoDef cargo = MapSiiUnitToClass.Parse<TsCargoDef>(data);
+
+                if (cargo.InGameId != null)
+                {
+                    if (cargo.LocalizationToken != null)
+                    {
+                        cargo.LocalizationToken = cargo.LocalizationToken.Replace("{", string.Empty).Replace("@", string.Empty).Replace("\"", string.Empty);
+
+                        foreach (var locale in Localization.GetLocales())
+                        {
+                            var localeValue = Localization.GetLocaleValue(cargo.LocalizationToken, locale);
+                            if (localeValue != null)
+                            {
+                                cargo.LocalizedNames.Add(locale, localeValue);
+                            }
+                        }
+
+                        if (cargo.LocalizedNames.ContainsKey("en_us"))
+                        {
+                            cargo.Name = cargo.LocalizedNames["en_us"];
+                        }
+                        else
+                        {
+                            cargo.Name = cargo.LocalizationToken;
+                        }
+                    }
+
+                    this.CargoDefs.Add(cargo);
+                }
+            }
+
+            Logger.Instance.Info($"Loaded {cargoDefFiles.Count} cargo defs in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+        }
+
+        public void ExportCargoDefs(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            File.WriteAllText(Path.Combine(path, "CargoDefs.json"), JsonConvert.SerializeObject(this.CargoDefs, Formatting.Indented));
         }
     }
 }
