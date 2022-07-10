@@ -14,9 +14,12 @@ namespace TsMap.Map.Overlays
 
         public byte DlcGuard { get; private set; }
 
-        internal MapOverlay(OverlayImage overlayImage, string overlayName)
+        public OverlayType OverlayType { get; }
+
+        internal MapOverlay(OverlayImage overlayImage, OverlayType overlayType, string overlayName)
         {
             _overlayImage = overlayImage;
+            OverlayType = overlayType;
             OverlayName = overlayName;
         }
 

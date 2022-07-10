@@ -20,6 +20,11 @@
         /// <summary>
         /// Overlays located in 'material/ui/map'
         /// </summary>
-        Map
+        Map,
+
+        /// <summary>
+        /// Bus Stop overlay located in 'tsmap/overlay'
+        /// </summary>
+        BusStop
     }
 }

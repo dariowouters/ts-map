@@ -23,6 +23,7 @@ namespace TsMap.Canvas
             MapOverlaysCheckBox.Checked = renderFlags.IsActive(RenderFlags.MapOverlays);
             FerryConnectionsCheckBox.Checked = renderFlags.IsActive(RenderFlags.FerryConnections);
             CityNamesCheckBox.Checked = renderFlags.IsActive(RenderFlags.CityNames);
+            BusStopOverlayCheckBox.Checked = renderFlags.IsActive(RenderFlags.BusStopOverlay);
 
             triStateTreeView1.ItemChecked += (TreeNode node) =>
             {
@@ -32,7 +33,11 @@ namespace TsMap.Canvas
                     triStateTreeView1.GetNodeByName("GenCountryList").Checked = node.Checked;
                     triStateTreeView1.GetNodeByName("GenCountryLocalizedNames").Checked = node.Checked;
                 }
-                else if (node.Name == "GenOverlayList") MapOverlaysCheckBox.Checked = !node.Checked;
+                else if (node.Name == "GenOverlayList")
+                {
+                    MapOverlaysCheckBox.Checked = !node.Checked;
+                    BusStopOverlayCheckBox.Checked = !node.Checked;
+                }
             };
         }
 
@@ -46,6 +51,7 @@ namespace TsMap.Canvas
             if (MapOverlaysCheckBox.Checked) renderFlags |= RenderFlags.MapOverlays;
             if (FerryConnectionsCheckBox.Checked) renderFlags |= RenderFlags.FerryConnections;
             if (CityNamesCheckBox.Checked) renderFlags |= RenderFlags.CityNames;
+            if (BusStopOverlayCheckBox.Checked) renderFlags |= RenderFlags.BusStopOverlay;
             return renderFlags;
         }
 
@@ -85,6 +91,16 @@ namespace TsMap.Canvas
             StartZoomLevelBox.Enabled = GenTilesCheck.Checked;
             EndZoomLevelBox.Enabled = GenTilesCheck.Checked;
             triStateTreeView1.GetNodeByName("GenTileMapInfo").Checked = GenTilesCheck.Checked;
+        }
+
+        private void MapOverlaysCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!MapOverlaysCheckBox.Checked) BusStopOverlayCheckBox.Checked = false;
+        }
+
+        private void BusStopOverlayCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (BusStopOverlayCheckBox.Checked) MapOverlaysCheckBox.Checked = true;
         }
     }
 }

@@ -35,12 +35,13 @@
             this.MapOverlaysCheckBox = new System.Windows.Forms.CheckBox();
             this.PrefabsCheckBox = new System.Windows.Forms.CheckBox();
             this.SecretRoadsCheckBox = new System.Windows.Forms.CheckBox();
+            this.BusStopOverlayCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // CityNamesCheckBox
             // 
             this.CityNamesCheckBox.AutoSize = true;
-            this.CityNamesCheckBox.Location = new System.Drawing.Point(12, 150);
+            this.CityNamesCheckBox.Location = new System.Drawing.Point(12, 170);
             this.CityNamesCheckBox.Name = "CityNamesCheckBox";
             this.CityNamesCheckBox.Size = new System.Drawing.Size(76, 17);
             this.CityNamesCheckBox.TabIndex = 5;
@@ -62,7 +63,7 @@
             // FerryConnectionsCheckBox
             // 
             this.FerryConnectionsCheckBox.AutoSize = true;
-            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(12, 127);
+            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(12, 147);
             this.FerryConnectionsCheckBox.Name = "FerryConnectionsCheckBox";
             this.FerryConnectionsCheckBox.Size = new System.Drawing.Size(108, 17);
             this.FerryConnectionsCheckBox.TabIndex = 4;
@@ -114,11 +115,23 @@
             this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
             this.SecretRoadsCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
             // 
+            // BusStopOverlayCheckBox
+            // 
+            this.BusStopOverlayCheckBox.AutoSize = true;
+            this.BusStopOverlayCheckBox.Location = new System.Drawing.Point(30, 124);
+            this.BusStopOverlayCheckBox.Name = "BusStopOverlayCheckBox";
+            this.BusStopOverlayCheckBox.Size = new System.Drawing.Size(108, 17);
+            this.BusStopOverlayCheckBox.TabIndex = 5;
+            this.BusStopOverlayCheckBox.Text = "Bus Stop Overlay";
+            this.BusStopOverlayCheckBox.UseVisualStyleBackColor = true;
+            this.BusStopOverlayCheckBox.CheckedChanged += new System.EventHandler(this.CheckChanged);
+            // 
             // ItemVisibilityForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(125, 175);
+            this.ClientSize = new System.Drawing.Size(142, 199);
+            this.Controls.Add(this.BusStopOverlayCheckBox);
             this.Controls.Add(this.CityNamesCheckBox);
             this.Controls.Add(this.MapAreasCheckBox);
             this.Controls.Add(this.FerryConnectionsCheckBox);
@@ -145,5 +158,6 @@
         private System.Windows.Forms.CheckBox MapOverlaysCheckBox;
         private System.Windows.Forms.CheckBox PrefabsCheckBox;
         private System.Windows.Forms.CheckBox SecretRoadsCheckBox;
+        private System.Windows.Forms.CheckBox BusStopOverlayCheckBox;
     }
 }

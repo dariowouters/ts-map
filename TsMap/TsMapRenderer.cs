@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using TsMap.Common;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap
 {
@@ -380,7 +381,8 @@ namespace TsMap
 
                     var b = mapOverlay.GetBitmap();
 
-                    if (b == null) continue;
+                    if (b == null || !renderFlags.IsActive(RenderFlags.BusStopOverlay) && mapOverlay.OverlayType == OverlayType.BusStop) continue;
+
                     g.DrawImage(b, mapOverlay.Position.X - (b.Width / 2f), mapOverlay.Position.Y - (b.Height / 2f),
                         b.Width, b.Height);
 

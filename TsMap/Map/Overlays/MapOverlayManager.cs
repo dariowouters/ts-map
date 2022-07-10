@@ -20,7 +20,7 @@ namespace TsMap.Map.Overlays
             var overlayImage = GetOrCreateOverlayImage(overlayName, overlayType);
             if (overlayImage == null || !overlayImage.Valid) return null;
 
-            return new MapOverlay(overlayImage, overlayName);
+            return new MapOverlay(overlayImage, overlayType, overlayName);
         }
 
         internal void AddOverlay(MapOverlay overlay)
@@ -40,7 +40,7 @@ namespace TsMap.Map.Overlays
             overlay.SetSecret(isSecret);
             overlay.SetDlcGuard(dlcGuard);
 
-            _overlays.Add(overlay);
+            AddOverlay(overlay);
 
             return true;
         }
@@ -106,8 +106,11 @@ namespace TsMap.Map.Overlays
                 case OverlayType.Map:
                     path = $"material/ui/map/{overlayName}.mat";
                     break;
+                case OverlayType.BusStop:
+                    path = $"tsmap/overlay/{overlayName}.mat";
+                    break;
                 default:
-                    path = PathHelper.EnsureLocalPath(overlayName);
+                    path = $"{PathHelper.EnsureLocalPath(overlayName)}.mat";
                     break;
             }
 

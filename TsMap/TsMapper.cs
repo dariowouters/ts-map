@@ -391,6 +391,9 @@ namespace TsMap
                 if (mod.Load) UberFileSystem.Instance.AddSourceFile(mod.ModPath);
             }
 
+            UberFileSystem.Instance.AddSourceFile(Path.Combine(Environment.CurrentDirectory,
+                "custom_resources.zip"));
+
             Logger.Instance.Info($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             ParseDefFiles();
