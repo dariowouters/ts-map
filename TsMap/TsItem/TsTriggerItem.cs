@@ -2,15 +2,13 @@
 using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap.TsItem
 {
     public class TsTriggerItem : TsItem
     {
-        public string OverlayName { get; private set; }
-        public TsMapOverlay Overlay { get; private set; }
-
-        public bool IsSecret { get; private set; }
+        private bool _isSecret;
 
         public TsTriggerItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -24,6 +22,11 @@ namespace TsMap.TsItem
             else
                 Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
                     $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
+        }
+
+        private void CreateMapOverlay()
+        {
+            Sector.Mapper.OverlayManager.AddOverlay("parking_ico", OverlayType.Map, X, Z, "Parking", DlcGuard, _isSecret);
         }
 
         public void TsTriggerItem825(int startOffset)
@@ -40,13 +43,7 @@ namespace TsMap.TsItem
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
                 if (action == ScsToken.StringToToken("hud_parking"))
                 {
-                    OverlayName = "parking_ico";
-                    Overlay = Sector.Mapper.LookupOverlay(OverlayName, OverlayTypes.Map);
-                    if (Overlay == null)
-                    {
-                        Logger.Instance.Error("Could not find parking overlay");
-                        Valid = false;
-                    }
+                    CreateMapOverlay();
                 }
                 var hasParameters = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(action)
                 fileOffset += 0x04; // set cursor after hasParameters
@@ -79,13 +76,7 @@ namespace TsMap.TsItem
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
                 if (action == ScsToken.StringToToken("hud_parking"))
                 {
-                    OverlayName = "parking_ico";
-                    Overlay = Sector.Mapper.LookupOverlay(OverlayName, OverlayTypes.Map);
-                    if (Overlay == null)
-                    {
-                        Logger.Instance.Error("Could not find parking overlay");
-                        Valid = false;
-                    }
+                    CreateMapOverlay();
                 }
 
                 var hasOverride = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(action)
@@ -112,7 +103,7 @@ namespace TsMap.TsItem
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
             DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
-            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 2);
+            _isSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 2);
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount)); // 0x04(nodeCount) + tags
 
@@ -124,13 +115,7 @@ namespace TsMap.TsItem
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
                 if (action == ScsToken.StringToToken("hud_parking"))
                 {
-                    OverlayName = "parking_ico";
-                    Overlay = Sector.Mapper.LookupOverlay(OverlayName, OverlayTypes.Map);
-                    if (Overlay == null)
-                    {
-                        Logger.Instance.Error("Could not find parking overlay");
-                        Valid = false;
-                    }
+                    CreateMapOverlay();
                 }
 
                 var hasOverride = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(action)

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap.TsItem
 {
@@ -247,6 +249,80 @@ namespace TsMap.TsItem
             fileOffset += 0x02 + nodeCount * 0x0C + 0x08; // 0x02(origin & padding) + nodeLooks + 0x08(padding2)
 
             BlockSize = fileOffset - startOffset;
+        }
+
+        internal override void Update()
+        {
+            var originNode = Sector.Mapper.GetNodeByUid(Nodes[0]);
+            if (Prefab?.PrefabNodes == null) return;
+
+            var mapPointOrigin = Prefab.PrefabNodes[Origin];
+
+            var rot = (float)(originNode.Rotation - Math.PI -
+                Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+            var prefabstartX = originNode.X - mapPointOrigin.X;
+            var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+            foreach (var spawnPoint in Prefab.SpawnPoints)
+            {
+                var newPoint = RenderHelper.RotatePoint(prefabstartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
+                    originNode.X, originNode.Z);
+
+                var overlayName = "";
+                var displayName = "";
+
+                if (spawnPoint.Type == TsSpawnPointType.GasPos)
+                {
+                    overlayName = "gas_ico";
+                    displayName = "Fuel";
+                }
+
+                else if (spawnPoint.Type == TsSpawnPointType.ServicePos)
+                {
+                    overlayName = "service_ico";
+                    displayName = "Service";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.WeightStationPos)
+                {
+                    overlayName = "weigh_station_ico";
+                    displayName = "WeightStation";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.TruckDealerPos)
+                {
+                    overlayName = "dealer_ico";
+                    displayName = "TruckDealer";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.BuyPos)
+                {
+                    overlayName = "garage_large_ico";
+                    displayName = "Garage";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.RecruitmentPos)
+                {
+                    overlayName = "recruitment_ico";
+                    displayName = "Recruitment";
+                }
+
+                Sector.Mapper.OverlayManager.AddOverlay(overlayName, OverlayType.Map, newPoint.X, newPoint.Y,
+                    displayName, DlcGuard, IsSecret);
+            }
+
+            var lastId = -1;
+            foreach (var triggerPoint in Prefab.TriggerPoints) // trigger points in prefabs: garage, hotel, ...
+            {
+                var newPoint = RenderHelper.RotatePoint(prefabstartX + triggerPoint.X, prefabStartZ + triggerPoint.Z,
+                    rot,
+                    originNode.X, originNode.Z);
+
+                if (triggerPoint.TriggerId == lastId) continue;
+                lastId = (int)triggerPoint.TriggerId;
+
+                if (triggerPoint.TriggerActionToken == ScsToken.StringToToken("hud_parking")) // parking trigger
+                {
+                    Sector.Mapper.OverlayManager.AddOverlay("parking_ico", OverlayType.Map, newPoint.X, newPoint.Y,
+                        "Parking", DlcGuard, IsSecret);
+                }
+            }
         }
     }
 }
