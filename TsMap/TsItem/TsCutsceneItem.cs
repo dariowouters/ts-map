@@ -1,12 +1,15 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap.TsItem
 {
     public class TsCutsceneItem : TsItem
     {
-        public bool IsSecret { get; private set; }
+        private bool _isSecret;
 
         public TsCutsceneItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -22,14 +25,22 @@ namespace TsMap.TsItem
         public void TsCutsceneItem844(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 4);
-            var isViewpoint = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x03) == 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            _isSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 4);
+            var isViewpoint = MemoryHelper.ReadUint8(Sector.Stream, fileOffset) == 0;
+
             if (isViewpoint)
             {
                 Valid = true;
             }
             var tagsCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
-            var actionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagsCount) + 0x08); // 0x04(tagsCount) + tags + 0x08(node_uid)
+
+            Nodes = new List<ulong>(1)
+            {
+                MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04 + (0x08 * tagsCount)), // 0x04(tagsCount) + tags
+            };
+
+            var actionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(node_uid)
             fileOffset += 0x04; // 0x04(actionCount)
             for (var i = 0; i < actionCount; ++i)
             {
@@ -45,6 +56,23 @@ namespace TsMap.TsItem
                 fileOffset += 0x04 + (targetTagCount * 0x08) + 0x08; // 0x04(targetTagCount) + targetTags + 0x08(target_range + action_flags)
             }
             BlockSize = fileOffset - startOffset;
+        }
+
+        internal override void Update()
+        {
+            var node = Sector.Mapper.GetNodeByUid(Nodes[0]);
+
+            if (node == null)
+            {
+                Logger.Instance.Error(
+                    $"Could not find node ({Nodes[0]:X}) for item uid: 0x{Uid:X}, " +
+                    $"in {Path.GetFileName(Sector.FilePath)} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
+                return;
+            }
+
+            Sector.Mapper.OverlayManager.AddOverlay("viewpoint", OverlayType.Map,
+                node.X, node.Z, "Viewpoint", DlcGuard, _isSecret);
+
         }
     }
 }

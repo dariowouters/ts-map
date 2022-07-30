@@ -18,6 +18,7 @@ namespace TsMap.Canvas
 
         private TileMapGeneratorForm _tileMapGeneratorForm;
         private ItemVisibilityForm _itemVisibilityForm;
+        private DlcGuardForm _dlcGuardForm;
         private PaletteEditorForm _paletteEditorForm;
         private LocalizationSettingsForm _localizationSettingsForm;
 
@@ -329,6 +330,22 @@ namespace TsMap.Canvas
             _scale = 0.2f;
             _startPoint = new PointF(city.X - 1000, city.Z - 1000);
             RedrawMap();
+        }
+
+        private void dLCGuardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_dlcGuardForm == null || _dlcGuardForm.IsDisposed) _dlcGuardForm = new DlcGuardForm(_mapper.GetDlcGuardsForCurrentGame());
+            _dlcGuardForm.Show();
+            _dlcGuardForm.BringToFront();
+
+            _dlcGuardForm.UpdateDlcGuards += (index, enabled) =>
+            {
+                var guards = _mapper.GetDlcGuardsForCurrentGame();
+
+                var guard = guards.Find(x => x.Index == index);
+                guard.Enabled = enabled;
+                RedrawMap();
+            };
         }
     }
 }

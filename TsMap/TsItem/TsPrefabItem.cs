@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap.TsItem
 {
@@ -10,7 +12,7 @@ namespace TsMap.TsItem
     {
         private const int NodeLookBlockSize = 0x3A;
         private const int NodeLookBlockSize825 = 0x38;
-        private const int PrefabVegetaionBlockSize = 0x20;
+        private const int PrefabVegetationBlockSize = 0x20;
         public int Origin { get; private set; }
         public TsPrefab Prefab { get; private set; }
         private List<TsPrefabLook> _looks;
@@ -57,8 +59,8 @@ namespace TsMap.TsItem
         public void TsPrefabItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -81,7 +83,7 @@ namespace TsMap.TsItem
             var prefabVegetationCount = MemoryHelper.ReadInt32(Sector.Stream,
                 fileOffset += 0x01 + 0x01 + (NodeLookBlockSize825 * nodeCount)); // 0x01(origin) + 0x01(padding) + nodeLooks
             var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream,
-                fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
+                fileOffset += 0x04 + (PrefabVegetationBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
             fileOffset += 0x04 + (VegetationSphereBlockSize825 * vegetationSphereCount); // 0x04(vegSphereCount) + vegSpheres
 
 
@@ -91,8 +93,8 @@ namespace TsMap.TsItem
         public void TsPrefabItem829(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -117,7 +119,7 @@ namespace TsMap.TsItem
             var prefabVegetationCount = MemoryHelper.ReadInt32(Sector.Stream,
                 fileOffset += 0x01 + 0x01 + (NodeLookBlockSize825 * nodeCount)); // 0x01(origin) + 0x01(padding) + nodeLooks
             var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream,
-                fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
+                fileOffset += 0x04 + (PrefabVegetationBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
             fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount); // 0x04(vegSphereCount) + vegSpheres
 
 
@@ -127,8 +129,8 @@ namespace TsMap.TsItem
         public void TsPrefabItem831(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -153,15 +155,15 @@ namespace TsMap.TsItem
             var prefabVegetationCount = MemoryHelper.ReadInt32(Sector.Stream,
                 fileOffset += 0x01 + 0x01 + (NodeLookBlockSize825 * nodeCount)); // 0x01(origin) + 0x01(padding) + nodeLooks
             var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream,
-                fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
+                fileOffset += 0x04 + (PrefabVegetationBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
             fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount) + (0x18 * nodeCount); // 0x04(vegSphereCount) + vegSpheres + padding
             BlockSize = fileOffset - startOffset;
         }
         public void TsPrefabItem846(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -186,7 +188,7 @@ namespace TsMap.TsItem
             var prefabVegetationCount = MemoryHelper.ReadInt32(Sector.Stream,
                 fileOffset += 0x01 + 0x01 + (NodeLookBlockSize * nodeCount)); // 0x01(origin) + 0x01(padding) + nodeLooks
             var vegetationSphereCount = MemoryHelper.ReadInt32(Sector.Stream,
-                fileOffset += 0x04 + (PrefabVegetaionBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
+                fileOffset += 0x04 + (PrefabVegetationBlockSize * prefabVegetationCount) + 0x04); // 0x04(prefabVegCount) + prefabVegs + 0x04(padding2)
             fileOffset += 0x04 + (VegetationSphereBlockSize * vegetationSphereCount) + (0x18 * nodeCount); // 0x04(vegSphereCount) + vegSpheres + padding
             BlockSize = fileOffset - startOffset;
         }
@@ -194,8 +196,8 @@ namespace TsMap.TsItem
         public void TsPrefabItem854(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             Prefab = Sector.Mapper.LookupPrefab(prefabId);
@@ -222,8 +224,8 @@ namespace TsMap.TsItem
         public void TsPrefabItem855(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount || (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            Hidden = (MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02) & 0x02) != 0;
             IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset), 5);
 
             var prefabId = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
@@ -247,6 +249,80 @@ namespace TsMap.TsItem
             fileOffset += 0x02 + nodeCount * 0x0C + 0x08; // 0x02(origin & padding) + nodeLooks + 0x08(padding2)
 
             BlockSize = fileOffset - startOffset;
+        }
+
+        internal override void Update()
+        {
+            var originNode = Sector.Mapper.GetNodeByUid(Nodes[0]);
+            if (Prefab?.PrefabNodes == null) return;
+
+            var mapPointOrigin = Prefab.PrefabNodes[Origin];
+
+            var rot = (float)(originNode.Rotation - Math.PI -
+                Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+            var prefabstartX = originNode.X - mapPointOrigin.X;
+            var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+            foreach (var spawnPoint in Prefab.SpawnPoints)
+            {
+                var newPoint = RenderHelper.RotatePoint(prefabstartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
+                    originNode.X, originNode.Z);
+
+                var overlayName = "";
+                var displayName = "";
+
+                if (spawnPoint.Type == TsSpawnPointType.GasPos)
+                {
+                    overlayName = "gas_ico";
+                    displayName = "Fuel";
+                }
+
+                else if (spawnPoint.Type == TsSpawnPointType.ServicePos)
+                {
+                    overlayName = "service_ico";
+                    displayName = "Service";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.WeightStationPos)
+                {
+                    overlayName = "weigh_station_ico";
+                    displayName = "WeightStation";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.TruckDealerPos)
+                {
+                    overlayName = "dealer_ico";
+                    displayName = "TruckDealer";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.BuyPos)
+                {
+                    overlayName = "garage_large_ico";
+                    displayName = "Garage";
+                }
+                else if (spawnPoint.Type == TsSpawnPointType.RecruitmentPos)
+                {
+                    overlayName = "recruitment_ico";
+                    displayName = "Recruitment";
+                }
+
+                Sector.Mapper.OverlayManager.AddOverlay(overlayName, OverlayType.Map, newPoint.X, newPoint.Y,
+                    displayName, DlcGuard, IsSecret);
+            }
+
+            var lastId = -1;
+            foreach (var triggerPoint in Prefab.TriggerPoints) // trigger points in prefabs: garage, hotel, ...
+            {
+                var newPoint = RenderHelper.RotatePoint(prefabstartX + triggerPoint.X, prefabStartZ + triggerPoint.Z,
+                    rot,
+                    originNode.X, originNode.Z);
+
+                if (triggerPoint.TriggerId == lastId) continue;
+                lastId = (int)triggerPoint.TriggerId;
+
+                if (triggerPoint.TriggerActionToken == ScsToken.StringToToken("hud_parking")) // parking trigger
+                {
+                    Sector.Mapper.OverlayManager.AddOverlay("parking_ico", OverlayType.Map, newPoint.X, newPoint.Y,
+                        "Parking", DlcGuard, IsSecret);
+                }
+            }
         }
     }
 }

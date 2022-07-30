@@ -28,13 +28,15 @@ namespace TsMap.TsItem
 
         protected uint Flags { get; }
 
+        public byte DlcGuard = 0;
+
         public TsItem(TsSector sector, int offset)
         {
             Sector = sector;
 
             var fileOffset = offset;
 
-            Type = (TsItemType)MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
+            Type = (TsItemType) MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
 
             Uid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04);
 
@@ -54,5 +56,8 @@ namespace TsMap.TsItem
             return EndNode ?? (EndNode = Sector.Mapper.GetNodeByUid(EndNodeUid));
         }
 
+        internal virtual void Update()
+        {
+        }
     }
 }

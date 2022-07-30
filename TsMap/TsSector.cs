@@ -55,119 +55,126 @@ namespace TsMap
                 var type = (TsItemType)MemoryHelper.ReadUInt32(Stream, lastOffset);
                 if (Version <= 825) type++; // after version 825 all types were pushed up 1
 
+                TsItem.TsItem item = null;
+
                 switch (type)
                 {
                     case TsItemType.Road:
                     {
-                        var item = new TsRoadItem(this, lastOffset);
+                        item = new TsRoadItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Roads.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Roads.Add((TsRoadItem) item);
                         break;
                     }
                     case TsItemType.Prefab:
                     {
-                        var item = new TsPrefabItem(this, lastOffset);
+                        item = new TsPrefabItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Prefabs.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.Prefabs.Add((TsPrefabItem) item);
+                        break;
+                    }
+                    case TsItemType.Model: // used to all be in .aux files, not sure why some are now in .base files
+                    {
+                        item = new TsModelItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.Company:
                     {
-                        var item = new TsCompanyItem(this, lastOffset);
+                        item = new TsCompanyItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Companies.Add(item);
                         break;
                     }
                     case TsItemType.Service:
                     {
-                        var item = new TsServiceItem(this, lastOffset);
+                        item = new TsServiceItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.CutPlane:
                     {
-                        var item = new TsCutPlaneItem(this, lastOffset);
+                        item = new TsCutPlaneItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.City:
                     {
-                        var item = new TsCityItem(this, lastOffset);
+                        item = new TsCityItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Cities.Add(item); break;
+                        if (item.Valid && !item.Hidden) Mapper.Cities.Add((TsCityItem) item);
+                        break;
                     }
                     case TsItemType.MapOverlay:
                     {
-                        var item = new TsMapOverlayItem(this, lastOffset);
+                        item = new TsMapOverlayItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.MapOverlays.Add(item); break;
+                        break;
                     }
                     case TsItemType.Ferry:
                     {
-                        var item = new TsFerryItem(this, lastOffset);
+                        item = new TsFerryItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.FerryConnections.Add(item); break;
+                        if (item.Valid && !item.Hidden) Mapper.FerryConnections.Add((TsFerryItem) item);
+                        break;
                     }
                     case TsItemType.Garage:
                     {
-                        var item = new TsGarageItem(this, lastOffset);
+                        item = new TsGarageItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.Trigger:
                     {
-                        var item = new TsTriggerItem(this, lastOffset);
+                        item = new TsTriggerItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Triggers.Add(item);
                         break;
                     }
                     case TsItemType.FuelPump:
                     {
-                        var item = new TsFuelPumpItem(this, lastOffset);
+                        item = new TsFuelPumpItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.RoadSideItem:
                     {
-                        var item = new TsRoadSideItem(this, lastOffset);
+                        item = new TsRoadSideItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.BusStop:
                     {
-                        var item = new TsBusStopItem(this, lastOffset);
+                        item = new TsBusStopItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.TrafficRule:
                     {
-                        var item = new TsTrafficRuleItem(this, lastOffset);
+                        item = new TsTrafficRuleItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.TrajectoryItem:
                     {
-                        var item = new TsTrajectoryItem(this, lastOffset);
+                        item = new TsTrajectoryItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.MapArea:
                     {
-                        var item = new TsMapAreaItem(this, lastOffset);
+                        item = new TsMapAreaItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.MapAreas.Add(item);
+                        if (item.Valid && !item.Hidden) Mapper.MapAreas.Add((TsMapAreaItem) item);
                         break;
                     }
                     case TsItemType.Cutscene:
                     {
-                        var item = new TsCutsceneItem(this, lastOffset);
+                         item = new TsCutsceneItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        if (item.Valid) Mapper.Viewpoints.Add(item);
                         break;
                     }
                     case TsItemType.VisibilityArea:
                     {
-                        var item = new TsVisibilityAreaItem(this, lastOffset);
+                        item = new TsVisibilityAreaItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         break;
                     }
@@ -177,6 +184,8 @@ namespace TsMap
                         break;
                     }
                 }
+
+                 if (item != null && item.Valid && !item.Hidden) Mapper.MapItems.Add(item);
             }
 
             var nodeCount = MemoryHelper.ReadInt32(Stream, lastOffset);

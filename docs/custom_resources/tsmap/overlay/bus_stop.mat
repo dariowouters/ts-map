@@ -1,0 +1,5 @@
+material : "ui"
+{
+	texture : "bus_stop.tobj"
+	texture_name : "texture"
+}

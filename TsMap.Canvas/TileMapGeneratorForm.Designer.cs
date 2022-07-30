@@ -53,9 +53,10 @@
             this.MapOverlaysCheckBox = new System.Windows.Forms.CheckBox();
             this.PrefabsCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.BusStopOverlayCheckBox = new System.Windows.Forms.CheckBox();
+            this.SecretRoadsCheckBox = new System.Windows.Forms.CheckBox();
             this.GenTilesCheck = new System.Windows.Forms.CheckBox();
             this.triStateTreeView1 = new TsMap.Canvas.TriStateTreeView();
-            this.SecretRoadsCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.StartZoomLevelBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EndZoomLevelBox)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -63,9 +64,9 @@
             // 
             // GenerateBtn
             // 
-            this.GenerateBtn.Location = new System.Drawing.Point(10, 194);
+            this.GenerateBtn.Location = new System.Drawing.Point(10, 214);
             this.GenerateBtn.Name = "GenerateBtn";
-            this.GenerateBtn.Size = new System.Drawing.Size(298, 23);
+            this.GenerateBtn.Size = new System.Drawing.Size(322, 23);
             this.GenerateBtn.TabIndex = 2;
             this.GenerateBtn.Text = "Generate";
             this.GenerateBtn.UseVisualStyleBackColor = true;
@@ -123,7 +124,7 @@
             this.CityNamesCheckBox.AutoSize = true;
             this.CityNamesCheckBox.Checked = true;
             this.CityNamesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CityNamesCheckBox.Location = new System.Drawing.Point(15, 155);
+            this.CityNamesCheckBox.Location = new System.Drawing.Point(15, 178);
             this.CityNamesCheckBox.Name = "CityNamesCheckBox";
             this.CityNamesCheckBox.Size = new System.Drawing.Size(76, 17);
             this.CityNamesCheckBox.TabIndex = 12;
@@ -147,7 +148,7 @@
             this.FerryConnectionsCheckBox.AutoSize = true;
             this.FerryConnectionsCheckBox.Checked = true;
             this.FerryConnectionsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(15, 134);
+            this.FerryConnectionsCheckBox.Location = new System.Drawing.Point(15, 157);
             this.FerryConnectionsCheckBox.Name = "FerryConnectionsCheckBox";
             this.FerryConnectionsCheckBox.Size = new System.Drawing.Size(108, 17);
             this.FerryConnectionsCheckBox.TabIndex = 11;
@@ -177,6 +178,7 @@
             this.MapOverlaysCheckBox.TabIndex = 10;
             this.MapOverlaysCheckBox.Text = "MapOverlays";
             this.MapOverlaysCheckBox.UseVisualStyleBackColor = true;
+            this.MapOverlaysCheckBox.CheckedChanged += new System.EventHandler(this.MapOverlaysCheckBox_CheckedChanged);
             // 
             // PrefabsCheckBox
             // 
@@ -193,6 +195,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.PrefabsCheckBox);
+            this.groupBox1.Controls.Add(this.BusStopOverlayCheckBox);
             this.groupBox1.Controls.Add(this.CityNamesCheckBox);
             this.groupBox1.Controls.Add(this.MapOverlaysCheckBox);
             this.groupBox1.Controls.Add(this.MapAreasCheckBox);
@@ -201,10 +204,35 @@
             this.groupBox1.Controls.Add(this.FerryConnectionsCheckBox);
             this.groupBox1.Location = new System.Drawing.Point(183, 7);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(125, 181);
+            this.groupBox1.Size = new System.Drawing.Size(149, 201);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Items To Render";
+            // 
+            // BusStopOverlayCheckBox
+            // 
+            this.BusStopOverlayCheckBox.AutoSize = true;
+            this.BusStopOverlayCheckBox.Checked = true;
+            this.BusStopOverlayCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BusStopOverlayCheckBox.Location = new System.Drawing.Point(33, 134);
+            this.BusStopOverlayCheckBox.Name = "BusStopOverlayCheckBox";
+            this.BusStopOverlayCheckBox.Size = new System.Drawing.Size(113, 17);
+            this.BusStopOverlayCheckBox.TabIndex = 12;
+            this.BusStopOverlayCheckBox.Text = "Bus Stop Overlays";
+            this.BusStopOverlayCheckBox.UseVisualStyleBackColor = true;
+            this.BusStopOverlayCheckBox.CheckedChanged += new System.EventHandler(this.BusStopOverlayCheckBox_CheckedChanged);
+            // 
+            // SecretRoadsCheckBox
+            // 
+            this.SecretRoadsCheckBox.AutoSize = true;
+            this.SecretRoadsCheckBox.Checked = true;
+            this.SecretRoadsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SecretRoadsCheckBox.Location = new System.Drawing.Point(15, 65);
+            this.SecretRoadsCheckBox.Name = "SecretRoadsCheckBox";
+            this.SecretRoadsCheckBox.Size = new System.Drawing.Size(91, 17);
+            this.SecretRoadsCheckBox.TabIndex = 8;
+            this.SecretRoadsCheckBox.Text = "Secret Roads";
+            this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
             // 
             // GenTilesCheck
             // 
@@ -250,26 +278,14 @@
             treeNode3,
             treeNode5,
             treeNode7});
-            this.triStateTreeView1.Size = new System.Drawing.Size(166, 129);
+            this.triStateTreeView1.Size = new System.Drawing.Size(166, 149);
             this.triStateTreeView1.TabIndex = 13;
-            // 
-            // SecretRoadsCheckBox
-            // 
-            this.SecretRoadsCheckBox.AutoSize = true;
-            this.SecretRoadsCheckBox.Checked = true;
-            this.SecretRoadsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.SecretRoadsCheckBox.Location = new System.Drawing.Point(15, 65);
-            this.SecretRoadsCheckBox.Name = "SecretRoadsCheckBox";
-            this.SecretRoadsCheckBox.Size = new System.Drawing.Size(91, 17);
-            this.SecretRoadsCheckBox.TabIndex = 8;
-            this.SecretRoadsCheckBox.Text = "Secret Roads";
-            this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
             // 
             // TileMapGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(319, 224);
+            this.ClientSize = new System.Drawing.Size(337, 244);
             this.Controls.Add(this.triStateTreeView1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.GenTilesCheck);
@@ -311,5 +327,6 @@
         private System.Windows.Forms.CheckBox GenTilesCheck;
         private TriStateTreeView triStateTreeView1;
         private System.Windows.Forms.CheckBox SecretRoadsCheckBox;
+        private System.Windows.Forms.CheckBox BusStopOverlayCheckBox;
     }
 }

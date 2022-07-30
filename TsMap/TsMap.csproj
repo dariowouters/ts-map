@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Consts.cs" />
-    <Compile Include="Common\Enums.cs" />
+    <Compile Include="Common\DlcGuard.cs" />
     <Compile Include="FileSystem\CityHash.cs" />
     <Compile Include="FileSystem\Entry.cs" />
     <Compile Include="FileSystem\Hash\HashEntry.cs" />
@@ -69,12 +69,18 @@
     <Compile Include="Common\ScsToken.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MapPalette.cs" />
+    <Compile Include="Map\Overlays\ColorTypes.cs" />
+    <Compile Include="Map\Overlays\MapOverlay.cs" />
+    <Compile Include="Map\Overlays\MapOverlayManager.cs" />
+    <Compile Include="Map\Overlays\OverlayImage.cs" />
+    <Compile Include="Map\Overlays\OverlayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TsCity.cs" />
     <Compile Include="TsCountry.cs" />
     <Compile Include="TsFerryConnection.cs" />
+    <Compile Include="TsItem\TsModelItem.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
     <Compile Include="TsItem\TsCompanyItem.cs" />
@@ -95,7 +101,6 @@
     <Compile Include="TsItem\TsTriggerItem.cs" />
     <Compile Include="TsItem\TsVisibilityAreaItem.cs" />
     <Compile Include="TsTypes.cs" />
-    <Compile Include="TsMapOverlay.cs" />
     <Compile Include="TsMapper.cs" />
     <Compile Include="TsMapRenderer.cs" />
     <Compile Include="TsNode.cs" />
@@ -107,5 +112,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

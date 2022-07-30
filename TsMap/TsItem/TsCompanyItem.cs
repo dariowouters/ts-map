@@ -1,20 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap.TsItem
 {
     public class TsCompanyItem : TsItem
     {
-        public ulong OverlayToken { get; private set; }
-        public TsMapOverlay Overlay { get; private set; }
+        private ulong _companyNameToken;
+        private ulong _prefabUid;
 
         public TsCompanyItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
             Valid = true;
-            Nodes = new List<ulong>();
             if (Sector.Version < 858)
                 TsCompanyItem825(startOffset);
             else if (Sector.Version >= 858)
@@ -27,23 +29,18 @@ namespace TsMap.TsItem
         public void TsCompanyItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
 
-            OverlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
+            _companyNameToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
 
-            Overlay = Sector.Mapper.LookupOverlay(ScsToken.TokenToString(OverlayToken), OverlayTypes.Company);
-            if (Overlay == null)
+            _prefabUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08); // 0x08(_companyNameToken) + 0x08(city_name)
+
+            Nodes = new List<ulong>(1)
             {
-                Valid = false;
-                if (OverlayToken != 0)
-                    Logger.Instance.Error(
-                        $"Could not find Company Overlay: '{ScsToken.TokenToString(OverlayToken)}'({OverlayToken:X}), item uid: 0x{Uid:X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
-            }
-            Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08)); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])
+                MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08) // 0x08(_prefabUid)
+            };
 
-            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // count | 0x08 (uid[1] & uid[2])
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // count | 0x08 (node_uid)
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count2
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count3
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count4
@@ -54,24 +51,18 @@ namespace TsMap.TsItem
         public void TsCompanyItem858(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
 
-            OverlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
+            _companyNameToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
 
-            Overlay = Sector.Mapper.LookupOverlay(ScsToken.TokenToString(OverlayToken), OverlayTypes.Company);
-            if (Overlay == null)
+            _prefabUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08); // 0x08(_companyNameToken) + 0x08(city_name)
+
+            Nodes = new List<ulong>(1)
             {
-                Valid = false;
-                if (OverlayToken != 0)
-                    Logger.Instance.Error(
-                        $"Could not find Company Overlay: '{ScsToken.TokenToString(OverlayToken)}'({OverlayToken:X}), item uid: 0x{Uid:X}, " +
-                        $"in {Path.GetFileName(Sector.FilePath)} @ {fileOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
-            }
+                MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08) // 0x08(_prefabUid)
+            };
 
-            Nodes.Add(MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08 + 0x08)); // (prefab uid) | 0x08(OverlayToken) + 0x08(uid[0])
-
-            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08 + 0x08); // count | 0x08 (uid[1] & uid[2])
+            var count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // count | 0x08 (node_uid)
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count2
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count3
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count4
@@ -79,6 +70,43 @@ namespace TsMap.TsItem
             count = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * count)); // count6
             fileOffset += 0x04 + (0x08 * count);
             BlockSize = fileOffset - startOffset;
+        }
+
+        internal override void Update()
+        {
+            var prefab = Sector.Mapper.Prefabs.FirstOrDefault(x => x.Uid == _prefabUid);
+            if (prefab == null)
+            {
+                Logger.Instance.Error(
+                    $"Could not find prefab for company (uid: 0x{Uid:X}, name: '{ScsToken.TokenToString(_companyNameToken)}') " +
+                    $"in file '{Path.GetFileName(Sector.FilePath)}' from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
+                return;
+            }
+
+            var originNode = Sector.Mapper.GetNodeByUid(prefab.Nodes[0]);
+            if (prefab.Prefab.PrefabNodes == null) return;
+            var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
+
+            var rot = (float)(originNode.Rotation - Math.PI -
+                Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
+
+            var prefabStartX = originNode.X - mapPointOrigin.X;
+            var prefabStartZ = originNode.Z - mapPointOrigin.Z;
+            var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
+
+            if (companyPos == null) return;
+
+            var point = RenderHelper.RotatePoint(prefabStartX + companyPos.X,
+                prefabStartZ + companyPos.Z, rot,
+                originNode.X, originNode.Z);
+
+            if (!Sector.Mapper.OverlayManager.AddOverlay(ScsToken.TokenToString(_companyNameToken), OverlayType.Company,
+                    point.X, point.Y, "Company", DlcGuard, prefab.IsSecret))
+            {
+                Logger.Instance.Error(
+                    $"Could not find Company Overlay: '{ScsToken.TokenToString(_companyNameToken)}'({_companyNameToken:X}), item uid: 0x{Uid:X}, " +
+                    $"in {Path.GetFileName(Sector.FilePath)} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
+            }
         }
     }
 }

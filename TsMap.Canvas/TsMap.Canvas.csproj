@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DlcGuardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlcGuardForm.Designer.cs">
+      <DependentUpon>DlcGuardForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TileMapGeneratorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,6 +97,9 @@
     <Compile Include="TsMapCanvas.Designer.cs">
       <DependentUpon>TsMapCanvas.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="DlcGuardForm.resx">
+      <DependentUpon>DlcGuardForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TileMapGeneratorForm.resx">
       <DependentUpon>TileMapGeneratorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -139,4 +148,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(SolutionDir)docs\custom_resources.zip" "$(TargetDir)custom_resources.zip"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -2,15 +2,13 @@
 using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap.TsItem
 {
     public class TsTriggerItem : TsItem
     {
-        public string OverlayName { get; private set; }
-        public TsMapOverlay Overlay { get; private set; }
-
-        public bool IsSecret { get; private set; }
+        private bool _isSecret;
 
         public TsTriggerItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -26,11 +24,15 @@ namespace TsMap.TsItem
                     $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
         }
 
+        private void CreateMapOverlay()
+        {
+            Sector.Mapper.OverlayManager.AddOverlay("parking_ico", OverlayType.Map, X, Z, "Parking", DlcGuard, _isSecret);
+        }
+
         public void TsTriggerItem825(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount)); // 0x04(nodeCount) + nodeUids
             var triggerActionCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount)); // 0x04(tagCount) + tags
@@ -41,13 +43,7 @@ namespace TsMap.TsItem
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
                 if (action == ScsToken.StringToToken("hud_parking"))
                 {
-                    OverlayName = "parking_ico";
-                    Overlay = Sector.Mapper.LookupOverlay(OverlayName, OverlayTypes.Map);
-                    if (Overlay == null)
-                    {
-                        Logger.Instance.Error("Could not find parking overlay");
-                        Valid = false;
-                    }
+                    CreateMapOverlay();
                 }
                 var hasParameters = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(action)
                 fileOffset += 0x04; // set cursor after hasParameters
@@ -68,8 +64,7 @@ namespace TsMap.TsItem
         public void TsTriggerItem829(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount)); // 0x04(nodeCount) + tags
 
@@ -81,13 +76,7 @@ namespace TsMap.TsItem
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
                 if (action == ScsToken.StringToToken("hud_parking"))
                 {
-                    OverlayName = "parking_ico";
-                    Overlay = Sector.Mapper.LookupOverlay(OverlayName, OverlayTypes.Map);
-                    if (Overlay == null)
-                    {
-                        Logger.Instance.Error("Could not find parking overlay");
-                        Valid = false;
-                    }
+                    CreateMapOverlay();
                 }
 
                 var hasOverride = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(action)
@@ -113,9 +102,8 @@ namespace TsMap.TsItem
         public void TsTriggerItem875(int startOffset)
         {
             var fileOffset = startOffset + 0x34; // Set position at start of flags
-            var dlcGuardCount = (Sector.Mapper.IsEts2) ? Consts.Ets2DlcGuardCount : Consts.AtsDlcGuardCount;
-            Hidden = MemoryHelper.ReadInt8(Sector.Stream, fileOffset + 0x01) > dlcGuardCount;
-            IsSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 2);
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+            _isSecret = MemoryHelper.IsBitSet(MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02), 2);
             var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * tagCount)); // 0x04(nodeCount) + tags
 
@@ -127,13 +115,7 @@ namespace TsMap.TsItem
                 var action = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset);
                 if (action == ScsToken.StringToToken("hud_parking"))
                 {
-                    OverlayName = "parking_ico";
-                    Overlay = Sector.Mapper.LookupOverlay(OverlayName, OverlayTypes.Map);
-                    if (Overlay == null)
-                    {
-                        Logger.Instance.Error("Could not find parking overlay");
-                        Valid = false;
-                    }
+                    CreateMapOverlay();
                 }
 
                 var hasOverride = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // 0x08(action)

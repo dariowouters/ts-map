@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using TsMap.Common;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 
 namespace TsMap
 {
@@ -41,6 +42,10 @@ namespace TsMap
                 return;
             }
 
+            var dlcGuards = _mapper.GetDlcGuardsForCurrentGame();
+
+            var activeDlcGuards = dlcGuards.Where(x => x.Enabled).Select(x => x.Index).ToList();
+
             var zoomIndex = RenderHelper.GetZoomIndex(clip, scale);
 
             var endPoint = new PointF(startPoint.X + clip.Width / scale, startPoint.Y + clip.Height / scale);
@@ -48,12 +53,9 @@ namespace TsMap
             var ferryStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.FerryConnections))
             {
-                var ferryConnections = _mapper.FerryConnections.Where(item => !item.Hidden)
-                    .ToList();
-
                 var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
 
-                foreach (var ferryConnection in ferryConnections)
+                foreach (var ferryConnection in _mapper.FerryConnections)
                 {
                     var connections = _mapper.LookupFerryConnection(ferryConnection.FerryPortId);
 
@@ -114,15 +116,12 @@ namespace TsMap
             var mapAreaStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.MapAreas))
             {
-                var mapAreas = _mapper.MapAreas.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                    .ToList();
-
-
-                foreach (var mapArea in mapAreas.OrderBy(x => x.DrawOver))
+                foreach (var mapArea in _mapper.MapAreas.OrderBy(x => x.DrawOver))
                 {
-                    if (mapArea.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    if (!activeDlcGuards.Contains(mapArea.DlcGuard) ||
+                        mapArea.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
+                        mapArea.X < startPoint.X - itemDrawMargin || mapArea.X > endPoint.X + itemDrawMargin ||
+                        mapArea.Z < startPoint.Y - itemDrawMargin || mapArea.Z > endPoint.Y + itemDrawMargin)
                     {
                         continue;
                     }
@@ -147,21 +146,20 @@ namespace TsMap
             var mapAreaTime = DateTime.Now.Ticks - mapAreaStartTime;
 
             var prefabStartTime = DateTime.Now.Ticks;
-            var prefabs = _mapper.Prefabs.Where(item =>
-                    item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                    item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                .ToList();
-
             if (renderFlags.IsActive(RenderFlags.Prefabs))
             {
                 List<TsPrefabLook> drawingQueue = new List<TsPrefabLook>();
 
-                foreach (var prefabItem in prefabs)
+                foreach (var prefabItem in _mapper.Prefabs)
                 {
-                    if (prefabItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    if (!activeDlcGuards.Contains(prefabItem.DlcGuard) ||
+                        prefabItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
+                        prefabItem.X < startPoint.X - itemDrawMargin || prefabItem.X > endPoint.X + itemDrawMargin ||
+                        prefabItem.Z < startPoint.Y - itemDrawMargin || prefabItem.Z > endPoint.Y + itemDrawMargin)
                     {
                         continue;
                     }
+
                     var originNode = _mapper.GetNodeByUid(prefabItem.Nodes[0]);
                     if (prefabItem.Prefab.PrefabNodes == null) continue;
 
@@ -304,14 +302,12 @@ namespace TsMap
             var roadStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.Roads))
             {
-                var roads = _mapper.Roads.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                    .ToList();
-
-                foreach (var road in roads)
+                foreach (var road in _mapper.Roads)
                 {
-                    if (road.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    if (!activeDlcGuards.Contains(road.DlcGuard) ||
+                        road.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
+                        road.X < startPoint.X - itemDrawMargin || road.X > endPoint.X + itemDrawMargin ||
+                        road.Z < startPoint.Y - itemDrawMargin || road.Z > endPoint.Y + itemDrawMargin)
                     {
                         continue;
                     }
@@ -371,211 +367,35 @@ namespace TsMap
             var mapOverlayStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.MapOverlays))
             {
-                var overlays = _mapper.MapOverlays.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                    .ToList();
-
-                foreach (var overlayItem in overlays) // TODO: Scaling
+                foreach (var mapOverlay in _mapper.OverlayManager.GetOverlays())
                 {
-                    if (overlayItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
+                    if (!activeDlcGuards.Contains(mapOverlay.DlcGuard) ||
+                        mapOverlay.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
+                        mapOverlay.Position.X < startPoint.X - itemDrawMargin ||
+                        mapOverlay.Position.X > endPoint.X + itemDrawMargin ||
+                        mapOverlay.Position.Y < startPoint.Y - itemDrawMargin ||
+                        mapOverlay.Position.Y > endPoint.Y + itemDrawMargin)
                     {
                         continue;
                     }
-                    Bitmap b = overlayItem.Overlay.GetBitmap();
-                    if (b != null)
-                        g.DrawImage(b, overlayItem.X - b.Width, overlayItem.Z - b.Height, b.Width * 2, b.Height * 2);
+
+                    var b = mapOverlay.GetBitmap();
+
+                    if (b == null || !renderFlags.IsActive(RenderFlags.BusStopOverlay) && mapOverlay.OverlayType == OverlayType.BusStop) continue;
+
+                    g.DrawImage(b, mapOverlay.Position.X - (b.Width / 2f), mapOverlay.Position.Y - (b.Height / 2f),
+                        b.Width, b.Height);
+
                 }
             }
             var mapOverlayTime = DateTime.Now.Ticks - mapOverlayStartTime;
 
-            var mapOverlay2StartTime = DateTime.Now.Ticks;
-            if (renderFlags.IsActive(RenderFlags.MapOverlays))
-            {
-                var companies = _mapper.Companies.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                    .ToList();
-
-                foreach (var companyItem in companies) // TODO: Scaling
-                {
-                    var point = new PointF(companyItem.X, companyItem.Z);
-                    if (companyItem.Nodes.Count > 0)
-                    {
-                        var prefab = _mapper.Prefabs.FirstOrDefault(x => x.Uid == companyItem.Nodes[0]);
-                        if (prefab != null)
-                        {
-                            if (prefab.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
-                            {
-                                continue;
-                            }
-                            var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
-                            if (prefab.Prefab.PrefabNodes == null) continue;
-                            var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
-
-                            var rot = (float)(originNode.Rotation - Math.PI -
-                                               Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
-
-                            var prefabstartX = originNode.X - mapPointOrigin.X;
-                            var prefabStartZ = originNode.Z - mapPointOrigin.Z;
-                            var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
-                            if (companyPos != null)
-                            {
-                                point = RenderHelper.RotatePoint(prefabstartX + companyPos.X,
-                                    prefabStartZ + companyPos.Z, rot,
-                                    originNode.X, originNode.Z);
-                            }
-                        }
-                    }
-                    Bitmap b = companyItem.Overlay?.GetBitmap();
-                    if (b != null)
-                        g.DrawImage(b, point.X, point.Y, b.Width, b.Height);
-                }
-
-                foreach (var prefab in prefabs) // Draw all prefab overlays
-                {
-                    if (prefab.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
-                    {
-                        continue;
-                    }
-
-                    var originNode = _mapper.GetNodeByUid(prefab.Nodes[0]);
-                    if (prefab.Prefab.PrefabNodes == null) continue;
-                    var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
-
-                    var rot = (float) (originNode.Rotation - Math.PI -
-                                       Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
-
-                    var prefabstartX = originNode.X - mapPointOrigin.X;
-                    var prefabStartZ = originNode.Z - mapPointOrigin.Z;
-                    foreach (var spawnPoint in prefab.Prefab.SpawnPoints)
-                    {
-                        var newPoint = RenderHelper.RotatePoint(prefabstartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
-                            originNode.X, originNode.Z);
-
-                        Bitmap b = null;
-
-                        switch (spawnPoint.Type)
-                        {
-                            case TsSpawnPointType.GasPos:
-                            {
-                                var overlay = _mapper.LookupOverlay("gas_ico", OverlayTypes.Map);
-                                b = overlay?.GetBitmap();
-                                break;
-                            }
-                            case TsSpawnPointType.ServicePos:
-                            {
-                                var overlay = _mapper.LookupOverlay("service_ico", OverlayTypes.Map);
-                                b = overlay?.GetBitmap();
-                                break;
-                            }
-                            case TsSpawnPointType.WeightStationPos:
-                            {
-                                var overlay = _mapper.LookupOverlay("weigh_station_ico", OverlayTypes.Map);
-                                b = overlay?.GetBitmap();
-                                break;
-                            }
-                            case TsSpawnPointType.TruckDealerPos:
-                            {
-                                var overlay = _mapper.LookupOverlay("dealer_ico", OverlayTypes.Map);
-                                b = overlay?.GetBitmap();
-                                break;
-                            }
-                            case TsSpawnPointType.BuyPos:
-                            {
-                                var overlay = _mapper.LookupOverlay("garage_large_ico", OverlayTypes.Map);
-                                b = overlay?.GetBitmap();
-                                break;
-                            }
-                            case TsSpawnPointType.RecruitmentPos:
-                            {
-                                var overlay = _mapper.LookupOverlay("recruitment_ico", OverlayTypes.Map);
-                                b = overlay?.GetBitmap();
-                                break;
-                            }
-                        }
-                        if (b != null)
-                            g.DrawImage(b, newPoint.X - b.Width / 2f, newPoint.Y - b.Height / 2f, b.Width, b.Height);
-
-                    }
-
-                    var lastId = -1;
-                    foreach (var triggerPoint in prefab.Prefab.TriggerPoints) // trigger points in prefabs: garage, hotel, ...
-                    {
-                        var newPoint = RenderHelper.RotatePoint(prefabstartX + triggerPoint.X, prefabStartZ + triggerPoint.Z, rot,
-                            originNode.X, originNode.Z);
-
-                        if (triggerPoint.TriggerId == lastId) continue;
-                        lastId = (int) triggerPoint.TriggerId;
-
-                        if (triggerPoint.TriggerActionToken == ScsToken.StringToToken("hud_parking")) // parking trigger
-                        {
-                            var overlay = _mapper.LookupOverlay("parking_ico", OverlayTypes.Map);
-                            Bitmap b = overlay?.GetBitmap();
-
-                            if (b != null)
-                                g.DrawImage(b, newPoint.X - b.Width / 2f, newPoint.Y - b.Height / 2f, b.Width, b.Height);
-                        }
-                    }
-                }
-
-                var triggers = _mapper.Triggers.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin && !item.Hidden)
-                    .ToList();
-
-                foreach (var triggerItem in triggers) // TODO: Scaling
-                {
-                    if (triggerItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
-                    {
-                        continue;
-                    }
-                    Bitmap b = triggerItem.Overlay?.GetBitmap();
-                    if (b != null)
-                        g.DrawImage(b, triggerItem.X, triggerItem.Z, b.Width, b.Height);
-                }
-
-                var ferryItems = _mapper.FerryConnections.Where(item =>
-                        item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                        item.Z <= endPoint.Y + itemDrawMargin)
-                    .ToList();
-
-                foreach (var ferryItem in ferryItems) // TODO: Scaling
-                {
-                    Bitmap b = ferryItem.Overlay?.GetBitmap();
-                    if (b != null)
-                        g.DrawImage(b, ferryItem.X, ferryItem.Z, b.Width, b.Height);
-                }
-
-                var viewpointOverlay = _mapper.LookupOverlay("viewpoint", OverlayTypes.Map);
-                var viewpointBitmap = viewpointOverlay?.GetBitmap();
-                if (viewpointBitmap != null)
-                {
-                    var viewpoints = _mapper.Viewpoints.Where(item =>
-                            item.X >= startPoint.X - itemDrawMargin && item.X <= endPoint.X + itemDrawMargin && item.Z >= startPoint.Y - itemDrawMargin &&
-                            item.Z <= endPoint.Y + itemDrawMargin)
-                        .ToList();
-
-                    foreach (var viewpoint in viewpoints)
-                    {
-                        if (viewpoint.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads))
-                        {
-                            continue;
-                        }
-                        g.DrawImage(viewpointBitmap, viewpoint.X, viewpoint.Z, viewpointBitmap.Width, viewpointBitmap.Height);
-                    }
-                }
-            }
-            var mapOverlay2Time = DateTime.Now.Ticks - mapOverlay2StartTime;
-
             var cityStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.CityNames)) // TODO: Fix position and scaling
             {
-                var cities = _mapper.Cities.Where(item => !item.Hidden).ToList();
-
                 var cityFont = new Font("Arial", 100 + zoomCaps[zoomIndex] / 100, FontStyle.Bold);
 
-                foreach (var city in cities)
+                foreach (var city in _mapper.Cities)
                 {
                     var name = _mapper.Localization.GetLocaleValue(city.City.LocalizationToken) ?? city.City.Name;
                     var node = _mapper.GetNodeByUid(city.NodeUid);
@@ -607,7 +427,6 @@ namespace TsMap
                 //g.DrawString($"Prefab: {prefabTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 55);
                 //g.DrawString($"Ferry: {ferryTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 70);
                 //g.DrawString($"MapOverlay: {mapOverlayTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 85);
-                //g.DrawString($"MapOverlay2: {mapOverlay2Time / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 100);
                 //g.DrawString($"MapArea: {mapAreaTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 115);
                 //g.DrawString($"City: {cityTime / TimeSpan.TicksPerMillisecond}ms", _defaultFont, Brushes.White, 10, 130);
             }
