@@ -9,10 +9,11 @@ namespace TsMap.TsItem
 {
     public class TsMapOverlayItem : TsItem
     {
-        private string _overlayName;
-        private byte _zoomLevelVisibility;
-
         private bool _isSecret;
+        private string _overlayName;
+
+        private OverlayType _type = OverlayType.Road;
+        private byte _zoomLevelVisibility;
 
         public TsMapOverlayItem(TsSector sector, int startOffset) : base(sector, startOffset)
         {
@@ -30,14 +31,24 @@ namespace TsMap.TsItem
 
             var type = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x02);
             var overlayToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05);
-            if (type == 1 && overlayToken == 0)
+            if (MemoryHelper.IsBitSet(type, 0) && overlayToken == 0)
             {
-                overlayToken = ScsToken.StringToToken("parking_ico"); // parking
+                _overlayName = "parking_ico"; // parking
+                _type = OverlayType.Map;
             }
-            _overlayName = ScsToken.TokenToString(overlayToken);
+            else if (MemoryHelper.IsBitSet(type, 4))
+            {
+                _overlayName = "photo_sight_captured"; // Landmark
+                _type = OverlayType.Map;
+            }
+            else
+            {
+                _overlayName = ScsToken.TokenToString(overlayToken);
+            }
+
             Nodes = new List<ulong>(1)
             {
-                MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08), // 0x08(overlayToken)
+                MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08) // 0x08(overlayToken)
             };
 
             fileOffset += 0x08; // 0x08(nodeUid)
@@ -58,8 +69,7 @@ namespace TsMap.TsItem
                 return;
             }
 
-            var overlay = Sector.Mapper.OverlayManager.CreateOverlay(_overlayName,
-                _overlayName == "parking_ico" ? OverlayType.Map : OverlayType.Road);
+            var overlay = Sector.Mapper.OverlayManager.CreateOverlay(_overlayName, _type);
 
             if (overlay == null)
             {

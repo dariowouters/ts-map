@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for 1.45 Open Beta**
+### **Support for 1.46**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -31,7 +31,7 @@ ETS2:
 - PJ Indo Map v2.5 (Can't load an overlay)
 
 ATS:
-- ProMods Canada V1.2.0
+- ProMods Canada V1.2.1
 - Coast to Coast V2.6 (Can't load some dds files)
 - US Expansion V2.4 (C2C Compatible)
 - CanaDream Open Beta (ATS 1.32)
@@ -43,7 +43,7 @@ ATS:
 
 ## Supported maps / DLC
 - ATS
-    - All map DLCs up to and including Wyoming.
+    - All map DLCs up to and including Montana.
 - ETS2
     - All map DLCs up to and including Iberia.
 
