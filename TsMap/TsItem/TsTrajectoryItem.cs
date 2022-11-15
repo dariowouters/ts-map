@@ -48,7 +48,8 @@ namespace TsMap.TsItem
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x05); // 0x05(flags)
             var routeRuleCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x08 * nodeCount) + 0x08); // 0x04(nodeCount) + nodeUids + 0x08(flags2)
             var checkpointCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x1C * routeRuleCount)); // 0x04(routeRuleCount) + routeRules
-            fileOffset += 0x04 + (0x10 * checkpointCount) + 0x04; // 0x04(checkpointCount) + checkpoints + 0x04(padding2)
+            var tagCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x04 + (0x10 * checkpointCount)); // 0x04(checkpointCount) + checkpoints
+            fileOffset += 0x04 + (0x08 * tagCount); // 0x04(tagCount) + tags
             BlockSize = fileOffset - startOffset;
         }
     }

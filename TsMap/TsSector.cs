@@ -59,6 +59,18 @@ namespace TsMap
 
                 switch (type)
                 {
+                    case TsItemType.Terrain: // used to all be in .aux files, not sure why some are now in .base files
+                    {
+                        item = new TsTerrainItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
+                    case TsItemType.Building: // used to all be in .aux files, not sure why some are now in .base files
+                    {
+                        item = new TsBuildingItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
+                        break;
+                    }
                     case TsItemType.Road:
                     {
                         item = new TsRoadItem(this, lastOffset);
@@ -154,6 +166,12 @@ namespace TsMap
                         lastOffset += item.BlockSize;
                         break;
                     }
+                    case TsItemType.BezierPatch: // used to all be in .aux files, not sure why some are now in .base files
+                        {
+                            item = new TsBezierPatchItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.TrajectoryItem:
                     {
                         item = new TsTrajectoryItem(this, lastOffset);
@@ -165,6 +183,12 @@ namespace TsMap
                         item = new TsMapAreaItem(this, lastOffset);
                         lastOffset += item.BlockSize;
                         if (item.Valid && !item.Hidden) Mapper.MapAreas.Add((TsMapAreaItem) item);
+                        break;
+                    }
+                    case TsItemType.Curve: // used to all be in .aux files, not sure why some are now in .base files
+                    {
+                        item = new TsCurveItem(this, lastOffset);
+                        lastOffset += item.BlockSize;
                         break;
                     }
                     case TsItemType.Cutscene:
