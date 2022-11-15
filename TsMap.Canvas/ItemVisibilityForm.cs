@@ -15,6 +15,7 @@ namespace TsMap.Canvas
             MapOverlaysCheckBox.Checked = renderFlags.IsActive(RenderFlags.MapOverlays);
             FerryConnectionsCheckBox.Checked = renderFlags.IsActive(RenderFlags.FerryConnections);
             CityNamesCheckBox.Checked = renderFlags.IsActive(RenderFlags.CityNames);
+            BusStopOverlayCheckBox.Checked = renderFlags.IsActive(RenderFlags.BusStopOverlay);
         }
 
         public delegate void UpdateItemVisibilityEvent(RenderFlags renderFlags);
@@ -29,8 +30,10 @@ namespace TsMap.Canvas
             if (SecretRoadsCheckBox.Checked) renderFlags |= RenderFlags.SecretRoads;
             if (MapAreasCheckBox.Checked) renderFlags |= RenderFlags.MapAreas;
             if (MapOverlaysCheckBox.Checked) renderFlags |= RenderFlags.MapOverlays;
+            else BusStopOverlayCheckBox.Checked = false;
             if (FerryConnectionsCheckBox.Checked) renderFlags |= RenderFlags.FerryConnections;
             if (CityNamesCheckBox.Checked) renderFlags |= RenderFlags.CityNames;
+            if (BusStopOverlayCheckBox.Checked) renderFlags |= RenderFlags.BusStopOverlay;
             UpdateItemVisibility?.Invoke(renderFlags);
         }
     }

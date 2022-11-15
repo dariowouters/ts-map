@@ -11,6 +11,7 @@ using TsMap.Common;
 using TsMap.FileSystem;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.Map.Overlays;
 using TsMap.TsItem;
 using System.Web.Script.Serialization;
 using TsMap.Utils;
@@ -26,20 +27,19 @@ namespace TsMap
 
         private List<string> _sectorFiles;
 
+        internal MapOverlayManager OverlayManager { get; private set; }
         public LocalizationManager Localization { get; private set; }
 
         private readonly Dictionary<ulong, TsPrefab> _prefabLookup = new Dictionary<ulong, TsPrefab>();
         private readonly Dictionary<ulong, TsCity> _citiesLookup = new Dictionary<ulong, TsCity>();
         private readonly Dictionary<ulong, TsCountry> _countriesLookup = new Dictionary<ulong, TsCountry>();
         private readonly Dictionary<ulong, TsRoadLook> _roadLookup = new Dictionary<ulong, TsRoadLook>();
-        private readonly Dictionary<ulong, TsMapOverlay> _overlayCache = new Dictionary<ulong, TsMapOverlay>();
         private readonly List<TsFerryConnection> _ferryConnectionLookup = new List<TsFerryConnection>();
 
         public readonly List<TsRoadItem> Roads = new List<TsRoadItem>();
         public readonly List<TsPrefabItem> Prefabs = new List<TsPrefabItem>();
         public readonly List<TsMapAreaItem> MapAreas = new List<TsMapAreaItem>();
         public readonly List<TsCityItem> Cities = new List<TsCityItem>();
-        public readonly List<TsMapOverlayItem> MapOverlays = new List<TsMapOverlayItem>();
         public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
         public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
         public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
@@ -56,11 +56,15 @@ namespace TsMap
 
         private List<TsSector> Sectors { get; set; }
 
+        internal readonly List<TsItem.TsItem> MapItems = new List<TsItem.TsItem>();
+
         public TsMapper(string gameDir, List<Mod> mods)
         {
             _gameDir = gameDir;
             _mods = mods;
             Sectors = new List<TsSector>();
+
+            OverlayManager = new MapOverlayManager();
             Localization = new LocalizationManager();
         }
 
@@ -309,41 +313,6 @@ namespace TsMap
             }
         }
 
-        private TsMapOverlay GetOverlayFromMatFile(string matFilePath)
-        {
-            var matFile = UberFileSystem.Instance.GetFile(matFilePath);
-            if (matFile == null) return null;
-
-            var data = matFile.Entry.Read();
-            var lines = Encoding.UTF8.GetString(data).Split('\n');
-
-            foreach (var line in lines)
-            {
-                var (validLine, key, value) = SiiHelper.ParseLine(line);
-                if (!validLine) continue;
-                if (key == "texture")
-                {
-                    var tobjPath = PathHelper.CombinePath(PathHelper.GetDirectoryPath(matFilePath), value.Split('"')[1]);
-
-                    var tobjData = UberFileSystem.Instance.GetFile(tobjPath)?.Entry?.Read();
-
-                    if (tobjData == null)
-                    {
-                        Logger.Instance.Warning($"Could not read tobj file for '{tobjPath}'");
-                        break;
-                    }
-
-                    var path = PathHelper.EnsureLocalPath(Encoding.UTF8.GetString(tobjData, 0x30, tobjData.Length - 0x30));
-
-                    var name = PathHelper.GetFileNameFromPath(matFilePath);
-                    if (name.StartsWith("map")) break; // skip the large unused background files
-
-                    return new TsMapOverlay(path);
-                }
-            }
-            return null;
-        }
-
         /// <summary>
         /// Parse all definition files
         /// </summary>
@@ -429,6 +398,9 @@ namespace TsMap
                 if (mod.Load) UberFileSystem.Instance.AddSourceFile(mod.ModPath);
             }
 
+            UberFileSystem.Instance.AddSourceFile(Path.Combine(Environment.CurrentDirectory,
+                "custom_resources.zip"));
+
             Logger.Instance.Info($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
             ParseDefFiles();
@@ -444,6 +416,11 @@ namespace TsMap
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base) files");
+
+            foreach (var mapItem in MapItems)
+            {
+                mapItem.Update();
+            }
 
             var invalidFerryConnections = _ferryConnectionLookup.Where(x => x.StartPortLocation == PointF.Empty || x.EndPortLocation == PointF.Empty).ToList();
             foreach (var invalidFerryConnection in invalidFerryConnections)
@@ -566,11 +543,9 @@ namespace TsMap
             if (saveAsPNG) Directory.CreateDirectory(overlayPath);
 
             var overlaysJArr = new JArray();
-            foreach (var overlay in MapOverlays)
+            foreach (var mapOverlay in OverlayManager.GetOverlays())
             {
-                if (overlay.Hidden) continue;
-                var overlayName = overlay.OverlayName;
-                var b = overlay.Overlay?.GetBitmap();
+                var b = mapOverlay.GetBitmap();
                 if (b == null) continue;
                 var overlayJObj = new JObject
                 {
@@ -581,7 +556,6 @@ namespace TsMap
                     ["Type"] = "Overlay",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
-                    ["City"] = FindCityInGameId(overlay)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -601,30 +575,16 @@ namespace TsMap
                         if (prefab.Prefab.PrefabNodes == null) continue;
                         var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
 
-                        var rot = (float)(originNode.Rotation - Math.PI -
-                                           Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
-
-                        var prefabstartX = originNode.X - mapPointOrigin.X;
-                        var prefabStartZ = originNode.Z - mapPointOrigin.Z;
-                        var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
-                        if (companyPos != null)
-                        {
-                            point = RenderHelper.RotatePoint(prefabstartX + companyPos.X, prefabStartZ + companyPos.Z,
-                                rot,
-                                originNode.X, originNode.Z);
-                        }
-                    }
-                }
-                var b = company.Overlay?.GetBitmap();
-                if (b == null) continue;
                 var overlayJObj = new JObject
                 {
-                    ["X"] = point.X,
-                    ["Y"] = point.Y,
-                    ["Name"] = overlayName,
-                    ["Type"] = "Company",
+                    ["X"] = mapOverlay.Position.X,
+                    ["Y"] = mapOverlay.Position.Y,
+                    ["Name"] = mapOverlay.OverlayName,
+                    ["Type"] = mapOverlay.TypeName,
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
+                    ["DlcGuard"] = mapOverlay.DlcGuard,
+                    ["IsSecret"] = mapOverlay.IsSecret,
                     ["City"] = FindCityInGameId(company)
                 };
                 overlaysJArr.Add(overlayJObj);
@@ -645,7 +605,6 @@ namespace TsMap
                     ["Type"] = "Parking",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
-                    ["City"] = FindCityInGameId(trigger)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -665,7 +624,6 @@ namespace TsMap
                     ["Type"] = (ferry.Train) ? "Train" : "Ferry",
                     ["Width"] = b.Width,
                     ["Height"] = b.Height,
-                    ["City"] = FindCityInGameId(ferry)
                 };
                 overlaysJArr.Add(overlayJObj);
                 if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
@@ -679,7 +637,7 @@ namespace TsMap
                 if (prefab.Prefab.PrefabNodes == null) continue;
                 var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
 
-                var rot = (float)(originNode.Rotation - Math.PI -
+                var rot = (float) (originNode.Rotation - Math.PI -
                                    Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
 
                 var prefabStartX = originNode.X - mapPointOrigin.X;
@@ -745,7 +703,6 @@ namespace TsMap
                     if (b == null) continue;
                     overlayJObj["Width"] = b.Width;
                     overlayJObj["Height"] = b.Height;
-                    overlayJObj["City"] = FindCityInGameId(prefab);
                     overlaysJArr.Add(overlayJObj);
                     if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                         b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
@@ -776,7 +733,6 @@ namespace TsMap
                     if (b == null) continue;
                     overlayJObj["Width"] = b.Width;
                     overlayJObj["Height"] = b.Height;
-                    overlayJObj["City"] = FindCityInGameId(prefab);
                     overlaysJArr.Add(overlayJObj);
                     if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
                         b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
@@ -817,58 +773,6 @@ namespace TsMap
         public TsCity LookupCity(ulong cityId)
         {
             return _citiesLookup.ContainsKey(cityId) ? _citiesLookup[cityId] : null;
-        }
-
-        /// <summary>
-        /// Get's the overlay for the given overlayName and overlayType from the cache or from the filesystem, returning null if it does not exist in either.
-        /// </summary>
-        /// <param name="overlayName">Name of the icon, road icons should not have 'road_' as a prefix</param>
-        /// <param name="overlayType">Determines the path where it checks for the overlay.
-        /// <para>If <see cref="OverlayTypes.Custom"/> is used, a full path to a .mat file should be provided in <paramref name="overlayName"/></para></param>
-        /// <returns>
-        /// <para><see cref="TsMapOverlay"></see> if found</para>
-        /// <para>Null if not</para>
-        /// </returns>
-        public TsMapOverlay LookupOverlay(string overlayName, OverlayTypes overlayType)
-        {
-            if (overlayName == "") return null;
-            ulong hash;
-            string path;
-            switch (overlayType)
-            {
-                case OverlayTypes.Road:
-                    path = $"material/ui/map/road/road_{overlayName}.mat";
-                    break;
-                case OverlayTypes.Company:
-                    path = $"material/ui/company/small/{overlayName}.mat";
-                    break;
-                case OverlayTypes.Map:
-                    path = $"material/ui/map/{overlayName}.mat";
-                    break;
-                default:
-                    path = PathHelper.EnsureLocalPath(overlayName);
-                    break;
-            }
-
-            hash = CityHash.CityHash64(path);
-
-            if (_overlayCache.ContainsKey(hash))
-            {
-                return _overlayCache[hash];
-            }
-            else
-            {
-                var overlay = GetOverlayFromMatFile(path);
-                if (overlay != null)
-                {
-                    if (!_overlayCache.ContainsKey(hash))
-                    {
-                        _overlayCache.Add(hash, overlay);
-                        return overlay;
-                    }
-                }
-            }
-            return null;
         }
 
         public List<TsFerryConnection> LookupFerryConnection(ulong ferryPortId)

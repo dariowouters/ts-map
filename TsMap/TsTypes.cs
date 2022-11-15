@@ -15,6 +15,7 @@ namespace TsMap
         FerryConnections = 1 << 5, // 32
         CityNames = 1 << 6, // 64
         SecretRoads = 1 << 7, // 128
+        BusStopOverlay = 1 << 8, // 256
         All = int.MaxValue
     }
 
