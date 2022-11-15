@@ -63,7 +63,7 @@
             this.lblMapPadding = new System.Windows.Forms.Label();
             this.txtMapPadding = new System.Windows.Forms.TextBox();
             this.triStateTreeView1 = new TsMap.Canvas.TriStateTreeView();
-
+            this.ExportDataBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.StartZoomLevelBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EndZoomLevelBox)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -71,7 +71,7 @@
             // 
             // GenerateBtn
             // 
-            this.GenerateBtn.Location = new System.Drawing.Point(10, 229);
+            this.GenerateBtn.Location = new System.Drawing.Point(10, 240);
             this.GenerateBtn.Name = "GenerateBtn";
             this.GenerateBtn.Size = new System.Drawing.Size(166, 23);
             this.GenerateBtn.TabIndex = 2;
@@ -211,7 +211,7 @@
             this.groupBox1.Controls.Add(this.FerryConnectionsCheckBox);
             this.groupBox1.Location = new System.Drawing.Point(183, 7);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(125, 190);
+            this.groupBox1.Size = new System.Drawing.Size(157, 201);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Items To Render";
@@ -256,7 +256,7 @@
             // 
             // txtTileSize
             // 
-            this.txtTileSize.Location = new System.Drawing.Point(60, 203);
+            this.txtTileSize.Location = new System.Drawing.Point(60, 214);
             this.txtTileSize.Name = "txtTileSize";
             this.txtTileSize.Size = new System.Drawing.Size(63, 20);
             this.txtTileSize.TabIndex = 14;
@@ -264,7 +264,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 206);
+            this.label1.Location = new System.Drawing.Point(7, 217);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 15;
@@ -273,7 +273,7 @@
             // lblMapPadding
             // 
             this.lblMapPadding.AutoSize = true;
-            this.lblMapPadding.Location = new System.Drawing.Point(162, 206);
+            this.lblMapPadding.Location = new System.Drawing.Point(161, 217);
             this.lblMapPadding.Name = "lblMapPadding";
             this.lblMapPadding.Size = new System.Drawing.Size(70, 13);
             this.lblMapPadding.TabIndex = 16;
@@ -281,7 +281,7 @@
             // 
             // txtMapPadding
             // 
-            this.txtMapPadding.Location = new System.Drawing.Point(237, 203);
+            this.txtMapPadding.Location = new System.Drawing.Point(237, 214);
             this.txtMapPadding.Name = "txtMapPadding";
             this.txtMapPadding.Size = new System.Drawing.Size(69, 20);
             this.txtMapPadding.TabIndex = 17;
@@ -325,34 +325,26 @@
             treeNode7,
             treeNode8,
             treeNode9});
-            this.triStateTreeView1.Size = new System.Drawing.Size(166, 138);
+            this.triStateTreeView1.Size = new System.Drawing.Size(166, 149);
             this.triStateTreeView1.TabIndex = 13;
             // 
             // ExportDataBtn
             // 
-            this.ExportDataBtn.Location = new System.Drawing.Point(182, 229);
+            this.ExportDataBtn.Location = new System.Drawing.Point(183, 240);
             this.ExportDataBtn.Name = "ExportDataBtn";
-            this.ExportDataBtn.Size = new System.Drawing.Size(126, 23);
+            this.ExportDataBtn.Size = new System.Drawing.Size(166, 23);
             this.ExportDataBtn.TabIndex = 18;
             this.ExportDataBtn.Text = "Export Data";
             this.ExportDataBtn.UseVisualStyleBackColor = true;
-            this.ExportDataBtn.Click += new System.EventHandler(this.ExportDataBtn_Click);
-            // 
-            this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            this.ClientSize = new System.Drawing.Size(319, 264);
-            // 
-            this.SecretRoadsCheckBox.UseVisualStyleBackColor = true;
+            this.ExportDataBtn.Click += new System.EventHandler(this.ExportDataBtn_Click_1);
             // 
             // TileMapGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(319, 224);
-            this.Controls.Add(this.triStateTreeView1);
+            this.ClientSize = new System.Drawing.Size(352, 275);
             this.Controls.Add(this.ExportDataBtn);
+            this.Controls.Add(this.triStateTreeView1);
             this.Controls.Add(this.txtMapPadding);
             this.Controls.Add(this.lblMapPadding);
             this.Controls.Add(this.label1);
@@ -393,7 +385,6 @@
         private System.Windows.Forms.CheckBox RoadsCheckBox;
         private System.Windows.Forms.CheckBox MapOverlaysCheckBox;
         private System.Windows.Forms.CheckBox PrefabsCheckBox;
-        private System.Windows.Forms.Button ExportDataBtn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox GenTilesCheck;
         private TriStateTreeView triStateTreeView1;
@@ -402,5 +393,7 @@
         private System.Windows.Forms.Label lblMapPadding;
         private System.Windows.Forms.TextBox txtMapPadding;
         private System.Windows.Forms.CheckBox SecretRoadsCheckBox;
+        private System.Windows.Forms.CheckBox BusStopOverlayCheckBox;
+        private System.Windows.Forms.Button ExportDataBtn;
     }
 }

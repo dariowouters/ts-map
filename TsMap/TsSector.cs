@@ -145,7 +145,7 @@ namespace TsMap
                     {
                         item = new TsBusStopItem(this, lastOffset);
                         lastOffset += item.BlockSize;
-                        Mapper.BusStops.Add(item);
+                        Mapper.BusStops.Add((TsBusStopItem)item);
                         break;
                     }
                     case TsItemType.TrafficRule:

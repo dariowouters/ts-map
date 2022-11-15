@@ -28,7 +28,7 @@ namespace TsMap.Canvas
             MapOverlaysCheckBox.Checked = SettingsManager.Current.Settings.TileGenerator.RenderFlags.IsActive(RenderFlags.MapOverlays);
             FerryConnectionsCheckBox.Checked = SettingsManager.Current.Settings.TileGenerator.RenderFlags.IsActive(RenderFlags.FerryConnections);
             CityNamesCheckBox.Checked = SettingsManager.Current.Settings.TileGenerator.RenderFlags.IsActive(RenderFlags.CityNames);
-            BusStopOverlayCheckBox.Checked = renderFlags.IsActive(RenderFlags.BusStopOverlay);
+            BusStopOverlayCheckBox.Checked = SettingsManager.Current.Settings.TileGenerator.RenderFlags.IsActive(RenderFlags.BusStopOverlay);
 
             EndZoomLevelBox.Value = SettingsManager.Current.Settings.TileGenerator.EndZoomLevel;
             StartZoomLevelBox.Value = SettingsManager.Current.Settings.TileGenerator.StartZoomLevel;
@@ -161,7 +161,17 @@ namespace TsMap.Canvas
             triStateTreeView1.GetNodeByName("GenTileMapInfo").Checked = GenTilesCheck.Checked;
         }
 
-        private void ExportDataBtn_Click(object sender, EventArgs e)
+        private void MapOverlaysCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!MapOverlaysCheckBox.Checked) BusStopOverlayCheckBox.Checked = false;
+        }
+
+        private void BusStopOverlayCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (BusStopOverlayCheckBox.Checked) MapOverlaysCheckBox.Checked = true;
+        }
+
+        private void ExportDataBtn_Click_1(object sender, EventArgs e)
         {
             SettingsManager.Current.Settings.TileGenerator.ExportFlags = GetExportFlags();
             SettingsManager.Current.SaveSettings();
@@ -178,16 +188,6 @@ namespace TsMap.Canvas
                 ExportMapData(folderBrowserDialog1.SelectedPath,
                     GetExportFlags());
             }
-        }
-
-        private void MapOverlaysCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!MapOverlaysCheckBox.Checked) BusStopOverlayCheckBox.Checked = false;
-        }
-
-        private void BusStopOverlayCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (BusStopOverlayCheckBox.Checked) MapOverlaysCheckBox.Checked = true;
         }
     }
 }

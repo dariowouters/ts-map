@@ -433,7 +433,7 @@ namespace TsMap
 
             this.ParseCargoFiles();
 
-            Logger.Instance.Info($"Loaded {_overlayCache.Count} overlays");
+            Logger.Instance.Info($"Loaded {OverlayManager.GetOverlayImagesCount()} overlay images, with {OverlayManager.GetOverlays().Count} overlays on the map");
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to fully load.");
         }
 
@@ -460,6 +460,7 @@ namespace TsMap
                 cityJObj["X"] = city.X;
                 cityJObj["Y"] = city.Z;
                 cityJObj["InGameId"] = ScsToken.TokenToString(city.City.Token);
+                cityJObj["LocalizationToken"] = city.City.LocalizationToken;
 
                 if (_countriesLookup.ContainsKey(ScsToken.StringToToken(city.City.Country)))
                 {
@@ -498,6 +499,8 @@ namespace TsMap
             foreach (var country in _countriesLookup.Values)
             {
                 var countryJObj = JObject.FromObject(country);
+                countryJObj["LocalizationToken"] = country.LocalizationToken;
+
                 if (exportFlags.IsActive(ExportFlags.CountryLocalizedNames))
                 {
                     countryJObj["LocalizedNames"] = new JObject();
@@ -547,33 +550,6 @@ namespace TsMap
             {
                 var b = mapOverlay.GetBitmap();
                 if (b == null) continue;
-                var overlayJObj = new JObject
-                {
-                    ["X"] = overlay.X,
-                    ["Y"] = overlay.Z,
-                    ["ZoomLevelVisibility"] = overlay.ZoomLevelVisibility,
-                    ["Name"] = overlayName,
-                    ["Type"] = "Overlay",
-                    ["Width"] = b.Width,
-                    ["Height"] = b.Height,
-                };
-                overlaysJArr.Add(overlayJObj);
-                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
-                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
-            }
-            foreach (var company in Companies)
-            {
-                if (company.Hidden) continue;
-                var overlayName = ScsToken.TokenToString(company.OverlayToken);
-                var point = new PointF(company.X, company.Z);
-                if (company.Nodes.Count > 0)
-                {
-                    var prefab = Prefabs.FirstOrDefault(x => x.Uid == company.Nodes[0]);
-                    if (prefab != null)
-                    {
-                        var originNode = GetNodeByUid(prefab.Nodes[0]);
-                        if (prefab.Prefab.PrefabNodes == null) continue;
-                        var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
 
                 var overlayJObj = new JObject
                 {
@@ -585,159 +561,17 @@ namespace TsMap
                     ["Height"] = b.Height,
                     ["DlcGuard"] = mapOverlay.DlcGuard,
                     ["IsSecret"] = mapOverlay.IsSecret,
-                    ["City"] = FindCityInGameId(company)
+                    ["City"] = FindCityInGameId(mapOverlay.Position.X, mapOverlay.Position.Y)
                 };
+
+                if (mapOverlay.ZoomLevelVisibility != 0)
+                    overlayJObj["ZoomLevelVisibility"] = mapOverlay.ZoomLevelVisibility;
+
                 overlaysJArr.Add(overlayJObj);
-                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
-                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
-            }
-            foreach (var trigger in Triggers)
-            {
-                if (trigger.Hidden) continue;
-                var overlayName = trigger.OverlayName;
-                var b = trigger.Overlay?.GetBitmap();
-                if (b == null) continue;
-                var overlayJObj = new JObject
-                {
-                    ["X"] = trigger.X,
-                    ["Y"] = trigger.Z,
-                    ["Name"] = overlayName,
-                    ["Type"] = "Parking",
-                    ["Width"] = b.Width,
-                    ["Height"] = b.Height,
-                };
-                overlaysJArr.Add(overlayJObj);
-                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
-                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
-            }
-            foreach (var ferry in FerryConnections)
-            {
-                if (ferry.Hidden) continue;
-                var overlayName = ScsToken.TokenToString(ferry.OverlayToken);
-                var b = ferry.Overlay?.GetBitmap();
-                if (b == null) continue;
-                var overlayJObj = new JObject
-                {
-                    ["X"] = ferry.X,
-                    ["Y"] = ferry.Z,
-                    ["Name"] = overlayName,
-                    ["Type"] = (ferry.Train) ? "Train" : "Ferry",
-                    ["Width"] = b.Width,
-                    ["Height"] = b.Height,
-                };
-                overlaysJArr.Add(overlayJObj);
-                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
-                    b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
+                if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{mapOverlay.OverlayName}.png")))
+                    b.Save(Path.Combine(overlayPath, $"{mapOverlay.OverlayName}.png"));
             }
 
-            foreach (var prefab in Prefabs)
-            {
-                if (prefab.Hidden) continue;
-                var originNode = GetNodeByUid(prefab.Nodes[0]);
-                if (prefab.Prefab.PrefabNodes == null) continue;
-                var mapPointOrigin = prefab.Prefab.PrefabNodes[prefab.Origin];
-
-                var rot = (float) (originNode.Rotation - Math.PI -
-                                   Math.Atan2(mapPointOrigin.RotZ, mapPointOrigin.RotX) + Math.PI / 2);
-
-                var prefabStartX = originNode.X - mapPointOrigin.X;
-                var prefabStartZ = originNode.Z - mapPointOrigin.Z;
-                foreach (var spawnPoint in prefab.Prefab.SpawnPoints)
-                {
-                    var newPoint = RenderHelper.RotatePoint(prefabStartX + spawnPoint.X, prefabStartZ + spawnPoint.Z, rot,
-                        originNode.X, originNode.Z);
-
-                    var overlayJObj = new JObject
-                    {
-                        ["X"] = newPoint.X,
-                        ["Y"] = newPoint.Y,
-                    };
-
-                    string overlayName;
-
-                    switch (spawnPoint.Type)
-                    {
-                        case TsSpawnPointType.GasPos:
-                            {
-                                overlayName = "gas_ico";
-                                overlayJObj["Type"] = "Fuel";
-                                break;
-                            }
-                        case TsSpawnPointType.ServicePos:
-                            {
-                                overlayName = "service_ico";
-                                overlayJObj["Type"] = "Service";
-                                break;
-                            }
-                        case TsSpawnPointType.WeightStationPos:
-                            {
-                                overlayName = "weigh_station_ico";
-                                overlayJObj["Type"] = "WeightStation";
-                                break;
-                            }
-                        case TsSpawnPointType.TruckDealerPos:
-                            {
-                                overlayName = "dealer_ico";
-                                overlayJObj["Type"] = "TruckDealer";
-                                break;
-                            }
-                        case TsSpawnPointType.BuyPos:
-                            {
-                                overlayName = "garage_large_ico";
-                                overlayJObj["Type"] = "Garage";
-                                break;
-                            }
-                        case TsSpawnPointType.RecruitmentPos:
-                            {
-                                overlayName = "recruitment_ico";
-                                overlayJObj["Type"] = "Recruitment";
-                                break;
-                            }
-                        default:
-                            continue;
-                    }
-
-                    overlayJObj["Name"] = overlayName;
-                    var overlay = LookupOverlay(overlayName, OverlayTypes.Map);
-                    var b = overlay.GetBitmap();
-                    if (b == null) continue;
-                    overlayJObj["Width"] = b.Width;
-                    overlayJObj["Height"] = b.Height;
-                    overlaysJArr.Add(overlayJObj);
-                    if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
-                        b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
-
-                }
-
-                var lastId = -1;
-                foreach (var triggerPoint in prefab.Prefab.TriggerPoints)
-                {
-                    var newPoint = RenderHelper.RotatePoint(prefabStartX + triggerPoint.X, prefabStartZ + triggerPoint.Z, rot,
-                        originNode.X, originNode.Z);
-
-                    if (triggerPoint.TriggerId == lastId) continue;
-                    lastId = (int)triggerPoint.TriggerId;
-                    var overlayJObj = new JObject
-                    {
-                        ["X"] = newPoint.X,
-                        ["Y"] = newPoint.Y,
-                        ["Name"] = "parking_ico",
-                        ["Type"] = "Parking",
-                    };
-
-                    if (triggerPoint.TriggerActionToken != ScsToken.StringToToken("hud_parking")) continue;
-
-                    const string overlayName = "parking_ico";
-                    var overlay = LookupOverlay(overlayName, OverlayTypes.Map);
-                    var b = overlay.GetBitmap();
-                    if (b == null) continue;
-                    overlayJObj["Width"] = b.Width;
-                    overlayJObj["Height"] = b.Height;
-                    overlaysJArr.Add(overlayJObj);
-                    if (saveAsPNG && !File.Exists(Path.Combine(overlayPath, $"{overlayName}.png")))
-                        b.Save(Path.Combine(overlayPath, $"{overlayName}.png"));
-                }
-            }
             File.WriteAllText(Path.Combine(path, "Overlays.json"), overlaysJArr.ToString(Formatting.Indented));
         }
 
@@ -789,21 +623,21 @@ namespace TsMap
             }
         }
 
-        public TsCity FindCity(TsItem.TsItem item)
+        public TsCity FindCity(float x, float z)
         {
             foreach (var city in Cities)
             {
-                if (item.X >= city.X &&
-                    item.X <= (city.X + city.Width) &&
-                    item.Z >= city.Z &&
-                    item.Z <= (city.Z + city.Height)) return city.City;
+                if (x >= city.X &&
+                    x <= (city.X + city.Width) &&
+                    z >= city.Z &&
+                    z <= (city.Z + city.Height)) return city.City;
             }
             return null;
         }
 
-        public string FindCityInGameId(TsItem.TsItem item)
+        public string FindCityInGameId(float x, float z)
         {
-            var city = FindCity(item);
+            var city = FindCity(x, z);
             if (city == null) return null;
             if (city != null)
                 return ScsToken.TokenToString(city.Token);
@@ -823,7 +657,7 @@ namespace TsMap
                 x["X"] = bs.X;
                 x["Y"] = bs.Z;
                 x["Type"] = "BusStop";
-                x["City"] = FindCityInGameId(bs);
+                x["City"] = FindCityInGameId(bs.X, bs.Z);
 
                 busStops.Add(x);
             }
