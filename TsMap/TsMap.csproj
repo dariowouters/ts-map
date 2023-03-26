@@ -80,6 +80,10 @@
     <Compile Include="TsCity.cs" />
     <Compile Include="TsCountry.cs" />
     <Compile Include="TsFerryConnection.cs" />
+    <Compile Include="TsItem\Shared\QuadInfo.cs" />
+    <Compile Include="TsItem\TsBezierPatchItem.cs" />
+    <Compile Include="TsItem\TsBuildingItem.cs" />
+    <Compile Include="TsItem\TsCurveItem.cs" />
     <Compile Include="TsItem\TsModelItem.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />
     <Compile Include="TsItem\TsCityItem.cs" />
@@ -96,6 +100,7 @@
     <Compile Include="TsItem\TsRoadItem.cs" />
     <Compile Include="TsItem\TsRoadSideItem.cs" />
     <Compile Include="TsItem\TsServiceItem.cs" />
+    <Compile Include="TsItem\TsTerrainItem.cs" />
     <Compile Include="TsItem\TsTrafficRuleItem.cs" />
     <Compile Include="TsItem\TsTrajectoryItem.cs" />
     <Compile Include="TsItem\TsTriggerItem.cs" />

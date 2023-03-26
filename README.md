@@ -31,7 +31,7 @@ ETS2:
 - PJ Indo Map v2.5 (Can't load an overlay)
 
 ATS:
-- ProMods Canada V1.2.1
+- ProMods Canada V1.2.2
 - Coast to Coast V2.6 (Can't load some dds files)
 - US Expansion V2.4 (C2C Compatible)
 - CanaDream Open Beta (ATS 1.32)
@@ -43,7 +43,7 @@ ATS:
 
 ## Supported maps / DLC
 - ATS
-    - All map DLCs up to and including Montana.
+    - All map DLCs up to and including Texas.
 - ETS2
     - All map DLCs up to and including Iberia.
 
