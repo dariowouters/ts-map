@@ -198,6 +198,7 @@ namespace TsMap.Canvas
                         for (int y = 0; y < Math.Pow(2, z); y++)
                         {
                             SaveTileImage(z, x, y, pos, zoom, exportPath, renderFlags);
+                            oldPos = pos;
                             _currentGeneratedTile++;
                             RedrawMap(true);
                         }

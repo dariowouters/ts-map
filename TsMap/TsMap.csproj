@@ -85,6 +85,7 @@
     <Compile Include="TsItem\Shared\QuadInfo.cs" />
     <Compile Include="TsItem\TsBezierPatchItem.cs" />
     <Compile Include="TsItem\TsBuildingItem.cs" />
+    <Compile Include="TsItem\TsCompanyDef.cs" />
     <Compile Include="TsItem\TsCurveItem.cs" />
     <Compile Include="TsItem\TsModelItem.cs" />
     <Compile Include="TsItem\TsBusStopItem.cs" />

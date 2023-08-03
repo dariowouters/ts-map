@@ -36,6 +36,11 @@ namespace TsMap.Common
             new DlcGuard("dlc_mt", 22),
             new DlcGuard("dlc_id_and_mt", 23),
             new DlcGuard("dlc_mt_and_wy", 24),
+             new DlcGuard("dlc_ok", 25),
+              new DlcGuard("dlc_ok_and_co", 26),
+               new DlcGuard("dlc_ok_and_nm", 26),
+                new DlcGuard("dlc_ok_and_tx", 27),
+                 new DlcGuard("dlc_ks", 28),
         };
 
         /// <summary>

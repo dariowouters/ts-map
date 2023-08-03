@@ -46,6 +46,7 @@ namespace TsMap
         public readonly List<TsCutsceneItem> Viewpoints = new List<TsCutsceneItem>();
         public readonly List<TsBusStopItem> BusStops = new List<TsBusStopItem>();
         public readonly List<TsCargoDef> CargoDefs = new List<TsCargoDef>();
+        public readonly List<TsCompanyDef> CompanyDefs = new List<TsCompanyDef>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -432,6 +433,7 @@ namespace TsMap
             }
 
             this.ParseCargoFiles();
+            this.ParseCompanyFiles();
 
             Logger.Instance.Info($"Loaded {OverlayManager.GetOverlayImagesCount()} overlay images, with {OverlayManager.GetOverlays().Count} overlays on the map");
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to fully load.");
@@ -444,6 +446,7 @@ namespace TsMap
             if (exportFlags.IsActive(ExportFlags.OverlayList)) ExportOverlays(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.BusStops)) ExportBusStops(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.CargoDefs)) ExportCargoDefs(exportFlags, exportPath);
+            this.ExportCompanyDefs(exportFlags, exportPath);
         }
 
         /// <summary>
@@ -730,6 +733,47 @@ namespace TsMap
             if (!Directory.Exists(path)) return;
 
             File.WriteAllText(Path.Combine(path, "CargoDefs.json"), JsonConvert.SerializeObject(this.CargoDefs, Formatting.Indented));
+        }
+
+        public void ExportCompanyDefs(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            File.WriteAllText(Path.Combine(path, "CompanyDefs.json"), JsonConvert.SerializeObject(this.CompanyDefs, Formatting.Indented));
+        }
+
+        private void ParseCompanyFiles()
+        {
+            var startTime = DateTime.Now.Ticks;
+
+            var companyDefDirectory = UberFileSystem.Instance.GetDirectory("def/company");
+            if (companyDefDirectory == null)
+            {
+                Logger.Instance.Error("Could not read 'def/company' dir");
+                return;
+            }
+
+            var companyDefFiles = companyDefDirectory.GetFiles(".sui");
+
+            if (companyDefFiles == null)
+            {
+                Logger.Instance.Error("Could not read  files");
+                return;
+            }
+
+            companyDefFiles.AddRange(companyDefDirectory.GetFiles("cargo").ToArray());
+
+            foreach (var companyDefFilePath in companyDefFiles)
+            {
+                var cargoDef = UberFileSystem.Instance.GetFile($"def/company/{companyDefFilePath}");
+
+                var data = cargoDef.Entry.Read();
+                TsCompanyDef company = MapSiiUnitToClass.Parse<TsCompanyDef>(data);
+
+                this.CompanyDefs.Add(company);
+            }
+
+            Logger.Instance.Info($"Loaded {companyDefFiles.Count} company defs in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
         }
     }
 }
