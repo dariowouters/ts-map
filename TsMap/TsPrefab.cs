@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TsMap.FileSystem;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
@@ -43,12 +44,41 @@ namespace TsMap
         public float Z;
     }
 
+    public struct TsPrefabCurve
+    {
+        public float StartX;
+        public float StartZ;
+        public float EndX;
+        public float EndZ;
+        public float Lenght;
+        public uint NavigationNodeIndex;
+    }
+
+    public struct TsNavNode
+    {
+        public TsNavNodeType Type;
+        public ushort ReferenceIndex;
+        public uint ConnectionsCount;
+        public List<TsNavConnection> Connections;
+    }
+
+    public struct TsNavConnection
+    {
+        public ushort TargetNodeIndex;
+        public float Length;
+        public uint CurvesCount;
+        public List<TsPrefabCurve> CurvePath;
+    }
+
     public class TsPrefab
     {
         private const int NodeBlockSize = 0x68;
+        private const int CurveBlockSize = 0x84;
         private const int MapPointBlockSize = 0x30;
         private const int SpawnPointBlockSize = 0x20;
         private const int TriggerPointBlockSize = 0x30;
+        private const int NavNodeBlockSize = 0xBC;
+        private const int NavConnectionBlockSize = 0x17;
 
         public string FilePath { get; }
         public ulong Token { get; }
@@ -59,9 +89,11 @@ namespace TsMap
         public bool ValidRoad { get; private set; }
 
         public List<TsPrefabNode> PrefabNodes { get; private set; }
+        public List<TsPrefabCurve> PrefabCurves { get; private set; }
         public List<TsSpawnPoint> SpawnPoints { get; private set; }
         public List<TsMapPoint> MapPoints { get; private set; }
         public List<TsTriggerPoint> TriggerPoints { get; private set; }
+        public List<TsNavNode> NavNodes { get; private set; }
 
         public TsPrefab(string filePath, ulong token, string category)
         {
@@ -81,9 +113,11 @@ namespace TsMap
         private void Parse()
         {
             PrefabNodes = new List<TsPrefabNode>();
+            PrefabCurves = new List<TsPrefabCurve>();
             SpawnPoints = new List<TsSpawnPoint>();
             MapPoints = new List<TsMapPoint>();
             TriggerPoints = new List<TsTriggerPoint>();
+            NavNodes = new List<TsNavNode>();
 
             var fileOffset = 0x0;
 
@@ -101,13 +135,14 @@ namespace TsMap
             var spawnPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var mapPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x0C);
             var triggerPointCount = BitConverter.ToInt32(_stream, fileOffset += 0x04);
+            var navNodesCount = BitConverter.ToInt32(_stream, fileOffset += 0x08);
 
-            if (version > 0x15) fileOffset += 0x04; // http://modding.scssoft.com/wiki/Games/ETS2/Modding_guides/1.30#Prefabs
-
-            var nodeOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x08);
-            var spawnPointOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x10);
+            var nodeOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x04);
+            var curveOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x04);
+            var spawnPointOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x0C);
             var mapPointOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x10);
             var triggerPointOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x04);
+            var navNodeOffset = MemoryHelper.ReadInt32(_stream, fileOffset += 0x08);
 
             for (var i = 0; i < nodeCount; i++)
             {
@@ -134,6 +169,21 @@ namespace TsMap
                 node.LaneCount = laneCount;
 
                 PrefabNodes.Add(node);
+            }
+
+            for (var i = 0; i < navCurveCount; i++)
+            {
+                var curveBaseOffset = curveOffset + (i * CurveBlockSize);
+                var curve = new TsPrefabCurve
+                {
+                    StartX = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x10),
+                    StartZ = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x18),
+                    EndX = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x1C),
+                    EndZ = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x24),
+                    Lenght = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x48),
+                    NavigationNodeIndex = MemoryHelper.ReadUInt32(_stream, curveBaseOffset + 0x80)
+                };
+                PrefabCurves.Add(curve);
             }
 
             for (var i = 0; i < spawnPointCount; i++)
@@ -234,6 +284,44 @@ namespace TsMap
                     Z = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x24),
                 };
                 TriggerPoints.Add(triggerPoint);
+            }
+
+            if (version > 22)
+            {
+                for (var i = 0; i < navNodesCount; i++)
+                {
+                    var navNodeBaseOffset = navNodeOffset + (i * NavNodeBlockSize);
+                    var navNode = new TsNavNode
+                    {
+                        Type = (MemoryHelper.ReadUint8(_stream, navNodeBaseOffset) == 0) ? TsNavNodeType.BorderNode : TsNavNodeType.AINode,
+                        ReferenceIndex = MemoryHelper.ReadUInt16(_stream, navNodeBaseOffset + 0x01),
+                        ConnectionsCount = MemoryHelper.ReadUint8(_stream, navNodeBaseOffset + 0x03),
+                        Connections = new List<TsNavConnection>()
+                    };
+                    navNodeBaseOffset += 0x04;
+
+                    for (var j = 0; j < navNode.ConnectionsCount && navNode.ConnectionsCount != 255; j++)
+                    {
+                        var navConnectionBaseOffset = navNodeBaseOffset + (j * NavConnectionBlockSize);
+
+                        var navConnection = new TsNavConnection
+                        {
+                            TargetNodeIndex = MemoryHelper.ReadUInt16(_stream, navConnectionBaseOffset),
+                            Length = MemoryHelper.ReadSingle(_stream, navConnectionBaseOffset + 0x02),
+                            CurvesCount = MemoryHelper.ReadUint8(_stream, navConnectionBaseOffset + 0x06),
+                            CurvePath = new List<TsPrefabCurve>()
+                        };
+                        navConnectionBaseOffset += 0x07;
+
+                        for (var k = 0; k < navConnection.CurvesCount && navConnection.CurvesCount != 255; k++)
+                        {
+                            var index = MemoryHelper.ReadUInt16(_stream, navConnectionBaseOffset + (k * 0x02));
+                            navConnection.CurvePath.Add(PrefabCurves[index]);
+                        }
+                        navNode.Connections.Add(navConnection);
+                    }
+                    NavNodes.Add(navNode);
+                }
             }
 
             _stream = null;
