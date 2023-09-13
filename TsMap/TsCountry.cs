@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using TsMap.Common;
@@ -18,6 +20,8 @@ namespace TsMap
         public string CountryCode { get; }
         public float X { get; }
         public float Y { get; }
+
+        public Dictionary<TsVehicleType, Dictionary<string, Dictionary<TsSpeedType, float>>> Speeds = new Dictionary<TsVehicleType, Dictionary<string, Dictionary<TsSpeedType, float>>>();
 
         public TsCountry(string path)
         {
@@ -61,6 +65,46 @@ namespace TsMap
                     var values = vector.Split(',');
                     X = float.Parse(values[0], CultureInfo.InvariantCulture);
                     Y = float.Parse(values[2], CultureInfo.InvariantCulture);
+                }
+            }
+
+            var fileSpeed = UberFileSystem.Instance.GetFile(path.Split('.')[0] + "/speed_limits.sii");
+            if (fileSpeed == null) return;
+            fileContent = fileSpeed.Entry.Read();
+            lines = Encoding.UTF8.GetString(fileContent).Split('\n');
+
+            TsVehicleType vehicle = default;
+            string road = "";
+            foreach (var line in lines)
+            {
+                string newLine = line.Split(new[] { "//" }, StringSplitOptions.None)[0].Split('#')[0];
+                if (newLine.Contains("\tvehicle_speed_class:"))
+                {
+                    switch (newLine.Split(':')[1].Trim())
+                    {
+                        case "car": vehicle = TsVehicleType.Car; break;
+                        case "bus": vehicle = TsVehicleType.Bus; break;
+                        case "tram": vehicle = TsVehicleType.Tram; break;
+                        case "truck": vehicle = TsVehicleType.Truck; break;
+                        case "train": vehicle = TsVehicleType.Train; break;
+                    }
+                    Speeds.Add(vehicle, new Dictionary<string, Dictionary<TsSpeedType, float>>());
+                }
+                else if (newLine.Contains("limit[]:"))
+                {
+                    string[] speedLine = newLine.Split(':');
+                    float speed = float.Parse(speedLine[1], CultureInfo.InvariantCulture);
+                    switch (speedLine[0].Trim())
+                    {
+                        case "limit[]": Speeds[vehicle][road][TsSpeedType.Limit] = speed; break;
+                        case "max_limit[]": Speeds[vehicle][road][TsSpeedType.MaxLimit] = speed; break;
+                        case "urban_limit[]": Speeds[vehicle][road][TsSpeedType.UrbanLimit] = speed; break;
+                    }
+                }
+                else if (newLine.Contains("\tlane_speed_class[]:"))
+                {
+                    road = newLine.Split(':')[1].Trim();
+                    Speeds[vehicle][road] = new Dictionary<TsSpeedType, float>();
                 }
             }
         }
