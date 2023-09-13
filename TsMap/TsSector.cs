@@ -209,7 +209,7 @@ namespace TsMap
                     }
                 }
 
-                 if (item != null && item.Valid && !item.Hidden) Mapper.MapItems.Add(item);
+                 if (item != null && item.Valid && !item.Hidden) Mapper.MapItems.Add(item.Uid, item);
             }
 
             var nodeCount = MemoryHelper.ReadInt32(Stream, lastOffset);

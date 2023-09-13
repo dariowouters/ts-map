@@ -49,7 +49,8 @@ namespace TsMap
 
         private List<TsSector> Sectors { get; set; }
 
-        internal readonly List<TsItem.TsItem> MapItems = new List<TsItem.TsItem>();
+        internal readonly Dictionary<ulong, TsItem.TsItem> MapItems = new Dictionary<ulong, TsItem.TsItem>();
+        internal readonly Dictionary<int, TsCountry> _countriesLookupById = new Dictionary<int, TsCountry>();
 
         public TsMapper(string gameDir, List<Mod> mods)
         {
@@ -124,6 +125,7 @@ namespace TsMap
                         if (country.Token != 0 && !_countriesLookup.ContainsKey(country.Token))
                         {
                             _countriesLookup.Add(country.Token, country);
+                            _countriesLookupById.Add(country.CountryId, country);
                         }
                     }
                 }
@@ -410,7 +412,7 @@ namespace TsMap
             Sectors.ForEach(sec => sec.ClearFileData());
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base) files");
 
-            foreach (var mapItem in MapItems)
+            foreach (var mapItem in MapItems.Values)
             {
                 mapItem.Update();
             }
@@ -571,10 +573,20 @@ namespace TsMap
             return Nodes.ContainsKey(uid) ? Nodes[uid] : null;
         }
 
+        public TsItem.TsItem GetItemByUid(ulong uid)
+        {
+            return MapItems.ContainsKey(uid) ? MapItems[uid] : null;
+        }
+
         public TsCountry GetCountryByTokenName(string name)
         {
             var token = ScsToken.StringToToken(name);
             return _countriesLookup.ContainsKey(token) ? _countriesLookup[token] : null;
+        }
+
+        public TsCountry GetCountryById(int id)
+        {
+            return _countriesLookupById.ContainsKey(id) ? _countriesLookupById[id] : null;
         }
 
         public TsRoadLook LookupRoadLook(ulong lookId)
