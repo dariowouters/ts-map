@@ -67,7 +67,7 @@ namespace TsMap.Map.Overlays
             {
                 var (validLine, key, value) = SiiHelper.ParseLine(line);
                 if (!validLine) continue;
-                if (key == "texture")
+                if ((key == "texture" || key == "source") && value.Contains(".tobj"))
                 {
                     var tobjPath =
                         PathHelper.CombinePath(PathHelper.GetDirectoryPath(matFilePath), value.Split('"')[1]);
