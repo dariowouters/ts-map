@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using TsMap.FileSystem;
@@ -122,7 +121,7 @@ namespace TsMap.Helpers
 
             if (!_localization[localeName].ContainsKey(localized_name_key))
             {
-                 _localization[localeName].Add(localized_name_key, localized_name);
+                _localization[localeName].Add(localized_name_key, localized_name);
             }
         }
 

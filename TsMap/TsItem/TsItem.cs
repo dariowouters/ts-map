@@ -36,7 +36,7 @@ namespace TsMap.TsItem
 
             var fileOffset = offset;
 
-            Type = (TsItemType) MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
+            Type = (TsItemType)MemoryHelper.ReadUInt32(Sector.Stream, fileOffset);
 
             Uid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04);
 

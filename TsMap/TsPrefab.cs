@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TsMap.FileSystem;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
@@ -203,7 +202,7 @@ namespace TsMap
             {
                 var mapPointBaseOffset = mapPointOffset + (i * MapPointBlockSize);
                 var roadLookFlags = MemoryHelper.ReadUint8(_stream, mapPointBaseOffset + 0x01);
-                var laneTypeFlags = (byte) (roadLookFlags & 0x0F);
+                var laneTypeFlags = (byte)(roadLookFlags & 0x0F);
                 var laneOffsetFlags = (byte)(roadLookFlags >> 4);
                 var controlNodeIndexFlags = MemoryHelper.ReadInt8(_stream, mapPointBaseOffset + 0x04);
                 int laneOffset;

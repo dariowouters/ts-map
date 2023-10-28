@@ -57,7 +57,7 @@ namespace TsMap
             var tileHeight = (backPos.Height / 2);
             for (int i = 0; i < 4; i++)
             {
-                g.DrawImage(_mapper.Backgrounds[i].GetBitmap(), (i/2) * tileWidth + backPos.X, (i % 2) * tileHeight + backPos.Y, tileWidth+35, tileHeight+35);
+                g.DrawImage(_mapper.Backgrounds[i].GetBitmap(), (i / 2) * tileWidth + backPos.X, (i % 2) * tileHeight + backPos.Y, tileWidth + 35, tileHeight + 35);
             }
             var backgroundTime = DateTime.Now.Ticks - backgroundStartTime;
 
@@ -65,7 +65,7 @@ namespace TsMap
             var ferryStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.FerryConnections))
             {
-                var ferryPen = new Pen(palette.FerryLines, 50) {DashPattern = new[] {10f, 10f}};
+                var ferryPen = new Pen(palette.FerryLines, 50) { DashPattern = new[] { 10f, 10f } };
 
                 foreach (var ferryConnection in _mapper.FerryConnections)
                 {
@@ -381,9 +381,9 @@ namespace TsMap
 
                         for (var i = 0; i < 8; i++)
                         {
-                            var s = i / (float) (8 - 1);
-                            var x = (float) TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
-                            var z = (float) TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
+                            var s = i / (float)(8 - 1);
+                            var x = (float)TsRoadLook.Hermite(s, sx, ex, tanSx, tanEx);
+                            var z = (float)TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
                             newPoints.Add(new PointF(x, z));
                         }
                         road.AddPoints(newPoints);
@@ -395,7 +395,7 @@ namespace TsMap
                     {
                         if (zoomIndex < 3)
                         {
-                            roadPen = new Pen(palette.Road, roadWidth) {DashPattern = new[] {1f, 1f}};
+                            roadPen = new Pen(palette.Road, roadWidth) { DashPattern = new[] { 1f, 1f } };
                         }
                         else // zoomed out with DashPattern causes OutOfMemory Exception
                         {
@@ -437,7 +437,8 @@ namespace TsMap
                         var height = b.Height / scale;
                         g.DrawImage(b, mapOverlay.Position.X - (width / 2f), mapOverlay.Position.Y - (height / 2f),
                             width, height);
-                    } else
+                    }
+                    else
                     {
                         g.DrawImage(b, mapOverlay.Position.X - (b.Width / 2f), mapOverlay.Position.Y - (b.Height / 2f),
                             b.Width, b.Height);

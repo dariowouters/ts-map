@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
 using TsMap.Common;
 using TsMap.FileSystem;
 using TsMap.Helpers;
@@ -24,7 +23,7 @@ namespace TsMap
 
         public bool IsEts2 = true;
 
-        private List<Tuple<string,TsMapSettings>> _sectorFiles;
+        private List<Tuple<string, TsMapSettings>> _sectorFiles;
 
         internal MapOverlayManager OverlayManager { get; private set; }
         public LocalizationManager Localization { get; private set; }
@@ -526,7 +525,7 @@ namespace TsMap
                 if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
                 {
                     cityJObj["LocalizedNames"] = new JObject();
-                    foreach(var locale in Localization.GetLocales())
+                    foreach (var locale in Localization.GetLocales())
                     {
                         var locCityName = Localization.GetLocaleValue(city.City.LocalizationToken, locale);
                         if (locCityName != null)

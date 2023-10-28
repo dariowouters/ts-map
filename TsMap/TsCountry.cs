@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Text;
 using TsMap.Common;
 using TsMap.FileSystem;
-using TsMap.Map.Overlays;
 
 namespace TsMap
 {
