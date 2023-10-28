@@ -9,6 +9,7 @@ namespace TsMap
     public struct TsPrefabNode
     {
         public float X;
+        public float Y;
         public float Z;
         public float RotX;
         public float RotZ;
@@ -31,6 +32,7 @@ namespace TsMap
     public class TsSpawnPoint
     {
         public float X;
+        public float Y;
         public float Z;
         public TsSpawnPointType Type;
     }
@@ -40,14 +42,17 @@ namespace TsMap
         public uint TriggerId;
         public ulong TriggerActionToken;
         public float X;
+        public float Y;
         public float Z;
     }
 
     public struct TsPrefabCurve
     {
         public float StartX;
+        public float StartY;
         public float StartZ;
         public float EndX;
+        public float EndY;
         public float EndZ;
         public float Lenght;
         public uint NavigationNodeIndex;
@@ -149,6 +154,7 @@ namespace TsMap
                 var node = new TsPrefabNode
                 {
                     X = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x10),
+                    Y = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x14),
                     Z = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x18),
                     RotX = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x1C),
                     RotZ = MemoryHelper.ReadSingle(_stream, nodeBaseOffset + 0x24),
@@ -176,8 +182,10 @@ namespace TsMap
                 var curve = new TsPrefabCurve
                 {
                     StartX = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x10),
+                    StartY = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x14),
                     StartZ = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x18),
                     EndX = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x1C),
+                    EndY = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x20),
                     EndZ = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x24),
                     Lenght = MemoryHelper.ReadSingle(_stream, curveBaseOffset + 0x48),
                     NavigationNodeIndex = MemoryHelper.ReadUInt32(_stream, curveBaseOffset + 0x80)
@@ -191,6 +199,7 @@ namespace TsMap
                 var spawnPoint = new TsSpawnPoint
                 {
                     X = MemoryHelper.ReadSingle(_stream, spawnPointBaseOffset),
+                    Y = MemoryHelper.ReadSingle(_stream, spawnPointBaseOffset + 0x04),
                     Z = MemoryHelper.ReadSingle(_stream, spawnPointBaseOffset + 0x08),
                     Type = (TsSpawnPointType)MemoryHelper.ReadUInt32(_stream, spawnPointBaseOffset + 0x1C)
                 };
@@ -280,6 +289,7 @@ namespace TsMap
                     TriggerId = MemoryHelper.ReadUInt32(_stream, triggerPointBaseOffset),
                     TriggerActionToken = MemoryHelper.ReadUInt64(_stream, triggerPointBaseOffset + 0x04),
                     X = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x1C),
+                    Y = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x20),
                     Z = MemoryHelper.ReadSingle(_stream, triggerPointBaseOffset + 0x24),
                 };
                 TriggerPoints.Add(triggerPoint);

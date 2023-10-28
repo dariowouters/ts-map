@@ -23,6 +23,7 @@ namespace TsMap.TsItem
 
         public TsItemType Type { get; }
         public float X { get; }
+        public float Y { get; }
         public float Z { get; }
         public bool Hidden { get; protected set; }
 
@@ -41,7 +42,8 @@ namespace TsMap.TsItem
             Uid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x04);
 
             X = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x08);
-            Z = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x08);
+            Y = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x04);
+            Z = MemoryHelper.ReadSingle(Sector.Stream, fileOffset += 0x04);
 
             Flags = MemoryHelper.ReadUInt32(Sector.Stream, fileOffset += 0x20);
         }

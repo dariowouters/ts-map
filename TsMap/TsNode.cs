@@ -8,6 +8,7 @@ namespace TsMap
         public ulong Uid { get; }
 
         public float X { get; }
+        public float Y { get; }
         public float Z { get; }
         public float Rotation { get; }
 
@@ -27,7 +28,8 @@ namespace TsMap
         {
             Uid = MemoryHelper.ReadUInt64(sector.Stream, fileOffset);
             X = MemoryHelper.ReadInt32(sector.Stream, fileOffset += 0x08) / 256f;
-            Z = MemoryHelper.ReadInt32(sector.Stream, fileOffset += 0x08) / 256f;
+            Y = MemoryHelper.ReadInt32(sector.Stream, fileOffset += 0x04) / 256f;
+            Z = MemoryHelper.ReadInt32(sector.Stream, fileOffset += 0x04) / 256f;
 
             var rX = MemoryHelper.ReadSingle(sector.Stream, fileOffset += 0x04);
             var rZ = MemoryHelper.ReadSingle(sector.Stream, fileOffset += 0x08);
