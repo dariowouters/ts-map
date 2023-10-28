@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Text;
 using TsMap.Common;
 using TsMap.FileSystem;
+using TsMap.Map.Overlays;
 
 namespace TsMap
 {
@@ -17,6 +19,7 @@ namespace TsMap
         public string Name { get; }
         [JsonIgnore]
         public string LocalizationToken { get; }
+        public string LicensePlateCode { get; }
         public string CountryCode { get; }
         public float X { get; }
         public float Y { get; }
@@ -57,7 +60,11 @@ namespace TsMap
                 }
                 else if (key == "country_code")
                 {
-                    CountryCode = value.Split('"')[1];
+                    LicensePlateCode = value.Split('"')[1];
+                }
+                else if (key == "iso_country_code")
+                {
+                    CountryCode = value.Trim('"').Trim();
                 }
                 else if (key == "pos")
                 {
@@ -107,6 +114,7 @@ namespace TsMap
                     Speeds[vehicle][road] = new Dictionary<TsSpeedType, float>();
                 }
             }
+
         }
     }
 }

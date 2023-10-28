@@ -431,8 +431,17 @@ namespace TsMap
 
                     if (b == null || !renderFlags.IsActive(RenderFlags.BusStopOverlay) && mapOverlay.OverlayType == OverlayType.BusStop) continue;
 
-                    g.DrawImage(b, mapOverlay.Position.X - (b.Width / 2f), mapOverlay.Position.Y - (b.Height / 2f),
-                        b.Width, b.Height);
+                    if (mapOverlay.OverlayType == OverlayType.Flag)
+                    {
+                        var width = b.Width / scale;
+                        var height = b.Height / scale;
+                        g.DrawImage(b, mapOverlay.Position.X - (width / 2f), mapOverlay.Position.Y - (height / 2f),
+                            width, height);
+                    } else
+                    {
+                        g.DrawImage(b, mapOverlay.Position.X - (b.Width / 2f), mapOverlay.Position.Y - (b.Height / 2f),
+                            b.Width, b.Height);
+                    }
 
                 }
             }

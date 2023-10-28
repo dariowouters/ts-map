@@ -130,6 +130,8 @@ namespace TsMap
                         {
                             _countriesLookup.Add(country.Token, country);
                             _countriesLookupById.Add(country.CountryId, country);
+
+                            OverlayManager.AddOverlay(country.CountryCode, OverlayType.Flag, country.X, country.Y, "Flag", 0);
                         }
                     }
                 }

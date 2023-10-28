@@ -25,6 +25,11 @@
         /// <summary>
         /// Bus Stop overlay located in 'tsmap/overlay'
         /// </summary>
-        BusStop
+        BusStop,
+
+        /// <summary>
+        /// Country flag overlay located in 'tsmap/overlay'
+        /// </summary>
+        Flag
     }
 }
