@@ -11,6 +11,7 @@ namespace TsMap
     {
         public string FilePath { get; }
         public TsMapper Mapper { get; }
+        public TsMapSettings Settings { get; }
 
 
         public int Version { get; private set; }
@@ -20,7 +21,7 @@ namespace TsMap
 
         private readonly UberFile _file;
 
-        public TsSector(TsMapper mapper, string filePath)
+        public TsSector(TsMapper mapper, string filePath, TsMapSettings settings)
         {
             Mapper = mapper;
             FilePath = filePath;
@@ -32,6 +33,7 @@ namespace TsMap
             }
 
             Stream = _file.Entry.Read();
+            Settings = settings;
         }
 
         public void Parse()

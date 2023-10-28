@@ -51,6 +51,17 @@ namespace TsMap
 
             var endPoint = new PointF(startPoint.X + clip.Width / scale, startPoint.Y + clip.Height / scale);
 
+            var backgroundStartTime = DateTime.Now.Ticks;
+            var backPos = _mapper.BackgroundPos;
+            var tileWidth = (backPos.Width / 2);
+            var tileHeight = (backPos.Height / 2);
+            for (int i = 0; i < 4; i++)
+            {
+                g.DrawImage(_mapper.Backgrounds[i].GetBitmap(), (i/2) * tileWidth + backPos.X, (i % 2) * tileHeight + backPos.Y, tileWidth+35, tileHeight+35);
+            }
+            var backgroundTime = DateTime.Now.Ticks - backgroundStartTime;
+
+
             var ferryStartTime = DateTime.Now.Ticks;
             if (renderFlags.IsActive(RenderFlags.FerryConnections))
             {

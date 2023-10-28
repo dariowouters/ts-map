@@ -105,6 +105,7 @@
     <Compile Include="TsItem\TsTrajectoryItem.cs" />
     <Compile Include="TsItem\TsTriggerItem.cs" />
     <Compile Include="TsItem\TsVisibilityAreaItem.cs" />
+    <Compile Include="TsMapSettings.cs" />
     <Compile Include="TsTypes.cs" />
     <Compile Include="TsMapper.cs" />
     <Compile Include="TsMapRenderer.cs" />

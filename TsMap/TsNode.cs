@@ -20,6 +20,8 @@ namespace TsMap
         public TsCountry BackwardNodeCountry { get; }
 
         private TsMapper _mapper;
+        private TsSector _sector;
+
 
         public TsNode(TsSector sector, int fileOffset)
         {
@@ -28,7 +30,7 @@ namespace TsMap
             Z = MemoryHelper.ReadInt32(sector.Stream, fileOffset += 0x08) / 256f;
 
             var rX = MemoryHelper.ReadSingle(sector.Stream, fileOffset += 0x04);
-            var rZ = MemoryHelper.ReadSingle(sector.Stream, fileOffset + 0x08);
+            var rZ = MemoryHelper.ReadSingle(sector.Stream, fileOffset += 0x08);
 
             BackwardItemUid = MemoryHelper.ReadUInt64(sector.Stream, fileOffset += 0x08);
             ForwardItemUid = MemoryHelper.ReadUInt64(sector.Stream, fileOffset += 0x08);
@@ -40,10 +42,12 @@ namespace TsMap
             BackwardNodeCountry = sector.Mapper.GetCountryById(MemoryHelper.ReadInt8(sector.Stream, fileOffset += 0x01));
 
             _mapper = sector.Mapper;
+            _sector = sector;
         }
 
         public TsCountry GetCountry()
         {
+            if (ForwardNodeCountry != BackwardNodeCountry) return null;
             if (ForwardNodeCountry != null) return ForwardNodeCountry;
             return BackwardNodeCountry;
         }
