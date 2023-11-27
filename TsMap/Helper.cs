@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TsMap
 {
+
     public static class RenderHelper
     {
+
         public static PointF RotatePoint(float x, float z, float angle, float rotX, float rotZ)
         {
             var s = Math.Sin(angle);
@@ -45,6 +49,47 @@ namespace TsMap
             if (smallestSize < 18500) return 2;
             return 3;
         }
+
+        public static PointF GetPoint(float x, float y)
+        {
+            return new PointF(x, y);
+        }
+
+        public static PointF GetPoint((float, float) p)
+        {
+            return new PointF(p.Item1, p.Item2);
+        }
+
+        public static PointF GetPoint(TsItem.TsItem item)
+        {
+            return new PointF(item.X, item.Z);
+        }
+
+        public static (float, float) ScsMapCorrection(float x, float y)
+        {
+            if (x < -31100 && x > -60720 && y < -5500 && y > -56300)
+            {
+                x = (x + 31100f) * 0.75f - 31700f;
+                y = (y + 5500f) * 0.75f - 5100f;
+            }
+            return (x, y);
+        }
+
+        public static PointF ScsMapCorrection(PointF p)
+        {
+            return GetPoint(ScsMapCorrection(p.X, p.Y));
+        }
+
+        public static PointF[] ScsMapCorrection(PointF[] p)
+        {
+            return p.Select(pp => ScsMapCorrection(pp)).ToArray();
+        }
+
+        public static List<PointF> ScsMapCorrection(List<PointF> p)
+        {
+            return p.Select(pp => ScsMapCorrection(pp)).ToList();
+        }
+
     }
 
     public static class SiiHelper

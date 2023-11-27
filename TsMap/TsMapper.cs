@@ -23,7 +23,7 @@ namespace TsMap
 
         public bool IsEts2 = true;
 
-        private List<string> _sectorFiles;
+        private List<Tuple<string, TsMapSettings>> _sectorFiles;
 
         internal MapOverlayManager OverlayManager { get; private set; }
         public LocalizationManager Localization { get; private set; }
@@ -47,9 +47,14 @@ namespace TsMap
         public float minZ = float.MaxValue;
         public float maxZ = float.MinValue;
 
+        public Rectangle BackgroundPos;
+        internal OverlayImage[] Backgrounds = new OverlayImage[4];
+        public TsMapSettings mapSettings;
+
         private List<TsSector> Sectors { get; set; }
 
-        internal readonly List<TsItem.TsItem> MapItems = new List<TsItem.TsItem>();
+        internal readonly Dictionary<ulong, TsItem.TsItem> MapItems = new Dictionary<ulong, TsItem.TsItem>();
+        internal readonly Dictionary<int, TsCountry> _countriesLookupById = new Dictionary<int, TsCountry>();
 
         public TsMapper(string gameDir, List<Mod> mods)
         {
@@ -124,9 +129,64 @@ namespace TsMap
                         if (country.Token != 0 && !_countriesLookup.ContainsKey(country.Token))
                         {
                             _countriesLookup.Add(country.Token, country);
+                            _countriesLookupById.Add(country.CountryId, country);
+
+                            if (country.CountryCode != string.Empty)
+                                OverlayManager.AddOverlay(country.CountryCode, OverlayType.Flag, country.X, country.Y, "Flag", 0);
                         }
                     }
                 }
+            }
+        }
+
+        private void ParseBackground()
+        {
+            var defDirectory = UberFileSystem.Instance.GetDirectory("def");
+            if (defDirectory == null)
+            {
+                Logger.Instance.Error("Could not read 'def' dir");
+                return;
+            }
+
+
+            var mapDataFiles = new Stack<UberFile>();
+            mapDataFiles.Push(UberFileSystem.Instance.GetFile("def/map_data.sii"));
+            PointF mapCenter = PointF.Empty, mapSize = PointF.Empty;
+            while (mapDataFiles.Count > 0 && (mapCenter == PointF.Empty || mapSize == PointF.Empty))
+            {
+                var data = mapDataFiles.Pop().Entry.Read();
+                var lines = Encoding.UTF8.GetString(data).Split('\n');
+                foreach (var line in lines)
+                {
+                    if (line.TrimStart().StartsWith("#")) continue;
+                    if (line.Contains("@include"))
+                    {
+                        mapDataFiles.Push(UberFileSystem.Instance.GetFile(line.Split('"')[1].Substring(1)));
+                    }
+                    if (line.Contains("ui_map_center") || line.Contains("ui_map_size"))
+                    {
+                        var x = float.Parse(line.Split('(')[1].Split(',')[0].Trim(), CultureInfo.InvariantCulture.NumberFormat);
+                        var z = float.Parse(line.Split(')')[0].Split(',')[1].Trim(), CultureInfo.InvariantCulture.NumberFormat);
+                        if (line.Contains("ui_map_center"))
+                        {
+                            mapCenter = new PointF(x, z);
+                        }
+                        else
+                        {
+                            mapSize = new PointF(x, z);
+                        }
+                    }
+                }
+            }
+            var settings = _sectorFiles.First().Item2;
+            mapSize.X = mapSize.X * 1000f / settings.Scale;
+            mapSize.Y = mapSize.Y * 1000f / settings.Scale;
+            BackgroundPos = new Rectangle((int)(mapSize.X / -2.0f + mapCenter.X), (int)(mapSize.Y / -2.0f + mapCenter.Y), (int)mapSize.X, (int)mapSize.Y);
+
+            for (int i = 0; i < 4; i++)
+            {
+                Backgrounds[i] = new OverlayImage($"material/ui/map/map{i}.dds");
+                Backgrounds[i].Parse();
             }
         }
 
@@ -330,6 +390,10 @@ namespace TsMap
             startTime = DateTime.Now.Ticks;
             ParseFerryConnections();
             Logger.Instance.Info($"Loaded {_ferryConnectionLookup.Count} ferry connections in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+
+            startTime = DateTime.Now.Ticks;
+            ParseBackground();
+            Logger.Instance.Info($"Loaded background in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
         }
 
         /// <summary>
@@ -351,7 +415,7 @@ namespace TsMap
                 return;
             }
 
-            _sectorFiles = new List<string>();
+            _sectorFiles = new List<Tuple<string, TsMapSettings>>();
 
             foreach (var filePath in mbdFilePaths)
             {
@@ -365,7 +429,9 @@ namespace TsMap
                     return;
                 }
 
-                _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base"));
+                mapSettings = new TsMapSettings(this, filePath);
+
+                _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base").Select(x => new Tuple<string, TsMapSettings>(x, mapSettings)));
             }
         }
 
@@ -396,8 +462,8 @@ namespace TsMap
 
             Logger.Instance.Info($"Loaded all .scs files in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
 
-            ParseDefFiles();
             LoadSectorFiles();
+            ParseDefFiles();
 
             var preLocaleTime = DateTime.Now.Ticks;
             Localization.LoadLocaleValues();
@@ -405,12 +471,12 @@ namespace TsMap
 
             if (_sectorFiles == null) return;
             var preMapParseTime = DateTime.Now.Ticks;
-            Sectors = _sectorFiles.Select(file => new TsSector(this, file)).ToList();
+            Sectors = _sectorFiles.Select(file => new TsSector(this, file.Item1, file.Item2)).ToList();
             Sectors.ForEach(sec => sec.Parse());
             Sectors.ForEach(sec => sec.ClearFileData());
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - preMapParseTime) / TimeSpan.TicksPerMillisecond} ms to parse all (*.base) files");
 
-            foreach (var mapItem in MapItems)
+            foreach (var mapItem in MapItems.Values)
             {
                 mapItem.Update();
             }
@@ -461,7 +527,7 @@ namespace TsMap
                 if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
                 {
                     cityJObj["LocalizedNames"] = new JObject();
-                    foreach(var locale in Localization.GetLocales())
+                    foreach (var locale in Localization.GetLocales())
                     {
                         var locCityName = Localization.GetLocaleValue(city.City.LocalizationToken, locale);
                         if (locCityName != null)
@@ -571,10 +637,20 @@ namespace TsMap
             return Nodes.ContainsKey(uid) ? Nodes[uid] : null;
         }
 
+        public TsItem.TsItem GetItemByUid(ulong uid)
+        {
+            return MapItems.ContainsKey(uid) ? MapItems[uid] : null;
+        }
+
         public TsCountry GetCountryByTokenName(string name)
         {
             var token = ScsToken.StringToToken(name);
             return _countriesLookup.ContainsKey(token) ? _countriesLookup[token] : null;
+        }
+
+        public TsCountry GetCountryById(int id)
+        {
+            return _countriesLookupById.ContainsKey(id) ? _countriesLookupById[id] : null;
         }
 
         public TsRoadLook LookupRoadLook(ulong lookId)

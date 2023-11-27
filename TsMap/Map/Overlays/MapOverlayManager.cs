@@ -109,6 +109,9 @@ namespace TsMap.Map.Overlays
                 case OverlayType.BusStop:
                     path = $"tsmap/overlay/{overlayName}.mat";
                     break;
+                case OverlayType.Flag:
+                    path = $"material/ui/flags/{overlayName}.mat";
+                    break;
                 default:
                     path = $"{PathHelper.EnsureLocalPath(overlayName)}.mat";
                     break;

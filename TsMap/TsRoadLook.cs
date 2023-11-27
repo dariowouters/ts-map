@@ -34,5 +34,16 @@ namespace TsMap
             return Offset + Consts.LaneWidth * LanesLeft.Count + Consts.LaneWidth * LanesRight.Count;
         }
 
+        public string GetRoadType()
+        {
+            if (LanesLeft.Count > 0) return LanesLeft[0];
+            else if (LanesRight.Count > 0) return LanesRight[0];
+            return null;
+        }
+
+        public bool IsOneWay()
+        {
+            return (this.LanesLeft.Count == 0 && this.LanesRight.Count > 0) || (this.LanesRight.Count == 0 && this.LanesLeft.Count > 0);
+        }
     }
 }

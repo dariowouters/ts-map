@@ -122,7 +122,7 @@ namespace TsMap.FileSystem
             {
                 var a = Fetch64(s);
                 var b = Fetch64(s, len - 8);
-                return HashLen16(a, RotateByAtleast1(b + len, (int) len)) ^ b;
+                return HashLen16(a, RotateByAtleast1(b + len, (int)len)) ^ b;
             }
 
             if (len >= 4)
@@ -136,8 +136,8 @@ namespace TsMap.FileSystem
                 var a = s[0];
                 var b = s[len >> 1];
                 var c = s[len - 1];
-                var y = a + ((uint) b << 8);
-                var z = len + ((uint) c << 2);
+                var y = a + ((uint)b << 8);
+                var z = len + ((uint)c << 2);
                 return ShiftMix(y * K2 ^ z * K3) * K2;
             }
 

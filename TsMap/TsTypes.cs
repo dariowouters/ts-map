@@ -128,4 +128,25 @@ namespace TsMap
         TrailerSpawn = 24,
         LongTrailerPos = 25,
     }
+    public enum TsVehicleType
+    {
+        Car,
+        Truck,
+        Bus,
+        Train,
+        Tram
+    }
+
+    public enum TsSpeedType
+    {
+        Limit,
+        MaxLimit,
+        UrbanLimit
+    }
+
+    public enum TsNavNodeType
+    {
+        BorderNode,
+        AINode
+    }
 }

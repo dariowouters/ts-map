@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using TsMap.FileSystem;
-using TsMap.TsItem;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using TsMap.TsItem;
 
 namespace TsMap
 {
@@ -11,6 +11,7 @@ namespace TsMap
     {
         public string FilePath { get; }
         public TsMapper Mapper { get; }
+        public TsMapSettings Settings { get; }
 
 
         public int Version { get; private set; }
@@ -20,7 +21,7 @@ namespace TsMap
 
         private readonly UberFile _file;
 
-        public TsSector(TsMapper mapper, string filePath)
+        public TsSector(TsMapper mapper, string filePath, TsMapSettings settings)
         {
             Mapper = mapper;
             FilePath = filePath;
@@ -32,6 +33,7 @@ namespace TsMap
             }
 
             Stream = _file.Entry.Read();
+            Settings = settings;
         }
 
         public void Parse()
@@ -60,111 +62,111 @@ namespace TsMap
                 switch (type)
                 {
                     case TsItemType.Terrain: // used to all be in .aux files, not sure why some are now in .base files
-                    {
-                        item = new TsTerrainItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsTerrainItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Building: // used to all be in .aux files, not sure why some are now in .base files
-                    {
-                        item = new TsBuildingItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsBuildingItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Road:
-                    {
-                        item = new TsRoadItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        if (item.Valid && !item.Hidden) Mapper.Roads.Add((TsRoadItem) item);
-                        break;
-                    }
+                        {
+                            item = new TsRoadItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            if (item.Valid && !item.Hidden) Mapper.Roads.Add((TsRoadItem)item);
+                            break;
+                        }
                     case TsItemType.Prefab:
-                    {
-                        item = new TsPrefabItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        if (item.Valid && !item.Hidden) Mapper.Prefabs.Add((TsPrefabItem) item);
-                        break;
-                    }
+                        {
+                            item = new TsPrefabItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            if (item.Valid && !item.Hidden) Mapper.Prefabs.Add((TsPrefabItem)item);
+                            break;
+                        }
                     case TsItemType.Model: // used to all be in .aux files, not sure why some are now in .base files
-                    {
-                        item = new TsModelItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsModelItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Company:
-                    {
-                        item = new TsCompanyItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsCompanyItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Service:
-                    {
-                        item = new TsServiceItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsServiceItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.CutPlane:
-                    {
-                        item = new TsCutPlaneItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsCutPlaneItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.City:
-                    {
-                        item = new TsCityItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        if (item.Valid && !item.Hidden) Mapper.Cities.Add((TsCityItem) item);
-                        break;
-                    }
+                        {
+                            item = new TsCityItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            if (item.Valid && !item.Hidden) Mapper.Cities.Add((TsCityItem)item);
+                            break;
+                        }
                     case TsItemType.MapOverlay:
-                    {
-                        item = new TsMapOverlayItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsMapOverlayItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Ferry:
-                    {
-                        item = new TsFerryItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        if (item.Valid && !item.Hidden) Mapper.FerryConnections.Add((TsFerryItem) item);
-                        break;
-                    }
+                        {
+                            item = new TsFerryItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            if (item.Valid && !item.Hidden) Mapper.FerryConnections.Add((TsFerryItem)item);
+                            break;
+                        }
                     case TsItemType.Garage:
-                    {
-                        item = new TsGarageItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsGarageItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Trigger:
-                    {
-                        item = new TsTriggerItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsTriggerItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.FuelPump:
-                    {
-                        item = new TsFuelPumpItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsFuelPumpItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.RoadSideItem:
-                    {
-                        item = new TsRoadSideItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsRoadSideItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.BusStop:
-                    {
-                        item = new TsBusStopItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsBusStopItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.TrafficRule:
-                    {
-                        item = new TsTrafficRuleItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsTrafficRuleItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.BezierPatch: // used to all be in .aux files, not sure why some are now in .base files
                         {
                             item = new TsBezierPatchItem(this, lastOffset);
@@ -172,44 +174,44 @@ namespace TsMap
                             break;
                         }
                     case TsItemType.TrajectoryItem:
-                    {
-                        item = new TsTrajectoryItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsTrajectoryItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.MapArea:
-                    {
-                        item = new TsMapAreaItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        if (item.Valid && !item.Hidden) Mapper.MapAreas.Add((TsMapAreaItem) item);
-                        break;
-                    }
+                        {
+                            item = new TsMapAreaItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            if (item.Valid && !item.Hidden) Mapper.MapAreas.Add((TsMapAreaItem)item);
+                            break;
+                        }
                     case TsItemType.Curve: // used to all be in .aux files, not sure why some are now in .base files
-                    {
-                        item = new TsCurveItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsCurveItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.Cutscene:
-                    {
-                         item = new TsCutsceneItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsCutsceneItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     case TsItemType.VisibilityArea:
-                    {
-                        item = new TsVisibilityAreaItem(this, lastOffset);
-                        lastOffset += item.BlockSize;
-                        break;
-                    }
+                        {
+                            item = new TsVisibilityAreaItem(this, lastOffset);
+                            lastOffset += item.BlockSize;
+                            break;
+                        }
                     default:
-                    {
-                        Logger.Instance.Warning($"Unknown Type: {type} in {Path.GetFileName(FilePath)} @ {lastOffset}");
-                        break;
-                    }
+                        {
+                            Logger.Instance.Warning($"Unknown Type: {type} in {Path.GetFileName(FilePath)} @ {lastOffset}");
+                            break;
+                        }
                 }
 
-                 if (item != null && item.Valid && !item.Hidden) Mapper.MapItems.Add(item);
+                if (item != null && item.Valid && !item.Hidden) Mapper.MapItems.Add(item.Uid, item);
             }
 
             var nodeCount = MemoryHelper.ReadInt32(Stream, lastOffset);
