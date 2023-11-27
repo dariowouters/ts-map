@@ -49,6 +49,7 @@ namespace TsMap
 
         public Rectangle BackgroundPos;
         internal OverlayImage[] Backgrounds = new OverlayImage[4];
+        public TsMapSettings mapSettings;
 
         private List<TsSector> Sectors { get; set; }
 
@@ -130,7 +131,7 @@ namespace TsMap
                             _countriesLookup.Add(country.Token, country);
                             _countriesLookupById.Add(country.CountryId, country);
 
-                            if (country.CountryCode != string.Empty) 
+                            if (country.CountryCode != string.Empty)
                                 OverlayManager.AddOverlay(country.CountryCode, OverlayType.Flag, country.X, country.Y, "Flag", 0);
                         }
                     }
@@ -428,9 +429,9 @@ namespace TsMap
                     return;
                 }
 
-                TsMapSettings settings = new TsMapSettings(this, filePath);
+                mapSettings = new TsMapSettings(this, filePath);
 
-                _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base").Select(x => new Tuple<string, TsMapSettings>(x, settings)));
+                _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base").Select(x => new Tuple<string, TsMapSettings>(x, mapSettings)));
             }
         }
 

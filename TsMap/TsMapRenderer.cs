@@ -7,6 +7,7 @@ using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
 using TsMap.Map.Overlays;
+using TsMap.TsItem;
 
 namespace TsMap
 {
@@ -49,7 +50,8 @@ namespace TsMap
 
             var zoomIndex = RenderHelper.GetZoomIndex(clip, scale);
 
-            var endPoint = new PointF(startPoint.X + clip.Width / scale, startPoint.Y + clip.Height / scale);
+            var rectangle = new RectangleF(startPoint.X - itemDrawMargin, startPoint.Y - itemDrawMargin, clip.Width / scale + itemDrawMargin, clip.Height / scale + itemDrawMargin);
+            var mapSettings = _mapper.mapSettings;
 
             var backgroundStartTime = DateTime.Now.Ticks;
             var backPos = _mapper.BackgroundPos;
@@ -75,7 +77,7 @@ namespace TsMap
                     {
                         if (conn.Connections.Count == 0) // no extra nodes -> straight line
                         {
-                            g.DrawLine(ferryPen, conn.StartPortLocation, conn.EndPortLocation);
+                            g.DrawLine(ferryPen, mapSettings.Correct(conn.StartPortLocation), mapSettings.Correct(conn.EndPortLocation));
                             continue;
                         }
 
@@ -118,6 +120,7 @@ namespace TsMap
                         bezierPoints.Add(new PointF(conn.EndPortLocation.X - bezierNodes.Item2.X, conn.EndPortLocation.Y - bezierNodes.Item2.Y)); // control2
                         bezierPoints.Add(new PointF(conn.EndPortLocation.X, conn.EndPortLocation.Y)); // end
 
+                        bezierPoints = mapSettings.Correct(bezierPoints);
                         g.DrawBeziers(ferryPen, bezierPoints.ToArray());
                     }
                 }
@@ -133,8 +136,8 @@ namespace TsMap
                 {
                     if (!activeDlcGuards.Contains(mapArea.DlcGuard) ||
                         mapArea.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
-                        mapArea.X < startPoint.X - itemDrawMargin || mapArea.X > endPoint.X + itemDrawMargin ||
-                        mapArea.Z < startPoint.Y - itemDrawMargin || mapArea.Z > endPoint.Y + itemDrawMargin)
+                        !rectangle.Contains(mapSettings.Correct(RenderHelper.GetPoint(mapArea.X, mapArea.Z)))
+                    )
                     {
                         continue;
                     }
@@ -166,6 +169,7 @@ namespace TsMap
                         zIndex = mapArea.DrawOver ? 11 : 1;
                     }
 
+                    points = mapSettings.Correct(points);
                     drawingQueue.Add(new TsPrefabPolyLook(points)
                     {
                         Color = fillColor,
@@ -189,8 +193,8 @@ namespace TsMap
                 {
                     if (!activeDlcGuards.Contains(prefabItem.DlcGuard) ||
                         prefabItem.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
-                        prefabItem.X < startPoint.X - itemDrawMargin || prefabItem.X > endPoint.X + itemDrawMargin ||
-                        prefabItem.Z < startPoint.Y - itemDrawMargin || prefabItem.Z > endPoint.Y + itemDrawMargin)
+                         !rectangle.Contains(mapSettings.Correct(RenderHelper.GetPoint(prefabItem)))
+                    )
                     {
                         continue;
                     }
@@ -263,7 +267,8 @@ namespace TsMap
                                 }
                                 // else fillColor = _palette.Error; // Unknown
 
-                                var prefabLook = new TsPrefabPolyLook(polyPoints.Values.ToList())
+                                var points = mapSettings.Correct(polyPoints.Values.ToList());
+                                var prefabLook = new TsPrefabPolyLook(points)
                                 {
                                     ZIndex = zIndex,
                                     Color = fillColor
@@ -326,6 +331,7 @@ namespace TsMap
                                     (Consts.LaneWidth * mapPointLaneCount + mapPoint.LaneOffset) / 2f, roadYaw - Math.PI / 2);
                                 cornerCoords.Add(RenderHelper.RotatePoint(coords.X, coords.Y, rot, originNode.X, originNode.Z));
 
+                                cornerCoords = mapSettings.Correct(cornerCoords);
                                 TsPrefabLook prefabLook = new TsPrefabPolyLook(cornerCoords)
                                 {
                                     Color = palette.PrefabRoad,
@@ -354,8 +360,8 @@ namespace TsMap
                 {
                     if (!activeDlcGuards.Contains(road.DlcGuard) ||
                         road.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
-                        road.X < startPoint.X - itemDrawMargin || road.X > endPoint.X + itemDrawMargin ||
-                        road.Z < startPoint.Y - itemDrawMargin || road.Z > endPoint.Y + itemDrawMargin)
+                         !rectangle.Contains(mapSettings.Correct(RenderHelper.GetPoint(road)))
+                    )
                     {
                         continue;
                     }
@@ -386,6 +392,7 @@ namespace TsMap
                             var z = (float)TsRoadLook.Hermite(s, sz, ez, tanSz, tanEz);
                             newPoints.Add(new PointF(x, z));
                         }
+                        newPoints = mapSettings.Correct(newPoints);
                         road.AddPoints(newPoints);
                     }
 
@@ -406,7 +413,7 @@ namespace TsMap
                     {
                         roadPen = new Pen(palette.Road, roadWidth);
                     }
-                    g.DrawCurve(roadPen, road.GetPoints()?.ToArray());
+                    g.DrawCurve(roadPen, road.GetPoints().ToArray());
                     roadPen.Dispose();
                 }
             }
@@ -419,10 +426,8 @@ namespace TsMap
                 {
                     if (!activeDlcGuards.Contains(mapOverlay.DlcGuard) ||
                         mapOverlay.IsSecret && !renderFlags.IsActive(RenderFlags.SecretRoads) ||
-                        mapOverlay.Position.X < startPoint.X - itemDrawMargin ||
-                        mapOverlay.Position.X > endPoint.X + itemDrawMargin ||
-                        mapOverlay.Position.Y < startPoint.Y - itemDrawMargin ||
-                        mapOverlay.Position.Y > endPoint.Y + itemDrawMargin)
+                        !rectangle.Contains(mapSettings.Correct(RenderHelper.GetPoint(mapOverlay.Position.X, mapOverlay.Position.Y)))
+                    )
                     {
                         continue;
                     }
@@ -431,17 +436,16 @@ namespace TsMap
 
                     if (b == null || !renderFlags.IsActive(RenderFlags.BusStopOverlay) && mapOverlay.OverlayType == OverlayType.BusStop) continue;
 
+                    var pos = mapSettings.Correct(mapOverlay.Position);
                     if (mapOverlay.OverlayType == OverlayType.Flag)
                     {
                         var width = b.Width / scale;
                         var height = b.Height / scale;
-                        g.DrawImage(b, mapOverlay.Position.X - (width / 2f), mapOverlay.Position.Y - (height / 2f),
-                            width, height);
+                        g.DrawImage(b, pos.X - (width / 2f), pos.Y - (height / 2f), width, height);
                     }
                     else
                     {
-                        g.DrawImage(b, mapOverlay.Position.X - (b.Width / 2f), mapOverlay.Position.Y - (b.Height / 2f),
-                            b.Width, b.Height);
+                        g.DrawImage(b, pos.X - (b.Width / 2f), pos.Y - (b.Height / 2f), b.Width, b.Height);
                     }
 
                 }
@@ -465,12 +469,14 @@ namespace TsMap
                     }
 
                     var textSize = g.MeasureString(name, cityFont);
+                    coords = mapSettings.Correct(coords);
                     g.DrawString(name, cityFont, _cityShadowColor, coords.X + 2, coords.Y + 2);
                     g.DrawString(name, cityFont, palette.CityName, coords.X, coords.Y);
                 }
                 cityFont.Dispose();
             }
             var cityTime = DateTime.Now.Ticks - cityStartTime;
+
 
             g.ResetTransform();
             var elapsedTime = DateTime.Now.Ticks - startTime;

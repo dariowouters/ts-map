@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using TsMap.FileSystem;
 
 namespace TsMap
@@ -23,6 +25,21 @@ namespace TsMap
             Version = BitConverter.ToInt32(stream, 0x0);
             Scale = BitConverter.ToSingle(stream, 0x3C);
             HasUICorrections = BitConverter.ToBoolean(stream, 0x44);
+        }
+
+        public PointF Correct(PointF p)
+        {
+            return RenderHelper.ScsMapCorrection(p);
+        }
+
+        public PointF[] Correct(PointF[] p)
+        {
+            return HasUICorrections ? RenderHelper.ScsMapCorrection(p) : p;
+        }
+
+        public List<PointF> Correct(List<PointF> p)
+        {
+            return HasUICorrections ? RenderHelper.ScsMapCorrection(p) : p;
         }
 
     }
