@@ -9,22 +9,22 @@
         /// <summary>
         /// Offset in file to where the data starts
         /// </summary>
-        internal ulong Offset { get; set; }
+        internal ulong Offset { private get; set; }
 
         /// <summary>
         /// File/dir path hashed by CityHash64
         /// </summary>
-        internal ulong Hash { get; set; }
+        internal ulong Hash { private get; set; }
 
         /// <summary>
         /// Total size when inflated
         /// </summary>
-        internal uint Size { get; set; }
+        internal uint Size { private get; set; }
 
         /// <summary>
         /// Size in archive file
         /// </summary>
-        internal uint CompressedSize { get; set; }
+        internal uint CompressedSize { private get; set; }
 
         private readonly ArchiveFile _archiveFile;
 
@@ -59,6 +59,22 @@
         {
             return Hash;
         }
+
+        public virtual uint GetSize()
+        {
+            return Size;
+        }
+
+        public virtual ulong GetOffset()
+        {
+            return Offset;
+        }
+
+        public virtual uint GetCompressedSize()
+        {
+            return CompressedSize;
+        }
+
         public abstract bool IsCompressed();
 
         public abstract bool IsDirectory();
