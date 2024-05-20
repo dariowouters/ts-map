@@ -4,7 +4,7 @@ This Application reads ATS/ETS2 files to draw roads, prefabs, map overlays, ferr
 
 ![Preview of the map](/docs/preview.jpg "Preview of the map")
 
-### **Support for 1.48.5**
+### **Support for 1.50**
 
 ## Export Maps
 Can now export maps as a tiled web map.
@@ -43,12 +43,13 @@ ATS:
 
 ## Supported maps / DLC
 - ATS
-    - All map DLCs up to and including Oklahoma.
+    - All map DLCs up to and including Nebraska.
 - ETS2
     - All map DLCs up to and including West Balkans.
 
-#### Dependencies (NuGet)
-- [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
+#### Dependencies
+- [Newtonsoft.Json (NuGet)](https://www.nuget.org/packages/Newtonsoft.Json)
+- [NVIDIA libdeflate](https://github.com/NVIDIA/libdeflate/tree/3bb5c6924b32a91e6e6a8f54ba00a21f037a8db5)
 
 #### Based on
 [Original project](https://github.com/nlhans/ets2-map)
