@@ -19,6 +19,8 @@ namespace TsMap.Map.Overlays
             _matFilePath = matFilePath;
         }
 
+        public string EffectName { get; private set; }
+
         public string TextureSource { get; private set; }
 
         public bool Parse()
@@ -37,6 +39,13 @@ namespace TsMap.Map.Overlays
             {
                 var (validLine, key, value) = SiiHelper.ParseLine(line);
                 if (!validLine) continue;
+
+                if (key == "effect")
+                {
+                    EffectName = value.Contains("\"")
+                        ? value.Split('"')[1]
+                        : value.Trim('{').Trim();
+                }
 
                 if (key.StartsWith("aux["))
                 {

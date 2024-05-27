@@ -40,7 +40,10 @@ namespace TsMap.Map.Overlays
         /// <returns></returns>
         private Color8888 MixAuxColorsFollowingMask(Color8888 inColor)
         {
-            if (Mat.AuxValues.Count < 4) return inColor;
+            if (Mat.AuxValues.Count < 4 || !Mat.EffectName.Contains("ui.sdf"))
+            {
+                return inColor;
+            }
 
             double totalColor = inColor.R + inColor.G + inColor.B;
             if (totalColor == 0) return new Color8888(0, 0, 0, 0);
