@@ -77,7 +77,7 @@ namespace TsMap.FileSystem.Zip
 
                 fileOffset += (uint)nameLen + extraFieldLength + fileCommentLength;
 
-                if (entry.Size != 0)
+                if (entry.GetSize() != 0)
                 {
                     var prevOffset = fileOffset;
 
@@ -126,14 +126,14 @@ namespace TsMap.FileSystem.Zip
                 }
                 else
                 {
-                    if (UberFileSystem.Instance.Files.ContainsKey(entry.Hash))
+                    if (UberFileSystem.Instance.Files.ContainsKey(entry.GetHash()))
                     {
-                        UberFileSystem.Instance.Files[entry.Hash] = new UberFile(entry);
+                        UberFileSystem.Instance.Files[entry.GetHash()] = new UberFile(entry);
                     }
                     else
                     {
                         parentDir.AddSubFileName(Path.GetFileName(name));
-                        UberFileSystem.Instance.Files.Add(entry.Hash, new UberFile(entry));
+                        UberFileSystem.Instance.Files.Add(entry.GetHash(), new UberFile(entry));
                     }
                 }
             }

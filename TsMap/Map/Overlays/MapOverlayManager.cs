@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TsMap.FileSystem;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
@@ -45,7 +44,6 @@ namespace TsMap.Map.Overlays
             return true;
         }
 
-
         /// <summary>
         ///     Reads the .mat file at the given path, reads the texture file path and returns an <see cref="OverlayImage" /> if
         ///     the texture path is valid
@@ -57,37 +55,15 @@ namespace TsMap.Map.Overlays
         /// </returns>
         private OverlayImage GetOverlayImageFromMatFile(string matFilePath)
         {
-            var matFile = UberFileSystem.Instance.GetFile(matFilePath);
-            if (matFile == null) return null;
+            var mat = new Material(matFilePath);
 
-            var data = matFile.Entry.Read();
-            var lines = Encoding.UTF8.GetString(data).Split('\n');
-
-            foreach (var line in lines)
+            if (!mat.Parse())
             {
-                var (validLine, key, value) = SiiHelper.ParseLine(line);
-                if (!validLine) continue;
-                if ((key == "texture" || key == "source") && value.Contains(".tobj"))
-                {
-                    var tobjPath =
-                        PathHelper.CombinePath(PathHelper.GetDirectoryPath(matFilePath), value.Split('"')[1]);
-
-                    var tobjData = UberFileSystem.Instance.GetFile(tobjPath)?.Entry?.Read();
-
-                    if (tobjData == null)
-                    {
-                        Logger.Instance.Warning($"Could not read tobj file for '{tobjPath}'");
-                        break;
-                    }
-
-                    var path = PathHelper.EnsureLocalPath(Encoding.UTF8.GetString(tobjData, 0x30,
-                        tobjData.Length - 0x30));
-
-                    return new OverlayImage(path);
-                }
+                Logger.Instance.Error($"Error reading material file '{matFilePath}'");
+                return null;
             }
 
-            return null;
+            return new OverlayImage(mat);
         }
 
         private OverlayImage GetOrCreateOverlayImage(string overlayName, OverlayType overlayType)

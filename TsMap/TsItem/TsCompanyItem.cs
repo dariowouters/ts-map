@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using TsMap.Common;
@@ -114,12 +115,27 @@ namespace TsMap.TsItem
             var prefabStartX = originNode.X - mapPointOrigin.X;
             var prefabStartZ = originNode.Z - mapPointOrigin.Z;
             var companyPos = prefab.Prefab.SpawnPoints.FirstOrDefault(x => x.Type == TsSpawnPointType.CompanyPos);
+            PointF point;
+            if (companyPos == null)
+            {
+                // place icon at the company node position if the prefab does not have a company spawn point
+                var companyNode = Sector.Mapper.GetNodeByUid(Nodes[0]);
 
-            if (companyPos == null) return;
+                if (companyNode == null)
+                {
+                    Logger.Instance.Error($"Could not find company spawn point and company node for prefab UID: 0x{_prefabUid}.");
+                    return;
+                }
 
-            var point = RenderHelper.RotatePoint(prefabStartX + companyPos.X,
-                prefabStartZ + companyPos.Z, rot,
-                originNode.X, originNode.Z);
+                point = new PointF(companyNode.X, companyNode.Z);
+            }
+            else
+            {
+
+                point = RenderHelper.RotatePoint(prefabStartX + companyPos.X,
+                    prefabStartZ + companyPos.Z, rot,
+                    originNode.X, originNode.Z);
+            }
 
             if (!Sector.Mapper.OverlayManager.AddOverlay(ScsToken.TokenToString(_companyNameToken), OverlayType.Company,
                     point.X, point.Y, "Company", DlcGuard, prefab.IsSecret))

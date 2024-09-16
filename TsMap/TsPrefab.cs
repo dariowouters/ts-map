@@ -33,6 +33,7 @@ namespace TsMap
         public float X;
         public float Z;
         public TsSpawnPointType Type;
+        public uint Unk; /* from version 24 */
     }
 
     public class TsTriggerPoint
@@ -48,6 +49,7 @@ namespace TsMap
         private const int NodeBlockSize = 0x68;
         private const int MapPointBlockSize = 0x30;
         private const int SpawnPointBlockSize = 0x20;
+        private const int SpawnPointV24BlockSize = 0x24;
         private const int TriggerPointBlockSize = 0x30;
 
         public string FilePath { get; }
@@ -136,9 +138,11 @@ namespace TsMap
                 PrefabNodes.Add(node);
             }
 
+            var spawnPointBlockSize = version >= 24 ? SpawnPointV24BlockSize : SpawnPointBlockSize;
+
             for (var i = 0; i < spawnPointCount; i++)
             {
-                var spawnPointBaseOffset = spawnPointOffset + (i * SpawnPointBlockSize);
+                var spawnPointBaseOffset = spawnPointOffset + (i * spawnPointBlockSize);
                 var spawnPoint = new TsSpawnPoint
                 {
                     X = MemoryHelper.ReadSingle(_stream, spawnPointBaseOffset),

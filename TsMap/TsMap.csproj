@@ -32,6 +32,26 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -51,9 +71,13 @@
     <Compile Include="Common\DlcGuard.cs" />
     <Compile Include="FileSystem\CityHash.cs" />
     <Compile Include="FileSystem\Entry.cs" />
-    <Compile Include="FileSystem\Hash\HashEntry.cs" />
+    <Compile Include="FileSystem\Hash\HashEntryV1.cs" />
     <Compile Include="FileSystem\Hash\HashArchiveHeader.cs" />
     <Compile Include="FileSystem\ArchiveFile.cs" />
+    <Compile Include="FileSystem\Hash\HashEntryV2.cs" />
+    <Compile Include="FileSystem\Hash\Metadata.cs" />
+    <Compile Include="FileSystem\libdeflate\GDeflate.cs" />
+    <Compile Include="FileSystem\libdeflate\LibdeflateWrapper.cs" />
     <Compile Include="FileSystem\Zip\ZipEntry.cs" />
     <Compile Include="LocalizationManager.cs" />
     <Compile Include="Helpers\Logger\LogLevel.cs" />
@@ -70,8 +94,10 @@
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MapPalette.cs" />
     <Compile Include="Map\Overlays\ColorTypes.cs" />
+    <Compile Include="Map\Overlays\Dds.cs" />
     <Compile Include="Map\Overlays\MapOverlay.cs" />
     <Compile Include="Map\Overlays\MapOverlayManager.cs" />
+    <Compile Include="Map\Overlays\Material.cs" />
     <Compile Include="Map\Overlays\OverlayImage.cs" />
     <Compile Include="Map\Overlays\OverlayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

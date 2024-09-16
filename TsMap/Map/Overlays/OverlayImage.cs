@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using TsMap.FileSystem;
+using TsMap.FileSystem.Hash;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
 
@@ -17,16 +21,58 @@ namespace TsMap.Map.Overlays
         private Color8888[] _pixelData;
         private byte[] _stream;
 
-        public OverlayImage(string filePath)
+        public OverlayImage(Material mat)
         {
-            FilePath = filePath;
+            Mat = mat;
         }
 
+        internal DxgiFormat Format { get; private set; }
         internal bool Valid { get; private set; }
         internal uint Width { get; private set; }
         internal uint Height { get; private set; }
 
-        internal string FilePath { get; }
+        internal Material Mat { get; }
+
+        /// <summary>
+        /// Mixes pixel color values from the material' aux values according to the percentage of color available in mask.
+        /// </summary>
+        /// <param name="inColor">Mask pixel color</param>
+        /// <returns></returns>
+        private Color8888 MixAuxColorsFollowingMask(Color8888 inColor)
+        {
+            if (Mat.AuxValues.Count < 4 || !Mat.EffectName.Contains("ui.sdf"))
+            {
+                return inColor;
+            }
+
+            double totalColor = inColor.R + inColor.G + inColor.B;
+            if (totalColor == 0) return new Color8888(0, 0, 0, 0);
+
+            var redRatio = inColor.R / totalColor;
+            var greenRatio = inColor.G / totalColor;
+            var blueRatio = inColor.B / totalColor;
+
+            var redChannel = Mat.AuxValues[1];
+            var greenChannel = Mat.AuxValues[2];
+            var blueChannel = Mat.AuxValues[3];
+
+            var newR =
+                redChannel.SrgbR * redRatio +
+                greenChannel.SrgbR * greenRatio +
+                blueChannel.SrgbR * blueRatio;
+
+            var newG =
+                redChannel.SrgbG * redRatio +
+                greenChannel.SrgbG * greenRatio +
+                blueChannel.SrgbG * blueRatio;
+
+            var newB =
+                redChannel.SrgbB * redRatio +
+                greenChannel.SrgbB * greenRatio +
+                blueChannel.SrgbB * blueRatio;
+
+            return new Color8888(inColor.A, (byte)Math.Round(newR), (byte)Math.Round(newG), (byte)Math.Round(newB));
+        }
 
         public Bitmap GetBitmap()
         {
@@ -52,7 +98,7 @@ namespace TsMap.Map.Overlays
             var bytes = new byte[Width * Height * 4];
             for (var i = 0; i < _pixelData.Length; ++i)
             {
-                var pixel = _pixelData[i];
+                var pixel = MixAuxColorsFollowingMask(_pixelData[i]);
                 bytes[i * 4 + 3] = pixel.A;
                 bytes[i * 4] = pixel.B;
                 bytes[i * 4 + 1] = pixel.G;
@@ -65,45 +111,152 @@ namespace TsMap.Map.Overlays
         internal void Parse()
         {
             Valid = true;
-            _file = UberFileSystem.Instance.GetFile(FilePath);
+            _file = UberFileSystem.Instance.GetFile(Mat.TextureSource);
             if (_file == null)
             {
                 Valid = false;
-                Logger.Instance.Error($"Could not find DDS file ({FilePath})");
+                Logger.Instance.Error($"Could not find TOBJ file ({Mat.TextureSource})");
                 return;
             }
 
-            _stream = _file.Entry.Read();
-
-            if (_stream.Length < 128 ||
-                MemoryHelper.ReadUInt32(_stream, 0x00) != 0x20534444 ||
-                MemoryHelper.ReadUInt32(_stream, 0x04) != 0x7C)
+            var pixelDataOffset = 0;
+            if (_file.Entry is HashEntryV2 entry)
             {
+                _stream = ProcessHashFsV2ImageData(entry);
+            }
+            else
+            {
+                var tobjData = _file.Entry.Read();
+                var ddsPath = PathHelper.EnsureLocalPath(Encoding.UTF8.GetString(tobjData, 0x30, tobjData.Length - 0x30));
+                _file = UberFileSystem.Instance.GetFile(ddsPath);
+                if (_file == null)
+                {
+                    Valid = false;
+                    Logger.Instance.Error($"Could not find DDS file ({ddsPath})");
+                    return;
+                }
+
+                _stream = _file.Entry.Read();
+
+                if (_stream.Length < 128 ||
+                    MemoryHelper.ReadUInt32(_stream, 0x00) != 0x20534444 ||
+                    MemoryHelper.ReadUInt32(_stream, 0x04) != 0x7C)
+                {
+                    Valid = false;
+                    Logger.Instance.Error($"Invalid DDS header for '{ddsPath}'");
+                    return;
+                }
+
+                Height = MemoryHelper.ReadUInt32(_stream, 0x0C);
+                Width = MemoryHelper.ReadUInt32(_stream, 0x10);
+                var ddpf = new DdsPixelFormat
+                {
+                    Size = MemoryHelper.ReadUInt32(_stream, 0x4c),
+                    Flags = MemoryHelper.ReadUInt32(_stream, 0x50),
+                    FourCc = MemoryHelper.ReadUInt32(_stream, 0x54),
+                    RgbBitCount = MemoryHelper.ReadUInt32(_stream, 0x58),
+                    RBitMask = MemoryHelper.ReadUInt32(_stream, 0x5c),
+                    GBitMask = MemoryHelper.ReadUInt32(_stream, 0x60),
+                    BBitMask = MemoryHelper.ReadUInt32(_stream, 0x64),
+                    ABitMask = MemoryHelper.ReadUInt32(_stream, 0x68),
+                };
+                pixelDataOffset = (ddpf.FourCc == MemoryHelper.MakeFourCc('D', 'X', '1', '0')) ? 0x94 : 0x80;
+
+                Format = Dds.GetDXGIFormat(ddpf);
+
+            }
+
+            if (Format == DxgiFormat.FormatUnknown)
+            {
+                Logger.Instance.Debug($"Could not find dds format for '{Mat.TextureSource}'");
                 Valid = false;
-                Logger.Instance.Error($"Invalid DDS file ({FilePath})");
                 return;
             }
 
-            Height = MemoryHelper.ReadUInt32(_stream, 0x0C);
-            Width = MemoryHelper.ReadUInt32(_stream, 0x10);
-
-            var fourCc = MemoryHelper.ReadUInt32(_stream, 0x54);
-
-            if (fourCc == 861165636) ParseDxt3();
-            else if (fourCc == 894720068) ParseDxt5();
-            else ParseUncompressed();
+            switch (Format)
+            {
+                case DxgiFormat.FormatB8G8R8A8Unorm:
+                case DxgiFormat.FormatB8G8R8A8UnormSrgb:
+                    ParseB8G8R8A8(pixelDataOffset);
+                    break;
+                case DxgiFormat.FormatB8G8R8X8Unorm:
+                case DxgiFormat.FormatB8G8R8X8UnormSrgb:
+                    ParseB8G8R8X8(pixelDataOffset);
+                    break;
+                case DxgiFormat.FormatBc2Unorm:
+                case DxgiFormat.FormatBc2UnormSrgb:
+                    ParseDxt3(pixelDataOffset);
+                    break;
+                case DxgiFormat.FormatBc3Unorm:
+                case DxgiFormat.FormatBc3UnormSrgb:
+                    ParseDxt5(pixelDataOffset);
+                    break;
+                default:
+                    Logger.Instance.Error($"No support for dds format '{Format}' for '{Mat.TextureSource}'");
+                    Valid = false;
+                    break;
+            }
         }
 
-        private void ParseUncompressed()
+
+        private byte[] ProcessHashFsV2ImageData(HashEntryV2 entry)
         {
-            if ((_stream.Length - 128) / 4 < Width * Height)
+            if (!entry._imgMetadata.HasValue)
             {
                 Valid = false;
-                Logger.Instance.Error($"Invalid DDS file (size), '{FilePath}'");
+                Logger.Instance.Error($"Tobj entry does not have image metadata ({Mat.TextureSource})");
+                return Array.Empty<byte>();
+            }
+
+            Width = entry._imgMetadata.Value.Width;
+            Height = entry._imgMetadata.Value.Height;
+            Format = entry._imgMetadata.Value.Format;
+            _stream = _file.Entry.Read();
+
+            var result = new List<byte>();
+
+            Dds.FillInitData(Width, Height, 1, entry._imgMetadata.Value.MipmapCount, 1, Format, 0,
+                (uint) _stream.Length, _stream,
+                out _,
+                out _,
+                out _,
+                out _,
+                out var subData);
+
+            uint currentOffset = 0;
+
+            for (uint currentFaceIndex = 0; currentFaceIndex < entry._imgMetadata.Value.Count; ++currentFaceIndex)
+            {
+                for (var mipmapIndex = 0; mipmapIndex < entry._imgMetadata.Value.MipmapCount; ++mipmapIndex)
+                {
+                    var mipmapSubData = subData[mipmapIndex];
+                    var slicePitch = mipmapSubData.SlicePitch;
+                    var rowPitch = mipmapSubData.RowPitch;
+
+                    currentOffset = (uint)Math.Ceiling((double)currentOffset / entry._imgMetadata.Value.ImageAlignment) * entry._imgMetadata.Value.ImageAlignment;
+
+                    for (uint doneBytes = 0; doneBytes < slicePitch; doneBytes += rowPitch)
+                    {
+                        currentOffset = (uint)Math.Ceiling((double)currentOffset / entry._imgMetadata.Value.PitchAlignment) * entry._imgMetadata.Value.PitchAlignment;
+
+                        result.AddRange(_stream.Skip((int) currentOffset).Take((int) rowPitch));
+                        currentOffset += rowPitch;
+                    }
+                }
+            }
+            return result.ToArray();
+        }
+
+        private void ParseB8G8R8A8(int pixelDataOffset)
+        {
+            if ((_stream.Length - pixelDataOffset) / 4 < Width * Height)
+            {
+                Valid = false;
+                Logger.Instance.Error($"Invalid DDS file (size), '{Mat.TextureSource}'");
                 return;
             }
 
-            var fileOffset = 0x7C;
+            var fileOffset = pixelDataOffset - 0x04;
 
             _pixelData = new Color8888[Width * Height];
 
@@ -115,9 +268,30 @@ namespace TsMap.Map.Overlays
             }
         }
 
-        private void ParseDxt3() // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        private void ParseB8G8R8X8(int pixelDataOffset)
         {
-            var fileOffset = 0x80;
+            if ((_stream.Length - pixelDataOffset) / 4 < Width * Height)
+            {
+                Valid = false;
+                Logger.Instance.Error($"Invalid DDS file (size), '{Mat.TextureSource}'");
+                return;
+            }
+
+            var fileOffset = pixelDataOffset - 0x04;
+
+            _pixelData = new Color8888[Width * Height];
+
+            for (var i = 0; i < Width * Height; ++i)
+            {
+                var rgba = MemoryHelper.ReadUInt32(_stream, fileOffset += 0x04);
+                _pixelData[i] = new Color8888(0xFF, (byte)((rgba >> 0x10) & 0xFF),
+                    (byte)((rgba >> 0x08) & 0xFF), (byte)(rgba & 0xFF));
+            }
+        }
+
+        private void ParseDxt3(int pixelDataOffset) // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        {
+            var fileOffset = pixelDataOffset;
             _pixelData = new Color8888[Width * Height];
             for (var y = 0; y < Height; y += 4)
             for (var x = 0; x < Width; x += 4)
@@ -158,9 +332,9 @@ namespace TsMap.Map.Overlays
             }
         }
 
-        private void ParseDxt5() // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        private void ParseDxt5(int pixelDataOffset) // https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
         {
-            var fileOffset = 0x80;
+            var fileOffset = pixelDataOffset;
             _pixelData = new Color8888[Width * Height];
             for (var y = 0; y < Height; y += 4)
             for (var x = 0; x < Width; x += 4)

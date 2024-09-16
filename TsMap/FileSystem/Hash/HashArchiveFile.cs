@@ -1,19 +1,42 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using TsMap.Common;
 using TsMap.Helpers;
 using TsMap.Helpers.Logger;
+using File = System.IO.File;
 
 namespace TsMap.FileSystem.Hash
 {
+    internal enum HashEntryTypes
+    {
+        Img = 0x01,
+        Sample = 0x02,
+        MipProxy = 0x03,
+        Plain = 0x80,
+        Directory = 0x81,
+        Mip0 = 0x82,
+        Mip1 = 0x83,
+        MipTail = 0x84
+    }
+
+    internal enum HashFsCompressionMethod
+    {
+        NoCompression = 0,
+        Zlib = 1,
+        Gdeflate = 3
+    }
+
     public class HashArchiveFile : ArchiveFile
     {
         /// <summary>
         /// Hashing method used in scs files, 'CITY' as utf-8 bytes
         /// </summary>
         internal const uint HashMethod = 1498696003;
-        private const ushort SupportedHashVersion = 1;
-        private const ushort EntryBlockSize = 0x20;
+        private readonly ushort[] _supportedHashVersions = { 1, 2 };
+        private const ushort EntryV1BlockSize = 0x20;
+        private const ushort EntryV2BlockSize = 0x10;
 
         private HashArchiveHeader _hashHeader;
 
@@ -60,65 +83,193 @@ namespace TsMap.FileSystem.Hash
                 return false;
             }
 
-            if (_hashHeader.Version != SupportedHashVersion)
+            if (!_supportedHashVersions.Contains(_hashHeader.Version))
             {
                 Logger.Instance.Error("Unsupported Hash Version");
                 return false;
             }
 
-            Br.BaseStream.Seek(_hashHeader.StartOffset, SeekOrigin.Begin);
-            var entriesRaw = Br.ReadBytes((int)_hashHeader.EntryCount * EntryBlockSize); // read all entries at once for performance
-
-            for (var i = 0; i < _hashHeader.EntryCount; i++)
+            if (_hashHeader.Version == 1)
             {
-                var offset = i * EntryBlockSize;
-                var entry = new HashEntry(this)
+
+                Br.BaseStream.Seek(_hashHeader.StartOffset, SeekOrigin.Begin);
+                var entriesRaw =
+                    Br.ReadBytes((int) _hashHeader.EntryCount *
+                                 EntryV1BlockSize); // read all entries at once for performance
+
+                for (var i = 0; i < _hashHeader.EntryCount; i++)
                 {
-                    Hash = MemoryHelper.ReadUInt64(entriesRaw, offset),
-                    Offset = MemoryHelper.ReadUInt64(entriesRaw, offset + 0x08),
-                    Flags = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x10),
-                    Crc = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x14),
-                    Size = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x18),
-                    CompressedSize = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x1C),
-                };
-
-                if (entry.IsDirectory())
-                {
-                    UberDirectory dir = UberFileSystem.Instance.GetDirectory(entry.GetHash());
-                    if (dir == null)
+                    var offset = i * EntryV1BlockSize;
+                    var entry = new HashEntryV1(this)
                     {
-                        dir = new UberDirectory();
-                        dir.AddNewEntry(entry);
-                        UberFileSystem.Instance.Directories[entry.GetHash()] = dir;
-                    }
+                        Hash = MemoryHelper.ReadUInt64(entriesRaw, offset),
+                        Offset = MemoryHelper.ReadUInt64(entriesRaw, offset + 0x08),
+                        Flags = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x10),
+                        Crc = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x14),
+                        Size = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x18),
+                        CompressedSize = MemoryHelper.ReadUInt32(entriesRaw, offset + 0x1C),
+                    };
 
-                    var lines = Encoding.UTF8.GetString(entry.Read()).Split('\n');
-                    foreach (var line in lines)
+                    if (entry.IsDirectory())
                     {
-                        if (line == "") continue;
-
-                        if (line.StartsWith("*")) // dir
+                        UberDirectory dir = UberFileSystem.Instance.GetDirectory(entry.GetHash());
+                        if (dir == null)
                         {
-                            dir.AddSubDirName(line.Substring(1));
+                            dir = new UberDirectory();
+                            dir.AddNewEntry(entry);
+                            UberFileSystem.Instance.Directories[entry.GetHash()] = dir;
                         }
-                        else
+
+                        var lines = Encoding.UTF8.GetString(entry.Read()).Split('\n');
+                        foreach (var line in lines)
                         {
-                            dir.AddSubFileName(line);
+                            if (line == "") continue;
+
+                            if (line.StartsWith("*")) // dir
+                            {
+                                dir.AddSubDirName(line.Substring(1));
+                            }
+                            else
+                            {
+                                dir.AddSubFileName(line);
+                            }
                         }
-                    }
-                }
-                else
-                {
-                    if (UberFileSystem.Instance.Files.ContainsKey(entry.GetHash()))
-                    {
-                        UberFileSystem.Instance.Files[entry.GetHash()] = new UberFile(entry); // overwrite if there already is a file with the current hash
                     }
                     else
                     {
-                        UberFileSystem.Instance.Files.Add(entry.GetHash(), new UberFile(entry));
+                        if (UberFileSystem.Instance.Files.ContainsKey(entry.GetHash()))
+                        {
+                            UberFileSystem.Instance.Files[entry.GetHash()] =
+                                new UberFile(entry); // overwrite if there already is a file with the current hash
+                        }
+                        else
+                        {
+                            UberFileSystem.Instance.Files.Add(entry.GetHash(), new UberFile(entry));
+                        }
                     }
                 }
             }
+            else if (_hashHeader.Version == 2)
+            {
+                var entryTableBlockSize = MemoryHelper.ReadUInt32(Br, 0x10);
+                var metadataCount = MemoryHelper.ReadUInt32(Br, 0x14);
+                var metadataTableBlockSize = MemoryHelper.ReadUInt32(Br, 0x18);
+                var entryTableBlockOffset = MemoryHelper.ReadInt64(Br, 0x1C);
+                var metadataTableBlockOffset = MemoryHelper.ReadInt64(Br, 0x24);
+
+                Br.BaseStream.Seek(entryTableBlockOffset, SeekOrigin.Begin);
+                var entriesBlockRaw =
+                    Br.ReadBytes((int)entryTableBlockSize);
+
+                var rawEntries =
+                    MemoryHelper.InflateZlib(entriesBlockRaw, entriesBlockRaw.Length,
+                        (int)(_hashHeader.EntryCount * EntryV2BlockSize));
+
+                Br.BaseStream.Seek(metadataTableBlockOffset, SeekOrigin.Begin);
+                var metadataBlockRaw =
+                    Br.ReadBytes((int)metadataTableBlockSize);
+
+                var rawMetadataBytes =
+                    MemoryHelper.InflateZlib(metadataBlockRaw, metadataBlockRaw.Length,
+                        (int)(metadataCount * 0x04));
+
+                for (var i = 0; i < _hashHeader.EntryCount; i++)
+                {
+                    var offset = i * EntryV2BlockSize;
+
+                    var entry = new HashEntryV2(this)
+                    {
+                        Hash = MemoryHelper.ReadUInt64(rawEntries, offset),
+                        Flags = MemoryHelper.ReadUInt32(rawEntries, offset + 0x0c)
+                    };
+
+                    var metadataStartIndex = MemoryHelper.ReadInt32(rawEntries, offset + 0x08);
+                    var entryMetadataCount = MemoryHelper.ReadUInt16(rawEntries, offset + 0x0c);
+                    for (var j = 0; j < entryMetadataCount; j++)
+                    {
+                        var metadata0 = MemoryHelper.ReadUInt32(rawMetadataBytes, (metadataStartIndex + j) * 4);
+                        var entryType = (HashEntryTypes)(metadata0 >> 0x18);
+                        var referencedMetadataOffset = (metadata0 & 0xFF_FF_FF) * 4;
+
+                        switch (entryType)
+                        {
+                            case HashEntryTypes.Plain:
+                            case HashEntryTypes.Directory:
+                            case HashEntryTypes.Mip0:
+                            case HashEntryTypes.Mip1:
+                            case HashEntryTypes.MipTail:
+                                entry._plainMetadata = new PlainMetadata(
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset),
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset + 0x04),
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset + 0x08),
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset + 0x0c));
+                                break;
+                            case HashEntryTypes.Img:
+                                entry._imgMetadata = new ImgMetadata(
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset),
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset + 0x04));
+                                break;
+                            case HashEntryTypes.Sample:
+                                entry._sampleMetadata = new SampleMetadata(
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset));
+                                break;
+                            default:
+                                Logger.Instance.Error(
+                                    $"Metadata type {metadata0 >> 0x18} 0x{metadata0 >> 0x18:X} for entry {entry.GetHash()} (0x{entry.GetHash():X}) not implemented.");
+                                break;
+                        }
+                    }
+
+
+                    if (entry.IsDirectory())
+                    {
+                        var dir = UberFileSystem.Instance.GetDirectory(entry.GetHash());
+                        if (dir == null)
+                        {
+                            dir = new UberDirectory();
+                            dir.AddNewEntry(entry);
+                            UberFileSystem.Instance.Directories[entry.GetHash()] = dir;
+                        }
+
+                        var dirSubData = entry.Read();
+                        if (dirSubData.Length < 4) continue;
+
+                        var subItemCount = MemoryHelper.ReadUInt32(dirSubData, 0);
+                        var strOffset = (int)(4 + subItemCount);
+                        for (var j = 0; j < subItemCount; j++)
+                        {
+                            var length = dirSubData[4 + j];
+                            try
+                            {
+                                var subItem = MemoryHelper.ReadString(dirSubData, strOffset, length);
+                                if (subItem.StartsWith("/"))
+                                    dir.AddSubDirName(subItem.Substring(1));
+                                else
+                                    dir.AddSubFileName(subItem);
+                                strOffset += length;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Instance.Debug($"Could not read dir entry {entry.GetHash()} (0x{entry.GetHash():X}), {_path}: {ex.Message}");
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (UberFileSystem.Instance.Files.ContainsKey(entry.GetHash()))
+                        {
+                            UberFileSystem.Instance.Files[entry.GetHash()] =
+                                new UberFile(entry); // overwrite if there already is a file with the current hash
+                        }
+                        else
+                        {
+                            UberFileSystem.Instance.Files.Add(entry.GetHash(), new UberFile(entry));
+                        }
+                    }
+                }
+            }
+
             Logger.Instance.Info($"Mounted '{Path.GetFileName(_path)}' with {_hashHeader.EntryCount} entries");
             return true;
         }
