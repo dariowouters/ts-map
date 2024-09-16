@@ -12,17 +12,17 @@ namespace TsMap.FileSystem.Zip
 
         public override byte[] Read()
         {
-            var buff = MemoryHelper.ReadBytes(GetArchiveFile().Br, (long)Offset, (int)CompressedSize);
+            var buff = MemoryHelper.ReadBytes(GetArchiveFile().Br, (long)GetOffset(), (int)GetCompressedSize());
             return IsCompressed() ? Inflate(buff) : buff;
         }
 
         protected override byte[] Inflate(byte[] buff)
         {
-            var inflatedBytes = new byte[Size];
+            var inflatedBytes = new byte[GetSize()];
             using (var ms = new MemoryStream(buff))
             using (var ds = new DeflateStream(ms, CompressionMode.Decompress))
             {
-                ds.Read(inflatedBytes, 0, (int)Size);
+                ds.Read(inflatedBytes, 0, (int)GetSize());
 
                 return inflatedBytes;
             }
@@ -30,12 +30,12 @@ namespace TsMap.FileSystem.Zip
 
         public override bool IsDirectory()
         {
-            return CompressedSize == 0;
+            return GetCompressedSize() == 0;
         }
 
         public override bool IsCompressed()
         {
-            return CompressedSize != Size;
+            return GetCompressedSize() != GetSize();
         }
     }
 }

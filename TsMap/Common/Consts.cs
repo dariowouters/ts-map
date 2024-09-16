@@ -38,11 +38,15 @@ namespace TsMap.Common
             new DlcGuard("dlc_mt_and_wy", 24),
             new DlcGuard("dlc_ok", 25),
             new DlcGuard("dlc_ok_and_co", 26),
-            new DlcGuard("dlc_ok_and_nm", 26),
-            new DlcGuard("dlc_ok_and_tx", 27),
-            new DlcGuard("dlc_ks", 28),
-            new DlcGuard("dlc_ks_and_co", 29),
-            new DlcGuard("dlc_ks_and_ok", 30),
+            new DlcGuard("dlc_ok_and_nm", 27),
+            new DlcGuard("dlc_ok_and_tx", 28),
+            new DlcGuard("dlc_ks", 29),
+            new DlcGuard("dlc_ks_and_co", 30),
+            new DlcGuard("dlc_ks_and_ok", 31),
+            new DlcGuard("dlc_ne", 32),
+            new DlcGuard("dlc_ne_and_co", 33),
+            new DlcGuard("dlc_ne_and_ks", 34),
+            new DlcGuard("dlc_ne_and_wy", 34),
         };
 
         /// <summary>
@@ -66,11 +70,11 @@ namespace TsMap.Common
             new DlcGuard("dlc_iberia_and_fr", 12),
             new DlcGuard("dlc_russia", 13, false),
             new DlcGuard("dlc_balt_and_russia", 14, false),
-            new DlcGuard("dlc_krone", 15, false),
+            new DlcGuard("dlc_krone", 15),
             new DlcGuard("dlc_blkw", 16),
             new DlcGuard("dlc_blkw_and_east", 17),
             new DlcGuard("dlc_blkw_and_blke", 18),
-            new DlcGuard("dlc_feldbinder", 19)
+            new DlcGuard("dlc_feldbinder", 19),
         };
 
         public const float LaneWidth = 4.5f;

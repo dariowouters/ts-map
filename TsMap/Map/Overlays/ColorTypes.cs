@@ -1,4 +1,6 @@
-﻿namespace TsMap.Map.Overlays
+﻿using System;
+
+namespace TsMap.Map.Overlays
 {
     internal struct Color8888
     {
@@ -60,6 +62,35 @@
         public static Color565 operator *(double val, Color565 col1)
         {
             return col1 * val;
+        }
+    }
+
+    internal struct ColorLinear
+    {
+        internal double LinearR { get; }
+        internal double LinearG { get; }
+        internal double LinearB { get; }
+        internal double LinearA { get; }
+
+        internal double SrgbR => Linear2Srgb(LinearR) * 255;
+        internal double SrgbG => Linear2Srgb(LinearG) * 255;
+        internal double SrgbB => Linear2Srgb(LinearB) * 255;
+        internal double SrgbA => Linear2Srgb(LinearA) * 255;
+
+        private static double Linear2Srgb(double x)
+        {
+            if (x <= 0.0031308)
+                return 12.92 * x;
+
+            return Math.Pow(x, 1.0 / 2.4) * 1.055 - 0.055;
+        }
+
+        internal ColorLinear(double linearR, double linearG, double linearB, double linearA)
+        {
+            LinearR = linearR;
+            LinearG = linearG;
+            LinearB = linearB;
+            LinearA = linearA;
         }
     }
 }
