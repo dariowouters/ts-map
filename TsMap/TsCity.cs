@@ -9,6 +9,7 @@ namespace TsMap
     public class TsCity
     {
         public string Name { get; set; }
+        public string Group { get; set; }
         [JsonIgnore]
         public string LocalizationToken { get; set; }
         public string Country { get; set; }
@@ -49,6 +50,10 @@ namespace TsMap
                 {
                     LocalizationToken = value.Split('"')[1];
                     LocalizationToken = LocalizationToken.Replace("@", "");
+                }
+                else if (key == "city_group")
+                {
+                    Group = value;
                 }
                 else if (key == "country")
                 {
