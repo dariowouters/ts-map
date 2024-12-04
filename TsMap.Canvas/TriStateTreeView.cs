@@ -68,7 +68,9 @@ namespace TsMap.Canvas
             node.StateImageIndex = node.Checked ? (int) CheckedState.Checked : (int) CheckedState.Unchecked;
             UpdateChildState(node.Nodes, node.StateImageIndex, node.Checked);
             UpdateParentState(node.Parent);
-            ItemChecked(node);
+
+            ItemChecked?.Invoke(node);
+
             _updating = false;
         }
         protected override void OnAfterExpand(TreeViewEventArgs e)
