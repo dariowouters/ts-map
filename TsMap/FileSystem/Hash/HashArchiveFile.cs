@@ -14,6 +14,8 @@ namespace TsMap.FileSystem.Hash
         Img = 0x01,
         Sample = 0x02,
         MipProxy = 0x03,
+        Pma = 0x05,
+        Pmg = 0x06,
         Plain = 0x80,
         Directory = 0x81,
         Mip0 = 0x82,
@@ -198,6 +200,8 @@ namespace TsMap.FileSystem.Hash
                             case HashEntryTypes.Mip0:
                             case HashEntryTypes.Mip1:
                             case HashEntryTypes.MipTail:
+                            case HashEntryTypes.Pma:
+                            case HashEntryTypes.Pmg:
                                 entry._plainMetadata = new PlainMetadata(
                                     MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset),
                                     MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset + 0x04),
