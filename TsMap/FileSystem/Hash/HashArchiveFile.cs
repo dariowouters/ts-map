@@ -14,8 +14,8 @@ namespace TsMap.FileSystem.Hash
         Img = 0x01,
         Sample = 0x02,
         MipProxy = 0x03,
-        Pma = 0x05,
-        Pmg = 0x06,
+        PmaInfo = 0x05,
+        PmgInfo = 0x06,
         Plain = 0x80,
         Directory = 0x81,
         Mip0 = 0x82,
@@ -200,8 +200,6 @@ namespace TsMap.FileSystem.Hash
                             case HashEntryTypes.Mip0:
                             case HashEntryTypes.Mip1:
                             case HashEntryTypes.MipTail:
-                            case HashEntryTypes.Pma:
-                            case HashEntryTypes.Pmg:
                                 entry._plainMetadata = new PlainMetadata(
                                     MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset),
                                     MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset + 0x04),
@@ -216,6 +214,20 @@ namespace TsMap.FileSystem.Hash
                             case HashEntryTypes.Sample:
                                 entry._sampleMetadata = new SampleMetadata(
                                     MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset));
+                                break;
+                            case HashEntryTypes.PmaInfo:
+                                entry._pmaInfoMetadata = new PmaInfoMetadata(
+                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset),
+                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x04),
+                                    MemoryHelper.ReadUInt64(rawMetadataBytes, referencedMetadataOffset + 0x08),
+                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x10),
+                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x14),
+                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x18),
+                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x1c));
+                                break;
+                            case HashEntryTypes.PmgInfo:
+                                entry._pmgInfoMetadata = new PmgInfoMetadata(
+                                    MemoryHelper.ReadUInt64(rawMetadataBytes, referencedMetadataOffset));
                                 break;
                             default:
                                 Logger.Instance.Error(
