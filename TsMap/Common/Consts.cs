@@ -55,6 +55,9 @@ namespace TsMap.Common
             new DlcGuard("dlc_mo_and_ks", 41),
             new DlcGuard("dlc_mo_and_ne", 42),
             new DlcGuard("dlc_mo_and_ok", 43),
+            new DlcGuard("dlc_ia", 44),
+            new DlcGuard("dlc_ia_and_mo", 45),
+            new DlcGuard("dlc_ia_and_ne", 46),
         };
 
         /// <summary>
