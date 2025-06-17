@@ -73,16 +73,32 @@ namespace TsMap
         Service = 7,
         CutPlane = 8,
         Mover = 9,
+        ShadowMap = 10,
         NoWeather = 11,
         City = 12,
         Hinge = 13,
+        Parking = 14,
+        AnimatedModel = 15,
+        Hq = 16,
+        Lock = 17,
         MapOverlay = 18,
         Ferry = 19,
+        MissionPoint = 20,
         Sound = 21,
         Garage = 22,
         CameraPoint = 23,
+        ParkingPoint = 24,
+        FixedCar = 25,
+        TrailerStart = 26,
+        TruckStart = 27,
+        Walker = 28,
+        YetdFinish = 29,
+        YetdTriplet = 30,
+        YetdFixable = 31,
+        YetdBall = 32,
+        YetdRod = 33,
         Trigger = 34,
-        FuelPump = 35, // services
+        FuelPump = 35, // ets_garage_gas
         RoadSideItem = 36, // sign
         BusStop = 37,
         TrafficRule = 38, // traffic_area
@@ -94,7 +110,9 @@ namespace TsMap
         Curve = 44,
         Camera = 45,
         Cutscene = 46,
+        Hookup = 47,
         VisibilityArea = 48,
+        Gate = 49,
     };
 
 
