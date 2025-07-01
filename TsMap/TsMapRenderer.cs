@@ -428,12 +428,21 @@ namespace TsMap
             var mapOverlayTime = DateTime.Now.Ticks - mapOverlayStartTime;
 
             var cityStartTime = DateTime.Now.Ticks;
+            var renderedCityGroups = new List<string>();
             if (renderFlags.IsActive(RenderFlags.CityNames)) // TODO: Fix position and scaling
             {
                 var cityFont = new Font("Arial", 100 + zoomCaps[zoomIndex] / 100, FontStyle.Bold);
 
                 foreach (var city in _mapper.Cities)
                 {
+                    if (city.City.Group != null)
+                    {
+                        if (renderedCityGroups.Contains(city.City.Group))
+                        {
+                            continue;
+                        }
+                        renderedCityGroups.Add(city.City.Group);
+                    }
                     var name = _mapper.Localization.GetLocaleValue(city.City.LocalizationToken) ?? city.City.Name;
                     var node = _mapper.GetNodeByUid(city.NodeUid);
                     var coords = (node == null) ? new PointF(city.X, city.Z) : new PointF(node.X, node.Z);

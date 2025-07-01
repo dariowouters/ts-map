@@ -55,4 +55,36 @@ namespace TsMap.FileSystem.Hash
             _data0 = data0;
         }
     }
+
+    internal readonly struct PmaInfoMetadata
+    {
+        private readonly uint _data0; // flag
+        private readonly float _data1; // anim_length
+        private readonly ulong _data2; // skeleton_hash
+        private readonly float _data3; // bsphere_rad
+        private readonly float _data4; // bsphere_org_x
+        private readonly float _data5; // bsphere_org_y
+        private readonly float _data6; // bsphere_org_z
+
+        public PmaInfoMetadata(uint data0, float data1, ulong data2, float data3, float data4, float data5, float data6)
+        {
+            _data0 = data0;
+            _data1 = data1;
+            _data2 = data2;
+            _data3 = data3;
+            _data4 = data4;
+            _data5 = data5;
+            _data6 = data6;
+        }
+    }
+
+    internal readonly struct PmgInfoMetadata
+    {
+        private readonly ulong _data0; // skeleton_hash
+
+        public PmgInfoMetadata(ulong skeletonHash)
+        {
+            _data0 = skeletonHash;
+        }
+    }
 }

@@ -62,7 +62,14 @@ namespace TsMap.Utils
                                 convertedValue = value == "true";
                                 break;
                             case "System.Int32":
-                                convertedValue = Convert.ToInt32(value);
+                                if (value.Contains("."))
+                                {
+                                    convertedValue = Convert.ToInt32(Convert.ToDecimal(value));
+                                }
+                                else
+                                {
+                                    convertedValue = Convert.ToInt32(value);
+                                }
                                 break;
                         }
 
