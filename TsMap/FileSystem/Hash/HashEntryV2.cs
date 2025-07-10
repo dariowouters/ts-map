@@ -10,6 +10,8 @@ namespace TsMap.FileSystem.Hash
         internal ImgMetadata? _imgMetadata;
         internal PlainMetadata _plainMetadata;
         internal SampleMetadata? _sampleMetadata;
+        internal PmaInfoMetadata? _pmaInfoMetadata;
+        internal PmgInfoMetadata? _pmgInfoMetadata;
 
         public HashEntryV2(HashArchiveFile fsFile) : base(fsFile)
         {

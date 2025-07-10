@@ -22,8 +22,10 @@ namespace TsMap.TsItem
                 TsCompanyItem825(startOffset);
             else if (Sector.Version >= 858 && Sector.Version < 900)
                 TsCompanyItem858(startOffset);
-            else if (Sector.Version >= 900)
+            else if (Sector.Version >= 900 && Sector.Version < 903)
                 TsCompanyItem900(startOffset);
+            else if (Sector.Version >= 903)
+                TsCompanyItem903(startOffset);
             else
                 Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
                     $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
@@ -87,6 +89,25 @@ namespace TsMap.TsItem
             Nodes = new List<ulong>(1)
             {
                 MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08) // 0x08(_prefabUid)
+            };
+
+            var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // count | 0x08 (node_uid)
+            fileOffset += 0x04 + (0x0C * nodeCount); // 0x04(nodeCount) + 0x0C(node_uid + node_flag)
+            BlockSize = fileOffset - startOffset;
+        }
+
+        public void TsCompanyItem903(int startOffset)
+        {
+            var fileOffset = startOffset + 0x34; // Set position at start of flags
+            DlcGuard = MemoryHelper.ReadUint8(Sector.Stream, fileOffset + 0x01);
+
+            _prefabUid = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x05 + 0x08); // 0x05(flags) + 0x08(linked_city_name)
+
+            _companyNameToken = MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08); // 0x08(_prefabUid)
+
+            Nodes = new List<ulong>(1)
+            {
+                MemoryHelper.ReadUInt64(Sector.Stream, fileOffset += 0x08) // 0x08(company_name)
             };
 
             var nodeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x08); // count | 0x08 (node_uid)
