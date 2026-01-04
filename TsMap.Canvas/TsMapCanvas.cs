@@ -14,7 +14,7 @@ namespace TsMap.Canvas
     {
         private readonly TsMapper _mapper;
         private readonly TsMapRenderer _renderer;
-        private Settings _appSettings;
+        //private Settings _appSettings;
 
         private TileMapGeneratorForm _tileMapGeneratorForm;
         private ItemVisibilityForm _itemVisibilityForm;
@@ -30,23 +30,26 @@ namespace TsMap.Canvas
         private PointF _lastPoint;
         private PointF _startPoint;
         private float _scale = 0.2f;
-        private readonly int tileSize = 256;
-        private int mapPadding = 500;
+        //private readonly int SettingsManager.Current.Settings.TileGenerator.TileSize = 256;
+        //private int SettingsManager.Current.Settings.TileGenerator.MapPadding = 500;
 
         private bool _isGeneratingTileMap;
         private uint _totalTileCount;
         private uint _currentGeneratedTile;
 
-        public TsMapCanvas(SetupForm f, string path, List<Mod> mods)
+        PointF oldPos = new PointF(0, 0);
+        float movement = 0;
+
+        public TsMapCanvas(SetupForm f)
         {
             InitializeComponent();
 
-            _appSettings = f.AppSettings;
+            //_appSettings = f.AppSettings;
 
-            JsonHelper.SaveSettings(_appSettings);
+            //JsonHelper.SaveSettings(_appSettings);
 
-            _mapper = new TsMapper(path, mods);
-            _palette = new SimpleMapPalette();
+            _mapper = new TsMapper(SettingsManager.Current.Settings.LastGamePath, SettingsManager.Current.Settings.Mods);
+            _palette = SettingsManager.Current.Settings.Palette.ToBrushPalette();// new SimpleMapPalette();
 
             _mapper.Parse();
 
@@ -102,7 +105,7 @@ namespace TsMap.Canvas
 
         private void SaveTileImage(int z, int x, int y, PointF pos, float zoom, string exportPath, RenderFlags renderFlags) // z = zoomLevel; x = row tile index; y = column tile index
         {
-            using (var bitmap = new Bitmap(tileSize, tileSize))
+            using (var bitmap = new Bitmap(SettingsManager.Current.Settings.TileGenerator.TileSize, SettingsManager.Current.Settings.TileGenerator.TileSize))
             using (var g = Graphics.FromImage(bitmap))
             {
                 pos.X = (x == 0) ? pos.X : pos.X + (bitmap.Width / zoom) * x; // get tile start coords
@@ -113,23 +116,31 @@ namespace TsMap.Canvas
 
                 Directory.CreateDirectory($"{exportPath}/Tiles/{z}/{x}");
                 bitmap.Save($"{exportPath}/Tiles/{z}/{x}/{y}.png", ImageFormat.Png);
+
+                if (z == SettingsManager.Current.Settings.TileGenerator.EndZoomLevel && oldPos.Y != 0 && oldPos.X != 0 && movement == 0)
+                {
+                    float difference = Math.Abs(oldPos.Y - pos.Y);
+                    movement = difference / SettingsManager.Current.Settings.TileGenerator.TileSize;
+
+                    Console.WriteLine($"{difference}, scale: {difference / SettingsManager.Current.Settings.TileGenerator.TileSize}");
+                }
             }
         }
         private void ZoomOutAndCenterMap(float targetWidth, float targetHeight, out PointF pos, out float zoom)
         {
-            var mapWidth = _mapper.maxX - _mapper.minX + mapPadding * 2;
-            var mapHeight = _mapper.maxZ - _mapper.minZ + mapPadding * 2;
+            var mapWidth = _mapper.maxX - _mapper.minX + SettingsManager.Current.Settings.TileGenerator.MapPadding * 2;
+            var mapHeight = _mapper.maxZ - _mapper.minZ + SettingsManager.Current.Settings.TileGenerator.MapPadding * 2;
             if (mapWidth > mapHeight) // get the scale to have the map edge to edge on the biggest axis (with padding)
             {
                 zoom = targetWidth / mapWidth;
-                var z = _mapper.minZ - mapPadding + -(targetHeight / zoom) / 2f + mapHeight / 2f;
-                pos = new PointF(_mapper.minX - mapPadding, z);
+                var z = _mapper.minZ - SettingsManager.Current.Settings.TileGenerator.MapPadding + -(targetHeight / zoom) / 2f + mapHeight / 2f;
+                pos = new PointF(_mapper.minX - SettingsManager.Current.Settings.TileGenerator.MapPadding, z);
             }
             else
             {
                 zoom = targetHeight / mapHeight;
-                var x = _mapper.minX - mapPadding + -(targetWidth / zoom) / 2f + mapWidth / 2f;
-                pos = new PointF(x, _mapper.minZ - mapPadding);
+                var x = _mapper.minX - SettingsManager.Current.Settings.TileGenerator.MapPadding + -(targetWidth / zoom) / 2f + mapWidth / 2f;
+                pos = new PointF(x, _mapper.minZ - SettingsManager.Current.Settings.TileGenerator.MapPadding);
             }
         }
 
@@ -139,8 +150,10 @@ namespace TsMap.Canvas
             {
                 return;
             }
-            _appSettings.LastTileMapPath = exportPath;
-            JsonHelper.SaveSettings(_appSettings);
+            //_appSettings.LastTileMapPath = exportPath;
+            //JsonHelper.SaveSettings(_appSettings);
+            SettingsManager.Current.Settings.LastTileMapPath = exportPath;
+            SettingsManager.Current.SaveSettings();
 
             _isGeneratingTileMap = true;
 
@@ -156,12 +169,12 @@ namespace TsMap.Canvas
 
                 if (saveInfo || startZoomLevel == 0)
                 {
-                    ZoomOutAndCenterMap(tileSize, tileSize, out PointF pos,
+                    ZoomOutAndCenterMap(SettingsManager.Current.Settings.TileGenerator.TileSize, SettingsManager.Current.Settings.TileGenerator.TileSize, out PointF pos,
                         out float zoom); // get zoom and start coords for tile level 0
                     if (saveInfo)
                     {
-                        JsonHelper.SaveTileMapInfo(exportPath, pos.X, pos.X + tileSize / zoom, pos.Y,
-                            pos.Y + tileSize / zoom, startZoomLevel, endZoomLevel);
+                        JsonHelper.SaveTileMapInfo(exportPath, pos.X, pos.X + SettingsManager.Current.Settings.TileGenerator.TileSize / zoom, pos.Y,
+                            pos.Y + SettingsManager.Current.Settings.TileGenerator.TileSize / zoom, startZoomLevel, endZoomLevel);
                     }
 
                     if (startZoomLevel == 0 && createTiles)
@@ -169,6 +182,7 @@ namespace TsMap.Canvas
                         SaveTileImage(0, 0, 0, pos, zoom, exportPath, renderFlags);
                         _currentGeneratedTile = 1;
                         startZoomLevel++;
+                        oldPos = pos;
                     }
                 }
 
@@ -176,7 +190,7 @@ namespace TsMap.Canvas
 
                 for (int z = startZoomLevel; z <= endZoomLevel; z++) // https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
                 {
-                    ZoomOutAndCenterMap((int) Math.Pow(2, z) * tileSize, (int) Math.Pow(2, z) * tileSize,
+                    ZoomOutAndCenterMap((int) Math.Pow(2, z) * SettingsManager.Current.Settings.TileGenerator.TileSize, (int) Math.Pow(2, z) * SettingsManager.Current.Settings.TileGenerator.TileSize,
                         out PointF pos, out float zoom); // get zoom and start coords for current tile level
 
                     for (int x = 0; x < Math.Pow(2, z); x++)
@@ -184,6 +198,7 @@ namespace TsMap.Canvas
                         for (int y = 0; y < Math.Pow(2, z); y++)
                         {
                             SaveTileImage(z, x, y, pos, zoom, exportPath, renderFlags);
+                            oldPos = pos;
                             _currentGeneratedTile++;
                             RedrawMap(true);
                         }
@@ -227,7 +242,7 @@ namespace TsMap.Canvas
 
         private void paletteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _paletteEditorForm = new PaletteEditorForm(_palette);
+            _paletteEditorForm = new PaletteEditorForm();
             _paletteEditorForm.Show();
             _paletteEditorForm.BringToFront();
 
@@ -288,15 +303,19 @@ namespace TsMap.Canvas
             {
                 return;
             }
-            if (_tileMapGeneratorForm == null || _tileMapGeneratorForm.IsDisposed) _tileMapGeneratorForm = new TileMapGeneratorForm(_appSettings.LastTileMapPath, _renderFlags);
+            if (_tileMapGeneratorForm == null || _tileMapGeneratorForm.IsDisposed) _tileMapGeneratorForm = new TileMapGeneratorForm();
             _tileMapGeneratorForm.Show();
             _tileMapGeneratorForm.BringToFront();
 
             _tileMapGeneratorForm.GenerateTileMap += (exportPath, startZoomLevel, endZoomLevel, createTiles, exportFlags, renderFlags) => // Called when export button is pressed in TileMapGeneratorForm
             {
                 _tileMapGeneratorForm.Close();
-                _appSettings.LastTileMapPath = exportPath;
-                JsonHelper.SaveSettings(_appSettings);
+                //_appSettings.LastTileMapPath = exportPath;
+                //JsonHelper.SaveSettings(_appSettings);
+
+                SettingsManager.Current.Settings.LastTileMapPath = exportPath;
+                SettingsManager.Current.SaveSettings();
+
                 _mapper.ExportInfo(exportFlags, exportPath);
 
                 if (startZoomLevel < 0 || endZoomLevel < 0) return;
@@ -308,6 +327,14 @@ namespace TsMap.Canvas
                 }
 
                 GenerateTileMap(startZoomLevel, endZoomLevel, exportPath, createTiles, (exportFlags & ExportFlags.TileMapInfo) == ExportFlags.TileMapInfo, renderFlags);
+            };
+
+            _tileMapGeneratorForm.ExportMapData += (exportPath, exportFlags) =>
+            {
+                _mapper.ExportInfo(exportFlags, exportPath);
+
+                MessageBox.Show("Map Data exported", "Map Info Export",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
         }
 

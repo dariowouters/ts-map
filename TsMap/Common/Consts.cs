@@ -61,7 +61,6 @@ namespace TsMap.Common
             new DlcGuard("dlc_la", 47),
             new DlcGuard("dlc_la_and_ar", 48),
             new DlcGuard("dlc_la_and_tx", 49),
-
         };
 
         /// <summary>
@@ -96,7 +95,6 @@ namespace TsMap.Common
             new DlcGuard("dlc_polar", 23),
             new DlcGuard("dlc_polar_and_balt", 24),
             new DlcGuard("dlc_polar_and_north", 25),
-
         };
 
         public const float LaneWidth = 4.5f;

@@ -13,6 +13,8 @@ using TsMap.Helpers;
 using TsMap.Helpers.Logger;
 using TsMap.Map.Overlays;
 using TsMap.TsItem;
+using System.Web.Script.Serialization;
+using TsMap.Utils;
 
 namespace TsMap
 {
@@ -39,6 +41,12 @@ namespace TsMap
         public readonly List<TsMapAreaItem> MapAreas = new List<TsMapAreaItem>();
         public readonly List<TsCityItem> Cities = new List<TsCityItem>();
         public readonly List<TsFerryItem> FerryConnections = new List<TsFerryItem>();
+        public readonly List<TsCompanyItem> Companies = new List<TsCompanyItem>();
+        public readonly List<TsTriggerItem> Triggers = new List<TsTriggerItem>();
+        public readonly List<TsCutsceneItem> Viewpoints = new List<TsCutsceneItem>();
+        public readonly List<TsBusStopItem> BusStops = new List<TsBusStopItem>();
+        public readonly List<TsCargoDef> CargoDefs = new List<TsCargoDef>();
+        public readonly List<TsCompanyDef> CompanyDefs = new List<TsCompanyDef>();
 
         public readonly Dictionary<ulong, TsNode> Nodes = new Dictionary<ulong, TsNode>();
 
@@ -424,6 +432,9 @@ namespace TsMap
                     $"due to not having Start/End location set.");
             }
 
+            this.ParseCargoFiles();
+            this.ParseCompanyFiles();
+
             Logger.Instance.Info($"Loaded {OverlayManager.GetOverlayImagesCount()} overlay images, with {OverlayManager.GetOverlays().Count} overlays on the map");
             Logger.Instance.Info($"It took {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond} ms to fully load.");
         }
@@ -433,6 +444,9 @@ namespace TsMap
             if (exportFlags.IsActive(ExportFlags.CityList)) ExportCities(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.CountryList)) ExportCountries(exportFlags, exportPath);
             if (exportFlags.IsActive(ExportFlags.OverlayList)) ExportOverlays(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.BusStops)) ExportBusStops(exportFlags, exportPath);
+            if (exportFlags.IsActive(ExportFlags.CargoDefs)) ExportCargoDefs(exportFlags, exportPath);
+            this.ExportCompanyDefs(exportFlags, exportPath);
         }
 
         /// <summary>
@@ -448,6 +462,9 @@ namespace TsMap
                 var cityJObj = JObject.FromObject(city.City);
                 cityJObj["X"] = city.X;
                 cityJObj["Y"] = city.Z;
+                cityJObj["InGameId"] = ScsToken.TokenToString(city.City.Token);
+                cityJObj["LocalizationToken"] = city.City.LocalizationToken;
+
                 if (_countriesLookup.ContainsKey(ScsToken.StringToToken(city.City.Country)))
                 {
                     var country = _countriesLookup[ScsToken.StringToToken(city.City.Country)];
@@ -461,7 +478,7 @@ namespace TsMap
                 if (exportFlags.IsActive(ExportFlags.CityLocalizedNames))
                 {
                     cityJObj["LocalizedNames"] = new JObject();
-                    foreach(var locale in Localization.GetLocales())
+                    foreach (var locale in Localization.GetLocales())
                     {
                         var locCityName = Localization.GetLocaleValue(city.City.LocalizationToken, locale);
                         if (locCityName != null)
@@ -485,6 +502,8 @@ namespace TsMap
             foreach (var country in _countriesLookup.Values)
             {
                 var countryJObj = JObject.FromObject(country);
+                countryJObj["LocalizationToken"] = country.LocalizationToken;
+
                 if (exportFlags.IsActive(ExportFlags.CountryLocalizedNames))
                 {
                     countryJObj["LocalizedNames"] = new JObject();
@@ -545,6 +564,7 @@ namespace TsMap
                     ["Height"] = b.Height,
                     ["DlcGuard"] = mapOverlay.DlcGuard,
                     ["IsSecret"] = mapOverlay.IsSecret,
+                    ["City"] = FindCityInGameId(mapOverlay.Position.X, mapOverlay.Position.Y)
                 };
 
                 if (mapOverlay.ZoomLevelVisibility != 0)
@@ -604,6 +624,156 @@ namespace TsMap
             {
                 connection.SetPortLocation(ferryPortId, x, z);
             }
+        }
+
+        public TsCity FindCity(float x, float z)
+        {
+            foreach (var city in Cities)
+            {
+                if (x >= city.X &&
+                    x <= (city.X + city.Width) &&
+                    z >= city.Z &&
+                    z <= (city.Z + city.Height)) return city.City;
+            }
+            return null;
+        }
+
+        public string FindCityInGameId(float x, float z)
+        {
+            var city = FindCity(x, z);
+            if (city == null) return null;
+            if (city != null)
+                return ScsToken.TokenToString(city.Token);
+
+            return null;
+        }
+
+        public void ExportBusStops(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            var busStops = new JArray();
+
+            foreach (var bs in BusStops)
+            {
+                var x = new JObject();
+                x["X"] = bs.X;
+                x["Y"] = bs.Z;
+                x["Type"] = "BusStop";
+                x["City"] = FindCityInGameId(bs.X, bs.Z);
+
+                busStops.Add(x);
+            }
+
+            File.WriteAllText(Path.Combine(path, "BusStops.json"), busStops.ToString(Formatting.Indented));
+        }
+
+        private void ParseCargoFiles()
+        {
+            var startTime = DateTime.Now.Ticks;
+
+            var cargoDefDirectory = UberFileSystem.Instance.GetDirectory("def/cargo");
+            if (cargoDefDirectory == null)
+            {
+                Logger.Instance.Error("Could not read 'def/cargo' dir");
+                return;
+            }
+
+            var cargoDefFiles = cargoDefDirectory.GetFiles(".sui");
+
+            if (cargoDefFiles == null)
+            {
+                Logger.Instance.Error("Could not read  files");
+                return;
+            }
+
+            cargoDefFiles.AddRange(cargoDefDirectory.GetFiles("cargo").ToArray());
+
+            foreach (var cargoDefFilePath in cargoDefFiles)
+            {
+                var cargoDef = UberFileSystem.Instance.GetFile($"def/cargo/{cargoDefFilePath}");
+
+                var data = cargoDef.Entry.Read();
+                TsCargoDef cargo = MapSiiUnitToClass.Parse<TsCargoDef>(data);
+
+                if (cargo.InGameId != null)
+                {
+                    if (cargo.LocalizationToken != null)
+                    {
+                        cargo.LocalizationToken = cargo.LocalizationToken.Replace("{", string.Empty).Replace("@", string.Empty).Replace("\"", string.Empty);
+
+                        foreach (var locale in Localization.GetLocales())
+                        {
+                            var localeValue = Localization.GetLocaleValue(cargo.LocalizationToken, locale);
+                            if (localeValue != null)
+                            {
+                                cargo.LocalizedNames.Add(locale, localeValue);
+                            }
+                        }
+
+                        if (cargo.LocalizedNames.ContainsKey("en_us"))
+                        {
+                            cargo.Name = cargo.LocalizedNames["en_us"];
+                        }
+                        else
+                        {
+                            cargo.Name = cargo.LocalizationToken;
+                        }
+                    }
+
+                    this.CargoDefs.Add(cargo);
+                }
+            }
+
+            Logger.Instance.Info($"Loaded {cargoDefFiles.Count} cargo defs in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
+        }
+
+        public void ExportCargoDefs(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            File.WriteAllText(Path.Combine(path, "CargoDefs.json"), JsonConvert.SerializeObject(this.CargoDefs, Formatting.Indented));
+        }
+
+        public void ExportCompanyDefs(ExportFlags exportFlags, string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            File.WriteAllText(Path.Combine(path, "CompanyDefs.json"), JsonConvert.SerializeObject(this.CompanyDefs, Formatting.Indented));
+        }
+
+        private void ParseCompanyFiles()
+        {
+            var startTime = DateTime.Now.Ticks;
+
+            var companyDefDirectory = UberFileSystem.Instance.GetDirectory("def/company");
+            if (companyDefDirectory == null)
+            {
+                Logger.Instance.Error("Could not read 'def/company' dir");
+                return;
+            }
+
+            var companyDefFiles = companyDefDirectory.GetFiles(".sui");
+
+            if (companyDefFiles == null)
+            {
+                Logger.Instance.Error("Could not read  files");
+                return;
+            }
+
+            companyDefFiles.AddRange(companyDefDirectory.GetFiles("cargo").ToArray());
+
+            foreach (var companyDefFilePath in companyDefFiles)
+            {
+                var cargoDef = UberFileSystem.Instance.GetFile($"def/company/{companyDefFilePath}");
+
+                var data = cargoDef.Entry.Read();
+                TsCompanyDef company = MapSiiUnitToClass.Parse<TsCompanyDef>(data);
+
+                this.CompanyDefs.Add(company);
+            }
+
+            Logger.Instance.Info($"Loaded {companyDefFiles.Count} company defs in {(DateTime.Now.Ticks - startTime) / TimeSpan.TicksPerMillisecond}ms");
         }
     }
 }

@@ -39,6 +39,8 @@
             System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Export As PNG");
             System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Generate Overlay List", new System.Windows.Forms.TreeNode[] {
             treeNode6});
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Generate Bus Stops");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Generate Cargo Defs");
             this.GenerateBtn = new System.Windows.Forms.Button();
             this.StartLabel = new System.Windows.Forms.Label();
             this.EndLabel = new System.Windows.Forms.Label();
@@ -56,7 +58,12 @@
             this.BusStopOverlayCheckBox = new System.Windows.Forms.CheckBox();
             this.SecretRoadsCheckBox = new System.Windows.Forms.CheckBox();
             this.GenTilesCheck = new System.Windows.Forms.CheckBox();
+            this.txtTileSize = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblMapPadding = new System.Windows.Forms.Label();
+            this.txtMapPadding = new System.Windows.Forms.TextBox();
             this.triStateTreeView1 = new TsMap.Canvas.TriStateTreeView();
+            this.ExportDataBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.StartZoomLevelBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EndZoomLevelBox)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -64,9 +71,9 @@
             // 
             // GenerateBtn
             // 
-            this.GenerateBtn.Location = new System.Drawing.Point(10, 214);
+            this.GenerateBtn.Location = new System.Drawing.Point(10, 240);
             this.GenerateBtn.Name = "GenerateBtn";
-            this.GenerateBtn.Size = new System.Drawing.Size(322, 23);
+            this.GenerateBtn.Size = new System.Drawing.Size(166, 23);
             this.GenerateBtn.TabIndex = 2;
             this.GenerateBtn.Text = "Generate";
             this.GenerateBtn.UseVisualStyleBackColor = true;
@@ -204,7 +211,7 @@
             this.groupBox1.Controls.Add(this.FerryConnectionsCheckBox);
             this.groupBox1.Location = new System.Drawing.Point(183, 7);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(149, 201);
+            this.groupBox1.Size = new System.Drawing.Size(157, 201);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Items To Render";
@@ -247,6 +254,38 @@
             this.GenTilesCheck.UseVisualStyleBackColor = true;
             this.GenTilesCheck.CheckedChanged += new System.EventHandler(this.GenTilesCheck_CheckedChanged);
             // 
+            // txtTileSize
+            // 
+            this.txtTileSize.Location = new System.Drawing.Point(60, 214);
+            this.txtTileSize.Name = "txtTileSize";
+            this.txtTileSize.Size = new System.Drawing.Size(63, 20);
+            this.txtTileSize.TabIndex = 14;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 217);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(47, 13);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Tile Size";
+            // 
+            // lblMapPadding
+            // 
+            this.lblMapPadding.AutoSize = true;
+            this.lblMapPadding.Location = new System.Drawing.Point(161, 217);
+            this.lblMapPadding.Name = "lblMapPadding";
+            this.lblMapPadding.Size = new System.Drawing.Size(70, 13);
+            this.lblMapPadding.TabIndex = 16;
+            this.lblMapPadding.Text = "Map Padding";
+            // 
+            // txtMapPadding
+            // 
+            this.txtMapPadding.Location = new System.Drawing.Point(237, 214);
+            this.txtMapPadding.Name = "txtMapPadding";
+            this.txtMapPadding.Size = new System.Drawing.Size(69, 20);
+            this.txtMapPadding.TabIndex = 17;
+            // 
             // triStateTreeView1
             // 
             this.triStateTreeView1.Location = new System.Drawing.Point(10, 59);
@@ -273,20 +312,43 @@
             treeNode7.Name = "GenOverlayList";
             treeNode7.StateImageIndex = 0;
             treeNode7.Text = "Generate Overlay List";
+            treeNode8.Name = "GenBusStops";
+            treeNode8.StateImageIndex = 0;
+            treeNode8.Text = "Generate Bus Stops";
+            treeNode9.Name = "GenCargoDefs";
+            treeNode9.StateImageIndex = 0;
+            treeNode9.Text = "Generate Cargo Defs";
             this.triStateTreeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode3,
             treeNode5,
-            treeNode7});
+            treeNode7,
+            treeNode8,
+            treeNode9});
             this.triStateTreeView1.Size = new System.Drawing.Size(166, 149);
             this.triStateTreeView1.TabIndex = 13;
+            // 
+            // ExportDataBtn
+            // 
+            this.ExportDataBtn.Location = new System.Drawing.Point(183, 240);
+            this.ExportDataBtn.Name = "ExportDataBtn";
+            this.ExportDataBtn.Size = new System.Drawing.Size(166, 23);
+            this.ExportDataBtn.TabIndex = 18;
+            this.ExportDataBtn.Text = "Export Data";
+            this.ExportDataBtn.UseVisualStyleBackColor = true;
+            this.ExportDataBtn.Click += new System.EventHandler(this.ExportDataBtn_Click_1);
             // 
             // TileMapGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(337, 244);
+            this.ClientSize = new System.Drawing.Size(352, 275);
+            this.Controls.Add(this.ExportDataBtn);
             this.Controls.Add(this.triStateTreeView1);
+            this.Controls.Add(this.txtMapPadding);
+            this.Controls.Add(this.lblMapPadding);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.txtTileSize);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.GenTilesCheck);
             this.Controls.Add(this.EndZoomLevelBox);
@@ -326,7 +388,12 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox GenTilesCheck;
         private TriStateTreeView triStateTreeView1;
+        private System.Windows.Forms.TextBox txtTileSize;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblMapPadding;
+        private System.Windows.Forms.TextBox txtMapPadding;
         private System.Windows.Forms.CheckBox SecretRoadsCheckBox;
         private System.Windows.Forms.CheckBox BusStopOverlayCheckBox;
+        private System.Windows.Forms.Button ExportDataBtn;
     }
 }
