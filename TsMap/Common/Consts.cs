@@ -94,8 +94,7 @@ namespace TsMap.Common
             new DlcGuard("dlc_greece_and_blkw", 22),
             new DlcGuard("dlc_polar", 23),
             new DlcGuard("dlc_polar_and_balt", 24),
-            new DlcGuard("dlc_polar_and_blkw", 25),
-            new DlcGuard("dlc_polar_and_balt", 26),
+            new DlcGuard("dlc_polar_and_north", 25),
         };
 
         public const float LaneWidth = 4.5f;
