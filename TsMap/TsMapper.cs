@@ -365,6 +365,21 @@ namespace TsMap
                     return;
                 }
 
+                var externalFilePath = $"map/{mapName}.external.sii";
+                var externalFile = UberFileSystem.Instance.GetFile(externalFilePath);
+                var data = externalFile.Entry.Read();
+                var lines = Encoding.UTF8.GetString(data).Split('\n');
+                foreach (var line in lines) {
+                    if (line.TrimStart().StartsWith("#")) continue;
+                    if (line.Contains("map_root_path")) {
+                        var path = line.Split('"')[1];
+                        Logger.Instance.Info($"Found external map root path: {path}");
+                        var extFileDir = UberFileSystem.Instance.GetDirectory(path);
+                        _sectorFiles.AddRange(extFileDir.GetFilesByExtension(path.Substring(1), ".base"));
+                        break;
+                    }
+                }
+
                 _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base"));
             }
         }
