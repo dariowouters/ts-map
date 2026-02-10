@@ -15,8 +15,10 @@ namespace TsMap.TsItem
                 TsRoadSideItem846(startOffset);
             else if (Sector.Version >= 855 && Sector.Version < 875)
                 TsRoadSideItem855(startOffset);
-            else if (Sector.Version >= 875)
+            else if (Sector.Version >= 875 && Sector.Version < 906)
                 TsRoadSideItem875(startOffset);
+            else if (Sector.Version >= 906)
+                TsRoadSideItem906(startOffset);
             else
                 Logger.Instance.Error($"Unknown base file version ({Sector.Version}) for item {Type} " +
                     $"in file '{Path.GetFileName(Sector.FilePath)}' @ {startOffset} from '{Sector.GetUberFile().Entry.GetArchiveFile().GetPath()}'");
@@ -194,6 +196,57 @@ namespace TsMap.TsItem
                     else
                     {
                         fileOffset += 0x04; // 0x04(padding)
+                    }
+                }
+            }
+            BlockSize = fileOffset - startOffset;
+        }
+
+        public void TsRoadSideItem906(int startOffset)
+        {
+            var fileOffset = startOffset + 0x34; // Set position at start of flags
+            var boardCount = MemoryHelper.ReadInt8(Sector.Stream, fileOffset += 0x05 + 0x20); // 0x05(flags) + 0x20(sign_model & node_uid & look & variant)
+            fileOffset += 0x01 + boardCount * 0x18; // 0x01(boardCount) + boardCount * 0x18(sign_template_t)
+
+            var overrideTemplateLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+            fileOffset += 0x04 + 0x04; // 0x04(overrideTemplateLength) + 0x04(padding)
+            if (overrideTemplateLength != 0)
+            {
+                fileOffset += overrideTemplateLength;
+                var boardOverrideCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x04 + (boardOverrideCount * 0x0B); // 0x04(boardOverrideCount) + board overrides
+
+                var signOverrideCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                fileOffset += 0x04; // cursor after signOverrideCount
+                for (var i = 0; i < signOverrideCount; i++)
+                {
+                    var attributeCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x0C); // 0x0C(padding)
+                    fileOffset += 0x04; // cursor after attributeCount
+                    for (var x = 0; x < attributeCount; x++)
+                    {
+                        var itemType = MemoryHelper.ReadInt16(Sector.Stream, fileOffset);
+
+                        //var itemCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset += 0x02); // 0x02(itemType)
+
+                        fileOffset += 0x02 + 0x04;// 0x02(itemType) + 0x04(index)
+
+                        if (itemType == 0x05)
+                        {
+                            var textLength = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
+                            fileOffset += 0x04 + 0x04 + textLength; // 0x04(cursor after textlength) + 0x04(padding)
+                        }
+                        else if (itemType == 0x06)
+                        {
+                            fileOffset += 0x08;
+                        }
+                        else if (itemType == 0x01)
+                        {
+                            fileOffset += 0x01; // 0x01(padding)
+                        }
+                        else
+                        {
+                            fileOffset += 0x04; // 0x04(padding)
+                        }
                     }
                 }
             }
