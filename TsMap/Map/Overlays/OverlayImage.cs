@@ -183,6 +183,10 @@ namespace TsMap.Map.Overlays
                 case DxgiFormat.FormatB8G8R8X8UnormSrgb:
                     ParseB8G8R8X8(pixelDataOffset);
                     break;
+                case DxgiFormat.FormatBc1Unorm:
+                case DxgiFormat.FormatBc1UnormSrgb:
+                    ParseDxt1(pixelDataOffset);
+                    break;
                 case DxgiFormat.FormatBc2Unorm:
                 case DxgiFormat.FormatBc2UnormSrgb:
                     ParseDxt3(pixelDataOffset);
@@ -286,6 +290,63 @@ namespace TsMap.Map.Overlays
                 var rgba = MemoryHelper.ReadUInt32(_stream, fileOffset += 0x04);
                 _pixelData[i] = new Color8888(0xFF, (byte)((rgba >> 0x10) & 0xFF),
                     (byte)((rgba >> 0x08) & 0xFF), (byte)(rgba & 0xFF));
+            }
+        }
+
+        private void ParseDxt1(int pixelDataOffset) // BC1/DXT1 format - https://msdn.microsoft.com/en-us/library/windows/desktop/bb694531
+        {
+            var fileOffset = pixelDataOffset;
+            _pixelData = new Color8888[Width * Height];
+            for (var y = 0; y < Height; y += 4)
+            for (var x = 0; x < Width; x += 4)
+            {
+                // BC1 block is 8 bytes: 2 colors (4 bytes) + 4x4 indices (4 bytes)
+                var c0Raw = BitConverter.ToUInt16(_stream, fileOffset);
+                var c1Raw = BitConverter.ToUInt16(_stream, fileOffset + 0x02);
+                var color0 = new Color565(c0Raw);
+                var color1 = new Color565(c1Raw);
+
+                Color8888[] colors;
+                if (c0Raw > c1Raw)
+                {
+                    // 4-color block (opaque)
+                    var color2 = (double) 2 / 3 * color0 + (double) 1 / 3 * color1;
+                    var color3 = (double) 1 / 3 * color0 + (double) 2 / 3 * color1;
+                    colors = new[]
+                    {
+                        new Color8888(color0, 0xFF), // bit code 00
+                        new Color8888(color1, 0xFF), // bit code 01
+                        new Color8888(color2, 0xFF), // bit code 10
+                        new Color8888(color3, 0xFF)  // bit code 11
+                    };
+                }
+                else
+                {
+                    // 3-color block with 1-bit alpha
+                    var color2 = (double) 1 / 2 * color0 + (double) 1 / 2 * color1;
+                    colors = new[]
+                    {
+                        new Color8888(color0, 0xFF),       // bit code 00 - opaque
+                        new Color8888(color1, 0xFF),       // bit code 01 - opaque
+                        new Color8888(color2, 0xFF),       // bit code 10 - opaque
+                        new Color8888(0, 0, 0, 0)          // bit code 11 - transparent black
+                    };
+                }
+
+                // Read 4 bytes of color indices (2 bits per pixel, 16 pixels)
+                fileOffset += 0x04;
+                for (var i = 0; i < 4; ++i)
+                {
+                    var colorRow = _stream[fileOffset + i];
+                    for (var j = 0; j < 4; ++j)
+                    {
+                        var colorIndex = (colorRow >> (j * 2)) & 3;
+                        var pos = y * Width + i * Width + x + j;
+                        _pixelData[pos] = colors[colorIndex];
+                    }
+                }
+
+                fileOffset += 0x04;
             }
         }
 
