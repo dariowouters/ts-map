@@ -380,9 +380,9 @@ namespace TsMap
                             break;
                         }
                     }
-
-                    _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base"));
                 }
+
+                _sectorFiles.AddRange(mapFileDir.GetFilesByExtension($"map/{mapName}", ".base"));
             }
         }
 
