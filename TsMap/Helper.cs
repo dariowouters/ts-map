@@ -83,14 +83,34 @@ namespace TsMap
             if (!line.Contains(":") || line.StartsWith("#") || line.StartsWith("//")) return (false, line, line);
             var key = Trim(line.Split(':')[0]);
             var val = line.Split(':')[1];
-            if (val.Contains("//"))
-            {
-                var commentIndex = val.LastIndexOf("//", StringComparison.OrdinalIgnoreCase);
-                val = val.Substring(0, commentIndex);
-            }
-
+            
+            val = StripComments(val);
             val = Trim(val);
             return (true, key, val);
+        }
+
+        private static string StripComments(string val)
+        {
+            var inQuote = false;
+            for (var i = 0; i < val.Length; i++)
+            {
+                if (val[i] == '"')
+                {
+                    inQuote = !inQuote;
+                }
+                else if (!inQuote)
+                {
+                    if (val[i] == '#')
+                    {
+                        return val.Substring(0, i);
+                    }
+                    if (i + 1 < val.Length && val[i] == '/' && val[i + 1] == '/')
+                    {
+                        return val.Substring(0, i);
+                    }
+                }
+            }
+            return val;
         }
     }
 }
