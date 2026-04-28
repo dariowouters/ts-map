@@ -61,6 +61,14 @@ namespace TsMap.Common
             new DlcGuard("dlc_la", 47),
             new DlcGuard("dlc_la_and_ar", 48),
             new DlcGuard("dlc_la_and_tx", 49),
+            new DlcGuard("dlc_il", 50),
+            new DlcGuard("dlc_il_and_ia", 51),
+            new DlcGuard("dlc_il_and_mo", 52),
+            new DlcGuard("dlc_sd", 53, false),
+            new DlcGuard("dlc_sd_and_ia", 54, false),
+            new DlcGuard("dlc_sd_and_mt", 55, false),
+            new DlcGuard("dlc_sd_and_ne", 56, false),
+            new DlcGuard("dlc_sd_and_wy", 57, false),
         };
 
         /// <summary>

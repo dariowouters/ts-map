@@ -179,15 +179,24 @@ namespace TsMap
 
                     if (line.Contains("}") && token != 0 && path != "")
                     {
-                        var prefab = new TsPrefab(path, token, category);
-                        if (prefab.Token != 0 && !_prefabLookup.ContainsKey(prefab.Token))
+                        try
                         {
-                            _prefabLookup.Add(prefab.Token, prefab);
+                            var prefab = new TsPrefab(path, token, category);
+                            if (prefab.Token != 0 && !_prefabLookup.ContainsKey(prefab.Token))
+                            {
+                                _prefabLookup.Add(prefab.Token, prefab);
+                            }
                         }
-
-                        token = 0;
-                        path = "";
-                        category = "";
+                        catch (Exception ex)
+                        {
+                            Logger.Instance.Error($"Failed to load Prefab '{path}': {ex.Message}");
+                        }
+                        finally
+                        {
+                            token = 0;
+                            path = "";
+                            category = "";
+                        }
                     }
                 }
             }

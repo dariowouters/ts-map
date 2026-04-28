@@ -16,6 +16,7 @@ namespace TsMap.FileSystem.Hash
         MipProxy = 0x03,
         PmaInfo = 0x05,
         PmgInfo = 0x06,
+        PfxInfo = 0x07,
         Plain = 0x80,
         Directory = 0x81,
         Mip0 = 0x82,
@@ -216,18 +217,9 @@ namespace TsMap.FileSystem.Hash
                                     MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset));
                                 break;
                             case HashEntryTypes.PmaInfo:
-                                entry._pmaInfoMetadata = new PmaInfoMetadata(
-                                    MemoryHelper.ReadUInt32(rawMetadataBytes, referencedMetadataOffset),
-                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x04),
-                                    MemoryHelper.ReadUInt64(rawMetadataBytes, referencedMetadataOffset + 0x08),
-                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x10),
-                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x14),
-                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x18),
-                                    MemoryHelper.ReadSingle(rawMetadataBytes, referencedMetadataOffset + 0x1c));
-                                break;
                             case HashEntryTypes.PmgInfo:
-                                entry._pmgInfoMetadata = new PmgInfoMetadata(
-                                    MemoryHelper.ReadUInt64(rawMetadataBytes, referencedMetadataOffset));
+                            case HashEntryTypes.PfxInfo:
+                                // don't need these
                                 break;
                             default:
                                 Logger.Instance.Error(

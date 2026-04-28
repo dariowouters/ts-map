@@ -214,7 +214,21 @@ namespace TsMap.TsItem
             {
                 fileOffset += overrideTemplateLength;
                 var boardOverrideCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
-                fileOffset += 0x04 + (boardOverrideCount * 0x0B); // 0x04(boardOverrideCount) + board overrides
+                fileOffset += 0x04; // 0x04(boardOverrideCount)
+
+                for (var i = 0; i < boardOverrideCount; i++)
+                {
+                    var flags = Sector.Stream[fileOffset += 0x08]; // 0x08(area_name)
+                    fileOffset += 0x01; // flags
+                    if ((flags & 0x01) != 0)
+                    {
+                        fileOffset += 0x02; // 0x02(x, y)
+                    }
+                    if ((flags & 0x02) != 0)
+                    {
+                        fileOffset += 0x08; // 0x08(board_def)
+                    }
+                }
 
                 var signOverrideCount = MemoryHelper.ReadInt32(Sector.Stream, fileOffset);
                 fileOffset += 0x04; // cursor after signOverrideCount
