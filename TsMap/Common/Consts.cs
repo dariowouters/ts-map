@@ -64,12 +64,11 @@ namespace TsMap.Common
             new DlcGuard("dlc_il", 50),
             new DlcGuard("dlc_il_and_ia", 51),
             new DlcGuard("dlc_il_and_mo", 52),
-            new DlcGuard("dlc_sd", 53, false),
-            new DlcGuard("dlc_sd_and_ia", 54, false),
-            new DlcGuard("dlc_sd_and_mt", 55, false),
-            new DlcGuard("dlc_sd_and_ne", 56, false),
-            new DlcGuard("dlc_sd_and_wy", 57, false),
-
+            new DlcGuard("dlc_sd", 53),
+            new DlcGuard("dlc_sd_and_ia", 54),
+            new DlcGuard("dlc_sd_and_mt", 55),
+            new DlcGuard("dlc_sd_and_ne", 56),
+            new DlcGuard("dlc_sd_and_wy", 57),
         };
 
         /// <summary>
@@ -104,7 +103,6 @@ namespace TsMap.Common
             new DlcGuard("dlc_polar", 23),
             new DlcGuard("dlc_polar_and_balt", 24),
             new DlcGuard("dlc_polar_and_north", 25),
-
         };
 
         public const float LaneWidth = 4.5f;

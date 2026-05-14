@@ -12,25 +12,22 @@ namespace TsMap.Canvas
         private string modPath;
         private List<Mod> _mods = new List<Mod>();
 
-        public Settings AppSettings { get; }
-
         public SetupForm()
         {
             InitializeComponent();
-            AppSettings = JsonHelper.LoadSettings();
             GameFolderBrowserDialog.Description = "Please select the game directory\nE.g. D:/Games/steamapps/common/Euro Truck Simulator 2/";
             GameFolderBrowserDialog.ShowNewFolderButton = false;
-            if (AppSettings.LastGamePath != null)
+            if (SettingsManager.Current.Settings.LastGamePath != null)
             {
-                GameFolderBrowserDialog.SelectedPath = AppSettings.LastGamePath;
+                GameFolderBrowserDialog.SelectedPath = SettingsManager.Current.Settings.LastGamePath;
                 SelectedGamePath();
             }
 
             ModFolderBrowserDialog.Description = "Please select the mod directory\nE.g. D:/Users/Dario/Documents/Euro Truck Simulator 2/mod";
             ModFolderBrowserDialog.ShowNewFolderButton = false;
-            if (AppSettings.LastModPath != null)
+            if (SettingsManager.Current.Settings.LastModPath != null)
             {
-                ModFolderBrowserDialog.SelectedPath = AppSettings.LastModPath;
+                ModFolderBrowserDialog.SelectedPath = SettingsManager.Current.Settings.LastModPath;
                 SelectedModPath();
             }
         }
@@ -38,7 +35,7 @@ namespace TsMap.Canvas
         private void SelectedGamePath()
         {
             if (!Directory.Exists(GameFolderBrowserDialog.SelectedPath)) return;
-            gamePath = SelectedGamePathLabel.Text = AppSettings.LastGamePath = GameFolderBrowserDialog.SelectedPath;
+            gamePath = SelectedGamePathLabel.Text = SettingsManager.Current.Settings.LastGamePath = GameFolderBrowserDialog.SelectedPath;
             if (loadMods.Checked && modPath == null) return;
             NextBtn.Enabled = true;
         }
@@ -46,7 +43,7 @@ namespace TsMap.Canvas
         private void SelectedModPath()
         {
             if (!Directory.Exists(ModFolderBrowserDialog.SelectedPath)) return;
-            modPath = SelectedModPathLabel.Text = AppSettings.LastModPath = ModFolderBrowserDialog.SelectedPath;
+            modPath = SelectedModPathLabel.Text = SettingsManager.Current.Settings.LastModPath = ModFolderBrowserDialog.SelectedPath;
             var files = Directory.EnumerateFiles(modPath, "*.*", SearchOption.TopDirectoryOnly)
                 .Where(s => s.EndsWith(".scs", StringComparison.OrdinalIgnoreCase) ||
                             s.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
@@ -66,8 +63,12 @@ namespace TsMap.Canvas
 
         private void NextBtn_Click(object sender, EventArgs e)
         {
+            SettingsManager.Current.Settings.Mods = _mods;
+
+            SettingsManager.Current.SaveSettings();
+
             Cursor = Cursors.WaitCursor;
-            new TsMapCanvas(this, GameFolderBrowserDialog.SelectedPath, _mods).Show();
+            new TsMapCanvas(this).Show();
             Hide();
         }
 

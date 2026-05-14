@@ -259,3 +259,9 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Project-specific
+map_data/
+mbtiles/
+web-viewer/public/map_data/
+rclone.conf
