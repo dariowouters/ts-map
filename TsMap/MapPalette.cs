@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 
 namespace TsMap
 {
@@ -48,5 +48,30 @@ namespace TsMap
         /// Brush for error text
         /// </summary>
         public Brush Error;
+
+        /// <summary>
+        /// Brush for special color index 8 used in ATS quarry. RGB(110, 62, 169) in game.
+        /// </summary>
+        public Brush SpecialColor8;
+
+        /// <summary>
+        /// Brush for special color index 7 used in ATS quarry. RGB(236, 212, 36) in game.
+        /// </summary>
+        public Brush SpecialColor7;
+
+        /// <summary>
+        /// Brush for special color index 6 used in ATS quarry. RGB(47, 119, 217) in game.
+        /// </summary>
+        public Brush SpecialColor6;
+
+        /// <summary>
+        /// Brush for special color index 5 used in ATS quarry. RGB(77, 165, 53) in game.
+        /// </summary>
+        public Brush SpecialColor5;
+
+        /// <summary>
+        /// Brush for special color index 4 used in ATS quarry. RGB(153, 0, 0) in game.
+        /// </summary>
+        public Brush SpecialColor4;
     }
 }
